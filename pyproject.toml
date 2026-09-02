@@ -1,0 +1,28 @@
+[project]
+name = "caption-checker"
+version = "0.1.0"
+description = "Add your description here"
+readme = "README.md"
+authors = [
+    { name = "ku-ro-wa", email = "kurowa.jp@gmail.com" }
+]
+requires-python = ">=3.11"
+dependencies = [
+    "click>=8.4.2",
+    "jellyfish>=1.2.1",
+    "python-dotenv>=1.2.3",
+    "srt>=3.5.3",
+    "webvtt-py>=0.5.1",
+]
+
+[project.scripts]
+caption-checker = "caption_checker:main"
+
+[build-system]
+requires = ["uv_build>=0.12.5,<0.13.0"]
+build-backend = "uv_build"
+
+[dependency-groups]
+dev = [
+    "pytest>=9.1.1",
+]

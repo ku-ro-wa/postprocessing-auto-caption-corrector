@@ -1,0 +1,27 @@
+1
+00:00:00,000 --> 00:00:03,500
+Welcome back to the lecture on distributed systems.
+
+2
+00:00:03,500 --> 00:00:07,200
+Today we're going to talk about con sensus algorithms.
+
+3
+00:00:07,200 --> 00:00:11,000
+Specifically, we'll cover the Raft protocol and how it differs from Paxos.
+
+4
+00:00:11,000 --> 00:00:15,800
+A key idea in Raft is leader election using randomized timeouts.
+
+5
+00:00:15,800 --> 00:00:20,100
+We also need to talk about cough ka, which is a distributed streaming platform.
+
+6
+00:00:20,100 --> 00:00:24,000
+Many companies use cough ka for event driven architectures.
+
+7
+00:00:24,000 --> 00:00:28,500
+Next week we'll look at cubernetes and container orchestration.
