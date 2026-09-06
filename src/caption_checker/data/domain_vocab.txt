@@ -1,0 +1,181 @@
+# Default domain vocabulary for phonetic error detection.
+# One term per line. Blank lines and lines starting with '#' are ignored.
+# Multi-word terms are allowed (matched against joined token n-grams).
+# Extend or override at the CLI with:  caption-checker check FILE --vocab my_terms.txt
+
+# --- distributed systems / consensus ---
+consensus
+quorum
+Paxos
+Raft
+Zab
+Byzantine
+gossip
+leader election
+heartbeat
+log replication
+state machine
+linearizability
+serializability
+eventual consistency
+strong consistency
+CAP theorem
+split brain
+fencing token
+lease
+epoch
+term
+commit index
+write-ahead log
+WAL
+snapshot
+checkpoint
+replication factor
+partition tolerance
+vector clock
+Lamport clock
+hybrid logical clock
+Merkle tree
+anti-entropy
+read repair
+hinted handoff
+quorum read
+quorum write
+
+# --- streaming / messaging ---
+Kafka
+Pulsar
+RabbitMQ
+ZeroMQ
+Kinesis
+Flink
+Samza
+Storm
+Spark
+topic
+partition
+offset
+consumer group
+broker
+producer
+exactly once
+at least once
+at most once
+backpressure
+watermark
+event time
+processing time
+windowing
+tumbling window
+sliding window
+session window
+
+# --- datastores ---
+Cassandra
+ScyllaDB
+DynamoDB
+Bigtable
+HBase
+MongoDB
+CockroachDB
+Spanner
+etcd
+ZooKeeper
+Consul
+Redis
+Memcached
+Postgres
+PostgreSQL
+SQLite
+RocksDB
+LevelDB
+LSM tree
+B-tree
+bloom filter
+compaction
+sharding
+resharding
+hash ring
+consistent hashing
+secondary index
+materialized view
+
+# --- orchestration / infra ---
+Kubernetes
+Nomad
+Mesos
+Docker
+containerd
+Envoy
+Istio
+Linkerd
+sidecar
+service mesh
+ingress
+egress
+pod
+namespace
+deployment
+StatefulSet
+DaemonSet
+horizontal pod autoscaler
+control plane
+data plane
+reconciliation loop
+operator
+custom resource
+Helm
+Terraform
+Ansible
+
+# --- networking / RPC ---
+gRPC
+protobuf
+Thrift
+Avro
+Cap'n Proto
+QUIC
+HTTP/2
+HTTP/3
+mTLS
+load balancer
+round robin
+least connections
+circuit breaker
+retry budget
+deadline
+idempotent
+idempotency key
+exponential backoff
+jitter
+
+# --- observability ---
+Prometheus
+Grafana
+Jaeger
+Zipkin
+OpenTelemetry
+distributed tracing
+span
+trace
+cardinality
+histogram
+percentile
+tail latency
+SLO
+SLI
+error budget
+
+# --- ML / data (lecture-adjacent) ---
+embedding
+transformer
+attention
+tokenizer
+gradient descent
+backpropagation
+overfitting
+regularization
+hyperparameter
+inference
+quantization
+distillation

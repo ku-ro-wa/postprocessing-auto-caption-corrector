@@ -1,7 +1,7 @@
 [project]
 name = "caption-checker"
 version = "0.1.0"
-description = "Add your description here"
+description = "Post-hoc detector for auto-generated caption (ASR) errors"
 readme = "README.md"
 authors = [
     { name = "ku-ro-wa", email = "kurowa.jp@gmail.com" }
@@ -10,9 +10,19 @@ requires-python = ">=3.11"
 dependencies = [
     "click>=8.4.2",
     "jellyfish>=1.2.1",
+    "metaphone>=0.6",
     "python-dotenv>=1.2.3",
     "srt>=3.5.3",
     "webvtt-py>=0.5.1",
+    "wordfreq>=3.1.1",
+]
+
+[project.optional-dependencies]
+# Local embedding model for the context-anomaly detector. Pulls in torch
+# (several hundred MB); the detector lazy-imports it and `check --no-embeddings`
+# / a graceful skip keep it opt-in.
+embeddings = [
+    "sentence-transformers>=3.0",
 ]
 
 [project.scripts]
@@ -26,3 +36,6 @@ build-backend = "uv_build"
 dev = [
     "pytest>=9.1.1",
 ]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
