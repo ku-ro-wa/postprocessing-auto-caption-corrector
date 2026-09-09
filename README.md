@@ -31,6 +31,33 @@ uv run caption-checker check lecture.srt --no-embeddings
 uv run caption-checker check lecture.srt --oov-zipf 2.0
 ```
 
+### Correcting a transcript
+
+`correct` runs the same detection as `check`, then resolves the cheap cases
+locally, sends the rest to an LLM (OpenRouter) for a judged correction, lets you
+review, and writes a corrected file plus a `<OUT>.flags.json` sidecar recording
+what became of every flag. It writes files and spends money, so it is a
+separate verb from `check` and needs an explicit `-o`.
+
+```bash
+# interactive review; needs OPENROUTER_API_KEY (env or .env)
+uv run caption-checker correct lecture.srt -o lecture.fixed.srt
+
+# unattended: apply every correction at or above a confidence, skip the rest
+uv run caption-checker correct lecture.srt -o lecture.fixed.srt --yes-above 0.8
+
+# see the price before committing (no API call)
+uv run caption-checker correct lecture.srt -o /dev/null --estimate
+
+# pick a model; cap spend; skip the cross-run decision cache
+uv run caption-checker correct lecture.srt -o out.srt \
+    --model anthropic/claude-3.5-haiku --max-calls 4 --no-cache
+```
+
+Interactive keys: `y` accept, `n` skip, `e` edit then accept, `a` accept all
+remaining at or above this confidence, `q` stop and write what's accepted so
+far. `check` is unchanged — still read-only, still free.
+
 Example:
 
 ```
@@ -63,6 +90,10 @@ confidence. The built-in vocabulary lives at
 ## Roadmap
 
 1. ~~SRT/VTT parser + CLI round-trip~~
-2. ~~Phonetic / statistical anomaly flagging~~ ← current
-3. LLM correction pass over the flagged JSON (OpenRouter, swappable model)
-4. Diff view + corrected-file export
+2. ~~Phonetic / statistical anomaly flagging~~
+3. ~~LLM correction pass + corrected-file export (`correct`, OpenRouter, swappable model)~~ ← current
+4. Qualitative pass over real transcripts + detector-threshold retuning
+
+Sessions 3–4 are planned in detail in [`docs/plan-llm-correction.md`](docs/plan-llm-correction.md).
+Domain vocabulary for the codebase itself is in [`CONTEXT.md`](CONTEXT.md); design
+decisions in [`docs/adr/`](docs/adr/).
