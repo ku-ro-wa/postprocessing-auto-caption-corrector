@@ -4,6 +4,16 @@ from dataclasses import dataclass, field
 from datetime import timedelta
 
 
+def format_timestamp(td: timedelta) -> str:
+    """``HH:MM:SS,mmm`` -- the SRT-style stamp used in reports and the eval
+    table (kept format-neutral here so both ``check`` and ``correct`` share it)."""
+    total_ms = round(td.total_seconds() * 1000)
+    h, rem = divmod(total_ms, 3_600_000)
+    m, rem = divmod(rem, 60_000)
+    s, ms = divmod(rem, 1000)
+    return f"{h:02d}:{m:02d}:{s:02d},{ms:03d}"
+
+
 @dataclass
 class Cue:
     index: int
@@ -34,6 +44,28 @@ class Flag:
     candidates: list[str] = field(default_factory=list)
     confidence: float = 0.0
     context: str = ""
+
+
+def flag_to_dict(flag: Flag) -> dict:
+    """JSON shape of a Flag -- the ``check --format json`` contract and the
+    per-flag record inside a ``correct`` sidecar."""
+    return {
+        "span": flag.span,
+        "global_indices": flag.global_indices,
+        "cue_index": flag.cue_index,
+        "start": flag.start.total_seconds(),
+        "end": flag.end.total_seconds(),
+        "detector": flag.detector,
+        "reason": flag.reason,
+        "candidates": flag.candidates,
+        "confidence": flag.confidence,
+        "context": flag.context,
+    }
+
+
+# Default OpenRouter model for the ``correct`` pass: a Gemini Flash-class slug,
+# pinned here and overridable with ``correct --model SLUG``.
+DEFAULT_MODEL = "google/gemini-2.0-flash-001"
 
 
 # Detector names, also the order flags are reported in.
@@ -71,4 +103,9 @@ class DetectConfig:
     embedding_sim_z: float = -1.5
     embedding_candidate_zipf_max: float = 2.5
     enable_embeddings: bool = True
+    #: Internal-match bypass (see ``correct.py``): a pure ``phonetic_internal``
+    #: flag with several candidates is only applied without an LLM call when the
+    #: top candidate's Jaro-Winkler score beats the runner-up's by at least this
+    #: much. A lone candidate always clears the bar.
+    bypass_jw_margin: float = 0.15
     stopwords: frozenset[str] = _DEFAULT_STOPWORDS
