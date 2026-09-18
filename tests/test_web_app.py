@@ -143,6 +143,15 @@ class TestReviewDecisions:
         )
         assert response.status_code == 404
 
+    def test_review_page_defaults_accept_text_to_top_local_candidate(
+        self, tmp_path: Path
+    ) -> None:
+        client = _make_client(tmp_path)
+        transcript_id = _upload(client)
+
+        page = client.get(f"/transcripts/{transcript_id}")
+        assert 'value="consensus"' in page.text
+
     def test_unknown_action_is_400(self, tmp_path: Path) -> None:
         client = _make_client(tmp_path)
         transcript_id = _upload(client)

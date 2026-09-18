@@ -192,13 +192,24 @@ def run_correction(
     return record
 
 
+def _default_replacement(flag: Flag, correction: Correction | None) -> str:
+    """The text an Accept should default to, absent an explicit edit: the
+    Flag's LLM Correction where one exists, else its own top local Candidate,
+    else its unchanged span."""
+    if correction is not None and correction.replacement:
+        return correction.replacement
+    if flag.candidates:
+        return flag.candidates[0]
+    return flag.span
+
+
 def set_decision(record: TranscriptRecord, flag_id: int, *, action: str, text: str | None) -> None:
     """Record a reviewer's Accept/Reject on Flag ``flag_id``.
 
     Accepting always carries explicit replacement text: the reviewer's edit
-    if given, else the Flag's LLM Correction, else the Flag's original span
-    (accepting with no edit and no Correction is a same-text no-op — legal,
-    just inert on Export).
+    if given, else the Flag's LLM Correction, else its top local Candidate,
+    else its unchanged span (accepting with no edit and no Correction or
+    Candidate is a same-text no-op — legal, just inert on Export).
     """
     if not (0 <= flag_id < len(record.flags)):
         raise IndexError(f"No flag {flag_id} on transcript {record.id}")
@@ -212,11 +223,7 @@ def set_decision(record: TranscriptRecord, flag_id: int, *, action: str, text: s
             replacement = text
         else:
             correction = record.corrections[flag_id] if record.corrections else None
-            replacement = (
-                correction.replacement
-                if correction and correction.replacement
-                else record.flags[flag_id].span
-            )
+            replacement = _default_replacement(record.flags[flag_id], correction)
         record.decisions[flag_id] = ReviewDecision(status="accepted", text=replacement)
         return
 
@@ -272,8 +279,7 @@ def transcript_rows(record: TranscriptRecord) -> list[FlagRow]:
                 correction=correction,
                 decision=record.decisions[flag_id],
                 dismissed=correction is not None and correction.replacement is None,
-                default_text=(correction.replacement if correction and correction.replacement else None)
-                or flag.span,
+                default_text=_default_replacement(flag, correction),
             )
         )
     return rows

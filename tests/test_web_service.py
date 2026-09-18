@@ -155,11 +155,22 @@ class TestSetDecision:
 
         assert record.decisions[flag_id].text == "Kubernetes cluster"
 
-    def test_accept_without_correction_falls_back_to_original_span(
+    def test_accept_without_correction_falls_back_to_top_local_candidate(
+        self, storage: Storage, session_id: str
+    ) -> None:
+        record = _upload_sample(storage, session_id)
+        flag_id = next(i for i, f in enumerate(record.flags) if f.candidates)
+
+        service.set_decision(record, flag_id, action="accept", text=None)
+
+        assert record.decisions[flag_id].text == record.flags[flag_id].candidates[0]
+
+    def test_accept_without_correction_or_candidate_falls_back_to_span(
         self, storage: Storage, session_id: str
     ) -> None:
         record = _upload_sample(storage, session_id)
         flag_id = 0
+        record.flags[flag_id].candidates = []
 
         service.set_decision(record, flag_id, action="accept", text=None)
 
@@ -184,6 +195,42 @@ class TestSetDecision:
         record = _upload_sample(storage, session_id)
         with pytest.raises(ValueError):
             service.set_decision(record, 0, action="frobnicate", text=None)
+
+
+class TestTranscriptRows:
+    def test_default_text_uses_top_local_candidate_when_no_correction(
+        self, storage: Storage, session_id: str
+    ) -> None:
+        record = _upload_sample(storage, session_id)
+        flag_id = next(i for i, f in enumerate(record.flags) if f.candidates)
+
+        rows = service.transcript_rows(record)
+
+        assert rows[flag_id].default_text == record.flags[flag_id].candidates[0]
+
+    def test_default_text_prefers_llm_correction_over_local_candidate(
+        self, storage: Storage, session_id: str
+    ) -> None:
+        record = _upload_sample(storage, session_id)
+        flag_id = next(i for i, f in enumerate(record.flags) if f.candidates)
+        record.corrections[flag_id] = Correction(
+            id=str(flag_id), replacement="LLM Replacement", confidence=0.9
+        )
+
+        rows = service.transcript_rows(record)
+
+        assert rows[flag_id].default_text == "LLM Replacement"
+
+    def test_default_text_falls_back_to_span_with_no_candidate_or_correction(
+        self, storage: Storage, session_id: str
+    ) -> None:
+        record = _upload_sample(storage, session_id)
+        flag_id = 0
+        record.flags[flag_id].candidates = []
+
+        rows = service.transcript_rows(record)
+
+        assert rows[flag_id].default_text == record.flags[flag_id].span
 
 
 class TestExportTranscript:
