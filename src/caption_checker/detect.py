@@ -7,7 +7,7 @@ from caption_checker.detectors import LEXICAL_DETECTORS, context_embedding
 from caption_checker.models import Cue, DetectConfig, Flag
 from caption_checker.normalize import sentences
 from caption_checker.parser import tokenize
-from caption_checker.vocab import Vocab, load_vocab
+from caption_checker.vocab import Vocab, build_doc_vocab, load_vocab
 
 
 def detect(
@@ -19,10 +19,13 @@ def detect(
     config = config or DetectConfig()
     vocab = vocab or load_vocab(algo=config.phonetic_algo)
     words = tokenize(cues)
+    doc_vocab = build_doc_vocab(
+        words, vocab, config, min_count=config.doc_vocab_min_count
+    )
 
     raw: list[Flag] = []
     for detector in LEXICAL_DETECTORS:
-        raw.extend(detector.find(words, cues, vocab, config))
+        raw.extend(detector.find(words, cues, vocab, config, doc_vocab=doc_vocab))
 
     if config.enable_embeddings:
         raw.extend(

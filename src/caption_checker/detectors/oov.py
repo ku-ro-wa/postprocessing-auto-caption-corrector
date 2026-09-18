@@ -7,7 +7,7 @@ from wordfreq import zipf_frequency
 
 from caption_checker.models import DETECTOR_OOV, Cue, DetectConfig, Flag, Word
 from caption_checker.normalize import clean, is_wordlike
-from caption_checker.vocab import Vocab
+from caption_checker.vocab import DocVocab, Vocab
 
 from .base import index_cues, make_flag
 
@@ -17,9 +17,12 @@ def find(
     cues: list[Cue],
     vocab: Vocab,
     config: DetectConfig,
+    *,
+    doc_vocab: DocVocab | None = None,
     **_context: object,
 ) -> list[Flag]:
     cues_by_index = index_cues(cues)
+    doc_vocab = doc_vocab or DocVocab()
     flags: list[Flag] = []
     for word in words:
         if not is_wordlike(word.text):
@@ -27,7 +30,7 @@ def find(
         cleaned = clean(word.text)
         if len(cleaned) < config.min_token_len:
             continue
-        if cleaned in config.stopwords or cleaned in vocab.terms:
+        if cleaned in config.stopwords or cleaned in vocab.terms or cleaned in doc_vocab:
             continue
         zipf = zipf_frequency(cleaned, "en")
         if zipf > config.oov_zipf_max:

@@ -55,6 +55,22 @@ def test_kafka_split_flagged() -> None:
     assert {f.cue_index for f in hits} == {5, 6}
 
 
+def test_doc_vocab_corrects_recurring_misspellings() -> None:
+    """"Kalshi" recurs correctly 7x; "Kashi" and "Caushi" are each a
+    consistent ASR mistake recurring 3x — enough to independently clear the
+    recurrence threshold that promotes a term into doc_vocab. Without
+    clustering near-duplicates together, each misspelling would get trusted
+    as its own "correct" term instead of being corrected."""
+    flags = _flags("doc_vocab_sample.srt")
+
+    kashi_like = _covering(flags, "kashi", "caushi")
+    assert kashi_like, "expected Kashi/Caushi misspellings to be flagged"
+    assert all(f.candidates == ["Kalshi"] for f in kashi_like)
+
+    spans = [f.span.lower() for f in flags]
+    assert "kalshi" not in spans, "correctly-spelled Kalshi should never be flagged"
+
+
 def test_clean_terms_not_flagged() -> None:
     flags = _flags()
     flagged_spans = " ".join(f.span.lower() for f in flags)

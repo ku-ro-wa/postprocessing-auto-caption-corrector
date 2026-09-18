@@ -99,6 +99,13 @@ class DetectConfig:
     split_common_zipf_min: float = 3.0
     phonetic_algo: str = "metaphone"
     known_good_zipf_min: float = 3.0
+    #: Doc-vocab clustering (see ``vocab.build_doc_vocab``): an OOV token
+    #: spelled the same way at least this many times is trusted as this
+    #: transcript's own term rather than a one-off ASR fluke.
+    doc_vocab_min_count: int = 3
+    #: Jaro-Winkler similarity floor for clustering near-duplicate
+    #: misspellings of the same doc-vocab term together.
+    doc_vocab_fuzzy_min: float = 0.82
     embedding_model: str = "sentence-transformers/all-MiniLM-L6-v2"
     embedding_sim_z: float = -1.5
     embedding_candidate_zipf_max: float = 2.5
