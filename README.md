@@ -87,12 +87,41 @@ Overlapping flags from different detectors are merged; agreement raises
 confidence. The built-in vocabulary lives at
 `src/caption_checker/data/domain_vocab.txt`.
 
+Each transcript also builds its own throwaway vocabulary: terms unknown to
+`wordfreq`/the curated list but spelled the same way several times (a
+recurring brand, guest, or company name) are trusted as that document's own
+correct term, so later occurrences aren't flagged and near-miss misspellings
+elsewhere get it as a candidate. Because a deterministic ASR mistake repeats
+too, near-duplicate misspellings that each independently clear the
+recurrence threshold ("Kashi" and "Caushi" alongside the correct "Kalshi")
+are clustered together first — only the most frequent spelling in a cluster
+is trusted; the rest stay correctable.
+
+## Web review UI
+
+```bash
+uv run caption-checker serve  # http://127.0.0.1:8000
+```
+
+Upload an SRT/VTT through the browser to get it scanned automatically by
+the local detectors, then review each Flag in context — accept, reject, or
+edit a suggestion before accepting — and download a corrected file that
+reflects only your accepted Review Decisions. The LLM `correct` pass only
+ever runs when you trigger it on a specific transcript; it uses your own
+OpenRouter key entered in the browser, falling back to the server's
+`OPENROUTER_API_KEY` only for local/dev use. Uploads and review state are
+private to your browser session and persist across server restarts. See
+`docs/adr/0003-web-ui-upload-session-persisted.md` and
+`docs/adr/0004-llm-correction-manual-session-keyed.md` for the reasoning
+behind these choices.
+
 ## Roadmap
 
 1. ~~SRT/VTT parser + CLI round-trip~~
 2. ~~Phonetic / statistical anomaly flagging~~
-3. ~~LLM correction pass + corrected-file export (`correct`, OpenRouter, swappable model)~~ ← current
-4. Qualitative pass over real transcripts + detector-threshold retuning
+3. ~~LLM correction pass + corrected-file export (`correct`, OpenRouter, swappable model)~~
+4. ~~Web review UI: upload, review, export (`serve`)~~ ← current
+5. Qualitative pass over real transcripts + detector-threshold retuning
 
 Sessions 3–4 are planned in detail in [`docs/plan-llm-correction.md`](docs/plan-llm-correction.md).
 Domain vocabulary for the codebase itself is in [`CONTEXT.md`](CONTEXT.md); design

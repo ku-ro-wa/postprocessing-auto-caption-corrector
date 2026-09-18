@@ -115,3 +115,32 @@ of it — applied, rejected, not-an-error, bypassed, cached (applied from the
 decision cache), or skipped after a parse failure. The corrected transcript
 itself carries only accepted changes.
 _Avoid_: log, manifest.
+
+### Web review UI
+
+**Transcript**:
+A caption file (SRT/VTT), parsed into Cues, uploaded through the web review
+UI (`caption-checker serve`) and belonging to the Session that uploaded it.
+Everything else on this page (Flags, Corrections) attaches to one.
+_Avoid_: upload, file, document.
+
+**Session**:
+An anonymous, cookie-identified scope isolating which Transcripts, Review
+Decisions, and OpenRouter API key belong to one browser. No login or account
+sits behind it — it's an isolation boundary, not an identity.
+_Avoid_: user, account.
+
+**Review Decision**:
+A reviewer's disposition on one Flag in the web UI: pending, accepted, or
+rejected, with optional edited replacement text overriding the Flag's
+Correction. Export reads these to decide what changes make it into the
+corrected file. Distinct from the CLI `correct` command's own interactive
+accept/skip/edit flow, which never persists a decision between runs.
+_Avoid_: verdict (that's the LLM's Correction; a Review Decision is the
+reviewer's response to it).
+
+**Export**:
+The corrected SRT/VTT the web UI produces by applying every accepted Review
+Decision's text back into the original Cues. Flags left pending or rejected
+keep their original text. Distinct from the CLI `correct` command's `-o`
+output, which is written directly from its own interactive review.

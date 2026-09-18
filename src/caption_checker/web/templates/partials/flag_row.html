@@ -1,0 +1,34 @@
+{% set status = "dismissed" if row.dismissed else row.decision.status %}
+<div class="flag-card {{ status }}" id="flag-{{ row.id }}">
+  <div class="flag-meta">
+    [{{ row.flag.start|ts }} → {{ row.flag.end|ts }}] cue {{ row.flag.cue_index }}
+    &middot; {{ row.flag.detector }} &middot; confidence {{ "%.2f"|format(row.flag.confidence) }}
+    <span class="status-pill">{{ status }}</span>
+  </div>
+  <div class="flag-context">
+    {{ (row.flag.context or row.flag.span)|highlight(row.flag.span) }}
+  </div>
+
+  {% if row.correction %}
+    <div class="flag-meta">
+      LLM: {{ "confirmed" if row.correction.replacement is not none else "dismissed" }}
+      {% if row.correction.replacement is not none %}
+        → "{{ row.correction.replacement }}" (confidence {{ "%.2f"|format(row.correction.confidence) }})
+      {% endif %}
+      {% if row.correction.rationale %}&mdash; {{ row.correction.rationale }}{% endif %}
+    </div>
+  {% endif %}
+
+  {% if not row.dismissed %}
+  <form
+    class="flag-actions"
+    hx-post="/transcripts/{{ transcript.id }}/flags/{{ row.id }}/decision"
+    hx-target="#flag-{{ row.id }}"
+    hx-swap="outerHTML"
+  >
+    <input type="text" name="text" value="{{ row.decision.text if row.decision.status == 'accepted' else row.default_text }}">
+    <button class="btn" type="submit" name="action" value="accept">Accept</button>
+    <button class="btn" type="submit" name="action" value="reject">Reject</button>
+  </form>
+  {% endif %}
+</div>

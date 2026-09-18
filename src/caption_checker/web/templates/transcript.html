@@ -1,0 +1,48 @@
+{% extends "base.html" %}
+{% block title %}{{ transcript.filename }} · caption-checker{% endblock %}
+{% block header_extra %}
+  <a href="/transcripts/{{ transcript.id }}/export">Export corrected {{ transcript.format }}</a>
+{% endblock %}
+{% block content %}
+
+<h2>{{ transcript.filename }}</h2>
+<p class="muted">
+  {{ transcript.flags|length }} flag{{ "" if transcript.flags|length == 1 else "s" }}
+  &middot; {{ transcript.reviewed_count }} reviewed
+  {% if summary %}
+    &middot; LLM confirmed {{ summary.confirmed }}/{{ summary.total }}
+  {% endif %}
+</p>
+
+<section>
+  <h3>LLM second opinion</h3>
+  {% if transcript.correct_error %}
+    <div class="error">{{ transcript.correct_error }}</div>
+  {% endif %}
+  {% if transcript.has_corrections %}
+    <p class="muted">Correction pass complete. Re-running isn't supported yet — see each Flag below for the LLM's verdict.</p>
+  {% else %}
+  <form action="/transcripts/{{ transcript.id }}/correct" method="post">
+    {% if not has_session_key and not has_server_key %}
+      <label>OpenRouter API key: <input type="password" name="api_key" placeholder="sk-or-..."></label>
+    {% elif not has_session_key and has_server_key %}
+      <p class="muted">Using the server's configured OPENROUTER_API_KEY (local/dev fallback). Enter your own to use it instead: <input type="password" name="api_key" placeholder="sk-or-..."></p>
+    {% else %}
+      <p class="muted">Using the OpenRouter key saved for this session.</p>
+    {% endif %}
+    <button class="btn" type="submit">Run correct pass</button>
+  </form>
+  {% endif %}
+</section>
+
+<section>
+  <h3>Flags</h3>
+  {% if not rows %}
+    <p class="muted">No likely caption errors found by the local scan.</p>
+  {% endif %}
+  {% for row in rows %}
+    {% include "partials/flag_row.html" %}
+  {% endfor %}
+</section>
+
+{% endblock %}

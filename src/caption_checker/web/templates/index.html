@@ -1,0 +1,46 @@
+{% extends "base.html" %}
+{% block title %}caption-checker · transcripts{% endblock %}
+{% block content %}
+
+<section>
+  <h2>Upload a transcript</h2>
+  {% if upload_error %}
+    <div class="error">{{ upload_error }}</div>
+  {% endif %}
+  <form action="/transcripts" method="post" enctype="multipart/form-data">
+    <input type="file" name="file" accept=".srt,.vtt" required>
+    <button class="btn" type="submit">Upload &amp; scan</button>
+  </form>
+  <p class="muted">Uploads are scanned automatically by the local detectors. Nothing is sent to an LLM until you ask for it on a transcript's review page.</p>
+</section>
+
+<section>
+  <h2>Your transcripts</h2>
+  {% if not transcripts %}
+    <p class="muted">Nothing uploaded yet in this session.</p>
+  {% else %}
+  <table>
+    <thead>
+      <tr><th>File</th><th>Format</th><th>Flags</th><th>Reviewed</th><th>Uploaded</th><th></th></tr>
+    </thead>
+    <tbody>
+      {% for t in transcripts %}
+      <tr>
+        <td><a href="/transcripts/{{ t.id }}">{{ t.filename }}</a></td>
+        <td>{{ t.format }}</td>
+        <td>{{ t.flag_count }}</td>
+        <td>{{ t.reviewed_count }} / {{ t.flag_count }}</td>
+        <td class="muted">{{ t.created_at }}</td>
+        <td>
+          <form class="inline" action="/transcripts/{{ t.id }}/delete" method="post" onsubmit="return confirm('Delete {{ t.filename }} and its review state?');">
+            <button class="btn" type="submit">Delete</button>
+          </form>
+        </td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+  {% endif %}
+</section>
+
+{% endblock %}

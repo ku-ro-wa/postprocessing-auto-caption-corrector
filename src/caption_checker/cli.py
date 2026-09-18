@@ -274,6 +274,31 @@ def correct(
     _print_run_report(result, output, sidecar)
 
 
+@main.command()
+@click.option("--host", default="127.0.0.1", show_default=True)
+@click.option("--port", default=8000, show_default=True, type=int)
+@click.option(
+    "--data-dir",
+    type=click.Path(file_okay=False, path_type=Path),
+    default=None,
+    help="Where Session/Transcript state persists "
+    "(default: $CAPTION_CHECKER_DATA_DIR or ~/.local/share/caption-checker/web).",
+)
+def serve(host: str, port: int, data_dir: Path | None) -> None:
+    """Start the locally-hosted web review UI."""
+    # Imported here, not at module scope, so `check`/`correct` never pull in
+    # the web stack (FastAPI/uvicorn/Jinja2) -- same rationale as `correct`'s
+    # own lazy imports above.
+    import uvicorn
+
+    from caption_checker.web.app import create_app
+    from caption_checker.web.storage import Storage, default_data_dir
+
+    storage = Storage(data_dir or default_data_dir())
+    app = create_app(storage)
+    uvicorn.run(app, host=host, port=port)
+
+
 def _detect_config(no_embeddings: bool, oov_zipf: float | None) -> DetectConfig:
     """The detection config both `check` and `correct` build from their shared
     pass-through options."""

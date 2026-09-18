@@ -1,0 +1,39 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>{% block title %}caption-checker{% endblock %}</title>
+<script src="https://unpkg.com/htmx.org@1.9.12"></script>
+<style>
+  :root { color-scheme: light dark; }
+  body { font-family: system-ui, sans-serif; max-width: 60rem; margin: 2rem auto; padding: 0 1rem; line-height: 1.4; }
+  header { display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 1.5rem; }
+  header a { text-decoration: none; color: inherit; font-weight: 600; }
+  .error { background: #fee; border: 1px solid #c33; padding: 0.5rem 0.75rem; border-radius: 4px; margin-bottom: 1rem; }
+  .muted { opacity: 0.7; font-size: 0.9em; }
+  table { border-collapse: collapse; width: 100%; }
+  th, td { text-align: left; padding: 0.4rem 0.6rem; border-bottom: 1px solid #ccc3; }
+  .flag-card { border: 1px solid #ccc5; border-radius: 6px; padding: 0.75rem 1rem; margin-bottom: 0.75rem; }
+  .flag-card.pending { border-left: 4px solid #999; }
+  .flag-card.accepted { border-left: 4px solid #2a7; background: #2a72; }
+  .flag-card.rejected { border-left: 4px solid #a33; opacity: 0.75; }
+  .flag-card.dismissed { border-left: 4px solid #999; opacity: 0.6; }
+  .flag-span { font-weight: 700; }
+  .flag-meta { font-size: 0.85em; opacity: 0.75; margin: 0.25rem 0; }
+  .flag-context { margin: 0.4rem 0; }
+  .flag-actions { display: flex; gap: 0.5rem; align-items: center; margin-top: 0.5rem; }
+  .flag-actions input[type=text] { flex: 1; }
+  form.inline { display: inline; }
+  .btn { cursor: pointer; }
+  .status-pill { font-size: 0.75em; padding: 0.1rem 0.5rem; border-radius: 1rem; border: 1px solid currentColor; text-transform: uppercase; }
+</style>
+</head>
+<body>
+<header>
+  <a href="/">caption-checker</a>
+  {% block header_extra %}{% endblock %}
+</header>
+{% block content %}{% endblock %}
+</body>
+</html>
