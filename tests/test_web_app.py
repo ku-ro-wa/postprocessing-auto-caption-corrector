@@ -11,6 +11,7 @@ from caption_checker.web.storage import Storage
 
 DATA_DIR = Path(__file__).parent / "data"
 SAMPLE = DATA_DIR / "sample_lecture.srt"
+SAMPLE_VTT = DATA_DIR / "sample_lecture.vtt"
 
 
 def _make_client(tmp_path: Path, corrector: Corrector | None = None) -> TestClient:
@@ -19,8 +20,8 @@ def _make_client(tmp_path: Path, corrector: Corrector | None = None) -> TestClie
     return TestClient(app)
 
 
-def _upload(client: TestClient, filename: str = "sample_lecture.srt") -> str:
-    with SAMPLE.open("rb") as f:
+def _upload(client: TestClient, filename: str = "sample_lecture.srt", path: Path = SAMPLE) -> str:
+    with path.open("rb") as f:
         response = client.post(
             "/transcripts", files={"file": (filename, f, "text/plain")}, follow_redirects=False
         )
@@ -244,6 +245,52 @@ class TestExport:
 
         response = client.get(f"/transcripts/{transcript_id}/export")
         assert response.status_code == 200
+
+    def test_export_reflects_mix_of_accepted_rejected_and_pending_flags(
+        self, tmp_path: Path
+    ) -> None:
+        # sample_lecture.srt yields 4 flags: 0 "con sensus" (cue 2),
+        # 1 "cough ka" (cue 5), 2 "cough ka" (cue 6), 3 "cubernetes" (cue 7).
+        client = _make_client(tmp_path)
+        transcript_id = _upload(client)
+
+        client.post(
+            f"/transcripts/{transcript_id}/flags/0/decision",
+            data={"action": "accept", "text": "consensus"},
+        )
+        client.post(
+            f"/transcripts/{transcript_id}/flags/1/decision",
+            data={"action": "reject"},
+        )
+        # Flag 2 (cue 6) and flag 3 (cue 7) are left pending.
+
+        response = client.get(f"/transcripts/{transcript_id}/export")
+        assert response.status_code == 200
+        body = response.text
+
+        # Accepted flag's replacement text lands in its Cue.
+        assert "con sensus algorithms" not in body
+        assert "consensus algorithms" in body
+        # Rejected flag's Cue is untouched.
+        assert "We also need to talk about cough ka" in body
+        # Pending flags' Cues are untouched.
+        assert "Many companies use cough ka for event driven architectures" in body
+        assert "cubernetes and container orchestration" in body
+
+    def test_export_vtt_upload_downloads_as_vtt(self, tmp_path: Path) -> None:
+        client = _make_client(tmp_path)
+        transcript_id = _upload(client, filename="sample_lecture.vtt", path=SAMPLE_VTT)
+
+        client.post(
+            f"/transcripts/{transcript_id}/flags/0/decision",
+            data={"action": "accept", "text": "consensus"},
+        )
+        response = client.get(f"/transcripts/{transcript_id}/export")
+
+        assert response.status_code == 200
+        assert response.text.startswith("WEBVTT")
+        assert "consensus algorithms" in response.text
+        assert 'filename="sample_lecture.corrected.vtt"' in response.headers["content-disposition"]
 
 
 class TestDelete:
