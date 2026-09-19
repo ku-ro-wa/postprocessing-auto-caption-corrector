@@ -14,9 +14,12 @@ SAMPLE = DATA_DIR / "sample_lecture.srt"
 SAMPLE_VTT = DATA_DIR / "sample_lecture.vtt"
 
 
+def _storage_for(tmp_path: Path) -> Storage:
+    return Storage(tmp_path / "data")
+
+
 def _make_client(tmp_path: Path, corrector: Corrector | None = None) -> TestClient:
-    storage = Storage(tmp_path / "data")
-    app = create_app(storage, corrector=corrector)
+    app = create_app(_storage_for(tmp_path), corrector=corrector)
     return TestClient(app)
 
 
@@ -59,6 +62,42 @@ class TestUpload:
         index = client.get("/")
         assert "sample_lecture.srt" in index.text
 
+    def test_index_summary_shows_flag_count_and_reviewed_progress(
+        self, tmp_path: Path
+    ) -> None:
+        # sample_lecture.srt yields 4 flags; review two of them.
+        client = _make_client(tmp_path)
+        transcript_id = _upload(client)
+        client.post(
+            f"/transcripts/{transcript_id}/flags/0/decision",
+            data={"action": "accept", "text": "consensus"},
+        )
+        client.post(
+            f"/transcripts/{transcript_id}/flags/1/decision",
+            data={"action": "reject"},
+        )
+
+        index = client.get("/")
+        assert "2 / 4" in index.text
+
+    def test_index_lists_every_transcript_uploaded_in_the_session(
+        self, tmp_path: Path
+    ) -> None:
+        client = _make_client(tmp_path)
+        _upload(client, filename="first.srt")
+        _upload(client, filename="second.srt")
+
+        index = client.get("/")
+        assert "first.srt" in index.text
+        assert "second.srt" in index.text
+
+    def test_index_links_to_transcripts_review_page(self, tmp_path: Path) -> None:
+        client = _make_client(tmp_path)
+        transcript_id = _upload(client)
+
+        index = client.get("/")
+        assert f'href="/transcripts/{transcript_id}"' in index.text
+
     def test_invalid_extension_shows_error_without_creating_transcript(
         self, tmp_path: Path
     ) -> None:
@@ -96,6 +135,23 @@ class TestSessionIsolation:
         client.get("/")  # establish a session
         response = client.get("/transcripts/does-not-exist")
         assert response.status_code == 404
+
+    def test_index_excludes_other_sessions_transcripts(self, tmp_path: Path) -> None:
+        # Two distinct TestClients == two distinct cookie jars == two
+        # "browsers," each getting its own Session cookie.
+        owner = _make_client(tmp_path)
+        _upload(owner, filename="owner_only.srt")
+
+        stranger = _make_client(tmp_path)
+        _upload(stranger, filename="stranger_only.srt")
+
+        owner_index = owner.get("/")
+        assert "owner_only.srt" in owner_index.text
+        assert "stranger_only.srt" not in owner_index.text
+
+        stranger_index = stranger.get("/")
+        assert "stranger_only.srt" in stranger_index.text
+        assert "owner_only.srt" not in stranger_index.text
 
 
 class TestReviewDecisions:
@@ -324,3 +380,23 @@ class TestDelete:
 
         follow_up = client.get(f"/transcripts/{transcript_id}")
         assert follow_up.status_code == 404
+
+    def test_delete_removes_transcript_from_index_list(self, tmp_path: Path) -> None:
+        client = _make_client(tmp_path)
+        transcript_id = _upload(client)
+
+        client.post(f"/transcripts/{transcript_id}/delete")
+
+        index = client.get("/")
+        assert "sample_lecture.srt" not in index.text
+
+    def test_delete_removes_stored_original_file(self, tmp_path: Path) -> None:
+        client = _make_client(tmp_path)
+        transcript_id = _upload(client)
+        storage = _storage_for(tmp_path)
+        session_id = client.cookies["cc_session"]
+        assert storage.original_path(session_id, transcript_id) is not None
+
+        client.post(f"/transcripts/{transcript_id}/delete")
+
+        assert storage.original_path(session_id, transcript_id) is None
