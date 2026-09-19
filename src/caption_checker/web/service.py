@@ -288,6 +288,7 @@ def transcript_rows(record: TranscriptRecord) -> list[FlagRow]:
 @dataclass
 class CorrectionSummary:
     confirmed: int
+    dismissed: int
     total: int
 
 
@@ -295,5 +296,6 @@ def correction_summary(record: TranscriptRecord) -> CorrectionSummary | None:
     if not record.has_corrections:
         return None
     confirmed = sum(1 for c in record.corrections if c is not None and c.replacement is not None)
+    dismissed = sum(1 for c in record.corrections if c is not None and c.replacement is None)
     total = sum(1 for c in record.corrections if c is not None)
-    return CorrectionSummary(confirmed=confirmed, total=total)
+    return CorrectionSummary(confirmed=confirmed, dismissed=dismissed, total=total)

@@ -197,6 +197,27 @@ class TestCorrectPass:
         assert 'LLM: confirmed' in response.text
         assert '→ "Kubernetes"' in response.text
 
+    def test_correct_summary_shows_confirmed_and_dismissed_counts(
+        self, tmp_path: Path
+    ) -> None:
+        # sample_lecture.srt yields 4 flags: "con sensus", "cough ka" (x2),
+        # "cubernetes". Dismiss the first three, confirm the last.
+        stub = StubCorrector(
+            null_spans={"con sensus", "cough ka"},
+            replacement_for={"cubernetes": "Kubernetes"},
+        )
+        client = _make_client(tmp_path, corrector=stub)
+        transcript_id = _upload(client)
+
+        response = client.post(
+            f"/transcripts/{transcript_id}/correct",
+            data={"api_key": "sk-or-test"},
+            follow_redirects=True,
+        )
+        assert response.status_code == 200
+        assert "confirmed 1" in response.text.lower()
+        assert "dismissed 3" in response.text.lower()
+
     def test_correct_does_not_rerun_once_corrected(self, tmp_path: Path) -> None:
         stub = StubCorrector(replacement_for={"cubernetes": "Kubernetes"})
         client = _make_client(tmp_path, corrector=stub)

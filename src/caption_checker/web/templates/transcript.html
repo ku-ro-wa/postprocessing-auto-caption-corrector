@@ -10,7 +10,7 @@
   {{ transcript.flags|length }} flag{{ "" if transcript.flags|length == 1 else "s" }}
   &middot; {{ transcript.reviewed_count }} reviewed
   {% if summary %}
-    &middot; LLM confirmed {{ summary.confirmed }}/{{ summary.total }}
+    &middot; LLM confirmed {{ summary.confirmed }}, dismissed {{ summary.dismissed }}
   {% endif %}
 </p>
 
