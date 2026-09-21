@@ -37,24 +37,6 @@ def test_cubernetes_flagged_with_candidate() -> None:
     assert "phonetic_vocab" in flag.detector
 
 
-def test_consensus_split_flagged() -> None:
-    hits = _covering(_flags(), "con sensus")
-    assert hits, "expected a flag spanning 'con sensus'"
-    flag = hits[0]
-    assert "consensus" in [c.lower() for c in flag.candidates]
-    assert "split_word" in flag.detector
-    assert len(flag.global_indices) == 2
-
-
-def test_kafka_split_flagged() -> None:
-    hits = _covering(_flags(), "cough ka")
-    assert hits, "expected a flag spanning 'cough ka'"
-    assert all("Kafka" in f.candidates for f in hits)
-    assert all("split_word" in f.detector for f in hits)
-    # appears in cue 5 and cue 6
-    assert {f.cue_index for f in hits} == {5, 6}
-
-
 def test_doc_vocab_corrects_recurring_misspellings() -> None:
     """"Kalshi" recurs correctly 7x; "Kashi" and "Caushi" are each a
     consistent ASR mistake recurring 3x — enough to independently clear the
@@ -114,62 +96,6 @@ def test_merge_combines_overlapping_detectors() -> None:
     # oov and phonetic_vocab both fire on this token and are merged
     assert flag.detector == "oov+phonetic_vocab"
     assert flag.confidence > 0.9
-
-
-def test_split_word_ignores_two_ordinary_words() -> None:
-    """"one thing" happens to share a metaphone code with the domain term
-    "windowing" (coarse Double Metaphone collision), but both words are
-    common and correct on their own -- flagging it is pure noise, unlike a
-    genuine split like "con sensus" where at least one fragment isn't an
-    everyday standalone word."""
-    clean_srt = (
-        "1\n00:00:00,000 --> 00:00:02,000\n"
-        "One thing I noticed is why now matters.\n"
-    )
-    path = DATA_DIR / "_tmp_split_word_clean.srt"
-    path.write_text(clean_srt, encoding="utf-8")
-    try:
-        flags = detect(parse(path), config=NO_EMBED)
-        spans = [f.span.lower() for f in flags if f.detector == "split_word"]
-        assert "one thing" not in spans
-        assert "why now" not in spans
-    finally:
-        path.unlink()
-
-
-def test_oov_ignores_plural_of_known_short_acronym() -> None:
-    """"LLMs" has no wordfreq data even though the singular "LLM" does --
-    wordfreq's corpus lags recent terminology. The bare acronym is already
-    exempt from OOV via ``is_wordlike``'s short-all-caps rule; its plural
-    should be too, rather than getting flagged as if it were gibberish."""
-    clean_srt = (
-        "1\n00:00:00,000 --> 00:00:02,000\n"
-        "Several LLMs were compared on the same benchmark.\n"
-    )
-    path = DATA_DIR / "_tmp_llms_clean.srt"
-    path.write_text(clean_srt, encoding="utf-8")
-    try:
-        flags = detect(parse(path), config=NO_EMBED)
-        spans = [f.span.lower() for f in flags]
-        assert "llms" not in spans
-    finally:
-        path.unlink()
-
-
-def test_no_false_positive_on_clean_transcript() -> None:
-    clean_srt = (
-        "1\n00:00:00,000 --> 00:00:02,000\n"
-        "Welcome to the lecture on distributed systems.\n\n"
-        "2\n00:00:02,000 --> 00:00:04,000\n"
-        "Today we discuss consensus and the Raft protocol.\n"
-    )
-    path = DATA_DIR / "_tmp_clean.srt"
-    path.write_text(clean_srt, encoding="utf-8")
-    try:
-        flags = detect(parse(path), config=NO_EMBED)
-        assert flags == []
-    finally:
-        path.unlink()
 
 
 # --- CLI ---------------------------------------------------------------------

@@ -1,0 +1,44 @@
+[
+  {
+    "source": "sample_lecture.srt",
+    "span": "con sensus",
+    "verdict": "should-flag",
+    "candidate": "consensus"
+  },
+  {
+    "source": "sample_lecture.srt",
+    "span": "cough ka",
+    "verdict": "should-flag",
+    "candidate": "Kafka"
+  },
+  {
+    "source": "split_word_clean.srt",
+    "span": "one thing",
+    "verdict": "should-not-flag"
+  },
+  {
+    "source": "split_word_clean.srt",
+    "span": "why now",
+    "verdict": "should-not-flag"
+  },
+  {
+    "source": "oov_plural_acronym.srt",
+    "span": "llms",
+    "verdict": "should-not-flag"
+  },
+  {
+    "source": "clean_transcript.srt",
+    "span": "distributed systems",
+    "verdict": "should-not-flag"
+  },
+  {
+    "source": "clean_transcript.srt",
+    "span": "consensus",
+    "verdict": "should-not-flag"
+  },
+  {
+    "source": "clean_transcript.srt",
+    "span": "raft protocol",
+    "verdict": "should-not-flag"
+  }
+]

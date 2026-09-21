@@ -116,6 +116,46 @@ decision cache), or skipped after a parse failure. The corrected transcript
 itself carries only accepted changes.
 _Avoid_: log, manifest.
 
+### Evaluation
+
+**Regression gate**:
+A check that compares the local detector pipeline's output on the Scored
+corpus against expected should-flag / should-not-flag cases, run whenever
+detector thresholds change. Reports flag precision/recall and the Cold flag
+rate as separate numbers — a floor that catches new false positives and
+negatives, never a claim of general accuracy.
+_Avoid_: benchmark, accuracy score.
+
+**Cold flag**:
+An OOV Flag matching neither the curated domain vocabulary nor that
+transcript's own doc vocabulary — the system has no learned context for the
+span at all. Tracked separately from other flags because its rate signals
+both reviewer-facing false-positive risk on unfamiliar content and LLM cost
+exposure, since a cold flag always becomes LLM residue.
+_Avoid_: unknown flag, unmatched flag.
+
+**Reference caption**:
+A same-video caption track that isn't labeled auto-generated, used as an
+approximate answer key for the Regression gate. Not verified: it may be a
+genuine post-hoc transcript, a lightly touched-up auto pass, or a
+pre-production script/TTS source that never touched the finished audio — a
+mismatch against it is spot-checked against the actual audio before being
+scored as a false positive or negative.
+_Avoid_: ground truth, clean transcript, manual transcript (all overstate a
+confidence this hasn't earned).
+
+**Scored corpus**:
+Transcripts paired with a Reference caption, small by necessity, used to
+compute the Regression gate's numbers.
+_Avoid_: eval set, golden set.
+
+**Smoke corpus**:
+A larger, unscored set of transcripts run through detection only (no LLM
+correction), used to catch a threshold overfit to the Scored corpus — flagged
+by a spike in flag rate or an unfamiliar class of flags, not by comparison to
+any answer key.
+_Avoid_: test set (too easily confused with `tests/`).
+
 ### Web review UI
 
 **Transcript**:
