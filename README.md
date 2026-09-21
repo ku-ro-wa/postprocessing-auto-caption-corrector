@@ -115,6 +115,45 @@ private to your browser session and persist across server restarts. See
 `docs/adr/0004-llm-correction-manual-session-keyed.md` for the reasoning
 behind these choices.
 
+## Evaluation
+
+Tuning detector thresholds (in `oov`, `phonetic_vocab`, `phonetic_internal`,
+`split_word`, `context_embedding`) needs a way to confirm a change didn't
+quietly regress previously-fixed behavior, without re-eyeballing the web
+review UI or spending on the LLM pass.
+
+**Regression gate** — automatic, part of the test suite:
+
+```bash
+uv run pytest tests/test_regression_gate.py -v
+```
+
+Runs `detect()` (no network calls) against the Scored corpus
+(`tests/data/scored_corpus.json`) and reports flag recall, precision, and
+cold-flag rate as three separate numbers, checked against hand-set floors in
+`tests/test_regression_gate.py`. Add a should-flag or should-not-flag entry
+to the corpus whenever a real transcript reveals a missed error or a false
+positive, so the gate permanently guards against it resurfacing. See
+`docs/adr/0005-scope-eval-loop-to-local-pipeline.md` for how entries are
+curated: compare a video's `.auto` transcript against its Reference caption
+for candidate mismatches, then spot-check each one against the actual audio
+before adding it — a Reference caption isn't verified ground truth on its
+own.
+
+**Smoke corpus** — manual, no dedicated tooling: after a threshold change
+passes the regression gate, sanity-check generalization by running `check`
+over a larger batch of real, unscored transcripts and eyeballing the result:
+
+```bash
+for f in path/to/smoke-batch/*.srt; do
+  uv run caption-checker check "$f" --format json
+done
+```
+
+There's no answer key here — watch for a flag-rate spike or an unfamiliar
+class of flag compared to prior runs, which signals the change overfit to
+the small Scored corpus rather than generalizing.
+
 ## Roadmap
 
 1. ~~SRT/VTT parser + CLI round-trip~~
