@@ -40,5 +40,295 @@
     "source": "clean_transcript.srt",
     "span": "raft protocol",
     "verdict": "should-not-flag"
+  },
+  {
+    "source": "agi-are-we-there-yet.auto.vtt",
+    "span": "Sherny",
+    "verdict": "should-flag"
+  },
+  {
+    "source": "agi-are-we-there-yet.auto.vtt",
+    "span": "model",
+    "verdict": "should-not-flag"
+  },
+  {
+    "source": "agi-are-we-there-yet.auto.vtt",
+    "span": "intelligence",
+    "verdict": "should-not-flag"
+  },
+  {
+    "source": "agi-are-we-there-yet.auto.vtt",
+    "span": "capabilities",
+    "verdict": "should-not-flag"
+  },
+  {
+    "source": "ai-researchers-pace-demand.auto.srt",
+    "span": "textto",
+    "verdict": "should-flag"
+  },
+  {
+    "source": "ai-researchers-pace-demand.auto.srt",
+    "span": "Amade's",
+    "verdict": "should-flag"
+  },
+  {
+    "source": "ai-researchers-pace-demand.auto.srt",
+    "span": "Majimmuda",
+    "verdict": "should-flag"
+  },
+  {
+    "source": "ai-researchers-pace-demand.auto.srt",
+    "span": "Majmudar",
+    "verdict": "should-flag"
+  },
+  {
+    "source": "ai-researchers-pace-demand.auto.srt",
+    "span": "Majmuda",
+    "verdict": "should-flag"
+  },
+  {
+    "source": "ai-researchers-pace-demand.auto.srt",
+    "span": "Antropic",
+    "verdict": "should-flag",
+    "candidate": "Anthropic"
+  },
+  {
+    "source": "ai-researchers-pace-demand.auto.srt",
+    "span": "Navia",
+    "verdict": "should-flag"
+  },
+  {
+    "source": "ai-researchers-pace-demand.auto.srt",
+    "span": "cenamed",
+    "verdict": "should-flag"
+  },
+  {
+    "source": "ai-researchers-pace-demand.auto.srt",
+    "span": "Samman's",
+    "verdict": "should-flag"
+  },
+  {
+    "source": "ai-researchers-pace-demand.auto.srt",
+    "span": "unmoniable",
+    "verdict": "should-flag"
+  },
+  {
+    "source": "ai-researchers-pace-demand.auto.srt",
+    "span": "moniable",
+    "verdict": "should-flag"
+  },
+  {
+    "source": "ai-researchers-pace-demand.auto.srt",
+    "span": "Selum",
+    "verdict": "should-flag"
+  },
+  {
+    "source": "ai-researchers-pace-demand.auto.srt",
+    "span": "Ammedday",
+    "verdict": "should-flag"
+  },
+  {
+    "source": "ai-researchers-pace-demand.auto.srt",
+    "span": "high-risisk",
+    "verdict": "should-flag"
+  },
+  {
+    "source": "ai-researchers-pace-demand.auto.srt",
+    "span": "Yemenes",
+    "verdict": "should-flag"
+  },
+  {
+    "source": "ai-researchers-pace-demand.auto.srt",
+    "span": "Kimmy",
+    "verdict": "should-flag"
+  },
+  {
+    "source": "ai-researchers-pace-demand.auto.srt",
+    "span": "rrooting",
+    "verdict": "should-flag"
+  },
+  {
+    "source": "ai-researchers-pace-demand.auto.srt",
+    "span": "biocurity",
+    "verdict": "should-flag"
+  },
+  {
+    "source": "ai-researchers-pace-demand.auto.srt",
+    "span": "Foudan",
+    "verdict": "should-flag"
+  },
+  {
+    "source": "ai-researchers-pace-demand.auto.srt",
+    "span": "AIdriven",
+    "verdict": "should-flag"
+  },
+  {
+    "source": "ai-researchers-pace-demand.auto.srt",
+    "span": "models",
+    "verdict": "should-not-flag"
+  },
+  {
+    "source": "ai-researchers-pace-demand.auto.srt",
+    "span": "researchers",
+    "verdict": "should-not-flag"
+  },
+  {
+    "source": "ai-researchers-pace-demand.auto.srt",
+    "span": "capabilities",
+    "verdict": "should-not-flag"
+  },
+  {
+    "source": "andrew-ng-ai-opportunities.auto.vtt",
+    "span": "monongering",
+    "verdict": "should-flag"
+  },
+  {
+    "source": "andrew-ng-ai-opportunities.auto.vtt",
+    "span": "Brennoffson",
+    "verdict": "should-flag"
+  },
+  {
+    "source": "andrew-ng-ai-opportunities.auto.vtt",
+    "span": "curriculara",
+    "verdict": "should-flag"
+  },
+  {
+    "source": "andrew-ng-ai-opportunities.auto.vtt",
+    "span": "endto-end",
+    "verdict": "should-flag"
+  },
+  {
+    "source": "andrew-ng-ai-opportunities.auto.vtt",
+    "span": "engineing",
+    "verdict": "should-flag"
+  },
+  {
+    "source": "andrew-ng-ai-opportunities.auto.vtt",
+    "span": "Quen",
+    "verdict": "should-flag"
+  },
+  {
+    "source": "andrew-ng-ai-opportunities.auto.vtt",
+    "span": "candly",
+    "verdict": "should-flag"
+  },
+  {
+    "source": "andrew-ng-ai-opportunities.auto.vtt",
+    "span": "Jajiv",
+    "verdict": "should-flag"
+  },
+  {
+    "source": "andrew-ng-ai-opportunities.auto.vtt",
+    "span": "Viti",
+    "verdict": "should-flag"
+  },
+  {
+    "source": "andrew-ng-ai-opportunities.auto.vtt",
+    "span": "building",
+    "verdict": "should-not-flag"
+  },
+  {
+    "source": "andrew-ng-ai-opportunities.auto.vtt",
+    "span": "skills",
+    "verdict": "should-not-flag"
+  },
+  {
+    "source": "andrew-ng-ai-opportunities.auto.vtt",
+    "span": "software",
+    "verdict": "should-not-flag"
+  },
+  {
+    "source": "prediction-markets-ads.auto.srt",
+    "span": "Kashi",
+    "verdict": "should-flag",
+    "candidate": "Kalshi"
+  },
+  {
+    "source": "prediction-markets-ads.auto.srt",
+    "span": "KASHI",
+    "verdict": "should-flag",
+    "candidate": "Kalshi"
+  },
+  {
+    "source": "prediction-markets-ads.auto.srt",
+    "span": "Treyus",
+    "verdict": "should-flag"
+  },
+  {
+    "source": "prediction-markets-ads.auto.srt",
+    "span": "Espenia",
+    "verdict": "should-flag"
+  },
+  {
+    "source": "prediction-markets-ads.auto.srt",
+    "span": "Caushi",
+    "verdict": "should-flag",
+    "candidate": "Kalshi"
+  },
+  {
+    "source": "prediction-markets-ads.auto.srt",
+    "span": "Kalshiem",
+    "verdict": "should-flag",
+    "candidate": "Kalshi"
+  },
+  {
+    "source": "prediction-markets-ads.auto.srt",
+    "span": "Polymarket",
+    "verdict": "should-not-flag"
+  },
+  {
+    "source": "prediction-markets-ads.auto.srt",
+    "span": "prediction",
+    "verdict": "should-not-flag"
+  },
+  {
+    "source": "prediction-markets-ads.auto.srt",
+    "span": "gambling",
+    "verdict": "should-not-flag"
+  },
+  {
+    "source": "social-media-addictive.auto.srt",
+    "span": "monkeykey's",
+    "verdict": "should-flag"
+  },
+  {
+    "source": "social-media-addictive.auto.srt",
+    "span": "Incogn",
+    "verdict": "should-flag"
+  },
+  {
+    "source": "social-media-addictive.auto.srt",
+    "span": "Incogny's",
+    "verdict": "should-flag"
+  },
+  {
+    "source": "social-media-addictive.auto.srt",
+    "span": "Incogn's",
+    "verdict": "should-flag"
+  },
+  {
+    "source": "social-media-addictive.auto.srt",
+    "span": "Africanamean",
+    "verdict": "should-flag"
+  },
+  {
+    "source": "social-media-addictive.auto.srt",
+    "span": "replplug",
+    "verdict": "should-flag"
+  },
+  {
+    "source": "social-media-addictive.auto.srt",
+    "span": "dopamine",
+    "verdict": "should-not-flag"
+  },
+  {
+    "source": "social-media-addictive.auto.srt",
+    "span": "reward",
+    "verdict": "should-not-flag"
+  },
+  {
+    "source": "social-media-addictive.auto.srt",
+    "span": "triggers",
+    "verdict": "should-not-flag"
   }
 ]
