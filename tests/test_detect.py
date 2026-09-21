@@ -116,6 +116,46 @@ def test_merge_combines_overlapping_detectors() -> None:
     assert flag.confidence > 0.9
 
 
+def test_split_word_ignores_two_ordinary_words() -> None:
+    """"one thing" happens to share a metaphone code with the domain term
+    "windowing" (coarse Double Metaphone collision), but both words are
+    common and correct on their own -- flagging it is pure noise, unlike a
+    genuine split like "con sensus" where at least one fragment isn't an
+    everyday standalone word."""
+    clean_srt = (
+        "1\n00:00:00,000 --> 00:00:02,000\n"
+        "One thing I noticed is why now matters.\n"
+    )
+    path = DATA_DIR / "_tmp_split_word_clean.srt"
+    path.write_text(clean_srt, encoding="utf-8")
+    try:
+        flags = detect(parse(path), config=NO_EMBED)
+        spans = [f.span.lower() for f in flags if f.detector == "split_word"]
+        assert "one thing" not in spans
+        assert "why now" not in spans
+    finally:
+        path.unlink()
+
+
+def test_oov_ignores_plural_of_known_short_acronym() -> None:
+    """"LLMs" has no wordfreq data even though the singular "LLM" does --
+    wordfreq's corpus lags recent terminology. The bare acronym is already
+    exempt from OOV via ``is_wordlike``'s short-all-caps rule; its plural
+    should be too, rather than getting flagged as if it were gibberish."""
+    clean_srt = (
+        "1\n00:00:00,000 --> 00:00:02,000\n"
+        "Several LLMs were compared on the same benchmark.\n"
+    )
+    path = DATA_DIR / "_tmp_llms_clean.srt"
+    path.write_text(clean_srt, encoding="utf-8")
+    try:
+        flags = detect(parse(path), config=NO_EMBED)
+        spans = [f.span.lower() for f in flags]
+        assert "llms" not in spans
+    finally:
+        path.unlink()
+
+
 def test_no_false_positive_on_clean_transcript() -> None:
     clean_srt = (
         "1\n00:00:00,000 --> 00:00:02,000\n"

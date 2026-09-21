@@ -84,7 +84,17 @@ def _match(
     disp = span_text(window)
     join_codes = codes(join, algo=config.phonetic_algo)
 
-    # (a) sounds exactly like a curated domain term / phrase
+    # (a) sounds exactly like a curated domain term / phrase. The window only
+    # got here because every part is short or unfamiliar (``_looks_broken``),
+    # but a short window of otherwise very common, everyday words ("one
+    # thing", "why now") also clears that gate and can coincidentally share a
+    # coarse metaphone code with an unrelated short jargon term ("windowing",
+    # "WAL"). Skip the match when every part is unambiguously an ordinary
+    # standalone word -- a genuine ASR split leaves at least one fragment
+    # ("con", "ka") that isn't.
+    if all(zipf_frequency(p, "en") >= config.split_vocab_zipf_ceiling for p in parts):
+        return None
+
     hits: set[str] = set()
     for code in join_codes:
         hits |= vocab.by_phonetic.get(code, set())

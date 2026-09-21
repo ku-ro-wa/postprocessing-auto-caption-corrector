@@ -28,7 +28,9 @@ def clean(token: str) -> str:
 
 def is_wordlike(token: str) -> bool:
     """True when a token is worth running detectors against — rejects numbers,
-    timestamps, single characters and short all-caps acronyms."""
+    timestamps, single characters and short all-caps acronyms (including their
+    plural, "LLMs" alongside "LLM" — wordfreq frequently has no data for the
+    plural form of a recent acronym even when it trusts the singular)."""
     stripped = token.strip(_EDGE_PUNCT)
     if len(stripped) < 2:
         return False
@@ -37,6 +39,13 @@ def is_wordlike(token: str) -> bool:
     if not _LETTER_RE.search(stripped):
         return False
     if stripped.isupper() and len(stripped) <= 4:
+        return False
+    # A plural of a short acronym ("LLMs") loses the all-upper check above to
+    # its lowercase "s". Require 2+ letters in the core so an ordinary,
+    # sentence-capitalized word ending in "s" ("As", "Its") can't match --
+    # those have a lowercase letter before the "s" and so aren't all-upper.
+    core = stripped[:-1] if stripped.endswith("s") else stripped
+    if 2 <= len(core) <= 4 and core.isupper():
         return False
     return True
 

@@ -99,6 +99,11 @@ class DetectConfig:
     split_max_window: int = 3
     split_component_max_len: int = 5
     split_common_zipf_min: float = 3.0
+    #: Suppress a split_word vocab-phonetic match (see split_word.py) when
+    #: every part of the window is at least this common -- an unambiguous,
+    #: everyday word standing alone is not an ASR-split fragment, whatever it
+    #: coincidentally collides with under the coarse metaphone code.
+    split_vocab_zipf_ceiling: float = 4.5
     phonetic_algo: str = "metaphone"
     known_good_zipf_min: float = 3.0
     #: Doc-vocab clustering (see ``vocab.build_doc_vocab``): an OOV token
