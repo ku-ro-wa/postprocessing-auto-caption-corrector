@@ -18,6 +18,7 @@ from __future__ import annotations
 
 import json
 import os
+import re
 from dataclasses import dataclass, field
 from typing import Protocol
 
@@ -37,6 +38,7 @@ __all__ = [
 ]
 
 OPENROUTER_URL = "https://openrouter.ai/api/v1/chat/completions"
+OPENROUTER_MODELS_URL = "https://openrouter.ai/api/v1/models"
 
 
 @dataclass
@@ -162,12 +164,28 @@ class OpenRouterCorrector:
                 "no OpenRouter credential: set OPENROUTER_API_KEY in the "
                 "environment or in a .env file"
             )
+        # Only checked once per instance, on the first `correct()` call --
+        # `run_correction` reuses one instance across every chunk of a batch.
+        self._model_checked = False
 
     def correct(self, batch: list[FlagContext]) -> list[Correction]:
+        import ssl
         from urllib.error import HTTPError, URLError
         from urllib.request import Request, urlopen
 
+        import certifi
+
         from caption_checker.prompt import build_messages, parse_response
+
+        # Some Python installs (notably python.org's macOS builds) ship
+        # without a wired-up system trust store, so the stdlib's default
+        # SSL context can't verify OpenRouter's certificate. Point it at
+        # certifi's bundle explicitly rather than relying on the
+        # environment being set up right.
+        context = ssl.create_default_context(cafile=certifi.where())
+        if not self._model_checked:
+            self._check_model_available(context)
+            self._model_checked = True
 
         body = json.dumps(
             {
@@ -185,9 +203,21 @@ class OpenRouterCorrector:
             },
         )
         try:
-            with urlopen(request, timeout=60) as response:
+            with urlopen(request, timeout=60, context=context) as response:
                 payload = json.loads(response.read().decode("utf-8"))
-        except (HTTPError, URLError, TimeoutError, ValueError) as exc:
+        except HTTPError as exc:
+            # exc's own str() is just the generic reason phrase (e.g. "Not
+            # Found") -- OpenRouter's actual explanation (bad model slug,
+            # no credit, moderation, ...) is in the JSON body.
+            detail = exc.read().decode("utf-8", errors="replace").strip()
+            try:
+                detail = json.loads(detail)["error"]["message"]
+            except (json.JSONDecodeError, KeyError, TypeError):
+                pass
+            raise CorrectorError(
+                f"OpenRouter request failed: HTTP {exc.code} {exc.reason}: {detail}"
+            ) from exc
+        except (URLError, TimeoutError, ValueError) as exc:
             raise CorrectorError(f"OpenRouter request failed: {exc}") from exc
 
         try:
@@ -195,6 +225,57 @@ class OpenRouterCorrector:
         except (KeyError, IndexError, TypeError) as exc:
             raise CorrectorError(f"unexpected OpenRouter reply: {exc}") from exc
         return parse_response(content, batch)
+
+    def _check_model_available(self, context: ssl.SSLContext) -> None:
+        """Catalogue drift guard: OpenRouter periodically retires dated model
+        slugs (e.g. ``google/gemini-2.0-flash-001`` disappeared in 2026-09),
+        which otherwise only surfaces as a bare 404 from the completions
+        endpoint. Check the public model list first so a retired slug fails
+        fast with a pointer to what replaced it, instead of a cryptic error
+        from mid-batch. Best-effort: if the catalogue check itself can't be
+        reached, fall through and let the real request's own error handling
+        take over rather than blocking the whole run on it.
+        """
+        from urllib.error import URLError
+        from urllib.request import urlopen
+
+        try:
+            with urlopen(OPENROUTER_MODELS_URL, timeout=15, context=context) as response:
+                payload = json.loads(response.read().decode("utf-8"))
+            available = {m["id"] for m in payload["data"]}
+        except (URLError, TimeoutError, ValueError, KeyError, TypeError):
+            return
+
+        if self.model_id in available:
+            return
+
+        suggestions = _similar_models(self.model_id, available)
+        hint = (
+            f" Similar models still available: {', '.join(suggestions)}."
+            if suggestions
+            else ""
+        )
+        raise CorrectorError(
+            f"model {self.model_id!r} is no longer on OpenRouter.{hint} "
+            "Set --model (CLI) or OPENROUTER_MODEL (web) to a current slug."
+        )
+
+
+def _similar_models(model_id: str, available: set[str]) -> list[str]:
+    """Same-vendor models, ranked by how many of ``model_id``'s dash/dot/colon
+    -separated words they share (e.g. ``flash``, ``lite``) -- a cheap stand-in
+    for "closest replacement" that needs no extra API call."""
+    vendor = model_id.split("/", 1)[0]
+    keywords = [w for w in re.split(r"[/:._-]", model_id) if w and w != vendor]
+
+    def shared_keywords(candidate: str) -> int:
+        return sum(1 for w in keywords if w in candidate)
+
+    same_vendor = [
+        m for m in available if m.startswith(f"{vendor}/") and not m.startswith("~")
+    ]
+    same_vendor.sort(key=lambda m: (-shared_keywords(m), m))
+    return same_vendor[:3]
 
 
 def build_corrector(model_id: str) -> Corrector:

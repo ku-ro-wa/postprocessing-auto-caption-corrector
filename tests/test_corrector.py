@@ -3,18 +3,22 @@ the reply parser. No network anywhere."""
 
 from __future__ import annotations
 
+import json
 import subprocess
 import sys
 
 import pytest
 
 from caption_checker.corrector import (
+    OPENROUTER_MODELS_URL,
+    OPENROUTER_URL,
     Correction,
     CorrectorError,
     FlagContext,
     MissingAPIKeyError,
     OpenRouterCorrector,
     StubCorrector,
+    _similar_models,
 )
 from caption_checker.prompt import parse_response
 
@@ -58,6 +62,123 @@ def test_openrouter_without_key_raises_named_error(monkeypatch) -> None:
     )
     with pytest.raises(MissingAPIKeyError, match="OPENROUTER_API_KEY"):
         OpenRouterCorrector("some/model")
+
+
+class _FakeResponse:
+    """Minimal stand-in for the context manager `urlopen` returns."""
+
+    def __init__(self, body: bytes) -> None:
+        self._body = body
+
+    def __enter__(self) -> "_FakeResponse":
+        return self
+
+    def __exit__(self, *exc_info: object) -> bool:
+        return False
+
+    def read(self) -> bytes:
+        return self._body
+
+
+def _patch_urlopen(monkeypatch, *, models: list[str], completion_reply: str | None) -> list[str]:
+    """Fakes both OpenRouter endpoints the corrector talks to, keyed by URL.
+    Returns the list of URLs `urlopen` was called with, so tests can assert
+    on call count (e.g. the model check running only once per instance)."""
+    calls: list[str] = []
+    models_body = json.dumps({"data": [{"id": m} for m in models]}).encode()
+    completion_body = (
+        json.dumps(
+            {"choices": [{"message": {"content": completion_reply}}]}
+        ).encode()
+        if completion_reply is not None
+        else b""
+    )
+
+    def fake_urlopen(request, timeout=None, context=None):  # noqa: ARG001
+        url = request if isinstance(request, str) else request.full_url
+        calls.append(url)
+        if url == OPENROUTER_MODELS_URL:
+            return _FakeResponse(models_body)
+        assert url == OPENROUTER_URL
+        return _FakeResponse(completion_body)
+
+    monkeypatch.setattr("urllib.request.urlopen", fake_urlopen)
+    return calls
+
+
+def test_similar_models_ranks_same_vendor_by_shared_keywords() -> None:
+    available = {
+        "google/gemini-2.5-flash",
+        "google/gemini-2.5-flash-lite",
+        "google/gemini-3.1-flash-lite",
+        "openai/gpt-4o-mini",
+        "~google/gemini-flash-latest",
+    }
+    got = _similar_models("google/gemini-2.0-flash-001", available)
+    assert got[0] in {"google/gemini-2.5-flash", "google/gemini-2.5-flash-lite"}
+    assert all(m.startswith("google/") for m in got)
+    assert "~google/gemini-flash-latest" not in got
+
+
+def test_correct_fails_fast_on_retired_model(monkeypatch) -> None:
+    calls = _patch_urlopen(
+        monkeypatch, models=["google/gemini-2.5-flash"], completion_reply=None
+    )
+    corrector = OpenRouterCorrector("google/gemini-2.0-flash-001", api_key="k")
+
+    with pytest.raises(CorrectorError, match="no longer on OpenRouter"):
+        corrector.correct([_ctx("f0", "sensus", ["consensus"])])
+
+    assert calls == [OPENROUTER_MODELS_URL]  # never reached the completions call
+
+
+def test_correct_proceeds_when_model_is_current(monkeypatch) -> None:
+    reply = '[{"id":"f0","replacement":"consensus","confidence":0.9}]'
+    calls = _patch_urlopen(
+        monkeypatch, models=["google/gemini-2.5-flash"], completion_reply=reply
+    )
+    corrector = OpenRouterCorrector("google/gemini-2.5-flash", api_key="k")
+
+    got = corrector.correct([_ctx("f0", "sensus", ["consensus"])])
+
+    assert got[0].replacement == "consensus"
+    assert calls == [OPENROUTER_MODELS_URL, OPENROUTER_URL]
+
+
+def test_model_check_runs_once_per_instance(monkeypatch) -> None:
+    reply = '[{"id":"f0","replacement":"consensus","confidence":0.9}]'
+    calls = _patch_urlopen(
+        monkeypatch, models=["google/gemini-2.5-flash"], completion_reply=reply
+    )
+    corrector = OpenRouterCorrector("google/gemini-2.5-flash", api_key="k")
+
+    corrector.correct([_ctx("f0", "sensus", ["consensus"])])
+    corrector.correct([_ctx("f0", "sensus", ["consensus"])])
+
+    assert calls.count(OPENROUTER_MODELS_URL) == 1
+
+
+def test_model_check_is_best_effort_on_catalogue_fetch_failure(monkeypatch) -> None:
+    """If the catalogue check itself can't be reached, the real request
+    still gets a chance to run rather than blocking the whole pass on it."""
+    from urllib.error import URLError
+
+    reply = '[{"id":"f0","replacement":"consensus","confidence":0.9}]'
+
+    def fake_urlopen(request, timeout=None, context=None):  # noqa: ARG001
+        url = request if isinstance(request, str) else request.full_url
+        if url == OPENROUTER_MODELS_URL:
+            raise URLError("network unreachable")
+        return _FakeResponse(
+            json.dumps({"choices": [{"message": {"content": reply}}]}).encode()
+        )
+
+    monkeypatch.setattr("urllib.request.urlopen", fake_urlopen)
+    corrector = OpenRouterCorrector("google/gemini-2.5-flash", api_key="k")
+
+    got = corrector.correct([_ctx("f0", "sensus", ["consensus"])])
+
+    assert got[0].replacement == "consensus"
 
 
 def _modules_after_import(*imports: str) -> set[str]:

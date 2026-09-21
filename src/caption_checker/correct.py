@@ -73,7 +73,7 @@ def _preset_for(replacement: str | None) -> str:
 # Static, no-network prompt pricing (USD per token) for cost estimates. Unknown
 # models fall back to a token count. Figures are order-of-magnitude only.
 _MODEL_PROMPT_PRICE: dict[str, float] = {
-    "google/gemini-2.0-flash-001": 1.0e-7,
+    "google/gemini-2.5-flash": 3.0e-7,
     "google/gemini-flash-1.5": 7.5e-8,
     "anthropic/claude-3.5-haiku": 8.0e-7,
     "openai/gpt-4o-mini": 1.5e-7,

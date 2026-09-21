@@ -28,7 +28,7 @@
     {% elif not has_session_key and has_server_key %}
       <p class="muted">Using the server's configured OPENROUTER_API_KEY (local/dev fallback). Enter your own to use it instead: <input type="password" name="api_key" placeholder="sk-or-..."></p>
     {% else %}
-      <p class="muted">Using the OpenRouter key saved for this session.</p>
+      <p class="muted">Using the OpenRouter key saved for this session. Enter a different one to replace it: <input type="password" name="api_key" placeholder="sk-or-..."></p>
     {% endif %}
     <button class="btn" type="submit">Run correct pass</button>
   </form>
