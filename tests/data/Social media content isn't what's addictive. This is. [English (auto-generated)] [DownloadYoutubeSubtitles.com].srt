@@ -1,0 +1,1912 @@
+1
+00:00:01,120 --> 00:00:06,000
+I woke up one day and realized
+
+2
+00:00:03,840 --> 00:00:08,000
+this is the rest of my [music] life,
+
+3
+00:00:06,000 --> 00:00:10,080
+assuming I lived to the average lifespan
+
+4
+00:00:08,000 --> 00:00:12,639
+of 78.
+
+5
+00:00:10,080 --> 00:00:15,440
+And this is how many hours I spent on my
+
+6
+00:00:12,639 --> 00:00:18,320
+phone a day last week.
+
+7
+00:00:15,440 --> 00:00:21,520
+So, I'm set to lose 16 years of my life
+
+8
+00:00:18,320 --> 00:00:23,279
+to [music] my phone.
+
+9
+00:00:21,520 --> 00:00:25,600
+Okay, maybe we don't need all of these
+
+10
+00:00:23,279 --> 00:00:28,160
+years back. The average American is
+
+11
+00:00:25,600 --> 00:00:30,480
+losing 2 and 12 months a year to their
+
+12
+00:00:28,160 --> 00:00:32,160
+phones. Turns out that only 10% of the
+
+13
+00:00:30,480 --> 00:00:33,920
+time that you check your phone, 10% of
+
+14
+00:00:32,160 --> 00:00:36,800
+the time is it because one of these
+
+15
+00:00:33,920 --> 00:00:38,879
+ping- dinger rings. And I know big tech
+
+16
+00:00:36,800 --> 00:00:42,800
+has hacked my brain to make my phone
+
+17
+00:00:38,879 --> 00:00:45,440
+super super addictive. But how how does
+
+18
+00:00:42,800 --> 00:00:47,920
+the hack actually work? And why does it
+
+19
+00:00:45,440 --> 00:00:50,399
+get stronger every year? Because if I
+
+20
+00:00:47,920 --> 00:00:54,600
+can figure it out, [music] I might win
+
+21
+00:00:50,399 --> 00:00:54,600
+all those years back.
+
+22
+00:01:10,560 --> 00:01:14,479
+Now that our dramatic intro is over, the
+
+23
+00:01:12,880 --> 00:01:15,200
+answer to our question starts at
+
+24
+00:01:14,479 --> 00:01:17,840
+Stanford.
+
+25
+00:01:15,200 --> 00:01:19,360
+>> If we talk about Stanford University, a
+
+26
+00:01:17,840 --> 00:01:21,759
+school I can never get into but can
+
+27
+00:01:19,360 --> 00:01:23,119
+pretend to be at for a YouTube video. It
+
+28
+00:01:21,759 --> 00:01:25,200
+may not seem like it, but this is
+
+29
+00:01:23,119 --> 00:01:26,960
+actually a very strange class. It's not
+
+30
+00:01:25,200 --> 00:01:28,560
+a computer science class or even a
+
+31
+00:01:26,960 --> 00:01:30,080
+business or entrepreneurship class. And
+
+32
+00:01:28,560 --> 00:01:32,000
+yet, the students in this class turned
+
+33
+00:01:30,080 --> 00:01:33,680
+their homework into seven figure
+
+34
+00:01:32,000 --> 00:01:36,159
+startups. God, I should have paid
+
+35
+00:01:33,680 --> 00:01:38,240
+attention more. Also, some of these
+
+36
+00:01:36,159 --> 00:01:40,400
+students went on to become the head of
+
+37
+00:01:38,240 --> 00:01:42,000
+growth at Facebook, co-found Instagram,
+
+38
+00:01:40,400 --> 00:01:43,600
+and work at dozens of companies like
+
+39
+00:01:42,000 --> 00:01:45,840
+Uber and Google. That makes our
+
+40
+00:01:43,600 --> 00:01:47,280
+professor BJ Fog one of the most pivotal
+
+41
+00:01:45,840 --> 00:01:48,720
+people in Silicon Valley that no one's
+
+42
+00:01:47,280 --> 00:01:50,640
+ever heard of. And yeah, that's his
+
+43
+00:01:48,720 --> 00:01:51,759
+name, BJ. If you think that's funny,
+
+44
+00:01:50,640 --> 00:01:53,759
+then you have the sense of humor of an
+
+45
+00:01:51,759 --> 00:01:55,520
+11-year-old. Even though BJ Fog is
+
+46
+00:01:53,759 --> 00:01:57,280
+teaching his students to make apps, he's
+
+47
+00:01:55,520 --> 00:01:59,360
+actually not a computer programmer, but
+
+48
+00:01:57,280 --> 00:02:01,040
+a psychologist. And he was one of the
+
+49
+00:01:59,360 --> 00:02:03,920
+first people to figure out how your
+
+50
+00:02:01,040 --> 00:02:05,520
+phone can use bait to hook a user in.
+
+51
+00:02:03,920 --> 00:02:07,520
+And today, he's going to teach all of us
+
+52
+00:02:05,520 --> 00:02:08,720
+how to masturbate.
+
+53
+00:02:07,520 --> 00:02:11,680
+See, you might have heard that your
+
+54
+00:02:08,720 --> 00:02:14,160
+phone is engineered like a slot machine,
+
+55
+00:02:11,680 --> 00:02:15,680
+but this is a massive oversimplification
+
+56
+00:02:14,160 --> 00:02:16,000
+and not a good enough answer for [music]
+
+57
+00:02:15,680 --> 00:02:17,360
+me.
+
+58
+00:02:16,000 --> 00:02:18,400
+>> It's not gambling when you know you're
+
+59
+00:02:17,360 --> 00:02:21,040
+going to win.
+
+60
+00:02:18,400 --> 00:02:22,400
+Why are casinos addicting? At least with
+
+61
+00:02:21,040 --> 00:02:25,920
+heroin, you're [music] getting hella
+
+62
+00:02:22,400 --> 00:02:28,560
+high. I'm told. With casinos, more often
+
+63
+00:02:25,920 --> 00:02:31,961
+than not, you're losing. Some go into
+
+64
+00:02:28,560 --> 00:02:33,840
+debt. Is losing fun? Great question.
+
+65
+00:02:31,961 --> 00:02:35,040
+[music] See, for decades, social
+
+66
+00:02:33,840 --> 00:02:36,640
+scientists actually didn't fully
+
+67
+00:02:35,040 --> 00:02:38,480
+understand what made casinos so
+
+68
+00:02:36,640 --> 00:02:40,400
+addicting. But that all changed after
+
+69
+00:02:38,480 --> 00:02:42,319
+psychologist BF Skinner. Uh,
+
+70
+00:02:40,400 --> 00:02:43,360
+>> Shreas, my star student. Who are you
+
+71
+00:02:42,319 --> 00:02:44,879
+talking to? Uh,
+
+72
+00:02:43,360 --> 00:02:47,599
+>> it's and no one. I'm sorry. It's just
+
+73
+00:02:44,879 --> 00:02:49,040
+nothing.
+
+74
+00:02:47,599 --> 00:02:50,959
+Yeah, I make him call me his star
+
+75
+00:02:49,040 --> 00:02:53,760
+student. It's my video. Okay, deal with
+
+76
+00:02:50,959 --> 00:02:55,760
+it. Just go to the next cut away. BF
+
+77
+00:02:53,760 --> 00:02:57,519
+Skinner believed human behavior could be
+
+78
+00:02:55,760 --> 00:02:59,360
+shaped through positive or negative
+
+79
+00:02:57,519 --> 00:03:01,040
+reinforcements and proved this through
+
+80
+00:02:59,360 --> 00:03:03,200
+an experiment where rats could pull a
+
+81
+00:03:01,040 --> 00:03:04,879
+lever. Surely enough, they would keep
+
+82
+00:03:03,200 --> 00:03:07,280
+pulling the lever and keep getting the
+
+83
+00:03:04,879 --> 00:03:08,800
+reward. They were hooked. This is how
+
+84
+00:03:07,280 --> 00:03:11,120
+addiction works. We all nod in
+
+85
+00:03:08,800 --> 00:03:12,720
+agreement. Nope. Because there were some
+
+86
+00:03:11,120 --> 00:03:16,720
+rats who would pull the levers
+
+87
+00:03:12,720 --> 00:03:19,200
+obsessively, constantly, insatiably. The
+
+88
+00:03:16,720 --> 00:03:21,360
+only difference, their levers were
+
+89
+00:03:19,200 --> 00:03:22,959
+basically broken. They didn't get
+
+90
+00:03:21,360 --> 00:03:26,159
+rewards every time they pulled the
+
+91
+00:03:22,959 --> 00:03:28,239
+lever. Instead, they got it randomly.
+
+92
+00:03:26,159 --> 00:03:30,319
+This was called a variable ratio
+
+93
+00:03:28,239 --> 00:03:32,720
+schedule. And BF Skinner concluded that
+
+94
+00:03:30,319 --> 00:03:35,040
+this causes rats and people to develop
+
+95
+00:03:32,720 --> 00:03:37,680
+behaviors that are quote hard to
+
+96
+00:03:35,040 --> 00:03:40,560
+extinguish. Basically, habits that do
+
+97
+00:03:37,680 --> 00:03:43,280
+not stop. So, now we understand casinos
+
+98
+00:03:40,560 --> 00:03:47,120
+kind of and our phones a little better.
+
+99
+00:03:43,280 --> 00:03:50,000
+Less reward equals more addicting. Uh,
+
+100
+00:03:47,120 --> 00:03:52,400
+not quite. This research serves as one
+
+101
+00:03:50,000 --> 00:03:54,879
+of the foundations to BJ Fog's claim to
+
+102
+00:03:52,400 --> 00:03:57,040
+fame. He invented the fog of behavioral
+
+103
+00:03:54,879 --> 00:03:58,720
+model. And I'll just let him explain it.
+
+104
+00:03:57,040 --> 00:04:00,560
+Basically, for an app to compel you to
+
+105
+00:03:58,720 --> 00:04:02,959
+do something, there's three components.
+
+106
+00:04:00,560 --> 00:04:04,560
+All right. First, motivation. It has to
+
+107
+00:04:02,959 --> 00:04:06,480
+motivate you to complete the action.
+
+108
+00:04:04,560 --> 00:04:08,080
+Secondly, it has to ensure you have the
+
+109
+00:04:06,480 --> 00:04:10,080
+ability to complete the action. And
+
+110
+00:04:08,080 --> 00:04:12,480
+thirdly, it has to prompt you to
+
+111
+00:04:10,080 --> 00:04:14,720
+complete the action. Now, for an action
+
+112
+00:04:12,480 --> 00:04:16,560
+that is hard to do, such as learning a
+
+113
+00:04:14,720 --> 00:04:18,639
+language, the app has to motivate you
+
+114
+00:04:16,560 --> 00:04:21,759
+more, right? And that can come in the
+
+115
+00:04:18,639 --> 00:04:23,759
+form of games or prizes. But for an
+
+116
+00:04:21,759 --> 00:04:27,680
+action that's simple, such as checking
+
+117
+00:04:23,759 --> 00:04:29,600
+text messages, right? Very easy to do.
+
+118
+00:04:27,680 --> 00:04:31,040
+You might already be motivated to do it,
+
+119
+00:04:29,600 --> 00:04:34,000
+so the app doesn't have to do much
+
+120
+00:04:31,040 --> 00:04:36,639
+prompting. So, a simple buzz or text is
+
+121
+00:04:34,000 --> 00:04:40,160
+good enough. But motivation is tricky.
+
+122
+00:04:36,639 --> 00:04:42,000
+Yeah. How can an app motivate us to do
+
+123
+00:04:40,160 --> 00:04:43,280
+something? Yeah, it's not like Instagram
+
+124
+00:04:42,000 --> 00:04:45,759
+is giving me a pep talk [music] every
+
+125
+00:04:43,280 --> 00:04:48,960
+night to continue doom scrolling. I do
+
+126
+00:04:45,759 --> 00:04:50,720
+that on my own, right? Apps use this
+
+127
+00:04:48,960 --> 00:04:52,479
+thing called dopamine.
+
+128
+00:04:50,720 --> 00:04:54,800
+>> If dopamine makes something more
+
+129
+00:04:52,479 --> 00:04:57,360
+addictive, then how come variable
+
+130
+00:04:54,800 --> 00:04:59,840
+rewards, [music] aka rewards that happen
+
+131
+00:04:57,360 --> 00:05:00,880
+less often, how come they're more
+
+132
+00:04:59,840 --> 00:05:02,400
+addictive?
+
+133
+00:05:00,880 --> 00:05:04,479
+>> That is actually an excellent question.
+
+134
+00:05:02,400 --> 00:05:07,360
+How can something be more addictive if
+
+135
+00:05:04,479 --> 00:05:09,840
+users are getting less rewards, aka less
+
+136
+00:05:07,360 --> 00:05:12,400
+dopamine? I know who knows the answer.
+
+137
+00:05:09,840 --> 00:05:13,520
+Shreas, you're getting an A, buddy. And
+
+138
+00:05:12,400 --> 00:05:16,080
+your parents are going to call you.
+
+139
+00:05:13,520 --> 00:05:20,800
+They're so proud of you. And uh you are
+
+140
+00:05:16,080 --> 00:05:22,160
+uh you're uh perfect.
+
+141
+00:05:20,800 --> 00:05:23,759
+>> I Okay, I know. I know. I have a
+
+142
+00:05:22,160 --> 00:05:25,520
+problem. So, to answer this question
+
+143
+00:05:23,759 --> 00:05:27,280
+about how less dopamine can be more
+
+144
+00:05:25,520 --> 00:05:29,680
+addicting, let's talk about Wolf from
+
+145
+00:05:27,280 --> 00:05:31,840
+Schultz. See shreas a common
+
+146
+00:05:29,680 --> 00:05:35,919
+misconception is that dopamine is tied
+
+147
+00:05:31,840 --> 00:05:38,800
+to only a reward and that is not true.
+
+148
+00:05:35,919 --> 00:05:42,720
+Watch this. Hello
+
+149
+00:05:38,800 --> 00:05:44,720
+I am Dr. Wolf from Shutz. It is nice to
+
+150
+00:05:42,720 --> 00:05:49,600
+meet you.
+
+151
+00:05:44,720 --> 00:05:52,160
+All right. Now observe as I ring the
+
+152
+00:05:49,600 --> 00:05:56,600
+bell. When I ring the bell I give the
+
+153
+00:05:52,160 --> 00:05:56,600
+monkey some juice.
+
+154
+00:05:57,360 --> 00:06:01,759
+Okay, that is enough.
+
+155
+00:05:59,840 --> 00:06:03,919
+No
+
+156
+00:06:01,759 --> 00:06:08,199
+enough. I did the bell ringing and the
+
+157
+00:06:03,919 --> 00:06:08,199
+juice giving many times.
+
+158
+00:06:16,880 --> 00:06:21,280
+Look, we are tracking the monkeykey's
+
+159
+00:06:18,639 --> 00:06:24,160
+brain and the dopamine spikes when I
+
+160
+00:06:21,280 --> 00:06:26,000
+ring the bell, not when I give the
+
+161
+00:06:24,160 --> 00:06:28,639
+juice. But if I do not give him the
+
+162
+00:06:26,000 --> 00:06:30,384
+juice, his dopamine levels drop below
+
+163
+00:06:28,639 --> 00:06:31,120
+normal.
+
+164
+00:06:30,384 --> 00:06:33,199
+[laughter]
+
+165
+00:06:31,120 --> 00:06:35,840
+No, no, calm down. He says, "Okay, we
+
+166
+00:06:33,199 --> 00:06:38,080
+try one more time here." See, his
+
+167
+00:06:35,840 --> 00:06:40,319
+dopamine spikes
+
+168
+00:06:38,080 --> 00:06:42,639
+and then it falls
+
+169
+00:06:40,319 --> 00:06:46,240
+as he realizes that the reward will not
+
+170
+00:06:42,639 --> 00:06:50,080
+cut. It will never come. He will be left
+
+171
+00:06:46,240 --> 00:06:51,840
+without it for eternity. However, it's
+
+172
+00:06:50,080 --> 00:06:53,680
+okay. He will learn to live with this
+
+173
+00:06:51,840 --> 00:06:55,280
+reality.
+
+174
+00:06:53,680 --> 00:06:57,039
+I can even tease him a little bit with
+
+175
+00:06:55,280 --> 00:06:59,599
+the juice.
+
+176
+00:06:57,039 --> 00:07:02,240
+No, no, no. You do not GET THE JUICE.
+
+177
+00:06:59,599 --> 00:07:05,479
+OH, NO, NO, NO, NO, NO, NO, NO, NO, NO,
+
+178
+00:07:02,240 --> 00:07:05,479
+NO, NO.
+
+179
+00:07:05,599 --> 00:07:10,160
+Bad boy. My research breaks a very
+
+180
+00:07:07,599 --> 00:07:16,919
+common misnomer. Dopamine is tied to the
+
+181
+00:07:10,160 --> 00:07:16,919
+trigger or the queue, not to the reward.
+
+182
+00:07:17,280 --> 00:07:20,800
+>> Thank you, Dr. Schultz. So, as we
+
+183
+00:07:19,120 --> 00:07:22,880
+learned from BF Skinner's work, it's a
+
+184
+00:07:20,800 --> 00:07:25,120
+variable reward or inconsistent reward
+
+185
+00:07:22,880 --> 00:07:26,960
+that is more addicting than getting more
+
+186
+00:07:25,120 --> 00:07:28,560
+reward. And what we learned from Wolf
+
+187
+00:07:26,960 --> 00:07:30,479
+Schultz's work is that this actually
+
+188
+00:07:28,560 --> 00:07:32,400
+makes sense because when you don't get
+
+189
+00:07:30,479 --> 00:07:34,080
+the reward after the trigger that we saw
+
+190
+00:07:32,400 --> 00:07:36,000
+in the RAD experiment, your dopamine
+
+191
+00:07:34,080 --> 00:07:38,000
+goes below average, meaning that you
+
+192
+00:07:36,000 --> 00:07:40,160
+desire the next trigger or cue that
+
+193
+00:07:38,000 --> 00:07:42,080
+reward is going to come. And Warframe
+
+194
+00:07:40,160 --> 00:07:43,919
+Schulz's research was groundbreaking for
+
+195
+00:07:42,080 --> 00:07:46,639
+the industry and helping us understand
+
+196
+00:07:43,919 --> 00:07:47,919
+that it is anticipation for reward that
+
+197
+00:07:46,639 --> 00:07:50,560
+is what we are addicted to. the
+
+198
+00:07:47,919 --> 00:07:52,639
+anticipation, not the reward itself.
+
+199
+00:07:50,560 --> 00:07:54,720
+It's the same reason why a gambler walks
+
+200
+00:07:52,639 --> 00:07:56,240
+into a casino every day for the chance
+
+201
+00:07:54,720 --> 00:07:57,840
+to win a million dollars, the chance to
+
+202
+00:07:56,240 --> 00:08:00,080
+change his life. It is the anticipation
+
+203
+00:07:57,840 --> 00:08:02,319
+that he's hooked to, not the reward
+
+204
+00:08:00,080 --> 00:08:05,759
+itself. And I think the same thing is
+
+205
+00:08:02,319 --> 00:08:08,240
+true for our phones. Oh no, my data got
+
+206
+00:08:05,759 --> 00:08:10,080
+stolen. In our super digital world, mega
+
+207
+00:08:08,240 --> 00:08:12,000
+breaches of our personal information can
+
+208
+00:08:10,080 --> 00:08:13,360
+happen all the time. And that means
+
+209
+00:08:12,000 --> 00:08:15,440
+people on the internet could find your
+
+210
+00:08:13,360 --> 00:08:17,520
+social security number or worse, your
+
+211
+00:08:15,440 --> 00:08:19,919
+search history. And that's why I trust
+
+212
+00:08:17,520 --> 00:08:22,639
+today's sponsor, Incogn to keep my
+
+213
+00:08:19,919 --> 00:08:24,560
+personal information safe. Incogn tracks
+
+214
+00:08:22,639 --> 00:08:26,240
+down and removes your personal data from
+
+215
+00:08:24,560 --> 00:08:27,440
+things like personal directories, people
+
+216
+00:08:26,240 --> 00:08:29,759
+search sites, and [music] even
+
+217
+00:08:27,440 --> 00:08:32,399
+commercial databases. There's databases
+
+218
+00:08:29,759 --> 00:08:34,399
+full of our information. What? We can't
+
+219
+00:08:32,399 --> 00:08:35,760
+even imagine where our data could be.
+
+220
+00:08:34,399 --> 00:08:38,159
+But we don't need to know because
+
+221
+00:08:35,760 --> 00:08:40,399
+Incogny's team does a thorough sweep of
+
+222
+00:08:38,159 --> 00:08:42,000
+the entire internet. It is so easy to
+
+223
+00:08:40,399 --> 00:08:44,000
+not take this seriously until something
+
+224
+00:08:42,000 --> 00:08:46,399
+bad happens to you. Like, I once had
+
+225
+00:08:44,000 --> 00:08:48,800
+some stranger take out a loan in my name
+
+226
+00:08:46,399 --> 00:08:51,120
+to buy a giant oil painting of Andrew
+
+227
+00:08:48,800 --> 00:08:52,640
+Garfield and put it up in my bedroom so
+
+228
+00:08:51,120 --> 00:08:54,640
+that I could look at it every time I go
+
+229
+00:08:52,640 --> 00:08:56,399
+to sleep. Who would do that to me? And
+
+230
+00:08:54,640 --> 00:08:58,320
+if you find a website that has personal
+
+231
+00:08:56,399 --> 00:09:00,720
+information about you, then Incogn's new
+
+232
+00:08:58,320 --> 00:09:02,720
+feature, custom removals, can help take
+
+233
+00:09:00,720 --> 00:09:04,399
+care of it for you on many eligible
+
+234
+00:09:02,720 --> 00:09:07,040
+links. Go to link in our description
+
+235
+00:09:04,399 --> 00:09:08,800
+right now and get started. See, we think
+
+236
+00:09:07,040 --> 00:09:10,480
+it's the posts on Instagram that hook
+
+237
+00:09:08,800 --> 00:09:12,160
+us, the posts that make us laugh or that
+
+238
+00:09:10,480 --> 00:09:14,160
+enrage us. But that's actually just half
+
+239
+00:09:12,160 --> 00:09:16,560
+of it. The other half are things like
+
+240
+00:09:14,160 --> 00:09:18,640
+infinite scroll, the refresh, things
+
+241
+00:09:16,560 --> 00:09:20,880
+that keep us in anticipation that reward
+
+242
+00:09:18,640 --> 00:09:23,920
+might come. Something sometimes as
+
+243
+00:09:20,880 --> 00:09:25,760
+simple as a buzz or a ding.
+
+244
+00:09:23,920 --> 00:09:27,920
+In fact, as some experts point out,
+
+245
+00:09:25,760 --> 00:09:30,240
+because the barrier to access our phone
+
+246
+00:09:27,920 --> 00:09:32,080
+is so low, we can do it at any moment.
+
+247
+00:09:30,240 --> 00:09:34,720
+We're basically in a constant state of
+
+248
+00:09:32,080 --> 00:09:36,720
+anticipation. I'm in a constant state of
+
+249
+00:09:34,720 --> 00:09:38,399
+anticipation of you letting me sit at
+
+250
+00:09:36,720 --> 00:09:39,760
+the dining hall with you. My
+
+251
+00:09:38,399 --> 00:09:42,160
+girlfriend's asking what you're doing on
+
+252
+00:09:39,760 --> 00:09:43,839
+Valentine's Day.
+
+253
+00:09:42,160 --> 00:09:45,760
+>> So, to better understand how to unhack
+
+254
+00:09:43,839 --> 00:09:48,320
+my brain, I'm about to go talk to an
+
+255
+00:09:45,760 --> 00:09:50,000
+actual former BJ Fog student named Mir
+
+256
+00:09:48,320 --> 00:09:51,839
+Aal, who went on to author the book
+
+257
+00:09:50,000 --> 00:09:53,519
+Indistractible, which is about how to
+
+258
+00:09:51,839 --> 00:09:55,680
+control your attention. But before I go,
+
+259
+00:09:53,519 --> 00:09:57,680
+I should say that BJ Fog actually always
+
+260
+00:09:55,680 --> 00:09:59,986
+had a very optimistic view of how
+
+261
+00:09:57,680 --> 00:10:01,360
+merging psychology and technology could
+
+262
+00:09:59,986 --> 00:10:03,680
+[music] impact people. He had a vision
+
+263
+00:10:01,360 --> 00:10:05,760
+of a world where we could use SMS texts
+
+264
+00:10:03,680 --> 00:10:07,680
+to help people get off cigarettes. But
+
+265
+00:10:05,760 --> 00:10:09,440
+once he realized what happened once this
+
+266
+00:10:07,680 --> 00:10:11,200
+genie was out of the bottle, he became
+
+267
+00:10:09,440 --> 00:10:12,560
+one of our foremost experts in warning
+
+268
+00:10:11,200 --> 00:10:14,079
+people about big [music] tech and what
+
+269
+00:10:12,560 --> 00:10:16,362
+it was trying to do to our attention.
+
+270
+00:10:14,079 --> 00:10:18,240
+Fog's class is by no means a nexus
+
+271
+00:10:16,362 --> 00:10:20,160
+[music] that caused big tech to use
+
+272
+00:10:18,240 --> 00:10:21,680
+psychology. It's very much just an
+
+273
+00:10:20,160 --> 00:10:24,399
+example of a broader trend that was
+
+274
+00:10:21,680 --> 00:10:26,800
+happening at that time and near a had a
+
+275
+00:10:24,399 --> 00:10:29,839
+front row seat to watch it happen. How
+
+276
+00:10:26,800 --> 00:10:31,519
+did our phones get so good at hacking
+
+277
+00:10:29,839 --> 00:10:32,959
+our brains?
+
+278
+00:10:31,519 --> 00:10:34,240
+>> This video that we're we're recording
+
+279
+00:10:32,959 --> 00:10:35,600
+right now, where is it going?
+
+280
+00:10:34,240 --> 00:10:37,360
+>> YouTube.com.
+
+281
+00:10:35,600 --> 00:10:39,120
+>> Yeah. And so when you want lots of
+
+282
+00:10:37,360 --> 00:10:40,800
+people to view this video, how do you
+
+283
+00:10:39,120 --> 00:10:42,079
+make a good video? What's the What's the
+
+284
+00:10:40,800 --> 00:10:42,720
+most important thing to making a good
+
+285
+00:10:42,079 --> 00:10:44,720
+video?
+
+286
+00:10:42,720 --> 00:10:47,120
+>> Um story.
+
+287
+00:10:44,720 --> 00:10:47,440
+>> Story. Why is story the most important
+
+288
+00:10:47,120 --> 00:10:48,720
+thing?
+
+289
+00:10:47,440 --> 00:10:50,240
+>> You want to talk about something that
+
+290
+00:10:48,720 --> 00:10:52,560
+people find really interesting that
+
+291
+00:10:50,240 --> 00:10:54,399
+compels them to watch the video and stay
+
+292
+00:10:52,560 --> 00:10:55,920
+for the whole video until the end.
+
+293
+00:10:54,399 --> 00:10:57,680
+>> That's your answer. Does the media tell
+
+294
+00:10:55,920 --> 00:11:00,000
+us what's most important in our lives?
+
+295
+00:10:57,680 --> 00:11:01,360
+No. They tell us what's scary, what's
+
+296
+00:11:00,000 --> 00:11:02,959
+exciting, what's interesting, what's
+
+297
+00:11:01,360 --> 00:11:04,480
+weird, what's different. That's what
+
+298
+00:11:02,959 --> 00:11:06,959
+they tell us. They don't tell us
+
+299
+00:11:04,480 --> 00:11:08,640
+thousands of flights didn't crash today.
+
+300
+00:11:06,959 --> 00:11:10,160
+They tell us about the one that had some
+
+301
+00:11:08,640 --> 00:11:11,360
+terrible disaster that we're all scared
+
+302
+00:11:10,160 --> 00:11:12,800
+of because that's different. That's
+
+303
+00:11:11,360 --> 00:11:15,519
+something you don't expect. It's called
+
+304
+00:11:12,800 --> 00:11:17,200
+a pattern interrupt. So, what all media
+
+305
+00:11:15,519 --> 00:11:19,360
+does is incorporate some kind of
+
+306
+00:11:17,200 --> 00:11:21,680
+variable reward. Whether it's social
+
+307
+00:11:19,360 --> 00:11:23,600
+media, whether it's gambling, whether
+
+308
+00:11:21,680 --> 00:11:25,040
+it's uh the news, whether it's this very
+
+309
+00:11:23,600 --> 00:11:26,800
+video you're watching right now, you
+
+310
+00:11:25,040 --> 00:11:28,800
+want to know what am I going to say
+
+311
+00:11:26,800 --> 00:11:30,240
+next. Is it what I expect? Nah, I'm not
+
+312
+00:11:28,800 --> 00:11:32,160
+going to watch that. I want something
+
+313
+00:11:30,240 --> 00:11:34,399
+different, exciting, controversial. I
+
+314
+00:11:32,160 --> 00:11:36,880
+want a hot take. The media business, the
+
+315
+00:11:34,399 --> 00:11:39,279
+business you are in, is about turning
+
+316
+00:11:36,880 --> 00:11:40,959
+eyeballs into cash. That's what you do
+
+317
+00:11:39,279 --> 00:11:43,279
+for a living. You're the pot calling the
+
+318
+00:11:40,959 --> 00:11:45,920
+kettle black. This is your business.
+
+319
+00:11:43,279 --> 00:11:50,240
+You're a drug dealer, right? [laughter]
+
+320
+00:11:45,920 --> 00:11:52,720
+Oh, [ __ ] This made me ponder, was I the
+
+321
+00:11:50,240 --> 00:11:55,519
+problem? I mean, my videos got hundreds,
+
+322
+00:11:52,720 --> 00:11:57,360
+if not tens of views. There's people out
+
+323
+00:11:55,519 --> 00:11:59,519
+there who missed important moments of
+
+324
+00:11:57,360 --> 00:12:02,320
+their life because they were staring at
+
+325
+00:11:59,519 --> 00:12:05,279
+my videos all day. Was I really the
+
+326
+00:12:02,320 --> 00:12:06,959
+kettle calling the pot Africanamean?
+
+327
+00:12:05,279 --> 00:12:09,279
+Instead of just blaming this technology
+
+328
+00:12:06,959 --> 00:12:14,320
+and hoping our overlords would fix it,
+
+329
+00:12:09,279 --> 00:12:15,839
+maybe I had to start with fixing myself.
+
+330
+00:12:14,320 --> 00:12:18,079
+So the first step is to understand what
+
+331
+00:12:15,839 --> 00:12:20,399
+is the difference between distraction
+
+332
+00:12:18,079 --> 00:12:22,880
+and traction. Those are opposites.
+
+333
+00:12:20,399 --> 00:12:24,240
+Traction and distraction. Traction is
+
+334
+00:12:22,880 --> 00:12:26,639
+anything that you say you're going to
+
+335
+00:12:24,240 --> 00:12:29,200
+do. So whether that's going on a walk or
+
+336
+00:12:26,639 --> 00:12:30,959
+meditating or checking your phone or
+
+337
+00:12:29,200 --> 00:12:32,480
+doing homework, doesn't matter. Anything
+
+338
+00:12:30,959 --> 00:12:34,079
+you say you're going to do in advance is
+
+339
+00:12:32,480 --> 00:12:35,600
+traction. Everything else is
+
+340
+00:12:34,079 --> 00:12:37,680
+distraction. Then we have to understand
+
+341
+00:12:35,600 --> 00:12:39,120
+our triggers. What what are our internal
+
+342
+00:12:37,680 --> 00:12:41,120
+triggers and our external triggers?
+
+343
+00:12:39,120 --> 00:12:43,360
+Turns out that only 10% of the time that
+
+344
+00:12:41,120 --> 00:12:44,959
+you check your phone, 10% of the time is
+
+345
+00:12:43,360 --> 00:12:47,040
+it because one of these ping- dinger
+
+346
+00:12:44,959 --> 00:12:50,320
+rings, right? These are called external
+
+347
+00:12:47,040 --> 00:12:53,040
+triggers. 10%. The other 90% of the time
+
+348
+00:12:50,320 --> 00:12:55,120
+that we check our phone, 90% is not
+
+349
+00:12:53,040 --> 00:12:56,800
+about the stuff happening outside of us.
+
+350
+00:12:55,120 --> 00:12:58,720
+It's about what's happening inside of
+
+351
+00:12:56,800 --> 00:13:01,040
+us. These are called internal triggers.
+
+352
+00:12:58,720 --> 00:13:02,800
+And if we don't understand why these
+
+353
+00:13:01,040 --> 00:13:04,320
+internal triggers are the source of 90%
+
+354
+00:13:02,800 --> 00:13:05,600
+of our distractions, we can't do
+
+355
+00:13:04,320 --> 00:13:07,200
+anything about them. So, what are
+
+356
+00:13:05,600 --> 00:13:09,040
+internal triggers? They are
+
+357
+00:13:07,200 --> 00:13:11,360
+uncomfortable feelings. they are
+
+358
+00:13:09,040 --> 00:13:13,200
+boredom, loneliness, fatigue,
+
+359
+00:13:11,360 --> 00:13:14,399
+uncertainty, anxiety. If you don't
+
+360
+00:13:13,200 --> 00:13:16,000
+understand the source of that
+
+361
+00:13:14,399 --> 00:13:17,839
+distraction, you will always be
+
+362
+00:13:16,000 --> 00:13:19,360
+distracted by one thing or another. So
+
+363
+00:13:17,839 --> 00:13:20,959
+that's the most important thing is to
+
+364
+00:13:19,360 --> 00:13:23,200
+master those internal triggers. Have
+
+365
+00:13:20,959 --> 00:13:24,959
+tools ready to go so that when you feel
+
+366
+00:13:23,200 --> 00:13:26,240
+boredom, when you feel uncertainty, when
+
+367
+00:13:24,959 --> 00:13:28,800
+you feel loneliness, you don't
+
+368
+00:13:26,240 --> 00:13:31,279
+impulsively check check, you do
+
+369
+00:13:28,800 --> 00:13:32,560
+something that's healthy and helpful
+
+370
+00:13:31,279 --> 00:13:34,320
+rather than hurtful.
+
+371
+00:13:32,560 --> 00:13:35,839
+>> Got it. I I tried doing this thing where
+
+372
+00:13:34,320 --> 00:13:37,120
+I put a stack of sticky notes on my
+
+373
+00:13:35,839 --> 00:13:38,240
+phone. So before I used it, I had to
+
+374
+00:13:37,120 --> 00:13:40,320
+write down what I was going to use it
+
+375
+00:13:38,240 --> 00:13:41,760
+for. Does stuff like that really work?
+
+376
+00:13:40,320 --> 00:13:43,519
+Have you tried something like that?
+
+377
+00:13:41,760 --> 00:13:45,600
+>> I'll tell you about an uh an effort pack
+
+378
+00:13:43,519 --> 00:13:46,240
+that I did. Is it okay if we get a
+
+379
+00:13:45,600 --> 00:13:47,040
+little personal?
+
+380
+00:13:46,240 --> 00:13:49,519
+>> Yeah, of course.
+
+381
+00:13:47,040 --> 00:13:52,160
+>> Uh I noticed when I was writing uh
+
+382
+00:13:49,519 --> 00:13:54,959
+Indistractible that uh my sex life was
+
+383
+00:13:52,160 --> 00:13:57,680
+really suffering because every night I
+
+384
+00:13:54,959 --> 00:13:59,519
+was caressing my iPad and my wife was
+
+385
+00:13:57,680 --> 00:14:00,639
+fondling her iPhone and we weren't being
+
+386
+00:13:59,519 --> 00:14:04,320
+intimate.
+
+387
+00:14:00,639 --> 00:14:06,079
+>> Been there. Not with your wife, just in
+
+388
+00:14:04,320 --> 00:14:08,160
+general.
+
+389
+00:14:06,079 --> 00:14:08,560
+Also, not in general. What were you
+
+390
+00:14:08,160 --> 00:14:10,160
+saying?
+
+391
+00:14:08,560 --> 00:14:12,160
+>> In the research for my book, I came
+
+392
+00:14:10,160 --> 00:14:14,079
+across these effort packs and I decided
+
+393
+00:14:12,160 --> 00:14:15,920
+to adopt one. So, what did I do? I went
+
+394
+00:14:14,079 --> 00:14:18,399
+to the hardware store and I bought us
+
+395
+00:14:15,920 --> 00:14:21,040
+the $6 outlet timer. And this outlet
+
+396
+00:14:18,399 --> 00:14:22,720
+timer you can program to turn on or off
+
+397
+00:14:21,040 --> 00:14:24,160
+whatever's plugged into it at a certain
+
+398
+00:14:22,720 --> 00:14:26,959
+time of day or night. So, in my
+
+399
+00:14:24,160 --> 00:14:30,079
+household, every night 1000 p.m., the
+
+400
+00:14:26,959 --> 00:14:31,760
+internet shuts off. Now, could I turn it
+
+401
+00:14:30,079 --> 00:14:32,959
+back on? Of course, I could. But now I
+
+402
+00:14:31,760 --> 00:14:34,399
+have to get under my desk and I have to
+
+403
+00:14:32,959 --> 00:14:35,920
+unplug and replplug or I have to change
+
+404
+00:14:34,399 --> 00:14:38,079
+my Wi-Fi settings. It's like a big old
+
+405
+00:14:35,920 --> 00:14:40,320
+mess. And so I don't do it because I put
+
+406
+00:14:38,079 --> 00:14:42,160
+a bit of friction in between something
+
+407
+00:14:40,320 --> 00:14:43,519
+that I don't want to do. I don't want to
+
+408
+00:14:42,160 --> 00:14:45,040
+keep scrolling. I don't want to keep,
+
+409
+00:14:43,519 --> 00:14:46,480
+you know, checking email and all that
+
+410
+00:14:45,040 --> 00:14:48,240
+other stuff. I want to get to bed on
+
+411
+00:14:46,480 --> 00:14:50,399
+time so I can get proper rest and maybe
+
+412
+00:14:48,240 --> 00:14:52,000
+be intimate with my wife. Hell yeah. So
+
+413
+00:14:50,399 --> 00:14:54,399
+that's an example of an effort packed.
+
+414
+00:14:52,000 --> 00:14:55,760
+But it only works because I did the
+
+415
+00:14:54,399 --> 00:14:56,880
+other three steps first. Mastered
+
+416
+00:14:55,760 --> 00:14:58,880
+internal triggers, made time for
+
+417
+00:14:56,880 --> 00:15:00,240
+traction, right? I have a bedtime now.
+
+418
+00:14:58,880 --> 00:15:02,079
+Hacked back the external triggers. all
+
+419
+00:15:00,240 --> 00:15:04,000
+the devices are charging outside and
+
+420
+00:15:02,079 --> 00:15:05,600
+then finally the fourth and final step
+
+421
+00:15:04,000 --> 00:15:08,399
+that can be making one of these effort
+
+422
+00:15:05,600 --> 00:15:09,839
+packs and I think near a's right I can't
+
+423
+00:15:08,399 --> 00:15:11,839
+wait [music] for big tech or the
+
+424
+00:15:09,839 --> 00:15:14,800
+government to solve this for me today
+
+425
+00:15:11,839 --> 00:15:17,600
+how am I supposed to master the internal
+
+426
+00:15:14,800 --> 00:15:20,560
+triggers what if I didn't use my phone
+
+427
+00:15:17,600 --> 00:15:22,560
+and just sat with my feelings for a day
+
+428
+00:15:20,560 --> 00:15:25,440
+I woke up late for work and couldn't
+
+429
+00:15:22,560 --> 00:15:28,320
+even get into my office
+
+430
+00:15:25,440 --> 00:15:30,000
+and missed an urgent text from my mom
+
+431
+00:15:28,320 --> 00:15:31,040
+okay phones are way too entrenched in
+
+432
+00:15:30,000 --> 00:15:34,000
+our life for that [music] to be
+
+433
+00:15:31,040 --> 00:15:38,025
+practical. Okay, it fine. I'll master
+
+434
+00:15:34,000 --> 00:15:38,025
+the internal triggers. [music]
+
+435
+00:15:38,720 --> 00:15:44,160
+What am I really feeling right now? Kind
+
+436
+00:15:41,199 --> 00:15:46,720
+of hungry. What if someone needs me? No.
+
+437
+00:15:44,160 --> 00:15:50,480
+Why did I think that painting was nice?
+
+438
+00:15:46,720 --> 00:15:52,800
+Am I a [ __ ] Okay, this is
+
+439
+00:15:50,480 --> 00:15:54,720
+unproductive. Sitting here in silence, I
+
+440
+00:15:52,800 --> 00:15:56,079
+respond to an email. Did I get an email?
+
+441
+00:15:54,720 --> 00:15:59,040
+[ __ ] What if it's a really important
+
+442
+00:15:56,079 --> 00:16:01,519
+email? Emails are my heroin. I realized
+
+443
+00:15:59,040 --> 00:16:04,160
+my biggest anxiety was that I feared
+
+444
+00:16:01,519 --> 00:16:05,279
+missing out on the news, on a text, on a
+
+445
+00:16:04,160 --> 00:16:06,880
+work email.
+
+446
+00:16:05,279 --> 00:16:08,639
+>> When I'm writing, I implement what's
+
+447
+00:16:06,880 --> 00:16:10,720
+called the 10-minute rule. The 10-minute
+
+448
+00:16:08,639 --> 00:16:12,480
+rule says that you can give into any
+
+449
+00:16:10,720 --> 00:16:14,000
+distraction, right? I can go check
+
+450
+00:16:12,480 --> 00:16:15,519
+sports scores. I can check stock prices.
+
+451
+00:16:14,000 --> 00:16:18,240
+I can check my email. I can check that
+
+452
+00:16:15,519 --> 00:16:21,040
+stuff. Not [music] right now. Okay? I'm
+
+453
+00:16:18,240 --> 00:16:22,160
+going to check it in 10 minutes. That's
+
+454
+00:16:21,040 --> 00:16:24,560
+the whole idea that you're going to
+
+455
+00:16:22,160 --> 00:16:26,240
+delay that that gratification. You're
+
+456
+00:16:24,560 --> 00:16:28,240
+not saying no because we know that
+
+457
+00:16:26,240 --> 00:16:30,000
+saying no actually backfires. So what
+
+458
+00:16:28,240 --> 00:16:33,240
+you're saying instead of [music] no is
+
+459
+00:16:30,000 --> 00:16:33,240
+not yet.
+
+460
+00:16:36,959 --> 00:16:41,759
+I started noticing that the 10-minute
+
+461
+00:16:38,639 --> 00:16:44,000
+rule worked immediately. My screen time
+
+462
+00:16:41,759 --> 00:16:45,920
+went down kind of because I started
+
+463
+00:16:44,000 --> 00:16:47,360
+training my brain into realizing I could
+
+464
+00:16:45,920 --> 00:16:49,360
+go without checking [music] my phone for
+
+465
+00:16:47,360 --> 00:16:52,160
+10 minutes and nothing in my life was
+
+466
+00:16:49,360 --> 00:16:53,759
+falling apart. This is only the start of
+
+467
+00:16:52,160 --> 00:16:56,480
+my journey. [music] I know so much more
+
+468
+00:16:53,759 --> 00:16:58,000
+about how my phone captures my attention
+
+469
+00:16:56,480 --> 00:17:00,000
+and that I should be focusing on those
+
+470
+00:16:58,000 --> 00:17:02,320
+internal triggers that [music] gravitate
+
+471
+00:17:00,000 --> 00:17:03,920
+me towards my phone. Understanding how
+
+472
+00:17:02,320 --> 00:17:05,439
+phones are able to take advantage of my
+
+473
+00:17:03,920 --> 00:17:07,280
+brain has helped me be so much more
+
+474
+00:17:05,439 --> 00:17:09,600
+conscious in those mindless moments with
+
+475
+00:17:07,280 --> 00:17:11,360
+my phone. [music] And now I feel like I
+
+476
+00:17:09,600 --> 00:17:13,360
+notice everything. Like nothing really
+
+477
+00:17:11,360 --> 00:17:15,839
+gets past me. It's like I have spidey
+
+478
+00:17:13,360 --> 00:17:15,839
+senses or
+

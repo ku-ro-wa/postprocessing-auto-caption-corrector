@@ -1,0 +1,793 @@
+WEBVTT
+
+00:00:00.000 --> 00:00:01.760
+Recently, tech CEOs have been saying
+
+00:00:01.760 --> 00:00:04.200
+that we either achieved AGI or we're at
+
+00:00:04.200 --> 00:00:06.280
+the verge of achieving AGI. And yet,
+
+00:00:06.280 --> 00:00:08.680
+nobody really agrees on what AGI really
+
+00:00:08.680 --> 00:00:10.640
+is. One question worth pondering here is
+
+00:00:10.640 --> 00:00:13.160
+whether AGI is even possible at all. And
+
+00:00:13.160 --> 00:00:14.720
+this debate goes all the way back to
+
+00:00:14.720 --> 00:00:17.160
+1980s, and Penrose stated that human
+
+00:00:17.160 --> 00:00:18.880
+understanding is fundamentally
+
+00:00:18.880 --> 00:00:21.400
+non-algorithmic and cannot be produced
+
+00:00:21.400 --> 00:00:22.960
+by computer. And he came to this
+
+00:00:22.960 --> 00:00:24.640
+conclusion by loosely applying
+
+00:00:24.640 --> 00:00:27.000
+mathematical theorems from the 1930s.
+
+00:00:27.000 --> 00:00:28.320
+And when we look at how the current
+
+00:00:28.320 --> 00:00:30.080
+model architecture looks like, way it
+
+00:00:30.080 --> 00:00:32.160
+borrows terminologies from neuroscience,
+
+00:00:32.160 --> 00:00:34.280
+these are just loosely related terms,
+
+00:00:34.280 --> 00:00:36.160
+but in reality, model architectures
+
+00:00:36.160 --> 00:00:38.080
+today don't really resemble human
+
+00:00:38.080 --> 00:00:40.480
+biology or human brain at all. So, I
+
+00:00:40.480 --> 00:00:42.360
+think it's fair to say that at least, if
+
+00:00:42.360 --> 00:00:45.040
+we really are close to achieving AGI,
+
+00:00:45.040 --> 00:00:47.240
+AGI doesn't really require us to
+
+00:00:47.240 --> 00:00:49.200
+reproduce the mechanism of human
+
+00:00:49.200 --> 00:00:50.800
+intelligence. Now, going back to the
+
+00:00:50.800 --> 00:00:53.240
+1980s, the framework that we often use
+
+00:00:53.240 --> 00:00:55.440
+was this idea called weak AI versus
+
+00:00:55.440 --> 00:00:57.840
+strong AI. Where weak AI is a narrow
+
+00:00:57.840 --> 00:00:59.600
+intelligence, which is something that we
+
+00:00:59.600 --> 00:01:01.560
+already have today. Machines today are
+
+00:01:01.560 --> 00:01:03.840
+already doing faster and more optimized
+
+00:01:03.840 --> 00:01:05.880
+tasks in narrow domains. And we also
+
+00:01:05.880 --> 00:01:08.000
+have strong AI, which is fundamentally
+
+00:01:08.000 --> 00:01:10.000
+different, where the actual definition
+
+00:01:10.000 --> 00:01:12.480
+ties it closer to having a mind of its
+
+00:01:12.480 --> 00:01:14.840
+own. But our public discourse around AGI
+
+00:01:14.840 --> 00:01:17.520
+cares less about whether AGI will have a
+
+00:01:17.520 --> 00:01:19.800
+mind or not in a philosophical sense,
+
+00:01:19.800 --> 00:01:21.920
+but people today care more about how
+
+00:01:21.920 --> 00:01:24.160
+capable these models are. So, instead of
+
+00:01:24.160 --> 00:01:26.120
+using this older framework, though it's
+
+00:01:26.120 --> 00:01:27.640
+really helpful to know, we'll look at it
+
+00:01:27.640 --> 00:01:29.880
+in these two axes in our discussion on
+
+00:01:29.880 --> 00:01:32.280
+AGI. Mechanism and capabilities.
+
+00:01:32.280 --> 00:01:34.280
+Mechanism referring to how intelligence
+
+00:01:34.280 --> 00:01:36.160
+is acquired and updated, and
+
+00:01:36.160 --> 00:01:38.440
+capabilities referring to the tasks that
+
+00:01:38.440 --> 00:01:40.320
+it can demonstrate. And people will hop
+
+00:01:40.320 --> 00:01:42.360
+back and forth between these two to
+
+00:01:42.360 --> 00:01:45.120
+either prove or disprove that AGI has
+
+00:01:45.120 --> 00:01:46.920
+already been reached. People argue that
+
+00:01:46.920 --> 00:01:49.160
+large language models by mechanism are
+
+00:01:49.160 --> 00:01:51.480
+nothing more than next token prediction.
+
+00:01:51.480 --> 00:01:53.600
+So, it cannot and does not fully
+
+00:01:53.600 --> 00:01:55.480
+understand. On the other side, people
+
+00:01:55.480 --> 00:01:57.880
+also say things like, "Well, Astra can't
+
+00:01:57.880 --> 00:01:59.800
+really do this task or Fable can't
+
+00:01:59.800 --> 00:02:01.720
+really do that task on the capabilities
+
+00:02:01.720 --> 00:02:04.000
+axis. And one prime example that really
+
+00:02:04.000 --> 00:02:06.080
+embodies this is Y Ann LeCun. Y Ann
+
+00:02:06.080 --> 00:02:08.360
+LeCun has long been arguing that LLMs
+
+00:02:08.360 --> 00:02:10.320
+are dead, but he also has been critical
+
+00:02:10.320 --> 00:02:12.520
+towards what LLMs can't really do in
+
+00:02:12.520 --> 00:02:14.280
+terms of capabilities. Recently, he
+
+00:02:14.280 --> 00:02:16.200
+showed up on my LinkedIn making comments
+
+00:02:16.200 --> 00:02:17.680
+like this saying that current, quote
+
+00:02:17.680 --> 00:02:19.520
+unquote, AGI can't really fix the
+
+00:02:19.520 --> 00:02:21.840
+bathroom, help watch kids, or even drive
+
+00:02:21.840 --> 00:02:24.280
+vehicles fully autonomously. So, as we
+
+00:02:24.280 --> 00:02:26.720
+unpack this state of AGI, I'll be using
+
+00:02:26.720 --> 00:02:29.160
+these two axes to ground our discussion.
+
+00:02:29.160 --> 00:02:30.520
+Now, let's start with the mechanics
+
+00:02:30.520 --> 00:02:32.480
+behind AGI. In an interview with
+
+00:02:32.480 --> 00:02:34.200
+François Chollet, he reasoned that we
+
+00:02:34.200 --> 00:02:36.600
+haven't reached AGI yet. And his opinion
+
+00:02:36.600 --> 00:02:38.640
+really boils down to whether or not the
+
+00:02:38.640 --> 00:02:41.160
+model can acquire skills in novel
+
+00:02:41.160 --> 00:02:43.160
+situations. The problem right now is
+
+00:02:43.160 --> 00:02:45.360
+that models like Astra and Fable are
+
+00:02:45.360 --> 00:02:47.640
+manufactured in the lab and trained in
+
+00:02:47.640 --> 00:02:49.720
+the data center for months until a
+
+00:02:49.720 --> 00:02:51.680
+checkpoint is released to the public.
+
+00:02:51.680 --> 00:02:53.480
+But, the intelligence that's currently
+
+00:02:53.480 --> 00:02:55.680
+baked into the parameters of the models
+
+00:02:55.680 --> 00:02:57.480
+are more or less immutable during
+
+00:02:57.480 --> 00:02:59.800
+inference. So, by François's definition,
+
+00:02:59.800 --> 00:03:02.000
+we haven't reached AGI yet. You see a
+
+00:03:02.000 --> 00:03:04.000
+similar opinion being shown when we look
+
+00:03:04.000 --> 00:03:05.920
+at the benchmarks that he created, ARC
+
+00:03:05.920 --> 00:03:08.120
+AGI. ARC AGI tries to measure the
+
+00:03:08.120 --> 00:03:10.280
+unspoken rule that the model needs to
+
+00:03:10.280 --> 00:03:12.000
+learn on the fly. But, the reason why
+
+00:03:12.000 --> 00:03:14.160
+models like Astra can reach upwards to
+
+00:03:14.160 --> 00:03:17.840
+99.9% on ARC AGI 3 despite the model
+
+00:03:17.840 --> 00:03:20.519
+still not really learning anything has a
+
+00:03:20.519 --> 00:03:22.959
+lot to do with the harness. Astra scored
+
+00:03:22.959 --> 00:03:24.600
+very differently depending on which
+
+00:03:24.600 --> 00:03:26.280
+harness that you used. So, while the
+
+00:03:26.280 --> 00:03:28.800
+model doesn't actually learn new skill
+
+00:03:28.800 --> 00:03:31.200
+during the ARC AGI 3 test, a lot of
+
+00:03:31.200 --> 00:03:33.400
+learning is actually possible through
+
+00:03:33.400 --> 00:03:35.440
+the harness that helps manage its own
+
+00:03:35.440 --> 00:03:37.720
+context, help have longer memory,
+
+00:03:37.720 --> 00:03:39.560
+provide an execution environment, and
+
+00:03:39.560 --> 00:03:41.680
+help recover from errors. And these are
+
+00:03:41.680 --> 00:03:44.000
+essential elements of intelligence that
+
+00:03:44.000 --> 00:03:45.920
+we just don't see in the model layer
+
+00:03:45.920 --> 00:03:47.680
+alone. But, when we put the model with
+
+00:03:47.680 --> 00:03:49.880
+harnesses like Codex that provide
+
+00:03:49.880 --> 00:03:53.200
+skills, MCP for databases, terminal, and
+
+00:03:53.200 --> 00:03:55.080
+loops. We've essentially outsourced a
+
+00:03:55.080 --> 00:03:57.120
+currently difficult task in the model
+
+00:03:57.120 --> 00:03:59.440
+architecture to handwritten code
+
+00:03:59.440 --> 00:04:01.400
+directly in the harness. So, while we
+
+00:04:01.400 --> 00:04:03.240
+certainly can't say that the model by
+
+00:04:03.240 --> 00:04:05.880
+itself has reached AGI just yet, we
+
+00:04:05.880 --> 00:04:07.560
+could reasonably make a case that we're
+
+00:04:07.560 --> 00:04:09.880
+seeing early signs of AGI when we look
+
+00:04:09.880 --> 00:04:12.280
+at the entire system that includes both
+
+00:04:12.280 --> 00:04:14.320
+the model and the harness that currently
+
+00:04:14.320 --> 00:04:16.200
+acts as a stopgap. And this certainly
+
+00:04:16.200 --> 00:04:18.200
+brings back to the famous bitter lessons
+
+00:04:18.200 --> 00:04:20.120
+from Richard Sutton. Since the harness
+
+00:04:20.120 --> 00:04:22.040
+layer right now is hand engineered by
+
+00:04:22.040 --> 00:04:23.880
+writing rules and programs. And if the
+
+00:04:23.880 --> 00:04:25.919
+bitter lesson is true, some of the
+
+00:04:25.919 --> 00:04:27.680
+structure that currently exists in the
+
+00:04:27.680 --> 00:04:29.880
+harness should get replaced with learned
+
+00:04:29.880 --> 00:04:32.280
+behavior rather than being explicitly
+
+00:04:32.280 --> 00:04:33.840
+programmed. And even looking at Claude
+
+00:04:33.840 --> 00:04:35.800
+Code, where Sherny, who created Claude
+
+00:04:35.800 --> 00:04:38.400
+Code, has labeled this harness layer as
+
+00:04:38.400 --> 00:04:40.880
+a tradeoff where engineering work can
+
+00:04:40.880 --> 00:04:42.800
+essentially extend the model's ability
+
+00:04:42.800 --> 00:04:44.880
+by 10 to 20%. Another angle worth
+
+00:04:44.880 --> 00:04:46.480
+considering here is when we look at the
+
+00:04:46.480 --> 00:04:49.080
+capabilities access of AGI. And having a
+
+00:04:49.080 --> 00:04:51.560
+capable AGI requires good computers,
+
+00:04:51.560 --> 00:04:53.000
+which is why you have to shop at Micro
+
+00:04:53.000 --> 00:04:55.080
+Center sponsoring this video. September
+
+00:04:55.080 --> 00:04:57.600
+is all about build, upgrade, and save.
+
+00:04:57.600 --> 00:04:59.120
+And it's perfect time to actually
+
+00:04:59.120 --> 00:05:00.840
+upgrade your PC at home that you might
+
+00:05:00.840 --> 00:05:02.480
+have been putting off. As hardware
+
+00:05:02.480 --> 00:05:04.360
+prices continue to climb, having a deal
+
+00:05:04.360 --> 00:05:06.560
+on what helps you run your next LLM at
+
+00:05:06.560 --> 00:05:08.680
+home helps a ton. Starting with RAM,
+
+00:05:08.680 --> 00:05:10.560
+which helps you unload KB cache so that
+
+00:05:10.560 --> 00:05:12.520
+you can run llama.cpp at home. And as
+
+00:05:12.520 --> 00:05:14.000
+you upgrade these components, you're
+
+00:05:14.000 --> 00:05:15.680
+going to need to improve your power
+
+00:05:15.680 --> 00:05:17.440
+supply as well. And as you can see, they
+
+00:05:17.440 --> 00:05:19.760
+got PSUs currently on sale. Micro Center
+
+00:05:19.760 --> 00:05:21.560
+is also running clearance sales through
+
+00:05:21.560 --> 00:05:23.240
+September. So, if you're looking for a
+
+00:05:23.240 --> 00:05:24.720
+discount, you can check out anything
+
+00:05:24.720 --> 00:05:26.720
+from refurbished products like Mac minis
+
+00:05:26.720 --> 00:05:28.360
+or more. And right now, if you're near
+
+00:05:28.360 --> 00:05:29.919
+Austin, Texas, you can sign up for a
+
+00:05:29.919 --> 00:05:33.080
+free 128 GB flash drive to redeem it in
+
+00:05:33.080 --> 00:05:34.840
+store when they open later this year.
+
+00:05:34.840 --> 00:05:36.520
+They also have this cool site, Micro
+
+00:05:36.520 --> 00:05:38.200
+Center News, to keep up to date with
+
+00:05:38.200 --> 00:05:40.080
+what's happening in the industry. Link
+
+00:05:40.080 --> 00:05:41.640
+in the description below. One way to
+
+00:05:41.640 --> 00:05:43.600
+talk about capabilities is looking at
+
+00:05:43.600 --> 00:05:46.360
+the famous blog by Tim Urban, Wait But
+
+00:05:46.360 --> 00:05:48.080
+Why. And in his blog post, which is
+
+00:05:48.080 --> 00:05:50.400
+already 11 years old, he introduced a
+
+00:05:50.400 --> 00:05:54.000
+framework of ANI to AGI to ASI. ANI
+
+00:05:54.000 --> 00:05:56.280
+refers to narrow intelligence, where AI
+
+00:05:56.280 --> 00:05:58.840
+specializes on one narrow area. But
+
+00:05:58.840 --> 00:06:01.360
+making the leap from ANI to AGI is a
+
+00:06:01.360 --> 00:06:03.440
+much different and much more typical
+
+00:06:03.440 --> 00:06:05.640
+case because general intelligence is
+
+00:06:05.640 --> 00:06:07.720
+less about a collection of narrow
+
+00:06:07.720 --> 00:06:09.960
+intelligence into one domain. Tim wrote
+
+00:06:09.960 --> 00:06:12.200
+about how building an AGI is hard since
+
+00:06:12.200 --> 00:06:14.280
+it's a computer that's as smart as
+
+00:06:14.280 --> 00:06:16.720
+humans in general, not just one narrow
+
+00:06:16.720 --> 00:06:19.040
+specialty. So, AGI is a completely
+
+00:06:19.040 --> 00:06:21.240
+different problem than ANI. That's why
+
+00:06:21.240 --> 00:06:23.280
+when we talk about AGI only in the
+
+00:06:23.280 --> 00:06:25.440
+capabilities axis, measuring whether we
+
+00:06:25.440 --> 00:06:27.840
+reach AGI by listing some arbitrary
+
+00:06:27.840 --> 00:06:30.560
+tasks that AGI can't do is a weak
+
+00:06:30.560 --> 00:06:32.680
+argument. In other words, we could have
+
+00:06:32.680 --> 00:06:35.440
+reached AGI while still underperforming
+
+00:06:35.440 --> 00:06:37.360
+some narrow domain tasks that ANI could
+
+00:06:37.360 --> 00:06:39.360
+do better because general intelligence
+
+00:06:39.360 --> 00:06:41.600
+is more about its ability to transfer
+
+00:06:41.600 --> 00:06:44.120
+its learning and adapt to new situations
+
+00:06:44.120 --> 00:06:46.520
+than having any task that it can do best
+
+00:06:46.520 --> 00:06:48.440
+at. So, rather than listing arbitrary
+
+00:06:48.440 --> 00:06:50.120
+tasks like fixing bathrooms,
+
+00:06:50.120 --> 00:06:52.520
+babysitting, or doing the laundry, the
+
+00:06:52.520 --> 00:06:54.120
+capabilities we should really be
+
+00:06:54.120 --> 00:06:56.560
+measuring is how well it can transfer
+
+00:06:56.560 --> 00:06:58.800
+knowledge, how well it can reason, and
+
+00:06:58.800 --> 00:07:00.640
+how well it actually adapts to changing
+
+00:07:00.640 --> 00:07:02.440
+environments. Now, after seeing this
+
+00:07:02.440 --> 00:07:04.080
+progression, you might have concluded
+
+00:07:04.080 --> 00:07:06.240
+that this entire debate around whether
+
+00:07:06.240 --> 00:07:08.640
+we reached AGI or not is kind of
+
+00:07:08.640 --> 00:07:10.280
+pointless. And you're not alone in this
+
+00:07:10.280 --> 00:07:11.960
+since many people agree on that
+
+00:07:11.960 --> 00:07:13.960
+sentiment. Dario from Anthropic thinks
+
+00:07:13.960 --> 00:07:16.120
+that AGI is just a marketing term.
+
+00:07:16.120 --> 00:07:17.919
+Though, ironically, he goes ahead and
+
+00:07:17.919 --> 00:07:20.080
+uses more marketing terms like saying
+
+00:07:20.080 --> 00:07:21.960
+that we will soon have a country of
+
+00:07:21.960 --> 00:07:24.240
+geniuses in a data center, whatever that
+
+00:07:24.240 --> 00:07:26.360
+means. But whether or not the term AGI
+
+00:07:26.360 --> 00:07:28.440
+is important in a scientific sense or
+
+00:07:28.440 --> 00:07:31.000
+not, we can't really deny that it has a
+
+00:07:31.000 --> 00:07:34.160
+huge economical weight to the term given
+
+00:07:34.160 --> 00:07:37.040
+how so many tech CEOs are promising AGI
+
+00:07:37.040 --> 00:07:38.440
+as something that we'll achieve in the
+
+00:07:38.440 --> 00:07:40.600
+next 5 to 10 years. And this isn't the
+
+00:07:40.600 --> 00:07:42.640
+first time people in the AI industry
+
+00:07:42.640 --> 00:07:44.880
+were over-promised. Looking back at two
+
+00:07:44.880 --> 00:07:46.480
+AI winters that can both be
+
+00:07:46.480 --> 00:07:48.880
+characterized by hopes and promises that
+
+00:07:48.880 --> 00:07:50.400
+ended up under-delivering. While
+
+00:07:50.400 --> 00:07:52.440
+generative AI is certainly different
+
+00:07:52.440 --> 00:07:54.600
+compared to previous iterations, given
+
+00:07:54.600 --> 00:07:57.440
+just how powerful it already is, AGI is
+
+00:07:57.440 --> 00:07:59.560
+not just a scientific hypothesis now,
+
+00:07:59.560 --> 00:08:02.160
+but it has a huge economical narrative
+
+00:08:02.160 --> 00:08:04.200
+built into it, which makes it really
+
+00:08:04.200 --> 00:08:06.720
+difficult to not talk about AGI, given
+
+00:08:06.720 --> 00:08:08.960
+that our goal towards AGI currently
+
+00:08:08.960 --> 00:08:11.320
+shapes how we allocate funding, how we
+
+00:08:11.320 --> 00:08:13.360
+value AI companies, the infrastructure
+
+00:08:13.360 --> 00:08:15.440
+spending into data centers, and hiring
+
+00:08:15.440 --> 00:08:17.480
+top talents and engineers. So, because
+
+00:08:17.480 --> 00:08:19.320
+all these companies have different ways
+
+00:08:19.320 --> 00:08:21.919
+to measure AGI, by definition, different
+
+00:08:21.919 --> 00:08:23.919
+companies should then reach AGI at
+
+00:08:23.919 --> 00:08:25.640
+different moments. Just like how Jensen
+
+00:08:25.640 --> 00:08:27.800
+recently said that OpenAI did achieve
+
+00:08:27.800 --> 00:08:30.400
+AGI with Astra using Nvidia chips.
+
+00:08:30.400 --> 00:08:32.680
+Emphasis on the using Nvidia chips. But,
+
+00:08:32.680 --> 00:08:34.560
+what matters less is a definition of
+
+00:08:34.560 --> 00:08:37.080
+what AGI is, but more that we continue
+
+00:08:37.080 --> 00:08:39.159
+our progress forward and manage our
+
+00:08:39.159 --> 00:08:41.479
+expectation in the meantime on what AGI
+
+00:08:41.479 --> 00:08:43.360
+could really mean. And kicking the can
+
+00:08:43.360 --> 00:08:45.320
+down the road and moving the goalpost
+
+00:08:45.320 --> 00:08:48.120
+only risks repeating the same cycle all
+
+00:08:48.120 --> 00:08:49.960
+over again. And I'm sure that people
+
+00:08:49.960 --> 00:08:51.680
+will get tired of hearing the same
+
+00:08:51.680 --> 00:08:53.480
+narrative over and over again that says
+
+00:08:53.480 --> 00:08:55.760
+the future is only 5 years from today. I
+
+00:08:55.760 --> 00:08:57.360
+think it's important to keep in mind
+
+00:08:57.360 --> 00:08:59.839
+that the first AGI model might be less
+
+00:08:59.839 --> 00:09:01.880
+capable than other models that we
+
+00:09:01.880 --> 00:09:04.120
+already have that's closer to ANI. This
+
+00:09:04.120 --> 00:09:05.880
+definitely raises some concern to me
+
+00:09:05.880 --> 00:09:08.280
+about managing people's expectation
+
+00:09:08.280 --> 00:09:10.400
+since AGI is building up to this very
+
+00:09:10.400 --> 00:09:12.240
+thing that certainly will change
+
+00:09:12.240 --> 00:09:13.920
+everything overnight, which I don't
+
+00:09:13.920 --> 00:09:17.080
+believe would be the case.

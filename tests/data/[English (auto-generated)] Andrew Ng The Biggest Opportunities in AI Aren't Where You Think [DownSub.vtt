@@ -1,0 +1,3193 @@
+WEBVTT
+
+00:00:00.080 --> 00:00:01.920
+There's been a lot of misinformation
+
+00:00:01.920 --> 00:00:03.120
+about AI.
+
+00:00:03.120 --> 00:00:05.839
+>> This is Andrew. He co-founded Google
+
+00:00:05.839 --> 00:00:07.919
+Brain and Corsera. His machine learning
+
+00:00:07.919 --> 00:00:09.760
+course has reached millions of learners
+
+00:00:09.760 --> 00:00:11.599
+and he is one of the most influential
+
+00:00:11.599 --> 00:00:13.280
+voices in AI today.
+
+00:00:13.280 --> 00:00:14.880
+>> So, a handful of leading AI companies
+
+00:00:14.880 --> 00:00:16.960
+have been very loud voices of fear
+
+00:00:16.960 --> 00:00:19.199
+monongering around AI to try to get
+
+00:00:19.199 --> 00:00:21.439
+regulations passed. This drum beat of
+
+00:00:21.439 --> 00:00:23.600
+fear-based messaging has skewed [music]
+
+00:00:23.600 --> 00:00:25.840
+societal perception to be really
+
+00:00:25.840 --> 00:00:28.000
+negative on AI. People talk to me about
+
+00:00:28.000 --> 00:00:30.240
+data centers and job loss.
+
+00:00:30.240 --> 00:00:33.520
+>> Maybe AI could do 30 40% of many jobs.
+
+00:00:33.520 --> 00:00:35.760
+And what that means is well that 60%
+
+00:00:35.760 --> 00:00:38.239
+that the human does has become even more
+
+00:00:38.239 --> 00:00:39.040
+valuable.
+
+00:00:39.040 --> 00:00:41.760
+>> What about loss of human control over
+
+00:00:41.760 --> 00:00:42.320
+AI?
+
+00:00:42.320 --> 00:00:44.000
+>> I think about something else that we
+
+00:00:44.000 --> 00:00:46.480
+can't control.
+
+00:00:46.480 --> 00:00:49.200
+I think you're one of the voices in AI
+
+00:00:49.200 --> 00:00:51.840
+who comes with a huge background in
+
+00:00:51.840 --> 00:00:54.000
+machine learning and teaching AI and
+
+00:00:54.000 --> 00:00:55.920
+also you're a positive voice because
+
+00:00:55.920 --> 00:00:58.160
+this is something that I've been seeing
+
+00:00:58.160 --> 00:01:00.800
+especially this summer how poor the
+
+00:01:00.800 --> 00:01:02.480
+society has become especially on social
+
+00:01:02.480 --> 00:01:04.960
+media when I'm posting about AI and
+
+00:01:04.960 --> 00:01:07.600
+people talk to me about data centers and
+
+00:01:07.600 --> 00:01:10.720
+job loss. Why do you think this wave
+
+00:01:10.720 --> 00:01:12.720
+started recently? What do you think the
+
+00:01:12.720 --> 00:01:14.240
+causes are? There's been a lot of
+
+00:01:14.240 --> 00:01:17.680
+misinformation about AI and the root
+
+00:01:17.680 --> 00:01:20.000
+cause of a lot of this is an unfortunate
+
+00:01:20.000 --> 00:01:22.479
+attempt that started two three years ago
+
+00:01:22.479 --> 00:01:25.920
+of I think PR and regret capture. It
+
+00:01:25.920 --> 00:01:27.840
+turns out that the most one of the most
+
+00:01:27.840 --> 00:01:29.520
+valuable things in AI right now is the
+
+00:01:29.520 --> 00:01:31.360
+giant AI models, giant large language
+
+00:01:31.360 --> 00:01:34.159
+models that some have trained. But if
+
+00:01:34.159 --> 00:01:35.600
+you spend billions of dollars training a
+
+00:01:35.600 --> 00:01:37.680
+model is really inconvenient if someone
+
+00:01:37.680 --> 00:01:39.600
+else trains a model and wants to give it
+
+00:01:39.600 --> 00:01:42.720
+to anyone in the world to use for free.
+
+00:01:42.720 --> 00:01:44.560
+So, a handful of leading AI companies, I
+
+00:01:44.560 --> 00:01:46.079
+think, as you know, have been very loud
+
+00:01:46.079 --> 00:01:49.200
+voices, fear-mongering around AI to try
+
+00:01:49.200 --> 00:01:51.920
+to get regulations passed to create an
+
+00:01:51.920 --> 00:01:54.560
+unfair playing field that favors
+
+00:01:54.560 --> 00:01:57.520
+incumbents so that we all have to pay a
+
+00:01:57.520 --> 00:02:01.520
+high toll for use of AI while stying the
+
+00:02:01.520 --> 00:02:03.520
+other teams, be it researchers or other
+
+00:02:03.520 --> 00:02:05.439
+companies that want to just give away
+
+00:02:05.439 --> 00:02:07.200
+open way to open source models that
+
+00:02:07.200 --> 00:02:08.640
+anyone could use much cheaper.
+
+00:02:08.640 --> 00:02:10.720
+Unfortunately, fear-mongering works. Um,
+
+00:02:10.720 --> 00:02:13.920
+when you go and say AI is like nuclear
+
+00:02:13.920 --> 00:02:15.920
+weapons, which is an analogy that has no
+
+00:02:15.920 --> 00:02:17.520
+basis in fact, what do they have to even
+
+00:02:17.520 --> 00:02:19.599
+do with each other? Or when you go
+
+00:02:19.599 --> 00:02:22.160
+around and cherrypick cases of AI, you
+
+00:02:22.160 --> 00:02:23.680
+know, making a misstep and making it
+
+00:02:23.680 --> 00:02:26.640
+much bigger than it is or even spread
+
+00:02:26.640 --> 00:02:29.840
+misinformation about how AI uses data
+
+00:02:29.840 --> 00:02:32.160
+centers, uses a lot more water than the
+
+00:02:32.160 --> 00:02:34.640
+actual reality. This drum beat of
+
+00:02:34.640 --> 00:02:37.519
+fear-based messaging has skewed societal
+
+00:02:37.519 --> 00:02:40.800
+perception to be really negative on AI,
+
+00:02:40.800 --> 00:02:42.640
+which is unfortunate because this is
+
+00:02:42.640 --> 00:02:44.800
+slowing down American adoption in AI.
+
+00:02:44.800 --> 00:02:47.680
+This is making America less competitive.
+
+00:02:47.680 --> 00:02:50.319
+Um, and unless we get the truth about AI
+
+00:02:50.319 --> 00:02:52.319
+out there, which is that it's fantastic
+
+00:02:52.319 --> 00:02:54.480
+benefit with some problems, but not
+
+00:02:54.480 --> 00:02:56.160
+nearly the TV which they're blown up to
+
+00:02:56.160 --> 00:02:58.800
+be, it will um will hurt individuals.
+
+00:02:58.800 --> 00:03:00.000
+>> I'm going to read out some of the
+
+00:03:00.000 --> 00:03:01.440
+problems that people are highlighting.
+
+00:03:01.440 --> 00:03:03.599
+Job loss and inequality. What do you
+
+00:03:03.599 --> 00:03:04.159
+think?
+
+00:03:04.159 --> 00:03:06.640
+>> The job apocalypse or job apocalypse,
+
+00:03:06.640 --> 00:03:09.920
+this idea that AI will take over 50% of
+
+00:03:09.920 --> 00:03:11.680
+jobs, people will be out of work, riding
+
+00:03:11.680 --> 00:03:13.599
+in the streets, that's just not going to
+
+00:03:13.599 --> 00:03:15.519
+happen. With every wave of technology,
+
+00:03:15.519 --> 00:03:17.040
+including AI, [gasps]
+
+00:03:17.040 --> 00:03:20.000
+the skills we need to do great work
+
+00:03:20.000 --> 00:03:22.400
+shifts. And so AI is changing job
+
+00:03:22.400 --> 00:03:26.000
+professions. But boy, I wish AI were AI
+
+00:03:26.000 --> 00:03:27.680
+just doesn't work well enough. I know
+
+00:03:27.680 --> 00:03:29.519
+that handful of businesses want to hype
+
+00:03:29.519 --> 00:03:32.400
+up AI to say we have super intelligence
+
+00:03:32.400 --> 00:03:33.680
+or we have artificial general
+
+00:03:33.680 --> 00:03:35.599
+intelligence or whatever and can do all
+
+00:03:35.599 --> 00:03:38.000
+the stuff that humans do. I wish AI work
+
+00:03:38.000 --> 00:03:39.280
+better. We're just not good enough to
+
+00:03:39.280 --> 00:03:41.760
+make AI do everything a human does. And
+
+00:03:41.760 --> 00:03:44.720
+if you look at the analysis of jobs,
+
+00:03:44.720 --> 00:03:46.560
+economists uh like my friend Eric
+
+00:03:46.560 --> 00:03:48.640
+Brennoffson at Stanford, Andy McAfee at
+
+00:03:48.640 --> 00:03:52.400
+MIT, um economists have analyzed many
+
+00:03:52.400 --> 00:03:54.640
+people's jobs and by break it down into
+
+00:03:54.640 --> 00:03:57.360
+individual tasks and maybe AI could do
+
+00:03:57.360 --> 00:04:00.799
+you know 30 40% of many jobs and what
+
+00:04:00.799 --> 00:04:03.760
+that means is well that 60% that a human
+
+00:04:03.760 --> 00:04:05.920
+does has become even more valuable
+
+00:04:05.920 --> 00:04:07.360
+because it's called an economic
+
+00:04:07.360 --> 00:04:09.680
+complement to the 30 40% that's now
+
+00:04:09.680 --> 00:04:13.680
+cheaper and So what will happen is
+
+00:04:13.680 --> 00:04:16.560
+people that use AI, maybe people that
+
+00:04:16.560 --> 00:04:18.400
+use AI will replace people that don't
+
+00:04:18.400 --> 00:04:21.680
+use AI, but AI is not in a position for
+
+00:04:21.680 --> 00:04:24.240
+the vast majority of jobs to replace
+
+00:04:24.240 --> 00:04:25.360
+people. Of all the different
+
+00:04:25.360 --> 00:04:27.120
+professions, the one that's most
+
+00:04:27.120 --> 00:04:28.800
+affected by AI now is software
+
+00:04:28.800 --> 00:04:30.320
+engineering because AI is actually
+
+00:04:30.320 --> 00:04:32.483
+fantastic at writing code. And
+
+00:04:32.483 --> 00:04:33.919
+[clears throat] what we see is that the
+
+00:04:33.919 --> 00:04:35.919
+number of job openings in software
+
+00:04:35.919 --> 00:04:38.800
+engineering is up contrary to what you
+
+00:04:38.800 --> 00:04:41.440
+know the doom fear-mongerers would say
+
+00:04:41.440 --> 00:04:43.680
+right AI is not actually able to replace
+
+00:04:43.680 --> 00:04:45.520
+software engineers and all the good
+
+00:04:45.520 --> 00:04:47.120
+software engineers I know are busier
+
+00:04:47.120 --> 00:04:50.080
+than ever now the flip side of it is if
+
+00:04:50.080 --> 00:04:53.360
+someone still write code like is 2022
+
+00:04:53.360 --> 00:04:55.600
+before chai GPT they're in trouble they
+
+00:04:55.600 --> 00:04:57.360
+need new skills like don't don't do
+
+00:04:57.360 --> 00:05:00.080
+stuff that that 30 40% AI can automate
+
+00:05:00.080 --> 00:05:01.759
+you got to stop doing that let AI do
+
+00:05:01.759 --> 00:05:04.400
+that but then gain your skills to do the
+
+00:05:04.400 --> 00:05:07.759
+other 60 70% that AI cannot do.
+
+00:05:07.759 --> 00:05:09.600
+>> What would your advice be to new
+
+00:05:09.600 --> 00:05:11.759
+graduates? Cuz I talked to Eric um on
+
+00:05:11.759 --> 00:05:14.320
+this podcast and uh he was talking about
+
+00:05:14.320 --> 00:05:16.880
+that there's not really a lot of impact
+
+00:05:16.880 --> 00:05:19.039
+on the job market except for I think he
+
+00:05:19.039 --> 00:05:21.199
+mentioned people from 18 to 25 who just
+
+00:05:21.199 --> 00:05:23.199
+graduated. What would be your advice to
+
+00:05:23.199 --> 00:05:25.280
+those people who don't have the
+
+00:05:25.280 --> 00:05:27.280
+expertise maybe to strategize in their
+
+00:05:27.280 --> 00:05:30.000
+job yet? uh they can only do manual work
+
+00:05:30.000 --> 00:05:31.600
+that AI can do as well.
+
+00:05:31.600 --> 00:05:34.960
+>> So one real challenge um uh for fresh
+
+00:05:34.960 --> 00:05:37.520
+college grads is that the university
+
+00:05:37.520 --> 00:05:42.320
+system is slow to adapt and so um you
+
+00:05:42.320 --> 00:05:44.080
+know I love academia. I think we should
+
+00:05:44.080 --> 00:05:46.240
+all support academia and universities.
+
+00:05:46.240 --> 00:05:49.120
+And when AI comes and transforms the way
+
+00:05:49.120 --> 00:05:51.600
+software is written, universities often
+
+00:05:51.600 --> 00:05:53.840
+take like a year or two for the faculty
+
+00:05:53.840 --> 00:05:56.080
+to master skills, then create new
+
+00:05:56.080 --> 00:05:57.600
+courses, get curriculum committee
+
+00:05:57.600 --> 00:05:59.680
+approval, whatever, get the faculty
+
+00:05:59.680 --> 00:06:02.320
+senate to vote. It just takes years. And
+
+00:06:02.320 --> 00:06:05.199
+that speed of change in academia is very
+
+00:06:05.199 --> 00:06:06.880
+poorly matched to the speed of change in
+
+00:06:06.880 --> 00:06:10.240
+AI. So sadly, many universities are
+
+00:06:10.240 --> 00:06:12.160
+still teaching students to be ready for
+
+00:06:12.160 --> 00:06:15.280
+the jobs of 2022 when we shouldn't even
+
+00:06:15.280 --> 00:06:17.600
+be teaching them for the jobs of 2026.
+
+00:06:17.600 --> 00:06:18.800
+We should be teaching them for the jobs
+
+00:06:18.800 --> 00:06:22.080
+of 2028 and beyond. And what this means
+
+00:06:22.080 --> 00:06:25.039
+is the job openings are there. Uh tons
+
+00:06:25.039 --> 00:06:26.800
+of employees I know just can't find
+
+00:06:26.800 --> 00:06:29.280
+enough skilled, you know, uh people at
+
+00:06:29.280 --> 00:06:32.240
+any level of seniority. But um it turns
+
+00:06:32.240 --> 00:06:34.160
+out in my office right now, we have a
+
+00:06:34.160 --> 00:06:35.600
+lot of interns. There are current
+
+00:06:35.600 --> 00:06:37.440
+college students, fresh college grad. We
+
+00:06:37.440 --> 00:06:39.520
+also had one high school intern and
+
+00:06:39.520 --> 00:06:40.880
+they're amazing and productive. But the
+
+00:06:40.880 --> 00:06:42.560
+key is they're all very AI native. They
+
+00:06:42.560 --> 00:06:45.039
+all use AI tools to do the things AI
+
+00:06:45.039 --> 00:06:46.960
+could do, but then also, you know, lean
+
+00:06:46.960 --> 00:06:49.120
+in to doing the things that uh humans
+
+00:06:49.120 --> 00:06:51.199
+can do that AI can't for the for for a
+
+00:06:51.199 --> 00:06:52.960
+long time. So there's plenty of work for
+
+00:06:52.960 --> 00:06:55.840
+people to do. But so my advice to fresh
+
+00:06:55.840 --> 00:06:57.600
+college grads or the people currently in
+
+00:06:57.600 --> 00:07:00.400
+college is um by all means work hard in
+
+00:07:00.400 --> 00:07:02.400
+classes. you know, get good grades,
+
+00:07:02.400 --> 00:07:04.160
+learn from the instructors, but to the
+
+00:07:04.160 --> 00:07:06.240
+extent that there's still additional
+
+00:07:06.240 --> 00:07:08.080
+skills that the university has not yet
+
+00:07:08.080 --> 00:07:10.639
+adapted to teaching, then find other
+
+00:07:10.639 --> 00:07:13.680
+ways to learn online, be it from Corsera
+
+00:07:13.680 --> 00:07:16.160
+or Deep Learning.AI or Udemy or other
+
+00:07:16.160 --> 00:07:18.080
+places where you can gain the more
+
+00:07:18.080 --> 00:07:20.160
+cutting edge skills, especially AI
+
+00:07:20.160 --> 00:07:23.199
+skills that um universities have not yet
+
+00:07:23.199 --> 00:07:24.479
+worked in the curriculara.
+
+00:07:24.479 --> 00:07:26.160
+>> Quick pause because what Andrew just
+
+00:07:26.160 --> 00:07:27.840
+said about workflows connects to
+
+00:07:27.840 --> 00:07:29.840
+something that HubSpot just put out for
+
+00:07:29.840 --> 00:07:32.000
+free. The thing is the real opportunity
+
+00:07:32.000 --> 00:07:33.919
+right now is not just in the models
+
+00:07:33.919 --> 00:07:36.240
+themselves, but in what you build on top
+
+00:07:36.240 --> 00:07:38.960
+of them. How you turn AI from a chat
+
+00:07:38.960 --> 00:07:41.199
+window into workflows that actually do
+
+00:07:41.199 --> 00:07:43.280
+work for you. And the good news is you
+
+00:07:43.280 --> 00:07:44.800
+don't have to start by building a full
+
+00:07:44.800 --> 00:07:47.120
+agent. You can start much simpler with
+
+00:07:47.120 --> 00:07:49.280
+better prompts. HubSpot just released
+
+00:07:49.280 --> 00:07:52.000
+the advanced chat GBT prompt engineering
+
+00:07:52.000 --> 00:07:55.039
+playbook. And the idea is very simple.
+
+00:07:55.039 --> 00:07:57.039
+in 7 days. It helps you move from
+
+00:07:57.039 --> 00:07:59.520
+getting generic AI answers to building
+
+00:07:59.520 --> 00:08:01.120
+prompts that give you much more
+
+00:08:01.120 --> 00:08:03.039
+consistent and useful options because
+
+00:08:03.039 --> 00:08:05.120
+we've all had this moment. You type in
+
+00:08:05.120 --> 00:08:07.520
+one vague sentence, get something
+
+00:08:07.520 --> 00:08:10.160
+mediocre back, and then spend the next
+
+00:08:10.160 --> 00:08:12.240
+20 minutes fixing it yourself. This
+
+00:08:12.240 --> 00:08:14.319
+playbook is basically built for that
+
+00:08:14.319 --> 00:08:16.240
+exact problem, and it walks you through
+
+00:08:16.240 --> 00:08:18.639
+a single progression. First, you learn
+
+00:08:18.639 --> 00:08:20.400
+how to structure prompts with things
+
+00:08:20.400 --> 00:08:22.720
+like role, context, format, and
+
+00:08:22.720 --> 00:08:25.199
+parameters. Then it gets more advanced.
+
+00:08:25.199 --> 00:08:27.360
+Few shot examples, chain of thought
+
+00:08:27.360 --> 00:08:29.039
+reasoning, more precise prompt
+
+00:08:29.039 --> 00:08:30.800
+structures, and ways to make outputs
+
+00:08:30.800 --> 00:08:32.880
+more reliable. What I like is that it
+
+00:08:32.880 --> 00:08:34.800
+doesn't stop at individual prompts. It
+
+00:08:34.800 --> 00:08:36.880
+also shows you how to build reusable AI
+
+00:08:36.880 --> 00:08:39.440
+personas, modular prompt components, and
+
+00:08:39.440 --> 00:08:41.599
+eventually your own signature prompt
+
+00:08:41.599 --> 00:08:43.519
+engineering system. So instead of
+
+00:08:43.519 --> 00:08:45.760
+starting from scratch every time, you're
+
+00:08:45.760 --> 00:08:47.600
+building a repeatable way to work with
+
+00:08:47.600 --> 00:08:49.600
+AI. Whether you're creating content,
+
+00:08:49.600 --> 00:08:51.519
+analyzing data, or making business
+
+00:08:51.519 --> 00:08:53.920
+decisions, the playbook is free. Links
+
+00:08:53.920 --> 00:08:55.920
+in the description. Thanks to Hopspot
+
+00:08:55.920 --> 00:08:58.000
+for sponsoring this video. And now back
+
+00:08:58.000 --> 00:09:00.160
+to our conversation with Andrew.
+
+00:09:00.160 --> 00:09:03.440
+>> I want to say one other thing. Um it
+
+00:09:03.440 --> 00:09:06.399
+turns out one if if look at the skill
+
+00:09:06.399 --> 00:09:08.959
+map changes. One of the most important
+
+00:09:08.959 --> 00:09:11.120
+changes is um it's so much easier to
+
+00:09:11.120 --> 00:09:13.600
+build with AI than before. When
+
+00:09:13.600 --> 00:09:15.440
+something becomes much easier, a lot
+
+00:09:15.440 --> 00:09:19.040
+more people should do it. And so now,
+
+00:09:19.040 --> 00:09:20.880
+not only should professional software
+
+00:09:20.880 --> 00:09:22.800
+engineers build software with AI, it's
+
+00:09:22.800 --> 00:09:24.880
+becoming much easier for everyone to
+
+00:09:24.880 --> 00:09:27.920
+build with AI and people that embrace
+
+00:09:27.920 --> 00:09:30.240
+that and do so will be more productive
+
+00:09:30.240 --> 00:09:31.600
+and will accomplish more and I think
+
+00:09:31.600 --> 00:09:33.680
+have more fun than the ones that don't.
+
+00:09:33.680 --> 00:09:36.480
+And AI lets you build really fast. So
+
+00:09:36.480 --> 00:09:38.080
+for people that not just software
+
+00:09:38.080 --> 00:09:40.560
+engineers but you know marketers,
+
+00:09:40.560 --> 00:09:42.480
+recruiters, uh HR professionals,
+
+00:09:42.480 --> 00:09:44.560
+operations specialists, I think if they
+
+00:09:44.560 --> 00:09:47.279
+learn to build with AI, uh they'll
+
+00:09:47.279 --> 00:09:49.120
+really just do much more whatever their
+
+00:09:49.120 --> 00:09:50.160
+job row is.
+
+00:09:50.160 --> 00:09:52.480
+>> How do you by the way measure uh the
+
+00:09:52.480 --> 00:09:54.560
+increase in productivity uh when you
+
+00:09:54.560 --> 00:09:57.120
+deploy AI? Do you have like a KPI in
+
+00:09:57.120 --> 00:09:58.080
+your company?
+
+00:09:58.080 --> 00:10:01.519
+>> I wish a simple answer. I find that the
+
+00:10:01.519 --> 00:10:03.600
+business outcome of AI is more a
+
+00:10:03.600 --> 00:10:05.200
+function of the business than a function
+
+00:10:05.200 --> 00:10:09.120
+of the AI. For for some it may be um
+
+00:10:09.120 --> 00:10:11.279
+increase you know uh customer growth and
+
+00:10:11.279 --> 00:10:13.360
+retention or maybe faster to serve
+
+00:10:13.360 --> 00:10:15.360
+customers or increase accuracy in some
+
+00:10:15.360 --> 00:10:17.760
+tasks. So the KPIs tend to be related to
+
+00:10:17.760 --> 00:10:19.440
+the business rather than the AI. M so
+
+00:10:19.440 --> 00:10:21.279
+you can't like directly measure just AI
+
+00:10:21.279 --> 00:10:22.560
+because it's it's an interesting thing
+
+00:10:22.560 --> 00:10:24.079
+to do because we've been deploying AI
+
+00:10:24.079 --> 00:10:25.519
+actively in my company and I think for
+
+00:10:25.519 --> 00:10:27.040
+me as a media company it's probably the
+
+00:10:27.040 --> 00:10:29.200
+amount of views the output [snorts] uh
+
+00:10:29.200 --> 00:10:31.600
+it's just interesting how yeah it's just
+
+00:10:31.600 --> 00:10:32.959
+interesting how different people measure
+
+00:10:32.959 --> 00:10:34.560
+even revenue like if you're becoming
+
+00:10:34.560 --> 00:10:35.920
+more effective
+
+00:10:35.920 --> 00:10:37.360
+>> uh with um how you make money
+
+00:10:37.360 --> 00:10:39.040
+>> actually same how are you using AI in
+
+00:10:39.040 --> 00:10:39.760
+your business
+
+00:10:39.760 --> 00:10:42.640
+>> oh my god I have the so first of all we
+
+00:10:42.640 --> 00:10:44.880
+have claude for all of us and we have
+
+00:10:44.880 --> 00:10:46.640
+certain projects for every social media
+
+00:10:46.640 --> 00:10:48.000
+that we're on so for example for this
+
+00:10:48.000 --> 00:10:49.839
+podcast. We [snorts] have a project
+
+00:10:49.839 --> 00:10:52.320
+that's called guests and it knows all
+
+00:10:52.320 --> 00:10:54.240
+the analytics from previous guests and
+
+00:10:54.240 --> 00:10:56.240
+it has certain criteria on which we rank
+
+00:10:56.240 --> 00:10:57.760
+every single person who comes to the
+
+00:10:57.760 --> 00:11:01.680
+podcast whether he's he or she's cited
+
+00:11:01.680 --> 00:11:03.600
+whether they have a certain opinion on
+
+00:11:03.600 --> 00:11:05.920
+AI whether they've been active with AI
+
+00:11:05.920 --> 00:11:07.680
+in their company or if they're a recent
+
+00:11:07.680 --> 00:11:09.440
+founder in AI. So it gives them
+
+00:11:09.440 --> 00:11:11.680
+different weights and it comes up with a
+
+00:11:11.680 --> 00:11:15.120
+grade based out of 40. 40 meaning tier
+
+00:11:15.120 --> 00:11:17.920
+one, 30 meaning tier three, etc. And
+
+00:11:17.920 --> 00:11:20.000
+then we have another one that analyzes
+
+00:11:20.000 --> 00:11:21.839
+every single podcast and gives me tips
+
+00:11:21.839 --> 00:11:23.360
+on how to ask questions.
+
+00:11:23.360 --> 00:11:24.000
+>> Oh wow.
+
+00:11:24.000 --> 00:11:26.640
+>> Same for Instagram, same for LinkedIn.
+
+00:11:26.640 --> 00:11:28.160
+It has my tone of voice, personal
+
+00:11:28.160 --> 00:11:30.640
+dossier, my business strategy. So it
+
+00:11:30.640 --> 00:11:32.720
+whenever it writes something, it knows
+
+00:11:32.720 --> 00:11:34.560
+all the facts about me, how I sound.
+
+00:11:34.560 --> 00:11:36.640
+Every social media is run by a person.
+
+00:11:36.640 --> 00:11:38.880
+So a person makes a strategic call and
+
+00:11:38.880 --> 00:11:40.640
+by the way if you can give me feedback
+
+00:11:40.640 --> 00:11:42.720
+on this if I can improve. So what I'm
+
+00:11:42.720 --> 00:11:44.800
+working on right now is closing the loop
+
+00:11:44.800 --> 00:11:46.399
+because sometimes they send me a text.
+
+00:11:46.399 --> 00:11:48.240
+I'm like oh we need to change this this
+
+00:11:48.240 --> 00:11:50.720
+and that. But that happens in a chat in
+
+00:11:50.720 --> 00:11:53.040
+Telegram and we have this feedback. We
+
+00:11:53.040 --> 00:11:54.959
+we have a bot that scans all of our
+
+00:11:54.959 --> 00:11:58.079
+chats. But I really want AI to be able
+
+00:11:58.079 --> 00:12:00.560
+to learn continuously from this feedback
+
+00:12:00.560 --> 00:12:02.480
+to just know my taste better. There's
+
+00:12:02.480 --> 00:12:04.720
+one thing I see a lot in AI which is um
+
+00:12:04.720 --> 00:12:06.800
+it turns out for AI as data scientists
+
+00:12:06.800 --> 00:12:09.120
+or AI brainstorming partner it often
+
+00:12:09.120 --> 00:12:10.720
+comes up with you know one or two good
+
+00:12:10.720 --> 00:12:12.800
+ideas two or three mediocre ones and
+
+00:12:12.800 --> 00:12:16.000
+like you know four atrocious ones and
+
+00:12:16.000 --> 00:12:18.160
+sometimes you wonder how could my AI
+
+00:12:18.160 --> 00:12:19.839
+have thought you know like that could
+
+00:12:19.839 --> 00:12:22.720
+even be a plausible idea and to me this
+
+00:12:22.720 --> 00:12:24.639
+relates to the job apocalypse point of
+
+00:12:24.639 --> 00:12:27.680
+view which is that for a long time
+
+00:12:27.680 --> 00:12:30.320
+humans you me everyone watching this
+
+00:12:30.320 --> 00:12:32.079
+will have a significant context
+
+00:12:32.079 --> 00:12:34.320
+advantage over AI, which is that you
+
+00:12:34.320 --> 00:12:36.079
+know something that's incredibly obvious
+
+00:12:36.079 --> 00:12:37.920
+to you that you know that was an awful
+
+00:12:37.920 --> 00:12:40.399
+idea but the AI did not and it turns out
+
+00:12:40.399 --> 00:12:43.040
+that one of the reasons why AI will not
+
+00:12:43.040 --> 00:12:45.200
+replace our jobs or whatever of large
+
+00:12:45.200 --> 00:12:48.800
+business anytime soon is because humans
+
+00:12:48.800 --> 00:12:51.200
+have a massive context advantage
+
+00:12:51.200 --> 00:12:54.079
+compared to AI. We know so much that you
+
+00:12:54.079 --> 00:12:55.760
+know from our years of experience that
+
+00:12:55.760 --> 00:12:57.680
+we talked to customer we saw the funny
+
+00:12:57.680 --> 00:12:59.360
+facial expression that told us ah they
+
+00:12:59.360 --> 00:13:01.040
+don't like this or we talked to business
+
+00:13:01.040 --> 00:13:03.440
+or you know our manager said hey blah
+
+00:13:03.440 --> 00:13:05.040
+blah blah I really care about this and
+
+00:13:05.040 --> 00:13:07.360
+so it turns out that almost all humans
+
+00:13:07.360 --> 00:13:10.000
+well maybe all humans just know a lot of
+
+00:13:10.000 --> 00:13:12.399
+stuff that the plumbing does not exist
+
+00:13:12.399 --> 00:13:13.760
+and I don't think exists for the
+
+00:13:13.760 --> 00:13:16.399
+foreseeable future for AI to get I know
+
+00:13:16.399 --> 00:13:18.240
+sometimes people talk about the
+
+00:13:18.240 --> 00:13:20.560
+importance of human judgment or human
+
+00:13:20.560 --> 00:13:23.040
+taste and Some people wonder all right
+
+00:13:23.040 --> 00:13:25.200
+what is taste is this fuzzy thing but to
+
+00:13:25.200 --> 00:13:27.440
+me the technical thing that underlies
+
+00:13:27.440 --> 00:13:29.279
+why humans have better judgment and
+
+00:13:29.279 --> 00:13:31.360
+better taste than AI is this context
+
+00:13:31.360 --> 00:13:33.519
+advantage and because this is a
+
+00:13:33.519 --> 00:13:35.360
+long-term advantage like no one's going
+
+00:13:35.360 --> 00:13:37.440
+to solve this you know in a few years
+
+00:13:37.440 --> 00:13:39.600
+this is why we just need a lot more
+
+00:13:39.600 --> 00:13:41.760
+humans with that judgment and taste to
+
+00:13:41.760 --> 00:13:43.200
+keep on complimenting AI
+
+00:13:43.200 --> 00:13:45.120
+>> and doesn't this make education even
+
+00:13:45.120 --> 00:13:47.040
+more important because education gives
+
+00:13:47.040 --> 00:13:48.639
+us context because it's another another
+
+00:13:48.639 --> 00:13:50.079
+thing I'm hearing about AI like you
+
+00:13:50.079 --> 00:13:51.440
+won't need education because all the
+
+00:13:51.440 --> 00:13:52.959
+information is at your fingertips. You
+
+00:13:52.959 --> 00:13:55.600
+just ask Chad GPT. But when you say
+
+00:13:55.600 --> 00:13:58.639
+context and taste, for me, that's years
+
+00:13:58.639 --> 00:14:00.399
+of acquiring knowledge and learning from
+
+00:14:00.399 --> 00:14:02.399
+the best and seeing how they perform
+
+00:14:02.399 --> 00:14:04.320
+versus just asking a chat.
+
+00:14:04.320 --> 00:14:06.240
+>> I'm going to say something that may be
+
+00:14:06.240 --> 00:14:07.600
+controversial. I don't know I've said
+
+00:14:07.600 --> 00:14:09.519
+this publicly, but I think it's true,
+
+00:14:09.519 --> 00:14:12.720
+which is frankly AI models are terrible
+
+00:14:12.720 --> 00:14:17.360
+for learning. Um, I know people think
+
+00:14:17.360 --> 00:14:20.240
+AI is AI is wonderful at getting things
+
+00:14:20.240 --> 00:14:23.279
+done. use it all the time, love it. But
+
+00:14:23.279 --> 00:14:25.600
+all the data that's coming out is that
+
+00:14:25.600 --> 00:14:28.480
+when say college students use AI, we
+
+00:14:28.480 --> 00:14:30.720
+know this. It's just a study now back up
+
+00:14:30.720 --> 00:14:32.240
+as well. So we also have numbers. But
+
+00:14:32.240 --> 00:14:34.560
+the data is very clear. Students score
+
+00:14:34.560 --> 00:14:37.120
+higher on homeworks when they use AI.
+
+00:14:37.120 --> 00:14:39.279
+Yay, higher homework scores. But
+
+00:14:39.279 --> 00:14:41.600
+retention, their long-term performance
+
+00:14:41.600 --> 00:14:43.360
+is much worse because their AI do the
+
+00:14:43.360 --> 00:14:44.800
+work for them. more and more studies are
+
+00:14:44.800 --> 00:14:48.160
+coming out to back this up now that I
+
+00:14:48.160 --> 00:14:50.959
+think people think oh it turns out you
+
+00:14:50.959 --> 00:14:52.880
+know I think Wikipedia is a wonderful
+
+00:14:52.880 --> 00:14:55.279
+tool has tons of facts web search is a
+
+00:14:55.279 --> 00:14:57.920
+wonderful tool has tons of facts but it
+
+00:14:57.920 --> 00:15:00.800
+turns out that when you ask AI to do
+
+00:15:00.800 --> 00:15:04.000
+work for you you're cognitive offloading
+
+00:15:04.000 --> 00:15:06.240
+to AI which is great because that's how
+
+00:15:06.240 --> 00:15:08.480
+society moves forward and gets work done
+
+00:15:08.480 --> 00:15:11.600
+but human retention is much worse it's
+
+00:15:11.600 --> 00:15:14.480
+just so clear that LMS MS as they are
+
+00:15:14.480 --> 00:15:16.399
+most commonly used are terrible for
+
+00:15:16.399 --> 00:15:17.920
+learning. I'm not saying there's no way
+
+00:15:17.920 --> 00:15:19.440
+to use it in a way that is good for
+
+00:15:19.440 --> 00:15:20.800
+learning. I think there are ways to use
+
+00:15:20.800 --> 00:15:22.160
+that good for learning but even for
+
+00:15:22.160 --> 00:15:24.000
+myself there's so many things on the AI
+
+00:15:24.000 --> 00:15:25.839
+model over the last you know 6 months or
+
+00:15:25.839 --> 00:15:27.279
+whatever like I don't know [gasps]
+
+00:15:27.279 --> 00:15:28.880
+building some project how does this
+
+00:15:28.880 --> 00:15:30.639
+front end backend component work
+
+00:15:30.639 --> 00:15:32.480
+whatever give me the answer get the job
+
+00:15:32.480 --> 00:15:34.959
+done it was fantastic but 6 months later
+
+00:15:34.959 --> 00:15:36.720
+I don't remember the answer when I need
+
+00:15:36.720 --> 00:15:39.760
+to redo that front end backend component
+
+00:15:39.760 --> 00:15:42.639
+I ask AI again so data is really clear
+
+00:15:42.639 --> 00:15:45.199
+we should stop thinking of AI as helpful
+
+00:15:45.199 --> 00:15:48.000
+for learning at least the vast majority
+
+00:15:48.000 --> 00:15:49.519
+of ways that the vast majority majority
+
+00:15:49.519 --> 00:15:51.120
+of your people are using AI models
+
+00:15:51.120 --> 00:15:52.720
+today. It's absolutely terrible for
+
+00:15:52.720 --> 00:15:53.120
+learning.
+
+00:15:53.120 --> 00:15:54.880
+>> But you're building a company helping
+
+00:15:54.880 --> 00:15:56.800
+solve that, right? Because the one
+
+00:15:56.800 --> 00:15:58.959
+onetoone tutoring with AI is that where
+
+00:15:58.959 --> 00:16:00.959
+you just announced with a 100 million
+
+00:16:00.959 --> 00:16:02.560
+investment from Corsera.
+
+00:16:02.560 --> 00:16:04.639
+>> Yes. So I'm excited about leading a new
+
+00:16:04.639 --> 00:16:07.360
+organization called Learn Vector that is
+
+00:16:07.360 --> 00:16:09.920
+focused on um building new learning
+
+00:16:09.920 --> 00:16:12.320
+experiences that is much more onetoone
+
+00:16:12.320 --> 00:16:14.320
+than one to many. So you know 15 years
+
+00:16:14.320 --> 00:16:17.040
+ago I I was privileged to participate in
+
+00:16:17.040 --> 00:16:20.240
+the online courses movement that I think
+
+00:16:20.240 --> 00:16:22.560
+changed the way a lot of people learn
+
+00:16:22.560 --> 00:16:25.120
+but that was and still remains largely a
+
+00:16:25.120 --> 00:16:27.040
+one to many experience where everyone
+
+00:16:27.040 --> 00:16:28.959
+you know kind of watches the same video
+
+00:16:28.959 --> 00:16:30.399
+which is actually okay it actually works
+
+00:16:30.399 --> 00:16:32.720
+well but the technology now exists to
+
+00:16:32.720 --> 00:16:35.040
+create much more personalized customized
+
+00:16:35.040 --> 00:16:38.079
+onetoone experiences and so our team is
+
+00:16:38.079 --> 00:16:39.680
+working hard on that I think we'll have
+
+00:16:39.680 --> 00:16:42.079
+a lot more to show by early next year
+
+00:16:42.079 --> 00:16:43.440
+when think about human skill
+
+00:16:43.440 --> 00:16:45.360
+development. I I feel like because AI
+
+00:16:45.360 --> 00:16:47.279
+has so heavily impacted software
+
+00:16:47.279 --> 00:16:50.560
+engineering, um what we see happening in
+
+00:16:50.560 --> 00:16:52.560
+the job market for software engineering
+
+00:16:52.560 --> 00:16:54.720
+is a harbinger as a forerunner of what
+
+00:16:54.720 --> 00:16:56.560
+we'll see in other disciplines as well.
+
+00:16:56.560 --> 00:16:59.360
+And in software engineering, um people
+
+00:16:59.360 --> 00:17:01.360
+need to learn new skills, but when they
+
+00:17:01.360 --> 00:17:03.600
+do, they are thriving and creating more
+
+00:17:03.600 --> 00:17:05.520
+value and frankly getting raises and
+
+00:17:05.520 --> 00:17:07.520
+doing even more exciting projects. And
+
+00:17:07.520 --> 00:17:09.360
+what I've seen the early signs of in
+
+00:17:09.360 --> 00:17:11.120
+other disciplines as well for example in
+
+00:17:11.120 --> 00:17:12.640
+software engineering you know most
+
+00:17:12.640 --> 00:17:14.480
+developers like front end backend
+
+00:17:14.480 --> 00:17:16.880
+developers have now become full stack
+
+00:17:16.880 --> 00:17:19.039
+developers because of AI hub you could
+
+00:17:19.039 --> 00:17:21.679
+take on broader scope I'm seeing early
+
+00:17:21.679 --> 00:17:23.199
+signs of this in other disciplines as
+
+00:17:23.199 --> 00:17:25.520
+well where for example someone that in
+
+00:17:25.520 --> 00:17:26.799
+marketing that did marketing
+
+00:17:26.799 --> 00:17:28.720
+coordination uh coordinating marketing
+
+00:17:28.720 --> 00:17:30.799
+campaigns with AI help they can now
+
+00:17:30.799 --> 00:17:32.960
+become more of a full cycle marketing
+
+00:17:32.960 --> 00:17:35.039
+take on a broader scope and I'm seeing
+
+00:17:35.039 --> 00:17:37.120
+you know frankly sources in recruiting
+
+00:17:37.120 --> 00:17:39.280
+become more full cycle do endto-end
+
+00:17:39.280 --> 00:17:42.240
+recruiting. So now the good news and bad
+
+00:17:42.240 --> 00:17:43.919
+news is for people to step up to these
+
+00:17:43.919 --> 00:17:45.600
+broader roles. You do need to learn AI
+
+00:17:45.600 --> 00:17:47.600
+skills but also it's not just learning
+
+00:17:47.600 --> 00:17:49.200
+AI you also need to learn these other
+
+00:17:49.200 --> 00:17:50.799
+skills uh like how do you do the other
+
+00:17:50.799 --> 00:17:52.559
+parts of marketing of recruiting or
+
+00:17:52.559 --> 00:17:54.000
+software engineering or AI engineering.
+
+00:17:54.000 --> 00:17:56.160
+So I think this actually creates a heavy
+
+00:17:56.160 --> 00:17:58.559
+need, a big need for people to gain new
+
+00:17:58.559 --> 00:18:00.960
+skills. But when they do, which is both
+
+00:18:00.960 --> 00:18:03.679
+AI skills, but also disciplinary skills,
+
+00:18:03.679 --> 00:18:05.760
+then they can do much more, hopefully
+
+00:18:05.760 --> 00:18:08.080
+have more fun, work on more exciting
+
+00:18:08.080 --> 00:18:10.160
+projects, hopefully get paid more as
+
+00:18:10.160 --> 00:18:12.160
+well. And one reason I kind of worry
+
+00:18:12.160 --> 00:18:14.720
+about the fear mongering is um I got an
+
+00:18:14.720 --> 00:18:16.160
+email from someone that was about to
+
+00:18:16.160 --> 00:18:18.799
+enter college and you know he emailed me
+
+00:18:18.799 --> 00:18:21.039
+saying hey Andrew taking online courses
+
+00:18:21.039 --> 00:18:22.320
+but I'm really struggling with what I
+
+00:18:22.320 --> 00:18:24.880
+should major in college because in four
+
+00:18:24.880 --> 00:18:26.480
+years won't AI do all this and
+
+00:18:26.480 --> 00:18:28.480
+everything I learn will be obsolete and
+
+00:18:28.480 --> 00:18:30.000
+the answer is no of course it won't all
+
+00:18:30.000 --> 00:18:32.559
+be obsolete but when we keep on pushing
+
+00:18:32.559 --> 00:18:36.320
+these fear messages uh we make people
+
+00:18:36.320 --> 00:18:38.799
+wonder if they will even be relevant and
+
+00:18:38.799 --> 00:18:41.120
+it makes people not lean in to gain
+
+00:18:41.120 --> 00:18:43.440
+these skills, they'll put them in much
+
+00:18:43.440 --> 00:18:45.760
+better position. So, I see very clearly
+
+00:18:45.760 --> 00:18:48.160
+that these fear-mongering messages are
+
+00:18:48.160 --> 00:18:51.039
+distorting how many people, including,
+
+00:18:51.039 --> 00:18:52.640
+you know, high school students, college
+
+00:18:52.640 --> 00:18:54.720
+students, fresh grads, think about the
+
+00:18:54.720 --> 00:18:57.280
+economy. And frankly, making people give
+
+00:18:57.280 --> 00:18:58.880
+up is one of the worst things we'll be
+
+00:18:58.880 --> 00:19:01.679
+doing in this era when people that lean
+
+00:19:01.679 --> 00:19:03.200
+in will thrive.
+
+00:19:03.200 --> 00:19:05.840
+>> Andrew has taught over 8 million people
+
+00:19:05.840 --> 00:19:08.160
+AI. He started teaching machine learning
+
+00:19:08.160 --> 00:19:11.280
+online back in 2011, years before the
+
+00:19:11.280 --> 00:19:13.039
+current AI boom. Now, one of the
+
+00:19:13.039 --> 00:19:15.039
+companies he's building is focused on AI
+
+00:19:15.039 --> 00:19:17.200
+agents. From the way that it sounds, it
+
+00:19:17.200 --> 00:19:19.600
+can still feel way too technical. So, I
+
+00:19:19.600 --> 00:19:21.520
+put together a step-by-step guide to
+
+00:19:21.520 --> 00:19:23.760
+building your first AI agent with no
+
+00:19:23.760 --> 00:19:25.440
+coding required. It walks you through
+
+00:19:25.440 --> 00:19:27.760
+what to automate, how to set it up, and
+
+00:19:27.760 --> 00:19:29.919
+how to make it actually useful. It is in
+
+00:19:29.919 --> 00:19:31.679
+my newsletter this week. The newsletter
+
+00:19:31.679 --> 00:19:33.840
+is called Future Proof. It's free. Link
+
+00:19:33.840 --> 00:19:36.240
+is in the description. What would you
+
+00:19:36.240 --> 00:19:39.039
+reply back to that email that somebody
+
+00:19:39.039 --> 00:19:40.640
+sent you? What would you say is the best
+
+00:19:40.640 --> 00:19:42.960
+major to study now to thrive in AI era?
+
+00:19:42.960 --> 00:19:45.200
+Do you think it's like going deep into a
+
+00:19:45.200 --> 00:19:47.440
+niche or just broader computer science
+
+00:19:47.440 --> 00:19:49.440
+so that you can acquire AI skills really
+
+00:19:49.440 --> 00:19:50.000
+fast?
+
+00:19:50.000 --> 00:19:51.280
+>> You know, I don't know what's the best
+
+00:19:51.280 --> 00:19:52.799
+major. There are awful lot of great
+
+00:19:52.799 --> 00:19:55.360
+majors. It's is like um I kind of feel
+
+00:19:55.360 --> 00:19:57.280
+like what's the best job in the world is
+
+00:19:57.280 --> 00:19:58.640
+like what's the best major in the world?
+
+00:19:58.640 --> 00:20:00.000
+>> Oh, something that you love, right?
+
+00:20:00.000 --> 00:20:01.120
+>> Yeah. My daughter wants to be an
+
+00:20:01.120 --> 00:20:02.720
+astronaut. I don't know if she can major
+
+00:20:02.720 --> 00:20:04.240
+in becoming an astronaut. I have to
+
+00:20:04.240 --> 00:20:05.280
+think about that. When she get older
+
+00:20:05.280 --> 00:20:06.559
+though, she may change your mind. I see
+
+00:20:06.559 --> 00:20:09.600
+so many opportunities um across across
+
+00:20:09.600 --> 00:20:11.360
+so many job roles. It all seems very
+
+00:20:11.360 --> 00:20:13.360
+exciting to me. But do learn AI, do
+
+00:20:13.360 --> 00:20:15.360
+learn to build with AI. The other thing
+
+00:20:15.360 --> 00:20:17.520
+that my team's been working on AI
+
+00:20:17.520 --> 00:20:19.440
+engineing skills map to try to map out,
+
+00:20:19.440 --> 00:20:20.640
+you know, the most important skills for
+
+00:20:20.640 --> 00:20:22.640
+AI engineering. One thing that I felt
+
+00:20:22.640 --> 00:20:24.240
+intuitively, but I was surprised to see
+
+00:20:24.240 --> 00:20:26.640
+it show up in the data was that a lot
+
+00:20:26.640 --> 00:20:28.559
+more job descriptions seem to be saying
+
+00:20:28.559 --> 00:20:30.480
+they want people that demonstrate a very
+
+00:20:30.480 --> 00:20:32.880
+high sense of agency. Because it turns
+
+00:20:32.880 --> 00:20:34.640
+out with AI there a lot more
+
+00:20:34.640 --> 00:20:36.960
+opportunities for individuals to spot
+
+00:20:36.960 --> 00:20:40.320
+problems and go build something or do
+
+00:20:40.320 --> 00:20:42.159
+something to go solve it. So I think
+
+00:20:42.159 --> 00:20:44.480
+we're really evolving. Well, we've long
+
+00:20:44.480 --> 00:20:46.320
+been evolving but we're accelerating
+
+00:20:46.320 --> 00:20:48.960
+positive era where people sit around and
+
+00:20:48.960 --> 00:20:50.480
+wait for their boss to tell them what to
+
+00:20:50.480 --> 00:20:50.880
+do.
+
+00:20:50.880 --> 00:20:52.320
+>> This is what I've been feeling a lot
+
+00:20:52.320 --> 00:20:53.919
+especially when we started doing remote
+
+00:20:53.919 --> 00:20:56.240
+work. I want people to be entrepreneurs
+
+00:20:56.240 --> 00:20:58.480
+within their niche. Like if you're
+
+00:20:58.480 --> 00:21:00.159
+helping me with LinkedIn, you're an
+
+00:21:00.159 --> 00:21:01.919
+entrepreneur there. You can hire more
+
+00:21:01.919 --> 00:21:03.600
+contractors. You can deploy different
+
+00:21:03.600 --> 00:21:05.679
+tools. You make the strategic decision
+
+00:21:05.679 --> 00:21:07.520
+whether this topic is good or not. Shall
+
+00:21:07.520 --> 00:21:09.840
+we proceed with it? I really think and
+
+00:21:09.840 --> 00:21:11.200
+tell me if you agree with me, we're
+
+00:21:11.200 --> 00:21:12.799
+moving into that job market where
+
+00:21:12.799 --> 00:21:15.120
+everyone is kind of independent in their
+
+00:21:15.120 --> 00:21:15.760
+workplace.
+
+00:21:15.760 --> 00:21:17.360
+>> I think people will have much more
+
+00:21:17.360 --> 00:21:19.200
+autonomy and creativity. So I agree with
+
+00:21:19.200 --> 00:21:21.039
+that. And I'd even go one step further
+
+00:21:21.039 --> 00:21:23.360
+which is I talked to a lot of people is
+
+00:21:23.360 --> 00:21:24.799
+know engineers and others in large
+
+00:21:24.799 --> 00:21:26.880
+companies that tell me that their
+
+00:21:26.880 --> 00:21:28.720
+manager tells them to stay in their swim
+
+00:21:28.720 --> 00:21:29.919
+lane. They'll say, "Oh, I have this
+
+00:21:29.919 --> 00:21:31.919
+creative idea, but the manager says,
+
+00:21:31.919 --> 00:21:33.360
+"No, I need you to focus on this one
+
+00:21:33.360 --> 00:21:35.200
+thing, frankly, often because their
+
+00:21:35.200 --> 00:21:36.880
+manager's career depends on it." But I
+
+00:21:36.880 --> 00:21:38.159
+feel like the number of opportunities
+
+00:21:38.159 --> 00:21:40.640
+for people to spot things outside the
+
+00:21:40.640 --> 00:21:43.440
+swim lane. Um, and then in a responsible
+
+00:21:43.440 --> 00:21:46.159
+way explore how to get it done, that
+
+00:21:46.159 --> 00:21:47.919
+feels very exciting to me. And I think
+
+00:21:47.919 --> 00:21:50.400
+that in the future the businesses that
+
+00:21:50.400 --> 00:21:53.280
+set up a culture that encourage people
+
+00:21:53.280 --> 00:21:57.120
+to learn AI build fast responsibly um
+
+00:21:57.120 --> 00:21:59.840
+talk to customers would drive a lot more
+
+00:21:59.840 --> 00:22:02.559
+value than the more hierarchical silo
+
+00:22:02.559 --> 00:22:03.440
+organizations.
+
+00:22:03.440 --> 00:22:05.440
+>> Yeah, it it starts with hiring the right
+
+00:22:05.440 --> 00:22:07.120
+people and then nurturing this in your
+
+00:22:07.120 --> 00:22:09.440
+organization. When you say learn how to
+
+00:22:09.440 --> 00:22:11.440
+use AI and become proficient with AI,
+
+00:22:11.440 --> 00:22:13.440
+can you give me some benchmarks like of
+
+00:22:13.440 --> 00:22:15.679
+a person who's like say a marketer,
+
+00:22:15.679 --> 00:22:17.919
+knowledge worker, advanced with AI, what
+
+00:22:17.919 --> 00:22:19.200
+are you looking for when you're
+
+00:22:19.200 --> 00:22:20.240
+interviewing this person?
+
+00:22:20.240 --> 00:22:21.600
+>> I'm pretty sure my team's ahead of the
+
+00:22:21.600 --> 00:22:23.360
+curve. All of my marketers know how to
+
+00:22:23.360 --> 00:22:25.600
+code. So, as part of how I interview
+
+00:22:25.600 --> 00:22:27.120
+marketers, we ask them what they've
+
+00:22:27.120 --> 00:22:30.400
+built and uh if they have not built any
+
+00:22:30.400 --> 00:22:31.200
+software.
+
+00:22:31.200 --> 00:22:33.039
+>> If it's a dashboard, is it good or bad?
+
+00:22:33.039 --> 00:22:34.880
+Like, is it too basic or
+
+00:22:34.880 --> 00:22:36.960
+>> a dashboard? Again, my team's probably,
+
+00:22:36.960 --> 00:22:38.400
+you know, somewhat ahead of the curve,
+
+00:22:38.400 --> 00:22:39.280
+but uh
+
+00:22:39.280 --> 00:22:40.320
+>> was good to hear like that.
+
+00:22:40.320 --> 00:22:41.520
+>> All of my marketers have built much
+
+00:22:41.520 --> 00:22:43.440
+specific things in
+
+00:22:43.440 --> 00:22:46.240
+>> Oh, I I feel like um I don't know the
+
+00:22:46.240 --> 00:22:47.919
+other day uh one of our someone on the
+
+00:22:47.919 --> 00:22:48.960
+marketing team was talking about the
+
+00:22:48.960 --> 00:22:51.440
+tools that he had built to uh when he's
+
+00:22:51.440 --> 00:22:53.200
+considering writing an article on
+
+00:22:53.200 --> 00:22:55.520
+something, it will um crawl the web,
+
+00:22:55.520 --> 00:22:57.840
+find related work, has a custom desktop
+
+00:22:57.840 --> 00:22:59.280
+app, actually built a desktop app that
+
+00:22:59.280 --> 00:23:01.679
+runs on his Mac to um highlight related
+
+00:23:01.679 --> 00:23:03.440
+articles for him. then you can chat to
+
+00:23:03.440 --> 00:23:05.600
+the whole system navigate you know the
+
+00:23:05.600 --> 00:23:07.200
+thing he's writing as well as the
+
+00:23:07.200 --> 00:23:09.280
+related work and he had a large
+
+00:23:09.280 --> 00:23:11.840
+dashboard for trolling the internet to
+
+00:23:11.840 --> 00:23:13.840
+highlight to him exciting things that
+
+00:23:13.840 --> 00:23:16.720
+are popping up um now even on my team I
+
+00:23:16.720 --> 00:23:18.240
+think that marketers is ahead of the
+
+00:23:18.240 --> 00:23:18.960
+curve
+
+00:23:18.960 --> 00:23:20.640
+>> but that's that's great to hear any
+
+00:23:20.640 --> 00:23:23.600
+other interesting use cases uh that will
+
+00:23:23.600 --> 00:23:24.880
+inspire people to build something
+
+00:23:24.880 --> 00:23:26.240
+similar
+
+00:23:26.240 --> 00:23:29.840
+>> let's see maybe u uh my finance team
+
+00:23:29.840 --> 00:23:32.320
+uses AI extensively
+
+00:23:32.320 --> 00:23:37.039
+So I think uh uh my um one of my CFOs uh
+
+00:23:37.039 --> 00:23:39.200
+realized that you know her team was
+
+00:23:39.200 --> 00:23:40.640
+spending hours every week clicking
+
+00:23:40.640 --> 00:23:42.480
+through documents open this copy paste
+
+00:23:42.480 --> 00:23:45.360
+this number here and so um she started
+
+00:23:45.360 --> 00:23:47.679
+building uh automation scripts that runs
+
+00:23:47.679 --> 00:23:50.640
+on a routine that um automatically opens
+
+00:23:50.640 --> 00:23:52.400
+files checks what's in there checks for
+
+00:23:52.400 --> 00:23:54.240
+consistency highlights to her team if
+
+00:23:54.240 --> 00:23:56.080
+there's something uh if there's
+
+00:23:56.080 --> 00:23:57.039
+something they need to be paying
+
+00:23:57.039 --> 00:23:58.559
+attention to if a new document has
+
+00:23:58.559 --> 00:24:00.960
+showed up. So I find that rather than
+
+00:24:00.960 --> 00:24:02.559
+waiting around for an engineer to do the
+
+00:24:02.559 --> 00:24:05.840
+work for them, the team's ability to to
+
+00:24:05.840 --> 00:24:08.080
+kind of a not just build dashboards but
+
+00:24:08.080 --> 00:24:10.480
+build kind of a data management
+
+00:24:10.480 --> 00:24:12.400
+infrastructures. They can ingest data,
+
+00:24:12.400 --> 00:24:14.320
+alert them if something's happening.
+
+00:24:14.320 --> 00:24:16.159
+>> I think uh my finance and marketing
+
+00:24:16.159 --> 00:24:18.240
+teams are doing that. Oh my recruiting
+
+00:24:18.240 --> 00:24:20.720
+team um well we actually have recruiting
+
+00:24:20.720 --> 00:24:22.720
+engineers which are really professional
+
+00:24:22.720 --> 00:24:25.679
+engineers that sit in a recruiting team
+
+00:24:25.679 --> 00:24:27.039
+that are building very sophisticated
+
+00:24:27.039 --> 00:24:28.480
+tools for recruiting. And this is
+
+00:24:28.480 --> 00:24:29.760
+actually the other trend. I think
+
+00:24:29.760 --> 00:24:31.360
+marketers, recruiters, HR professional,
+
+00:24:31.360 --> 00:24:33.520
+ops people should all learn AI. But the
+
+00:24:33.520 --> 00:24:35.200
+other thing is when you take an engineer
+
+00:24:35.200 --> 00:24:37.200
+and embed them in these teams, then that
+
+00:24:37.200 --> 00:24:38.720
+further accelerates what you can do.
+
+00:24:38.720 --> 00:24:40.240
+>> We do the same. We we start with
+
+00:24:40.240 --> 00:24:41.600
+something basic, build it ourselves,
+
+00:24:41.600 --> 00:24:43.840
+then we hit the wall, an engineer comes
+
+00:24:43.840 --> 00:24:45.200
+in, we build it further.
+
+00:24:45.200 --> 00:24:46.240
+>> Frankly, when you look at not just
+
+00:24:46.240 --> 00:24:47.440
+software engineers, but recruiting
+
+00:24:47.440 --> 00:24:49.039
+engineers, marketing engineers, HR
+
+00:24:49.039 --> 00:24:50.880
+engineers, I think there's so much
+
+00:24:50.880 --> 00:24:52.559
+valuable engineering work that can now
+
+00:24:52.559 --> 00:24:55.360
+be done. I'm just, you know, not worried
+
+00:24:55.360 --> 00:24:56.960
+about running out of, [laughter]
+
+00:24:56.960 --> 00:24:58.799
+frankly, all my friends were so busy. We
+
+00:24:58.799 --> 00:25:00.080
+think, boy, how could we run out of
+
+00:25:00.080 --> 00:25:01.039
+engineering jobs?
+
+00:25:01.039 --> 00:25:02.240
+>> Yeah. Yeah. There are so many cool ideas
+
+00:25:02.240 --> 00:25:03.679
+you can experiment on. But you touched
+
+00:25:03.679 --> 00:25:05.440
+up on something that is actually one of
+
+00:25:05.440 --> 00:25:07.039
+the fears when when we talk about like
+
+00:25:07.039 --> 00:25:09.039
+financial information, how much you're
+
+00:25:09.039 --> 00:25:11.919
+giving to AI. So, I gave my perplexity
+
+00:25:11.919 --> 00:25:13.840
+permission to scan my Fidelity account
+
+00:25:13.840 --> 00:25:16.320
+so it can track my portfolio, tell me
+
+00:25:16.320 --> 00:25:17.760
+when to rebalance. It doesn't do
+
+00:25:17.760 --> 00:25:19.200
+anything on my behalf, but it has
+
+00:25:19.200 --> 00:25:22.640
+access. Do you think there is any
+
+00:25:22.640 --> 00:25:23.679
+problem with that?
+
+00:25:23.679 --> 00:25:25.520
+>> This is complicated. I think AI and
+
+00:25:25.520 --> 00:25:29.520
+privacy is a complex area. Um, and it
+
+00:25:29.520 --> 00:25:31.600
+depends a lot on the company that you
+
+00:25:31.600 --> 00:25:33.840
+are sharing your data with. So, for
+
+00:25:33.840 --> 00:25:37.440
+example, I trust all the hyperscalers to
+
+00:25:37.440 --> 00:25:40.080
+really 100%, you know, follow their
+
+00:25:40.080 --> 00:25:41.520
+terms of service and to do what they
+
+00:25:41.520 --> 00:25:43.279
+say. my personal opinion not not giving
+
+00:25:43.279 --> 00:25:44.880
+legal business advice but I'd be shocked
+
+00:25:44.880 --> 00:25:47.120
+if you know the largest hyperscalers
+
+00:25:47.120 --> 00:25:48.640
+publish the terms of service with some
+
+00:25:48.640 --> 00:25:50.960
+privacy notice and if they breach that
+
+00:25:50.960 --> 00:25:52.640
+because that would be not the culture be
+
+00:25:52.640 --> 00:25:54.000
+so damaging of the long-term business
+
+00:25:54.000 --> 00:25:55.760
+model now that's on the largest
+
+00:25:55.760 --> 00:25:58.400
+hyperscaler side if you look at AI
+
+00:25:58.400 --> 00:26:00.960
+company's side there's been you know at
+
+00:26:00.960 --> 00:26:03.600
+least one company that I won't name that
+
+00:26:03.600 --> 00:26:05.600
+seems to occasionally change the terms
+
+00:26:05.600 --> 00:26:08.480
+of service and if you're using it you go
+
+00:26:08.480 --> 00:26:10.320
+to the website so you pop up hey we
+
+00:26:10.320 --> 00:26:11.600
+changed the terms of service to retain
+
+00:26:11.600 --> 00:26:13.520
+your data or train your data and if
+
+00:26:13.520 --> 00:26:14.640
+you're aren't paying attention and click
+
+00:26:14.640 --> 00:26:17.600
+the wrong button then they suddenly gave
+
+00:26:17.600 --> 00:26:19.360
+themselves permission to access your
+
+00:26:19.360 --> 00:26:20.480
+data in a way that I'm not that
+
+00:26:20.480 --> 00:26:22.480
+comfortable with. I feel like I handle
+
+00:26:22.480 --> 00:26:24.799
+you know some sensitive information. So
+
+00:26:24.799 --> 00:26:27.120
+then I tend to be very careful with the
+
+00:26:27.120 --> 00:26:30.000
+businesses that I just don't feel that
+
+00:26:30.000 --> 00:26:32.320
+culture and the DNA and frankly the
+
+00:26:32.320 --> 00:26:35.200
+long-term business model is as tied to
+
+00:26:35.200 --> 00:26:37.600
+protecting individual user privacy than
+
+00:26:37.600 --> 00:26:40.640
+the hyperscalers. And um I see
+
+00:26:40.640 --> 00:26:43.600
+businesses, you know, get this as well.
+
+00:26:43.600 --> 00:26:45.760
+For example, one of my teams, AI Aspire,
+
+00:26:45.760 --> 00:26:47.600
+we work with very large corporations,
+
+00:26:47.600 --> 00:26:50.240
+including banks, with incredibly
+
+00:26:50.240 --> 00:26:53.840
+sensitive financial data. And as you can
+
+00:26:53.840 --> 00:26:56.720
+imagine, AI Aspire and our and our
+
+00:26:56.720 --> 00:26:59.760
+clients do not willy-nilly share, you
+
+00:26:59.760 --> 00:27:02.480
+know, really sensitive I often material
+
+00:27:02.480 --> 00:27:05.039
+nonpublic information, right? NPI uh
+
+00:27:05.039 --> 00:27:07.760
+with Frontier with with Frontier Labs
+
+00:27:07.760 --> 00:27:09.919
+without really careful thinking about
+
+00:27:09.919 --> 00:27:11.600
+the guardrails and privacy. So I think
+
+00:27:11.600 --> 00:27:12.640
+it's complicated.
+
+00:27:12.640 --> 00:27:14.799
+>> So trusting hypers scale, but also u
+
+00:27:14.799 --> 00:27:16.159
+another thing that you can do, you can
+
+00:27:16.159 --> 00:27:17.760
+download an open source model and just
+
+00:27:17.760 --> 00:27:19.360
+run it on your computer and then it just
+
+00:27:19.360 --> 00:27:21.200
+stays on your computer, right?
+
+00:27:21.200 --> 00:27:23.360
+>> Yes. I think yes I it turns out a lot of
+
+00:27:23.360 --> 00:27:25.679
+banks will actually run um the things in
+
+00:27:25.679 --> 00:27:27.600
+uh you know a virtual private car or on
+
+00:27:27.600 --> 00:27:29.679
+prem so they so it never even leaves
+
+00:27:29.679 --> 00:27:31.039
+their control but I think for
+
+00:27:31.039 --> 00:27:32.960
+individuals it's true for for the really
+
+00:27:32.960 --> 00:27:36.000
+sensitive things um uh I sometimes run a
+
+00:27:36.000 --> 00:27:37.440
+local model and it's been interesting
+
+00:27:37.440 --> 00:27:39.200
+with the open way models some of the
+
+00:27:39.200 --> 00:27:40.880
+latest open way models are approaching
+
+00:27:40.880 --> 00:27:43.919
+frontier capability and that are you
+
+00:27:43.919 --> 00:27:45.679
+know actually small enough they're
+
+00:27:45.679 --> 00:27:47.039
+actually really good models now they can
+
+00:27:47.039 --> 00:27:47.440
+run on it
+
+00:27:47.440 --> 00:27:48.880
+>> yeah the one from Meta right the recent
+
+00:27:48.880 --> 00:27:49.120
+one
+
+00:27:49.120 --> 00:27:50.880
+>> oh yes Metamuse is a good model and I'm
+
+00:27:50.880 --> 00:27:52.880
+thinking Also the latest version of Quen
+
+00:27:52.880 --> 00:27:54.640
+is also very good but I think frankly
+
+00:27:54.640 --> 00:27:56.960
+these models change every other week. So
+
+00:27:56.960 --> 00:27:59.440
+I think the best practice is to not get
+
+00:27:59.440 --> 00:28:01.120
+stuck on one but keep on trying new
+
+00:28:01.120 --> 00:28:01.840
+models.
+
+00:28:01.840 --> 00:28:03.600
+>> So basically when there is a situation
+
+00:28:03.600 --> 00:28:05.360
+that you don't trust anyone you run a
+
+00:28:05.360 --> 00:28:06.960
+local model and this is how you keep
+
+00:28:06.960 --> 00:28:08.320
+your data safe.
+
+00:28:08.320 --> 00:28:10.640
+>> I do trust the hyperscalers but
+
+00:28:10.640 --> 00:28:13.440
+sometimes for you know literally NMPI
+
+00:28:13.440 --> 00:28:15.840
+material nonpublic information that I
+
+00:28:15.840 --> 00:28:17.279
+won't even send to that I just can't
+
+00:28:17.279 --> 00:28:19.760
+even send that to the cloud. So that uh
+
+00:28:19.760 --> 00:28:22.000
+I'll either do it manually without AI
+
+00:28:22.000 --> 00:28:24.399
+help or if I really need to use AI then
+
+00:28:24.399 --> 00:28:27.200
+you know really carefully only use a
+
+00:28:27.200 --> 00:28:28.000
+local model.
+
+00:28:28.000 --> 00:28:30.080
+>> Interesting. Okay. This is this is this
+
+00:28:30.080 --> 00:28:33.440
+is an interesting one. Okay. What about
+
+00:28:33.440 --> 00:28:36.159
+loss of human control over AI? Because
+
+00:28:36.159 --> 00:28:38.320
+I've talked to I talked to Yoshua Benja
+
+00:28:38.320 --> 00:28:42.480
+who is very um negative when it comes to
+
+00:28:42.480 --> 00:28:46.159
+open free AI without any regulation and
+
+00:28:46.159 --> 00:28:49.200
+he painted me some very scary pictures
+
+00:28:49.200 --> 00:28:52.080
+of AI taking over control because we
+
+00:28:52.080 --> 00:28:54.480
+basically the the whole scenario is we
+
+00:28:54.480 --> 00:28:56.240
+can't control something that's smarter
+
+00:28:56.240 --> 00:28:58.399
+than us and if AI gets smarter and
+
+00:28:58.399 --> 00:29:00.240
+smarter where where do we end up? What
+
+00:29:00.240 --> 00:29:01.520
+do you think about that? I think about
+
+00:29:01.520 --> 00:29:03.600
+something else that we can't control
+
+00:29:03.600 --> 00:29:06.480
+which is um airplanes. No one can build
+
+00:29:06.480 --> 00:29:08.320
+an airplane that you can fly perfectly.
+
+00:29:08.320 --> 00:29:10.799
+Winds will buffet it around. And then
+
+00:29:10.799 --> 00:29:12.720
+candly in the early days of developing
+
+00:29:12.720 --> 00:29:14.799
+airplanes, some airplanes crash and
+
+00:29:14.799 --> 00:29:17.440
+people died and it was tragic and awful.
+
+00:29:17.440 --> 00:29:19.840
+But through the early lessons learned,
+
+00:29:19.840 --> 00:29:21.760
+we then learned to control airplanes
+
+00:29:21.760 --> 00:29:23.440
+better and better. So that today, you
+
+00:29:23.440 --> 00:29:25.200
+know, we can mostly get in an airplane
+
+00:29:25.200 --> 00:29:28.080
+and not fear too much for our lives. And
+
+00:29:28.080 --> 00:29:30.240
+it's really like that too of AI. No one
+
+00:29:30.240 --> 00:29:32.320
+can perfectly control AI because it
+
+00:29:32.320 --> 00:29:34.640
+generates tokens or outputs that a
+
+00:29:34.640 --> 00:29:36.080
+little bit random. So we don't really
+
+00:29:36.080 --> 00:29:38.799
+know what exactly it'll do. But as we
+
+00:29:38.799 --> 00:29:40.480
+run them and you know there's been a
+
+00:29:40.480 --> 00:29:42.320
+small number of mishaps which is
+
+00:29:42.320 --> 00:29:44.559
+unfortunate and some number of mishaps
+
+00:29:44.559 --> 00:29:47.279
+have done some real damage but the way
+
+00:29:47.279 --> 00:29:49.600
+we engineer almost any system from an
+
+00:29:49.600 --> 00:29:53.840
+airplane to electric circus to now AI is
+
+00:29:53.840 --> 00:29:57.200
+carefully grow their capabilities so
+
+00:29:57.200 --> 00:29:59.039
+that we can have a controlled
+
+00:29:59.039 --> 00:30:01.279
+environment in which to measure what's
+
+00:30:01.279 --> 00:30:03.200
+wrong and then to shape it to make sure
+
+00:30:03.200 --> 00:30:05.360
+we can control it well enough that it
+
+00:30:05.360 --> 00:30:07.360
+behaves responsibly and safely and to
+
+00:30:07.360 --> 00:30:09.200
+this day we can't perfectly control any
+
+00:30:09.200 --> 00:30:11.200
+airplane and we will never perfectly
+
+00:30:11.200 --> 00:30:14.799
+control AI either but I think um we are
+
+00:30:14.799 --> 00:30:16.960
+certainly controlling them well enough
+
+00:30:16.960 --> 00:30:19.279
+that this loss of control doesn't feel
+
+00:30:19.279 --> 00:30:20.720
+like science science
+
+00:30:20.720 --> 00:30:24.559
+>> fiction yeah what about deep fakes
+
+00:30:24.559 --> 00:30:26.240
+>> deep fakes are a problem well one of the
+
+00:30:26.240 --> 00:30:28.880
+most disgusting things I've ever seen or
+
+00:30:28.880 --> 00:30:30.960
+heard of is non-consensual
+
+00:30:30.960 --> 00:30:33.840
+intimate deep fake imagery
+
+00:30:33.840 --> 00:30:35.679
+>> I'm really glad that you know US
+
+00:30:35.679 --> 00:30:37.360
+Congress has been moving Right. Let's
+
+00:30:37.360 --> 00:30:39.120
+pass laws. Get rid of that. Penalties
+
+00:30:39.120 --> 00:30:40.960
+for that. I'm just I think there's some
+
+00:30:40.960 --> 00:30:43.200
+really problematic uses of AI that we
+
+00:30:43.200 --> 00:30:45.600
+should outlaw, heavily penalize. Let's
+
+00:30:45.600 --> 00:30:46.640
+just get rid of that.
+
+00:30:46.640 --> 00:30:48.399
+>> What do you think about children and
+
+00:30:48.399 --> 00:30:50.320
+social connection when it comes to AI
+
+00:30:50.320 --> 00:30:52.720
+with kids using more of AI? Because
+
+00:30:52.720 --> 00:30:55.520
+we've seen social media how, you know,
+
+00:30:55.520 --> 00:30:57.279
+there are people who are dumb scrolling
+
+00:30:57.279 --> 00:30:59.600
+all day and my daughter who is 5 years
+
+00:30:59.600 --> 00:31:01.200
+old now, whenever I don't have an
+
+00:31:01.200 --> 00:31:03.120
+answer, he's like, "Ask Chad GPT." And
+
+00:31:03.120 --> 00:31:05.440
+like, who's that person? I'm like, "I
+
+00:31:05.440 --> 00:31:07.679
+don't know. Ask Jajiv Viti like she
+
+00:31:07.679 --> 00:31:10.720
+thinks Jaji knows everything. What would
+
+00:31:10.720 --> 00:31:14.559
+you say about you know kids future with
+
+00:31:14.559 --> 00:31:15.200
+AI?
+
+00:31:15.200 --> 00:31:16.960
+>> First I think kids have a bright future.
+
+00:31:16.960 --> 00:31:18.480
+It's just such an exciting time to be
+
+00:31:18.480 --> 00:31:19.760
+child to grow up in this environment
+
+00:31:19.760 --> 00:31:21.279
+with tools that none of us ever had
+
+00:31:21.279 --> 00:31:23.120
+before. [gasps] At the same time we've
+
+00:31:23.120 --> 00:31:26.320
+seen that social media um I think social
+
+00:31:26.320 --> 00:31:27.919
+media has probably been blamed a bit
+
+00:31:27.919 --> 00:31:29.679
+more than it deserves. But it does
+
+00:31:29.679 --> 00:31:32.000
+deserve blame uh has kind of not been
+
+00:31:32.000 --> 00:31:34.640
+great for kids. I actually worry a lot
+
+00:31:34.640 --> 00:31:38.720
+about it's a wonderful tool, but AI
+
+00:31:38.720 --> 00:31:40.960
+damaging learning is something I worry a
+
+00:31:40.960 --> 00:31:43.360
+lot about. So, it turns out um I have a
+
+00:31:43.360 --> 00:31:45.679
+5-year-old and a seven-year-old. When I
+
+00:31:45.679 --> 00:31:47.600
+teach them math, they're so young enough
+
+00:31:47.600 --> 00:31:49.679
+that I can basically, you know, not let
+
+00:31:49.679 --> 00:31:52.240
+them use a calculator, can say, "How do
+
+00:31:52.240 --> 00:31:54.080
+you multiply these numbers?" And I don't
+
+00:31:54.080 --> 00:31:55.679
+give them a calculator and practice that
+
+00:31:55.679 --> 00:31:56.880
+with them. But as they're a little bit
+
+00:31:56.880 --> 00:32:00.399
+older, I worry a lot about students
+
+00:32:00.399 --> 00:32:02.960
+using cognitive offloading to AI in a
+
+00:32:02.960 --> 00:32:04.720
+way that damages the long-term learning
+
+00:32:04.720 --> 00:32:07.039
+retention. Um, but then at the same
+
+00:32:07.039 --> 00:32:08.799
+time, oh, I actually built an app. I did
+
+00:32:08.799 --> 00:32:10.720
+not like any of the, you know, free
+
+00:32:10.720 --> 00:32:12.960
+online learning to type types of things.
+
+00:32:12.960 --> 00:32:15.679
+So, I actually built my own to um have
+
+00:32:15.679 --> 00:32:17.760
+my daughter learn to type. And I'm
+
+00:32:17.760 --> 00:32:19.360
+hoping that she's actually getting
+
+00:32:19.360 --> 00:32:20.960
+pretty decent now for a seven-year-old.
+
+00:32:20.960 --> 00:32:22.960
+>> Oh, she's Oh, yeah. She actually typed
+
+00:32:22.960 --> 00:32:24.480
+all the lowercase letters. she's a
+
+00:32:24.480 --> 00:32:27.360
+little bit fit, you know, not her shift
+
+00:32:27.360 --> 00:32:29.360
+uppercase letter is a little bit not
+
+00:32:29.360 --> 00:32:31.679
+quite there. But I think that this um
+
+00:32:31.679 --> 00:32:34.480
+unlocks, you know, responsible adult
+
+00:32:34.480 --> 00:32:37.919
+supervised use of online tools and I
+
+00:32:37.919 --> 00:32:40.559
+think it's really tricky. You know, I
+
+00:32:40.559 --> 00:32:43.440
+think um adult supervised use of digital
+
+00:32:43.440 --> 00:32:45.360
+tools seems a great thing for kids, but
+
+00:32:45.360 --> 00:32:46.799
+too many adults don't have time to
+
+00:32:46.799 --> 00:32:48.480
+supervise the use of the tools and then
+
+00:32:48.480 --> 00:32:50.559
+the incentives of [gasps] say social
+
+00:32:50.559 --> 00:32:53.200
+media, right, to do funny things.
+
+00:32:53.200 --> 00:32:55.360
+>> Yeah. has to be the right incentive when
+
+00:32:55.360 --> 00:32:57.360
+it comes to AI. Okay. [snorts] You
+
+00:32:57.360 --> 00:32:59.360
+mentioned we we talked about the fears.
+
+00:32:59.360 --> 00:33:02.080
+We talked about how you can improve your
+
+00:33:02.080 --> 00:33:04.159
+work with AI. Can you name some of the
+
+00:33:04.159 --> 00:33:07.039
+biggest opportunities in AI in 2026 for
+
+00:33:07.039 --> 00:33:08.799
+people who want to build? for an
+
+00:33:08.799 --> 00:33:11.360
+individual that wants to build. I don't
+
+00:33:11.360 --> 00:33:13.519
+think it's one size fits all, but
+
+00:33:13.519 --> 00:33:16.000
+because the cost of building has
+
+00:33:16.000 --> 00:33:17.600
+plummeted,
+
+00:33:17.600 --> 00:33:18.399
+um, [clears throat]
+
+00:33:18.399 --> 00:33:22.000
+I encourage people to learn AI, build
+
+00:33:22.000 --> 00:33:25.519
+fast, and talk to customers. I find
+
+00:33:25.519 --> 00:33:28.399
+myself building things, I don't know,
+
+00:33:28.399 --> 00:33:31.360
+every week, every weekend because I or
+
+00:33:31.360 --> 00:33:32.799
+someone on our team, we have some
+
+00:33:32.799 --> 00:33:35.760
+problem and I have some idea for
+
+00:33:35.760 --> 00:33:39.039
+building some AI thing. to automate it.
+
+00:33:39.039 --> 00:33:41.519
+Last weekend, I had really I was using a
+
+00:33:41.519 --> 00:33:43.519
+frontier model to analyze a lot of our
+
+00:33:43.519 --> 00:33:45.039
+key business metrics because I didn't
+
+00:33:45.039 --> 00:33:46.720
+have time to do it myself, but it was
+
+00:33:46.720 --> 00:33:49.440
+kind of measuring, you know, deandized
+
+00:33:49.440 --> 00:33:51.279
+key business metrics and I didn't have
+
+00:33:51.279 --> 00:33:53.120
+time to go find a data scientist to go
+
+00:33:53.120 --> 00:33:55.919
+work me on it. So, I just did variety of
+
+00:33:55.919 --> 00:33:58.240
+frontier models being really careful on
+
+00:33:58.240 --> 00:34:00.559
+their uh data retention policies. I did
+
+00:34:00.559 --> 00:34:02.159
+not use models with data retention
+
+00:34:02.159 --> 00:34:04.399
+policies I don't like uh in order to
+
+00:34:04.399 --> 00:34:07.519
+analyze data. But and then I find that
+
+00:34:07.519 --> 00:34:10.000
+um what's happen of AI is the cost of
+
+00:34:10.000 --> 00:34:11.839
+building has plummeted and so the
+
+00:34:11.839 --> 00:34:13.679
+challenge is shifting to deciding what
+
+00:34:13.679 --> 00:34:15.200
+to build which I was calling which I've
+
+00:34:15.200 --> 00:34:16.879
+been calling the product management
+
+00:34:16.879 --> 00:34:19.280
+bottleneck and so people you know
+
+00:34:19.280 --> 00:34:21.919
+founders engineers product managers that
+
+00:34:21.919 --> 00:34:24.320
+can talk to customers get a sense for
+
+00:34:24.320 --> 00:34:26.399
+the taste of judgment on what to build
+
+00:34:26.399 --> 00:34:28.159
+and then build with AI and iterate
+
+00:34:28.159 --> 00:34:30.320
+quickly. I think that's just a ton of
+
+00:34:30.320 --> 00:34:31.359
+exciting things to do
+
+00:34:31.359 --> 00:34:32.560
+>> and you've been starting so many
+
+00:34:32.560 --> 00:34:34.320
+companies. You're like when I looked at
+
+00:34:34.320 --> 00:34:36.240
+your portfolio, do you think for
+
+00:34:36.240 --> 00:34:37.599
+beginners when you said you built
+
+00:34:37.599 --> 00:34:39.919
+something during the weekend, how do you
+
+00:34:39.919 --> 00:34:41.520
+decide what to focus on or you can
+
+00:34:41.520 --> 00:34:43.440
+pursue multiple ideas because of AI now
+
+00:34:43.440 --> 00:34:45.599
+and you can just be, you know, playing
+
+00:34:45.599 --> 00:34:47.119
+in different companies at the same time.
+
+00:34:47.119 --> 00:34:49.040
+>> It turns out building a company is still
+
+00:34:49.040 --> 00:34:50.960
+really, really hard and so there's a lot
+
+00:34:50.960 --> 00:34:52.399
+to be said for a single threaded
+
+00:34:52.399 --> 00:34:54.159
+leadership or someone that's fully
+
+00:34:54.159 --> 00:34:56.960
+focused on just one thing. I find it,
+
+00:34:56.960 --> 00:34:58.320
+you know, over a weekend I can often
+
+00:34:58.320 --> 00:34:59.920
+build an Elm wrap, build a simple
+
+00:34:59.920 --> 00:35:03.359
+application, but I wish it was that easy
+
+00:35:03.359 --> 00:35:07.040
+to build a large company. Um, I find
+
+00:35:07.040 --> 00:35:09.280
+that building something meaningful often
+
+00:35:09.280 --> 00:35:12.320
+takes either real technical depth uh and
+
+00:35:12.320 --> 00:35:15.040
+or deep customer insight and integration
+
+00:35:15.040 --> 00:35:18.079
+with customers. And yes, we can now, you
+
+00:35:18.079 --> 00:35:20.079
+know, use AI to code something in a few
+
+00:35:20.079 --> 00:35:21.920
+hours, but that's a small piece of the
+
+00:35:21.920 --> 00:35:24.320
+puzzle. So spending time understanding
+
+00:35:24.320 --> 00:35:26.079
+the technical complexity and building
+
+00:35:26.079 --> 00:35:28.160
+the really complex software that takes
+
+00:35:28.160 --> 00:35:30.560
+us like months you know maybe years or
+
+00:35:30.560 --> 00:35:32.240
+having that deep custom insight to
+
+00:35:32.240 --> 00:35:33.920
+decide what to build that also just
+
+00:35:33.920 --> 00:35:35.280
+takes a lot talking to people reading
+
+00:35:35.280 --> 00:35:37.520
+facial expressions surveys doing that
+
+00:35:37.520 --> 00:35:38.880
+over and over until we figure out what
+
+00:35:38.880 --> 00:35:41.200
+to build. Um and so I think sometimes
+
+00:35:41.200 --> 00:35:43.440
+there's a lot of value to sampling
+
+00:35:43.440 --> 00:35:46.160
+widely but then having that focus for an
+
+00:35:46.160 --> 00:35:48.240
+individual to go really deep in a couple
+
+00:35:48.240 --> 00:35:50.160
+sectors that that still seems important
+
+00:35:50.160 --> 00:35:51.760
+for building a business. My last
+
+00:35:51.760 --> 00:35:53.440
+question, I know it's we don't have much
+
+00:35:53.440 --> 00:35:55.839
+time, but I wanted to ask you about AGI
+
+00:35:55.839 --> 00:35:57.839
+just because people use this word so
+
+00:35:57.839 --> 00:36:00.000
+much and some people say I think Jensen
+
+00:36:00.000 --> 00:36:02.480
+Hang said we already reached AGI. You
+
+00:36:02.480 --> 00:36:05.200
+said it's decades away. What's the one
+
+00:36:05.200 --> 00:36:06.960
+criteria when you're going to say we
+
+00:36:06.960 --> 00:36:08.560
+reach AGI?
+
+00:36:08.560 --> 00:36:10.720
+>> So different people say we reach AGI at
+
+00:36:10.720 --> 00:36:11.839
+different times because of different
+
+00:36:11.839 --> 00:36:14.000
+definitions of AGI. The definition I'm
+
+00:36:14.000 --> 00:36:16.000
+most familiar with is AI that could do
+
+00:36:16.000 --> 00:36:18.960
+any intellectual task that a human can.
+
+00:36:18.960 --> 00:36:22.079
+But so the human brain can take say five
+
+00:36:22.079 --> 00:36:25.359
+years to study and do a PhD thesis or or
+
+00:36:25.359 --> 00:36:28.320
+and so can AI write a PhD thesis or a
+
+00:36:28.320 --> 00:36:30.720
+human can learn to drive a truck through
+
+00:36:30.720 --> 00:36:33.040
+a dense rainforest with you know tens of
+
+00:36:33.040 --> 00:36:35.280
+minutes of practice. So when can AI do
+
+00:36:35.280 --> 00:36:37.280
+that to drive new environment with tens
+
+00:36:37.280 --> 00:36:38.800
+of minutes of practice. It feels like
+
+00:36:38.800 --> 00:36:41.760
+there's a long list of these things that
+
+00:36:41.760 --> 00:36:45.760
+AI cannot do uh for what feels to me
+
+00:36:45.760 --> 00:36:48.000
+decades. I hope it's only decades. maybe
+
+00:36:48.000 --> 00:36:50.000
+you turn out to be longer. So that's why
+
+00:36:50.000 --> 00:36:51.760
+I think for that definition of AI or
+
+00:36:51.760 --> 00:36:55.280
+AGI, AGI is still very far away.
+
+00:36:55.280 --> 00:36:57.440
+>> But um it turns out because of you know
+
+00:36:57.440 --> 00:36:59.440
+economic incentives, I think open
+
+00:36:59.440 --> 00:37:00.960
+Microsoft had an agreement that's
+
+00:37:00.960 --> 00:37:02.400
+actually been renegotiated now. So
+
+00:37:02.400 --> 00:37:04.480
+that's gone away. But open AI had an
+
+00:37:04.480 --> 00:37:06.960
+economic incentive to try to declare
+
+00:37:06.960 --> 00:37:10.000
+reaching AGI earlier. Uh and so it turns
+
+00:37:10.000 --> 00:37:11.680
+out that if you come up with other
+
+00:37:11.680 --> 00:37:14.240
+definitions of AI depending on how far
+
+00:37:14.240 --> 00:37:16.480
+you lower the bar then you could totally
+
+00:37:16.480 --> 00:37:18.720
+have reached AGI you know already or
+
+00:37:18.720 --> 00:37:20.560
+even 30 years ago depending on how you
+
+00:37:20.560 --> 00:37:21.440
+want to define it.
+
+00:37:21.440 --> 00:37:23.839
+>> Yeah true Andrew thank you so much for
+
+00:37:23.839 --> 00:37:25.440
+this positive conversation very
+
+00:37:25.440 --> 00:37:28.079
+applicable. I like when u you watch
+
+00:37:28.079 --> 00:37:29.520
+something and then you go and you
+
+00:37:29.520 --> 00:37:31.280
+measure yourself against what people are
+
+00:37:31.280 --> 00:37:34.240
+doing with AI look at your process and
+
+00:37:34.240 --> 00:37:36.000
+uh maybe expand it. So thank you so much
+
+00:37:36.000 --> 00:37:38.079
+for showing what your team is doing and
+
+00:37:38.079 --> 00:37:40.720
+thank you for your insights. Yeah, I
+
+00:37:40.720 --> 00:37:43.119
+think given the huge benefits of AI to
+
+00:37:43.119 --> 00:37:44.960
+come, I hope whoever was watching this
+
+00:37:44.960 --> 00:37:48.000
+is motivated to really go learn AI,
+
+00:37:48.000 --> 00:37:50.320
+apply it, um, and and even to go build
+
+00:37:50.320 --> 00:37:52.480
+some
