@@ -12,7 +12,7 @@
 ## Overview
 A post-hoc checker that takes an existing auto-generated transcript (SRT/VTT) — regardless of what tool produced it — and flags likely ASR errors (mistranscribed technical terms, slang, domain jargon), then suggests corrections. Chosen over a pre-processing approach because it's more original, workflow-agnostic, and solves the harder problem of catching *unanticipated* errors.
 
-Framed as a personal build / portfolio project, not for commercialization. Prioritized ahead of the privacy-oriented Anki clone (Tauri + React + local LLM + custom FSRS) because it's lower-friction and better suited to a busy school/self-study period; the Anki clone is deferred to a less busy stretch.
+Framed as a personal build / portfolio project, not for commercialization.
 
 ## Core Pipeline
 1. **Input parsing** — read SRT/VTT, extract cue text + timestamps, track word-level position across the transcript. ✅ `parser.py` / `models.py` (`Cue`, `Word` with per-cue and global position).
