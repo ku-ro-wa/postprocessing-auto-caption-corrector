@@ -1,9 +1,10 @@
 # Auto-Generated Caption Error Detection Tool — Project Plan
 
-> **Status (2026-09-19):** Sessions 1–4 below are done and shipped, plus a web
-> review UI that wasn't in the original scope. Current frontier is Session 5:
-> a qualitative pass over real transcripts. This file is kept as the
-> historical design record; day-to-day roadmap tracking lives in
+> **Status (2026-09-22):** Sessions 1–5 below are done and shipped, plus a web
+> review UI and a Regression gate that weren't in the original scope. Current
+> frontier is ongoing detector-threshold retuning against that gate. This
+> file is kept as the historical design record; day-to-day roadmap tracking
+> lives in
 > [`README.md`](README.md)'s Roadmap section and
 > [`docs/plan-llm-correction.md`](docs/plan-llm-correction.md). Domain
 > language is in [`CONTEXT.md`](CONTEXT.md); decisions with rationale are in
@@ -43,7 +44,7 @@ Framed as a personal build / portfolio project, not for commercialization.
 2. ✅ Phonetic/statistical anomaly flagging — `check` command, text and JSON output
 3. ✅ LLM correction step — `correct` command, structured JSON-in/JSON-out via OpenRouter
 4. ✅ Diff output + corrected file export — CLI interactive review + sidecar; **web review UI added as an unplanned 4th phase**, now itself covered by tests (upload, per-flag decisions, dashboard listing/isolation/delete, export with mixed decisions, VTT format)
-5. 🔲 Qualitative pass over real transcripts + detector-threshold retuning — **current next step**, not yet started
+5. ✅ Regression gate + Scored corpus (5 real-video fixtures) + Smoke corpus workflow — see README's `## Evaluation` section and `docs/adr/0005-scope-eval-loop-to-local-pipeline.md`. Ongoing detector-threshold retuning against the gate is the current next step.
 
 ## Cost Control (limiting LLM calls)
 - **Batch requests**: ✅ implemented — flags are batched per `correct` run, not sent one call per word.
@@ -55,19 +56,20 @@ Framed as a personal build / portfolio project, not for commercialization.
 ## Model Testing (via OpenRouter)
 - Frontier models are unnecessary — this is a narrow, constrained classification/correction task, not open-ended reasoning.
 - `--model` makes swapping trivial; default is `google/gemini-2.0-flash-001`.
-- 🔲 Not yet done: side-by-side testing across candidates (Gemini Flash, Qwen 2.5, Llama 3.1 8B/70B, other cheap options). Revisit once real transcripts are on hand for Session 5.
+- 🔲 Not yet done: side-by-side testing across candidates (Gemini Flash, Qwen 2.5, Llama 3.1 8B/70B, other cheap options). Real transcripts are now on hand (`tests/data/`); this is unblocked but still not started — the LLM pass stays outside the regression gate per ADR-0005, so this remains a manual comparison.
 
 ## Evaluation Approach
-- **Qualitative, not formal benchmarking** — still the right call; no ground-truth dataset exists yet.
-- `correct --eval-out FILE` already writes the planned `flagged term | model's suggestion | verdict` markdown table (verdict column left blank for manual fill-in) — the scaffolding for this exists ahead of the actual eval pass.
-- 🔲 Not yet run against real (non-synthetic) transcripts. `tests/data/` currently holds only synthetic/sample fixtures for unit tests, not a qualitative-eval corpus.
-- Revisit formal metrics after 3–5 real test videos, as originally planned.
+- **Regression gate over the local pipeline, qualitative for the LLM pass** — see README's `## Evaluation` section and `docs/adr/0005-scope-eval-loop-to-local-pipeline.md` for the full rationale (a Scored corpus this small can't support a general accuracy claim, so the gate reports recall/precision/cold-flag rate as separate floors instead of a blended score; the LLM correction pass deliberately stays outside this loop).
+- `correct --eval-out FILE` still writes the planned `flagged term | model's suggestion | verdict` markdown table for manual LLM-pass spot checks — unrelated to the regression gate, which never calls the LLM.
+- ✅ `tests/data/` now holds 5 real-video fixtures (paired `.auto`/Reference-caption transcripts) plus `scored_corpus.json`, curated per ADR-0005; `pytest tests/test_regression_gate.py` runs the gate.
+- A larger, unscored Smoke corpus run (`check` over a bigger transcript batch, eyeballed) is the informal generalization check — see README.
 
 ## Immediate Next Steps
-- [ ] User to source a handful of real test videos with known/suspected caption errors — still the blocking input for Session 5
 - [x] Build SRT/VTT parser + CLI skeleton (Session 1)
 - [x] Implement phonetic/statistical flagging (Session 2)
 - [x] Wire up OpenRouter LLM correction step with model-swap abstraction (Session 3)
 - [x] Add diff/export output — CLI (Session 4) and, beyond plan, a web review UI
-- [ ] Run first qualitative pass across real test videos and log the `flagged term | suggestion | verdict` table (Session 5)
-- [ ] A/B a couple of cheap OpenRouter models against each other on that same set once it exists
+- [x] Source real test videos and build the Regression gate + initial Scored corpus (Session 5)
+- [ ] Keep growing the Scored corpus as more paired videos are sourced (ongoing, per ADR-0005 — not a one-time close-out)
+- [ ] Run a Smoke corpus pass (larger unscored batch) to sanity-check generalization
+- [ ] A/B a couple of cheap OpenRouter models against each other on a real transcript set (LLM pass stays outside the regression gate)

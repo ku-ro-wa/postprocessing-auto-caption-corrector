@@ -159,8 +159,9 @@ the small Scored corpus rather than generalizing.
 1. ~~SRT/VTT parser + CLI round-trip~~
 2. ~~Phonetic / statistical anomaly flagging~~
 3. ~~LLM correction pass + corrected-file export (`correct`, OpenRouter, swappable model)~~
-4. ~~Web review UI: upload, review, export (`serve`)~~ ← current
-5. Qualitative pass over real transcripts + detector-threshold retuning
+4. ~~Web review UI: upload, review, export (`serve`)~~
+5. ~~Regression gate + Scored/Smoke corpus for detector tuning~~
+6. Ongoing detector-threshold retuning against the regression gate ← current
 
 Sessions 3–4 are planned in detail in [`docs/plan-llm-correction.md`](docs/plan-llm-correction.md).
 Domain vocabulary for the codebase itself is in [`CONTEXT.md`](CONTEXT.md); design
