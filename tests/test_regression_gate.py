@@ -8,37 +8,52 @@ from __future__ import annotations
 
 from pathlib import Path
 
+import pytest
+
 from caption_checker.detect import detect
 from caption_checker.evaluation import ScoreReport, load_corpus, score
 from caption_checker.models import DetectConfig
-from caption_checker.parser import parse
+from caption_checker.parser import parse, tokenize
 
 DATA_DIR = Path(__file__).parent / "data"
 CORPUS_PATH = DATA_DIR / "scored_corpus.json"
-CONFIG = DetectConfig(enable_embeddings=False)
 
-MIN_RECALL = 1.0
-MIN_PRECISION = 1.0
+# Set 2026-09-23 from the full manual audio pass over the 5 real videos.
+# Recall is low on purpose: the corpus now holds every error heard, including
+# the real-word errors (right spelling, wrong word) no detector catches yet.
+# Precision is measured over should-not-flag spans that were mostly picked
+# *because* they got flagged, so it's a regression floor, not a rate.
+MIN_RECALL = 0.49
+MIN_PRECISION = 0.52
 MAX_COLD_FLAG_RATE = 0.5
 
+# The context-embedding tier (the `check`/`correct` default when installed)
+# currently adds one false positive ("Kalshi") and no catches.
+MIN_PRECISION_WITH_EMBEDDINGS = 0.50
 
-def _run() -> ScoreReport:
+
+def _run(config: DetectConfig) -> ScoreReport:
     cases = load_corpus(CORPUS_PATH)
-    sources = {case.source for case in cases}
+    cues = {case.source: parse(DATA_DIR / case.source) for case in cases}
     flags_by_source = {
-        source: detect(parse(DATA_DIR / source), config=CONFIG) for source in sources
+        source: detect(source_cues, config=config) for source, source_cues in cues.items()
     }
-    return score(cases, flags_by_source)
+    words_by_source = {source: tokenize(source_cues) for source, source_cues in cues.items()}
+    return score(cases, flags_by_source, words_by_source)
 
 
-def test_regression_gate_meets_floors() -> None:
-    report = _run()
+@pytest.mark.parametrize("with_embeddings", [False, True], ids=["lexical", "embeddings"])
+def test_regression_gate_meets_floors(with_embeddings: bool) -> None:
+    if with_embeddings:
+        pytest.importorskip("sentence_transformers")
+    report = _run(DetectConfig(enable_embeddings=with_embeddings))
+    min_precision = MIN_PRECISION_WITH_EMBEDDINGS if with_embeddings else MIN_PRECISION
     assert report.recall >= MIN_RECALL, (
         f"recall {report.recall:.2f} below floor {MIN_RECALL} "
         f"({report.false_negatives} missed real error(s))"
     )
-    assert report.precision >= MIN_PRECISION, (
-        f"precision {report.precision:.2f} below floor {MIN_PRECISION} "
+    assert report.precision >= min_precision, (
+        f"precision {report.precision:.2f} below floor {min_precision} "
         f"({report.false_positives} known-good span(s) flagged)"
     )
     assert report.cold_flag_rate <= MAX_COLD_FLAG_RATE, (

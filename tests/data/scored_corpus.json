@@ -3,13 +3,15 @@
     "source": "sample_lecture.srt",
     "span": "con sensus",
     "verdict": "should-flag",
-    "candidate": "consensus"
+    "candidate": "consensus",
+    "kind": "real-word"
   },
   {
     "source": "sample_lecture.srt",
     "span": "cough ka",
     "verdict": "should-flag",
-    "candidate": "Kafka"
+    "candidate": "Kafka",
+    "kind": "real-word"
   },
   {
     "source": "split_word_clean.srt",
@@ -43,11 +45,6 @@
   },
   {
     "source": "agi-are-we-there-yet.auto.vtt",
-    "span": "Sherny",
-    "verdict": "should-flag"
-  },
-  {
-    "source": "agi-are-we-there-yet.auto.vtt",
     "span": "model",
     "verdict": "should-not-flag"
   },
@@ -60,107 +57,6 @@
     "source": "agi-are-we-there-yet.auto.vtt",
     "span": "capabilities",
     "verdict": "should-not-flag"
-  },
-  {
-    "source": "ai-researchers-pace-demand.auto.srt",
-    "span": "textto",
-    "verdict": "should-flag"
-  },
-  {
-    "source": "ai-researchers-pace-demand.auto.srt",
-    "span": "Amade's",
-    "verdict": "should-flag"
-  },
-  {
-    "source": "ai-researchers-pace-demand.auto.srt",
-    "span": "Majimmuda",
-    "verdict": "should-flag"
-  },
-  {
-    "source": "ai-researchers-pace-demand.auto.srt",
-    "span": "Majmudar",
-    "verdict": "should-flag"
-  },
-  {
-    "source": "ai-researchers-pace-demand.auto.srt",
-    "span": "Majmuda",
-    "verdict": "should-flag"
-  },
-  {
-    "source": "ai-researchers-pace-demand.auto.srt",
-    "span": "Antropic",
-    "verdict": "should-flag",
-    "candidate": "Anthropic"
-  },
-  {
-    "source": "ai-researchers-pace-demand.auto.srt",
-    "span": "Navia",
-    "verdict": "should-flag"
-  },
-  {
-    "source": "ai-researchers-pace-demand.auto.srt",
-    "span": "cenamed",
-    "verdict": "should-flag"
-  },
-  {
-    "source": "ai-researchers-pace-demand.auto.srt",
-    "span": "Samman's",
-    "verdict": "should-flag"
-  },
-  {
-    "source": "ai-researchers-pace-demand.auto.srt",
-    "span": "unmoniable",
-    "verdict": "should-flag"
-  },
-  {
-    "source": "ai-researchers-pace-demand.auto.srt",
-    "span": "moniable",
-    "verdict": "should-flag"
-  },
-  {
-    "source": "ai-researchers-pace-demand.auto.srt",
-    "span": "Selum",
-    "verdict": "should-flag"
-  },
-  {
-    "source": "ai-researchers-pace-demand.auto.srt",
-    "span": "Ammedday",
-    "verdict": "should-flag"
-  },
-  {
-    "source": "ai-researchers-pace-demand.auto.srt",
-    "span": "high-risisk",
-    "verdict": "should-flag"
-  },
-  {
-    "source": "ai-researchers-pace-demand.auto.srt",
-    "span": "Yemenes",
-    "verdict": "should-flag"
-  },
-  {
-    "source": "ai-researchers-pace-demand.auto.srt",
-    "span": "Kimmy",
-    "verdict": "should-flag"
-  },
-  {
-    "source": "ai-researchers-pace-demand.auto.srt",
-    "span": "rrooting",
-    "verdict": "should-flag"
-  },
-  {
-    "source": "ai-researchers-pace-demand.auto.srt",
-    "span": "biocurity",
-    "verdict": "should-flag"
-  },
-  {
-    "source": "ai-researchers-pace-demand.auto.srt",
-    "span": "Foudan",
-    "verdict": "should-flag"
-  },
-  {
-    "source": "ai-researchers-pace-demand.auto.srt",
-    "span": "AIdriven",
-    "verdict": "should-flag"
   },
   {
     "source": "ai-researchers-pace-demand.auto.srt",
@@ -179,51 +75,6 @@
   },
   {
     "source": "andrew-ng-ai-opportunities.auto.vtt",
-    "span": "monongering",
-    "verdict": "should-flag"
-  },
-  {
-    "source": "andrew-ng-ai-opportunities.auto.vtt",
-    "span": "Brennoffson",
-    "verdict": "should-flag"
-  },
-  {
-    "source": "andrew-ng-ai-opportunities.auto.vtt",
-    "span": "curriculara",
-    "verdict": "should-flag"
-  },
-  {
-    "source": "andrew-ng-ai-opportunities.auto.vtt",
-    "span": "endto-end",
-    "verdict": "should-flag"
-  },
-  {
-    "source": "andrew-ng-ai-opportunities.auto.vtt",
-    "span": "engineing",
-    "verdict": "should-flag"
-  },
-  {
-    "source": "andrew-ng-ai-opportunities.auto.vtt",
-    "span": "Quen",
-    "verdict": "should-flag"
-  },
-  {
-    "source": "andrew-ng-ai-opportunities.auto.vtt",
-    "span": "candly",
-    "verdict": "should-flag"
-  },
-  {
-    "source": "andrew-ng-ai-opportunities.auto.vtt",
-    "span": "Jajiv",
-    "verdict": "should-flag"
-  },
-  {
-    "source": "andrew-ng-ai-opportunities.auto.vtt",
-    "span": "Viti",
-    "verdict": "should-flag"
-  },
-  {
-    "source": "andrew-ng-ai-opportunities.auto.vtt",
     "span": "building",
     "verdict": "should-not-flag"
   },
@@ -236,40 +87,6 @@
     "source": "andrew-ng-ai-opportunities.auto.vtt",
     "span": "software",
     "verdict": "should-not-flag"
-  },
-  {
-    "source": "prediction-markets-ads.auto.srt",
-    "span": "Kashi",
-    "verdict": "should-flag",
-    "candidate": "Kalshi"
-  },
-  {
-    "source": "prediction-markets-ads.auto.srt",
-    "span": "KASHI",
-    "verdict": "should-flag",
-    "candidate": "Kalshi"
-  },
-  {
-    "source": "prediction-markets-ads.auto.srt",
-    "span": "Treyus",
-    "verdict": "should-flag"
-  },
-  {
-    "source": "prediction-markets-ads.auto.srt",
-    "span": "Espenia",
-    "verdict": "should-flag"
-  },
-  {
-    "source": "prediction-markets-ads.auto.srt",
-    "span": "Caushi",
-    "verdict": "should-flag",
-    "candidate": "Kalshi"
-  },
-  {
-    "source": "prediction-markets-ads.auto.srt",
-    "span": "Kalshiem",
-    "verdict": "should-flag",
-    "candidate": "Kalshi"
   },
   {
     "source": "prediction-markets-ads.auto.srt",
@@ -288,36 +105,6 @@
   },
   {
     "source": "social-media-addictive.auto.srt",
-    "span": "monkeykey's",
-    "verdict": "should-flag"
-  },
-  {
-    "source": "social-media-addictive.auto.srt",
-    "span": "Incogn",
-    "verdict": "should-flag"
-  },
-  {
-    "source": "social-media-addictive.auto.srt",
-    "span": "Incogny's",
-    "verdict": "should-flag"
-  },
-  {
-    "source": "social-media-addictive.auto.srt",
-    "span": "Incogn's",
-    "verdict": "should-flag"
-  },
-  {
-    "source": "social-media-addictive.auto.srt",
-    "span": "Africanamean",
-    "verdict": "should-flag"
-  },
-  {
-    "source": "social-media-addictive.auto.srt",
-    "span": "replplug",
-    "verdict": "should-flag"
-  },
-  {
-    "source": "social-media-addictive.auto.srt",
     "span": "dopamine",
     "verdict": "should-not-flag"
   },
@@ -329,6 +116,767 @@
   {
     "source": "social-media-addictive.auto.srt",
     "span": "triggers",
+    "verdict": "should-not-flag"
+  },
+  {
+    "source": "agi-are-we-there-yet.auto.vtt",
+    "span": "Y Ann",
+    "verdict": "should-flag",
+    "kind": "real-word"
+  },
+  {
+    "source": "agi-are-we-there-yet.auto.vtt",
+    "span": "where",
+    "verdict": "should-flag",
+    "context": "where Sherny",
+    "kind": "real-word"
+  },
+  {
+    "source": "agi-are-we-there-yet.auto.vtt",
+    "span": "Sherny",
+    "verdict": "should-flag",
+    "kind": "non-word"
+  },
+  {
+    "source": "agi-are-we-there-yet.auto.vtt",
+    "span": "KB",
+    "verdict": "should-flag",
+    "context": "KB cache",
+    "kind": "real-word"
+  },
+  {
+    "source": "ai-researchers-pace-demand.auto.srt",
+    "span": "Coxin",
+    "verdict": "should-flag",
+    "kind": "non-word"
+  },
+  {
+    "source": "ai-researchers-pace-demand.auto.srt",
+    "span": "Open AAI",
+    "verdict": "should-flag",
+    "kind": "real-word"
+  },
+  {
+    "source": "ai-researchers-pace-demand.auto.srt",
+    "span": "Amade's",
+    "verdict": "should-flag",
+    "kind": "non-word"
+  },
+  {
+    "source": "ai-researchers-pace-demand.auto.srt",
+    "span": "Majimmuda",
+    "verdict": "should-flag",
+    "kind": "non-word"
+  },
+  {
+    "source": "ai-researchers-pace-demand.auto.srt",
+    "span": "monitor",
+    "verdict": "should-flag",
+    "context": "trajectory of monitor and",
+    "kind": "real-word"
+  },
+  {
+    "source": "ai-researchers-pace-demand.auto.srt",
+    "span": "GT4",
+    "verdict": "should-flag",
+    "kind": "real-word"
+  },
+  {
+    "source": "ai-researchers-pace-demand.auto.srt",
+    "span": "Antropic",
+    "verdict": "should-flag",
+    "candidate": "Anthropic",
+    "kind": "non-word"
+  },
+  {
+    "source": "ai-researchers-pace-demand.auto.srt",
+    "span": "Navia",
+    "verdict": "should-flag",
+    "kind": "real-word"
+  },
+  {
+    "source": "ai-researchers-pace-demand.auto.srt",
+    "span": "cenamed",
+    "verdict": "should-flag",
+    "kind": "non-word"
+  },
+  {
+    "source": "ai-researchers-pace-demand.auto.srt",
+    "span": "Nome",
+    "verdict": "should-flag",
+    "kind": "real-word"
+  },
+  {
+    "source": "ai-researchers-pace-demand.auto.srt",
+    "span": "chorus",
+    "verdict": "should-flag",
+    "context": "chorus of concern",
+    "kind": "real-word"
+  },
+  {
+    "source": "ai-researchers-pace-demand.auto.srt",
+    "span": "Cristiano",
+    "verdict": "should-flag",
+    "kind": "real-word"
+  },
+  {
+    "source": "ai-researchers-pace-demand.auto.srt",
+    "span": "peak",
+    "verdict": "should-flag",
+    "context": "peak into",
+    "kind": "real-word"
+  },
+  {
+    "source": "ai-researchers-pace-demand.auto.srt",
+    "span": "Samman's",
+    "verdict": "should-flag",
+    "kind": "non-word"
+  },
+  {
+    "source": "ai-researchers-pace-demand.auto.srt",
+    "span": "unmoniable",
+    "verdict": "should-flag",
+    "kind": "non-word"
+  },
+  {
+    "source": "ai-researchers-pace-demand.auto.srt",
+    "span": "moniable",
+    "verdict": "should-flag",
+    "kind": "non-word"
+  },
+  {
+    "source": "ai-researchers-pace-demand.auto.srt",
+    "span": "Soul",
+    "verdict": "should-flag",
+    "context": "GPT 5.6 Soul",
+    "kind": "real-word"
+  },
+  {
+    "source": "ai-researchers-pace-demand.auto.srt",
+    "span": "Selum",
+    "verdict": "should-flag",
+    "kind": "non-word"
+  },
+  {
+    "source": "ai-researchers-pace-demand.auto.srt",
+    "span": "Ammeday",
+    "verdict": "should-flag",
+    "kind": "non-word"
+  },
+  {
+    "source": "ai-researchers-pace-demand.auto.srt",
+    "span": "Ammedday",
+    "verdict": "should-flag",
+    "kind": "non-word"
+  },
+  {
+    "source": "ai-researchers-pace-demand.auto.srt",
+    "span": "Mecca",
+    "verdict": "should-flag",
+    "context": "Mecca pilot",
+    "kind": "real-word"
+  },
+  {
+    "source": "ai-researchers-pace-demand.auto.srt",
+    "span": "cuttingedge",
+    "verdict": "should-flag",
+    "kind": "format"
+  },
+  {
+    "source": "ai-researchers-pace-demand.auto.srt",
+    "span": "high-risisk",
+    "verdict": "should-flag",
+    "kind": "non-word"
+  },
+  {
+    "source": "ai-researchers-pace-demand.auto.srt",
+    "span": "chin ga",
+    "verdict": "should-flag",
+    "kind": "real-word"
+  },
+  {
+    "source": "ai-researchers-pace-demand.auto.srt",
+    "span": "Marley",
+    "verdict": "should-flag",
+    "kind": "real-word"
+  },
+  {
+    "source": "ai-researchers-pace-demand.auto.srt",
+    "span": "Maralian",
+    "verdict": "should-flag",
+    "kind": "non-word"
+  },
+  {
+    "source": "ai-researchers-pace-demand.auto.srt",
+    "span": "self-p",
+    "verdict": "should-flag",
+    "kind": "format"
+  },
+  {
+    "source": "ai-researchers-pace-demand.auto.srt",
+    "span": "Yemenes",
+    "verdict": "should-flag",
+    "kind": "non-word"
+  },
+  {
+    "source": "ai-researchers-pace-demand.auto.srt",
+    "span": "Kimmy",
+    "verdict": "should-flag",
+    "kind": "real-word"
+  },
+  {
+    "source": "ai-researchers-pace-demand.auto.srt",
+    "span": "biocurity",
+    "verdict": "should-flag",
+    "kind": "non-word"
+  },
+  {
+    "source": "ai-researchers-pace-demand.auto.srt",
+    "span": "rrooting",
+    "verdict": "should-flag",
+    "kind": "non-word"
+  },
+  {
+    "source": "ai-researchers-pace-demand.auto.srt",
+    "span": "Foudan",
+    "verdict": "should-flag",
+    "kind": "non-word"
+  },
+  {
+    "source": "ai-researchers-pace-demand.auto.srt",
+    "span": "AIdriven",
+    "verdict": "should-flag",
+    "kind": "format"
+  },
+  {
+    "source": "ai-researchers-pace-demand.auto.srt",
+    "span": "entrance",
+    "verdict": "should-flag",
+    "kind": "real-word"
+  },
+  {
+    "source": "ai-researchers-pace-demand.auto.srt",
+    "span": "textto",
+    "verdict": "should-flag",
+    "kind": "format"
+  },
+  {
+    "source": "ai-researchers-pace-demand.auto.srt",
+    "span": "Majmuda",
+    "verdict": "should-flag",
+    "kind": "non-word"
+  },
+  {
+    "source": "ai-researchers-pace-demand.auto.srt",
+    "span": "Deepseek",
+    "verdict": "should-flag",
+    "kind": "format"
+  },
+  {
+    "source": "ai-researchers-pace-demand.auto.srt",
+    "span": "anthropics",
+    "verdict": "should-flag",
+    "candidate": "Anthropic",
+    "kind": "non-word"
+  },
+  {
+    "source": "andrew-ng-ai-opportunities.auto.vtt",
+    "span": "Corsera",
+    "verdict": "should-flag",
+    "kind": "non-word"
+  },
+  {
+    "source": "andrew-ng-ai-opportunities.auto.vtt",
+    "span": "monongering",
+    "verdict": "should-flag",
+    "kind": "non-word"
+  },
+  {
+    "source": "andrew-ng-ai-opportunities.auto.vtt",
+    "span": "poor the",
+    "verdict": "should-flag",
+    "context": "poor the society",
+    "kind": "real-word"
+  },
+  {
+    "source": "andrew-ng-ai-opportunities.auto.vtt",
+    "span": "way",
+    "verdict": "should-flag",
+    "context": "open way",
+    "kind": "real-word"
+  },
+  {
+    "source": "andrew-ng-ai-opportunities.auto.vtt",
+    "span": "job apocalypse",
+    "verdict": "should-flag",
+    "context": "or job apocalypse",
+    "kind": "real-word"
+  },
+  {
+    "source": "andrew-ng-ai-opportunities.auto.vtt",
+    "span": "riding",
+    "verdict": "should-flag",
+    "context": "riding in the streets",
+    "kind": "real-word"
+  },
+  {
+    "source": "andrew-ng-ai-opportunities.auto.vtt",
+    "span": "work",
+    "verdict": "should-flag",
+    "context": "work better",
+    "kind": "real-word"
+  },
+  {
+    "source": "andrew-ng-ai-opportunities.auto.vtt",
+    "span": "chai",
+    "verdict": "should-flag",
+    "context": "chai GPT",
+    "kind": "real-word"
+  },
+  {
+    "source": "andrew-ng-ai-opportunities.auto.vtt",
+    "span": "GBT",
+    "verdict": "should-flag",
+    "context": "chat GBT",
+    "kind": "real-word"
+  },
+  {
+    "source": "andrew-ng-ai-opportunities.auto.vtt",
+    "span": "Chad",
+    "verdict": "should-flag",
+    "context": "Chad GPT",
+    "kind": "real-word"
+  },
+  {
+    "source": "andrew-ng-ai-opportunities.auto.vtt",
+    "span": "Hopspot",
+    "verdict": "should-flag",
+    "kind": "non-word"
+  },
+  {
+    "source": "andrew-ng-ai-opportunities.auto.vtt",
+    "span": "row",
+    "verdict": "should-flag",
+    "context": "job row",
+    "kind": "real-word"
+  },
+  {
+    "source": "andrew-ng-ai-opportunities.auto.vtt",
+    "span": "wish a",
+    "verdict": "should-flag",
+    "context": "I wish a simple answer",
+    "kind": "real-word"
+  },
+  {
+    "source": "andrew-ng-ai-opportunities.auto.vtt",
+    "span": "complimenting",
+    "verdict": "should-flag",
+    "kind": "real-word"
+  },
+  {
+    "source": "andrew-ng-ai-opportunities.auto.vtt",
+    "span": "LMS MS",
+    "verdict": "should-flag",
+    "kind": "real-word"
+  },
+  {
+    "source": "andrew-ng-ai-opportunities.auto.vtt",
+    "span": "onetoone",
+    "verdict": "should-flag",
+    "kind": "format"
+  },
+  {
+    "source": "andrew-ng-ai-opportunities.auto.vtt",
+    "span": "hub",
+    "verdict": "should-flag",
+    "context": "AI hub",
+    "kind": "real-word"
+  },
+  {
+    "source": "andrew-ng-ai-opportunities.auto.vtt",
+    "span": "endto-end",
+    "verdict": "should-flag",
+    "kind": "format"
+  },
+  {
+    "source": "andrew-ng-ai-opportunities.auto.vtt",
+    "span": "they'll",
+    "verdict": "should-flag",
+    "context": "they'll put them",
+    "kind": "real-word"
+  },
+  {
+    "source": "andrew-ng-ai-opportunities.auto.vtt",
+    "span": "engineing",
+    "verdict": "should-flag",
+    "kind": "non-word"
+  },
+  {
+    "source": "andrew-ng-ai-opportunities.auto.vtt",
+    "span": "positive",
+    "verdict": "should-flag",
+    "context": "positive era",
+    "kind": "real-word"
+  },
+  {
+    "source": "andrew-ng-ai-opportunities.auto.vtt",
+    "span": "trolling",
+    "verdict": "should-flag",
+    "context": "trolling the internet",
+    "kind": "real-word"
+  },
+  {
+    "source": "andrew-ng-ai-opportunities.auto.vtt",
+    "span": "Quen",
+    "verdict": "should-flag",
+    "kind": "real-word"
+  },
+  {
+    "source": "andrew-ng-ai-opportunities.auto.vtt",
+    "span": "Benja",
+    "verdict": "should-flag",
+    "kind": "real-word"
+  },
+  {
+    "source": "andrew-ng-ai-opportunities.auto.vtt",
+    "span": "candly",
+    "verdict": "should-flag",
+    "kind": "non-word"
+  },
+  {
+    "source": "andrew-ng-ai-opportunities.auto.vtt",
+    "span": "circus",
+    "verdict": "should-flag",
+    "context": "electric circus",
+    "kind": "real-word"
+  },
+  {
+    "source": "andrew-ng-ai-opportunities.auto.vtt",
+    "span": "dumb scrolling",
+    "verdict": "should-flag",
+    "kind": "real-word"
+  },
+  {
+    "source": "andrew-ng-ai-opportunities.auto.vtt",
+    "span": "Jajiv",
+    "verdict": "should-flag",
+    "kind": "non-word"
+  },
+  {
+    "source": "andrew-ng-ai-opportunities.auto.vtt",
+    "span": "Viti",
+    "verdict": "should-flag",
+    "kind": "real-word"
+  },
+  {
+    "source": "andrew-ng-ai-opportunities.auto.vtt",
+    "span": "deandized",
+    "verdict": "should-flag",
+    "kind": "non-word"
+  },
+  {
+    "source": "andrew-ng-ai-opportunities.auto.vtt",
+    "span": "Elm wrap",
+    "verdict": "should-flag",
+    "kind": "real-word"
+  },
+  {
+    "source": "andrew-ng-ai-opportunities.auto.vtt",
+    "span": "Hang",
+    "verdict": "should-flag",
+    "context": "Jensen Hang",
+    "kind": "real-word"
+  },
+  {
+    "source": "andrew-ng-ai-opportunities.auto.vtt",
+    "span": "open",
+    "verdict": "should-flag",
+    "context": "think open Microsoft",
+    "kind": "real-word"
+  },
+  {
+    "source": "andrew-ng-ai-opportunities.auto.vtt",
+    "span": "Brennoffson",
+    "verdict": "should-flag",
+    "kind": "non-word"
+  },
+  {
+    "source": "andrew-ng-ai-opportunities.auto.vtt",
+    "span": "curriculara",
+    "verdict": "should-flag",
+    "kind": "non-word"
+  },
+  {
+    "source": "prediction-markets-ads.auto.srt",
+    "span": "Shane",
+    "verdict": "should-flag",
+    "context": "Shane Coplan",
+    "kind": "real-word"
+  },
+  {
+    "source": "prediction-markets-ads.auto.srt",
+    "span": "Kashi",
+    "verdict": "should-flag",
+    "candidate": "Kalshi",
+    "kind": "real-word"
+  },
+  {
+    "source": "prediction-markets-ads.auto.srt",
+    "span": "KASHI'S",
+    "verdict": "should-flag",
+    "candidate": "Kalshi",
+    "kind": "real-word"
+  },
+  {
+    "source": "prediction-markets-ads.auto.srt",
+    "span": "add to reach",
+    "verdict": "should-flag",
+    "kind": "real-word"
+  },
+  {
+    "source": "prediction-markets-ads.auto.srt",
+    "span": "So long",
+    "verdict": "should-flag",
+    "context": "ads. So long",
+    "kind": "real-word"
+  },
+  {
+    "source": "prediction-markets-ads.auto.srt",
+    "span": "Treyus",
+    "verdict": "should-flag",
+    "kind": "non-word"
+  },
+  {
+    "source": "prediction-markets-ads.auto.srt",
+    "span": "Espenia",
+    "verdict": "should-flag",
+    "kind": "non-word"
+  },
+  {
+    "source": "prediction-markets-ads.auto.srt",
+    "span": "Caushi",
+    "verdict": "should-flag",
+    "candidate": "Kalshi",
+    "kind": "non-word"
+  },
+  {
+    "source": "prediction-markets-ads.auto.srt",
+    "span": "Kalshiem",
+    "verdict": "should-flag",
+    "candidate": "Kalshi",
+    "kind": "non-word"
+  },
+  {
+    "source": "social-media-addictive.auto.srt",
+    "span": "12",
+    "verdict": "should-flag",
+    "context": "2 and 12 months",
+    "kind": "format"
+  },
+  {
+    "source": "social-media-addictive.auto.srt",
+    "span": "Fog",
+    "verdict": "should-flag",
+    "context": "BJ Fog",
+    "kind": "real-word"
+  },
+  {
+    "source": "social-media-addictive.auto.srt",
+    "span": "Shreas",
+    "verdict": "should-flag",
+    "kind": "non-word"
+  },
+  {
+    "source": "social-media-addictive.auto.srt",
+    "span": "Wolf from",
+    "verdict": "should-flag",
+    "kind": "real-word"
+  },
+  {
+    "source": "social-media-addictive.auto.srt",
+    "span": "Shutz",
+    "verdict": "should-flag",
+    "kind": "non-word"
+  },
+  {
+    "source": "social-media-addictive.auto.srt",
+    "span": "monkeykey's",
+    "verdict": "should-flag",
+    "kind": "non-word"
+  },
+  {
+    "source": "social-media-addictive.auto.srt",
+    "span": "cut",
+    "verdict": "should-flag",
+    "context": "will not cut",
+    "kind": "real-word"
+  },
+  {
+    "source": "social-media-addictive.auto.srt",
+    "span": "queue",
+    "verdict": "should-flag",
+    "kind": "real-word"
+  },
+  {
+    "source": "social-media-addictive.auto.srt",
+    "span": "RAD",
+    "verdict": "should-flag",
+    "context": "RAD experiment",
+    "kind": "real-word"
+  },
+  {
+    "source": "social-media-addictive.auto.srt",
+    "span": "Warframe",
+    "verdict": "should-flag",
+    "kind": "real-word"
+  },
+  {
+    "source": "social-media-addictive.auto.srt",
+    "span": "Incogn",
+    "verdict": "should-flag",
+    "kind": "non-word"
+  },
+  {
+    "source": "social-media-addictive.auto.srt",
+    "span": "Incogny's",
+    "verdict": "should-flag",
+    "kind": "non-word"
+  },
+  {
+    "source": "social-media-addictive.auto.srt",
+    "span": "Incogn's",
+    "verdict": "should-flag",
+    "kind": "non-word"
+  },
+  {
+    "source": "social-media-addictive.auto.srt",
+    "span": "near a",
+    "verdict": "should-flag",
+    "context": "time and near a had",
+    "kind": "real-word"
+  },
+  {
+    "source": "social-media-addictive.auto.srt",
+    "span": "Africanamean",
+    "verdict": "should-flag",
+    "kind": "non-word"
+  },
+  {
+    "source": "social-media-addictive.auto.srt",
+    "span": "1000",
+    "verdict": "should-flag",
+    "context": "1000 p.m.",
+    "kind": "format"
+  },
+  {
+    "source": "social-media-addictive.auto.srt",
+    "span": "replplug",
+    "verdict": "should-flag",
+    "kind": "non-word"
+  },
+  {
+    "source": "agi-are-we-there-yet.auto.vtt",
+    "span": "theorems",
+    "verdict": "should-not-flag"
+  },
+  {
+    "source": "agi-are-we-there-yet.auto.vtt",
+    "span": "Chollet",
+    "verdict": "should-not-flag"
+  },
+  {
+    "source": "agi-are-we-there-yet.auto.vtt",
+    "span": "llama.cpp",
+    "verdict": "should-not-flag"
+  },
+  {
+    "source": "agi-are-we-there-yet.auto.vtt",
+    "span": "minis",
+    "verdict": "should-not-flag"
+  },
+  {
+    "source": "agi-are-we-there-yet.auto.vtt",
+    "span": "Dario",
+    "verdict": "should-not-flag"
+  },
+  {
+    "source": "agi-are-we-there-yet.auto.vtt",
+    "span": "OpenAI",
+    "verdict": "should-not-flag"
+  },
+  {
+    "source": "ai-researchers-pace-demand.auto.srt",
+    "span": "Sora",
+    "verdict": "should-not-flag"
+  },
+  {
+    "source": "ai-researchers-pace-demand.auto.srt",
+    "span": "recursively",
+    "verdict": "should-not-flag"
+  },
+  {
+    "source": "ai-researchers-pace-demand.auto.srt",
+    "span": "Dario",
+    "verdict": "should-not-flag"
+  },
+  {
+    "source": "ai-researchers-pace-demand.auto.srt",
+    "span": "acing",
+    "verdict": "should-not-flag"
+  },
+  {
+    "source": "ai-researchers-pace-demand.auto.srt",
+    "span": "crucially",
+    "verdict": "should-not-flag"
+  },
+  {
+    "source": "ai-researchers-pace-demand.auto.srt",
+    "span": "OpenAI's",
+    "verdict": "should-not-flag"
+  },
+  {
+    "source": "ai-researchers-pace-demand.auto.srt",
+    "span": "anodine",
+    "verdict": "should-not-flag"
+  },
+  {
+    "source": "ai-researchers-pace-demand.auto.srt",
+    "span": "Majmudar",
+    "verdict": "should-not-flag"
+  },
+  {
+    "source": "ai-researchers-pace-demand.auto.srt",
+    "span": "Demis",
+    "verdict": "should-not-flag"
+  },
+  {
+    "source": "andrew-ng-ai-opportunities.auto.vtt",
+    "span": "Yoshua",
+    "verdict": "should-not-flag"
+  },
+  {
+    "source": "prediction-markets-ads.auto.srt",
+    "span": "Kalshi",
+    "verdict": "should-not-flag"
+  },
+  {
+    "source": "prediction-markets-ads.auto.srt",
+    "span": "Steyer",
+    "verdict": "should-not-flag"
+  },
+  {
+    "source": "prediction-markets-ads.auto.srt",
+    "span": "Zohran",
+    "verdict": "should-not-flag"
+  },
+  {
+    "source": "prediction-markets-ads.auto.srt",
+    "span": "Mamdani's",
+    "verdict": "should-not-flag"
+  },
+  {
+    "source": "prediction-markets-ads.auto.srt",
+    "span": "seep",
     "verdict": "should-not-flag"
   }
 ]
