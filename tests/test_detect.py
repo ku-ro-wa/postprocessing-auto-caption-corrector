@@ -144,6 +144,23 @@ def test_cli_clean_file_exit_zero(tmp_path: Path) -> None:
     assert "no likely caption errors" in result.output
 
 
+def test_mid_sentence_name_not_corrected_to_common_word(tmp_path: Path) -> None:
+    """"Chollet" shares a phonetic code with "should", but capitalized
+    mid-sentence it reads as a name, not a mistranscribed common word. At a
+    sentence start the capital says nothing, so the match still stands."""
+    srt = tmp_path / "names.srt"
+    srt.write_text(
+        "1\n00:00:00,000 --> 00:00:04,000\n"
+        "You should ask François Chollet about it. Chollet knows.\n",
+        encoding="utf-8",
+    )
+    flags = detect(parse(srt), config=NO_EMBED)
+    suggested = [f.global_indices[0] for f in flags if "should" in f.candidates]
+    words = tokenize(parse(srt))
+    assert [words[i].text for i in suggested] == ["Chollet"]
+    assert words[suggested[0]].global_index == 7  # the sentence-initial one
+
+
 # --- embedding tier (optional dependency) -----------------------------------
 
 

@@ -23,13 +23,20 @@ CORPUS_PATH = DATA_DIR / "scored_corpus.json"
 # the real-word errors (right spelling, wrong word) no detector catches yet.
 # Precision is measured over should-not-flag spans that were mostly picked
 # *because* they got flagged, so it's a regression floor, not a rate.
-MIN_RECALL = 0.49
-MIN_PRECISION = 0.52
-MAX_COLD_FLAG_RATE = 0.5
+#
+# Lowered recall / raised cold ceiling 2026-09-23, knowingly: phonetic_internal
+# no longer offers a common word for a capitalized mid-sentence token. That
+# dropped 6 false positives on real names (Chollet -> "should") but also 5
+# misheard names (Navia, Nome, Kimmy, Quen, Viti) that were only "caught" via
+# equally wrong candidates ("now", "name", "come") the bypass would have
+# applied. Several oov merges lost those junk candidates and went cold.
+MIN_RECALL = 0.44
+MIN_PRECISION = 0.66
+MAX_COLD_FLAG_RATE = 0.6
 
 # The context-embedding tier (the `check`/`correct` default when installed)
-# currently adds one false positive ("Kalshi") and no catches.
-MIN_PRECISION_WITH_EMBEDDINGS = 0.50
+# currently adds two false positives (e.g. "Kalshi") and no catches.
+MIN_PRECISION_WITH_EMBEDDINGS = 0.61
 
 
 def _run(config: DetectConfig) -> ScoreReport:

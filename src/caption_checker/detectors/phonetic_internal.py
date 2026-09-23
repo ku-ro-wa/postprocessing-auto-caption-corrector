@@ -23,7 +23,7 @@ from caption_checker.models import (
     Flag,
     Word,
 )
-from caption_checker.normalize import clean, is_wordlike
+from caption_checker.normalize import clean, is_wordlike, trim_edges
 from caption_checker.phonetics import codes, similar
 from caption_checker.vocab import DocVocab, Vocab
 
@@ -38,6 +38,19 @@ def _is_known_good(
         or cleaned in doc_vocab
         or zipf_frequency(cleaned, "en") >= config.known_good_zipf_min
     )
+
+
+def _mid_sentence_capitalized(words: list[Word]) -> set[int]:
+    """id() of every Word written like a proper name: capitalized (but not
+    all-caps) and not opening a sentence."""
+    out: set[int] = set()
+    for prev, word in zip([None, *words], words):
+        text = trim_edges(word.text)
+        if not text or not text[0].isupper() or text.isupper():
+            continue
+        if prev is not None and not prev.text.rstrip("\"')]”’").endswith((".", "!", "?")):
+            out.add(id(word))
+    return out
 
 
 def find(
@@ -111,7 +124,12 @@ def find(
                     "times elsewhere in this transcript",
                 )
 
-    # Pass 2: exact phonetic-code match against a known-good sibling.
+    # Pass 2: exact phonetic-code match against a known-good sibling. A
+    # capitalized mid-sentence token is presumably a name, so a sibling that
+    # is only known-good by being a common English word ("Chollet" ->
+    # "should", "Demis" -> "times") is a coincidental code collision, not a
+    # correction; only vocab / doc_vocab terms may stand in for it.
+    name_like = _mid_sentence_capitalized(words)
     for surfaces in by_code.values():
         if len(surfaces) < 2:
             continue
@@ -123,11 +141,15 @@ def find(
             ranked = sorted(
                 good, key=lambda s: similar(bad_surface, s), reverse=True
             )
+            named = [s for s in ranked if s in vocab.terms or s in doc_vocab]
             for word in surfaces[bad_surface]:
+                candidates = named if id(word) in name_like else ranked
+                if not candidates:
+                    continue
                 emit(
                     word,
-                    ranked,
-                    f'"{word.text}" sounds like "{ranked[0]}" used '
+                    candidates,
+                    f'"{word.text}" sounds like "{candidates[0]}" used '
                     "elsewhere in this transcript",
                 )
 
