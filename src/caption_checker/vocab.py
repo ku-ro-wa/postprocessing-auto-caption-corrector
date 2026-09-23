@@ -192,6 +192,16 @@ def known_neighbours(term: str, config: DetectConfig, limit: int = 3) -> list[st
     return sorted(scored, key=lambda w: -scored[w])[:limit]
 
 
+def possessive_base(cleaned: str) -> str | None:
+    """``"openai"`` for ``"openai's"`` (straight or curly apostrophe), else
+    None. wordfreq and the vocab list only hold base forms, so a possessive
+    of a known term would otherwise read as out-of-vocabulary."""
+    for suffix in ("'s", "’s"):
+        if cleaned.endswith(suffix) and len(cleaned) > len(suffix):
+            return cleaned[: -len(suffix)]
+    return None
+
+
 def _read_terms(path: Path) -> list[str]:
     lines = path.read_text(encoding="utf-8").splitlines()
     out: list[str] = []

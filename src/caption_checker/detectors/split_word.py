@@ -99,7 +99,18 @@ def _match(
     for code in join_codes:
         hits |= vocab.by_phonetic.get(code, set())
         hits |= vocab.phrases_by_phonetic.get(code, set())
-    hits = {h for h in hits if "".join(clean(p) for p in h.split()) != join}
+    # Neither the join itself nor one of the window's own parts ("why OpenAI"
+    # -> "OpenAI") is a correction, and a part that is already a correct
+    # domain term only joins into a phrase that keeps it ("Ann LeCun" ->
+    # "Yann LeCun", never "see why OpenAI" -> "span").
+    known_parts = {p for p in parts if p in vocab.terms}
+    hits = {
+        h
+        for h in hits
+        if "".join(clean(p) for p in h.split()) != join
+        and clean(h) not in parts
+        and known_parts <= {clean(p) for p in h.split()}
+    }
     if hits:
         ranked = sorted(
             hits,

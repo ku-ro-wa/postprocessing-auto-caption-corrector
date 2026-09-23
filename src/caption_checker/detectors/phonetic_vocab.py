@@ -1,5 +1,6 @@
 """Phonetic-vs-vocabulary detector: a token that is not itself a known domain
-term but sounds exactly like one ("cubernetes" -> "Kubernetes")."""
+term but sounds exactly like one ("cubernetes" -> "Kubernetes"), or is one
+written without its distinctive casing ("Deepseek" -> "DeepSeek")."""
 
 from __future__ import annotations
 
@@ -12,11 +13,19 @@ from caption_checker.models import (
     Flag,
     Word,
 )
-from caption_checker.normalize import clean, is_wordlike
+from caption_checker.normalize import clean, is_wordlike, trim_edges
 from caption_checker.phonetics import codes, similar
 from caption_checker.vocab import Vocab
 
 from .base import index_cues, make_flag
+
+
+def _miscased(surface: str, display: str) -> bool:
+    """A vocab term with internal capitals ("DeepSeek", "PyTorch") written any
+    other way except all-caps. Plain words and acronyms have no casing to get
+    wrong."""
+    brand = any(ch.isupper() for ch in display[1:]) and not display.isupper()
+    return brand and surface != display and not surface.isupper()
 
 
 def find(
@@ -32,7 +41,22 @@ def find(
         if not is_wordlike(word.text):
             continue
         cleaned = clean(word.text)
-        if cleaned in vocab.terms or cleaned in config.stopwords:
+        if cleaned in vocab.terms:
+            display = vocab.display[cleaned]
+            if _miscased(trim_edges(word.text), display):
+                flags.append(
+                    make_flag(
+                        [word],
+                        cues_by_index,
+                        detector=DETECTOR_PHONETIC_VOCAB,
+                        reason=f'"{word.text}" is domain term "{display}" '
+                        "with nonstandard casing",
+                        candidates=[display],
+                        confidence=0.6,
+                    )
+                )
+            continue
+        if cleaned in config.stopwords:
             continue
         # A term that is already a perfectly ordinary English word is unlikely
         # to be a mistranscription of a domain term.

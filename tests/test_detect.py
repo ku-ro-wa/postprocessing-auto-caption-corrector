@@ -143,17 +143,45 @@ def test_cli_clean_file_exit_zero(tmp_path: Path) -> None:
 
 
 def test_mid_sentence_name_not_corrected_to_common_word(tmp_path: Path) -> None:
-    """"Chollet" shares a phonetic code with "should", but capitalized
+    """"Steyer" shares a phonetic code with "story", but capitalized
     mid-sentence it reads as a name, not a mistranscribed common word. At a
     sentence start the capital says nothing, so the match still stands."""
     srt = tmp_path / "names.srt"
     srt.write_text(
         "1\n00:00:00,000 --> 00:00:04,000\n"
-        "You should ask François Chollet about it. Chollet knows.\n",
+        "Tell the story to Tom Steyer about it. Steyer knows.\n",
         encoding="utf-8",
     )
     flags = detect(parse(srt), config=DetectConfig())
-    suggested = [f.global_indices[0] for f in flags if "should" in f.candidates]
+    suggested = [f.global_indices[0] for f in flags if "story" in f.candidates]
     words = tokenize(parse(srt))
-    assert [words[i].text for i in suggested] == ["Chollet"]
-    assert words[suggested[0]].global_index == 7  # the sentence-initial one
+    assert [words[i].text for i in suggested] == ["Steyer"]
+    assert words[suggested[0]].global_index == 8  # the sentence-initial one
+
+
+def _detect_text(tmp_path: Path, text: str):
+    srt = tmp_path / "t.srt"
+    srt.write_text(f"1\n00:00:00,000 --> 00:00:04,000\n{text}\n", encoding="utf-8")
+    return detect(parse(srt), config=DetectConfig())
+
+
+def test_possessive_of_vocab_term_not_flagged(tmp_path: Path) -> None:
+    assert not _detect_text(tmp_path, "We read OpenAI's report.")
+
+
+def test_lost_apostrophe_on_vocab_term_suggests_possessive(tmp_path: Path) -> None:
+    flags = _covering(_detect_text(tmp_path, "They doubted anthropics leadership."), "anthropics")
+    assert flags and flags[0].candidates == ["Anthropic's"]
+
+
+def test_miscased_brand_term_flagged(tmp_path: Path) -> None:
+    flags = _detect_text(tmp_path, "She joined Deepseek and later DeepSeek again.")
+    assert [f.span for f in flags] == ["Deepseek"]
+    assert flags[0].candidates == ["DeepSeek"]
+
+
+def test_split_word_ignores_filler_and_existing_terms(tmp_path: Path) -> None:
+    """"uh when" joins to the sound of "Yann", and "why OpenAI" to "OpenAI"
+    itself; neither is a split term."""
+    flags = _detect_text(tmp_path, "So uh when did you see why OpenAI moved?")
+    assert not [f for f in flags if f.detector.startswith("split_word")]

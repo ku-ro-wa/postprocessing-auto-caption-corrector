@@ -7,7 +7,7 @@ from wordfreq import zipf_frequency
 
 from caption_checker.models import DETECTOR_OOV, Cue, DetectConfig, Flag, Word
 from caption_checker.normalize import clean, is_wordlike
-from caption_checker.vocab import DocVocab, Vocab
+from caption_checker.vocab import DocVocab, Vocab, possessive_base
 
 from .base import index_cues, make_flag
 
@@ -32,12 +32,18 @@ def find(
             continue
         if cleaned in config.stopwords or cleaned in vocab.terms or cleaned in doc_vocab:
             continue
+        base = possessive_base(cleaned)
+        if base is not None and (base in vocab.terms or base in doc_vocab):
+            continue  # "OpenAI's"
         zipf = zipf_frequency(cleaned, "en")
         if zipf > config.oov_zipf_max:
             continue
         # 0.0 -> 0.9 confidence; anything with a faint frequency signal lower.
         confidence = 0.9 if zipf == 0.0 else max(0.4, 0.9 - zipf / 3.0)
         suspects = doc_vocab.suspects.get(cleaned, [])
+        if not suspects and cleaned.endswith("s") and cleaned[:-1] in vocab.terms:
+            # "anthropics": a known term's possessive with the apostrophe lost
+            suspects = [vocab.display[cleaned[:-1]] + "'s"]
         reason = f'"{word.text}" is not a common word or known term' + (
             "" if zipf == 0.0 else f" (rare, zipf {zipf:.1f})"
         )

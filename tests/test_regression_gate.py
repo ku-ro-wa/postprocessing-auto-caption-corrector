@@ -33,9 +33,15 @@ CORPUS_PATH = DATA_DIR / "scored_corpus.json"
 # longer trusted when it's a near-miss of a known word (Corsera -> Coursera,
 # Shreas -> Shreyas), so oov flags it with that word as a candidate. The new
 # warm flags also pulled the cold-flag rate back down.
-MIN_RECALL = 0.46
-MIN_PRECISION = 0.66
-MAX_COLD_FLAG_RATE = 0.56
+#
+# Raised all three 2026-09-24: an AI-industry section in the domain vocab
+# (labs, models, well-known researchers -- deliberately no names that only
+# matter to one test video) catches Kimmy/Quen/Nome/Benja/"Y Ann" and stops
+# flagging Dario/llama.cpp/OpenAI's. The vocab was written after seeing the
+# misses, so this corpus overstates how well it generalizes.
+MIN_RECALL = 0.51
+MIN_PRECISION = 0.73
+MAX_COLD_FLAG_RATE = 0.5
 #
 # The context_embedding detector was removed 2026-09-24 (it caught nothing
 # and added false positives); a masked-LM replacement was prototyped and

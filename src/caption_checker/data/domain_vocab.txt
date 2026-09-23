@@ -179,3 +179,90 @@ hyperparameter
 inference
 quantization
 distillation
+
+# --- AI industry: labs, products, models ---
+OpenAI
+Anthropic
+DeepMind
+DeepSeek
+Nvidia
+Hugging Face
+Mistral
+Cohere
+Midjourney
+xAI
+Grok
+Claude
+Gemini
+ChatGPT
+GPT
+Copilot
+Sora
+Llama
+llama.cpp
+Qwen
+Kimi
+Alibaba
+Coursera
+DeepLearning.AI
+PyTorch
+TensorFlow
+CUDA
+LangChain
+Stable Diffusion
+
+# --- AI concepts ---
+LLM
+LLMs
+AGI
+RLHF
+fine-tuning
+open weights
+KV cache
+chain of thought
+reasoning model
+agentic
+multimodal
+monitorability
+
+# --- AI people ---
+Sam Altman
+Altman
+Dario Amodei
+Dario
+Amodei
+Demis Hassabis
+Demis
+Hassabis
+Jensen Huang
+Jensen
+Huang
+Yann LeCun
+Yann
+LeCun
+Yoshua Bengio
+Yoshua
+Bengio
+Geoffrey Hinton
+Hinton
+Ilya Sutskever
+Ilya
+Sutskever
+Andrej Karpathy
+Karpathy
+Andrew Ng
+Fei-Fei Li
+Paul Christiano
+Christiano
+Noam Brown
+Noam Shazeer
+Noam
+Mustafa Suleyman
+Suleyman
+Satya Nadella
+Nadella
+Sundar Pichai
+Pichai
+François Chollet
+Chollet
+Elon Musk

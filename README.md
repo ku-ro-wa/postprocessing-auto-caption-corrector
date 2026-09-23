@@ -74,7 +74,7 @@ sample_lecture.srt: 4 likely caption errors
 | Detector | Signal |
 |---|---|
 | `oov` | token is neither common English (`wordfreq`) nor a known domain term |
-| `phonetic_vocab` | token sounds exactly like a curated domain term (Double Metaphone) |
+| `phonetic_vocab` | token sounds exactly like a curated domain term (Double Metaphone), or is one with the wrong casing ("Deepseek") |
 | `phonetic_internal` | token sounds like a known-good word used elsewhere in the same transcript |
 | `split_word` | 2–3 adjacent tokens joined sound like one term or a common word |
 

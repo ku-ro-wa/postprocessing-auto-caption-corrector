@@ -84,6 +84,7 @@ _DEFAULT_STOPWORDS = frozenset(
     i you he she it we they me him her us them my your his its our their this that
     these those as so than too very can will just not no nor only own same s t
     we're we'll today next week
+    uh um
     """.split()
 )
 
