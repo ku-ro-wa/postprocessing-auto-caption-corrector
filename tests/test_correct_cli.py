@@ -38,13 +38,13 @@ def _run(*args):
 
 
 def test_missing_output_is_a_usage_error(stub) -> None:
-    result = _run(SRT, "--no-embeddings")
+    result = _run(SRT)
     assert result.exit_code != 0
     assert "-o PATH" in result.output
 
 
 def test_non_tty_without_yes_above_names_a_flag(stub) -> None:
-    result = _run(SRT, "-o", "out.srt", "--no-cache", "--no-embeddings")
+    result = _run(SRT, "-o", "out.srt", "--no-cache")
     assert result.exit_code != 0
     assert "not a TTY" in result.output
     assert "con sensus" in result.output  # the first flag, named
@@ -55,7 +55,6 @@ def test_non_tty_with_yes_above_completes(tmp_path, stub) -> None:
     out = tmp_path / "out.srt"
     result = _run(
         SRT, "-o", str(out), "--yes-above", "0.5", "--no-cache",
-        "--no-embeddings",
     )
     assert result.exit_code == 0
     assert "consensus algorithms" in out.read_text()
@@ -66,7 +65,6 @@ def test_vtt_is_supported(tmp_path, stub) -> None:
     out = tmp_path / "out.vtt"
     result = _run(
         VTT, "-o", str(out), "--yes-above", "0.5", "--no-cache",
-        "--no-embeddings",
     )
     assert result.exit_code == 0
     assert "consensus algorithms" in out.read_text()
@@ -77,7 +75,7 @@ def test_vtt_is_supported(tmp_path, stub) -> None:
 
 def test_sidecar_has_one_valid_entry_per_flag(tmp_path, stub) -> None:
     out = tmp_path / "out.srt"
-    _run(SRT, "-o", str(out), "--yes-above", "0.5", "--no-cache", "--no-embeddings")
+    _run(SRT, "-o", str(out), "--yes-above", "0.5", "--no-cache")
 
     sidecar = json.loads((tmp_path / "out.srt.flags.json").read_text())
     valid = {
@@ -94,7 +92,6 @@ def test_exit_zero_even_when_nothing_meets_the_threshold(tmp_path, stub) -> None
     out = tmp_path / "out.srt"
     result = _run(
         SRT, "-o", str(out), "--yes-above", "0.999", "--no-cache",
-        "--no-embeddings",
     )
     assert result.exit_code == 0
     # stub confidence is 0.9 < 0.999 -> everything left uncorrected
@@ -109,7 +106,7 @@ def test_exit_zero_even_when_nothing_meets_the_threshold(tmp_path, stub) -> None
 def test_estimate_prints_counts_and_makes_no_call(tmp_path) -> None:
     out = tmp_path / "out.srt"
     result = _run(
-        SRT, "-o", str(out), "--estimate", "--no-cache", "--no-embeddings"
+        SRT, "-o", str(out), "--estimate", "--no-cache"
     )
     assert result.exit_code == 0
     assert "flags: 4" in result.output
@@ -130,7 +127,7 @@ def test_estimate_counts_reflect_the_bypass(tmp_path, stub) -> None:
     )
     result = _run(
         str(fixture), "-o", str(tmp_path / "o.srt"), "--estimate",
-        "--no-cache", "--no-embeddings",
+        "--no-cache",
     )
     assert "flags: 1" in result.output
     assert "residue (after bypass + cache): 0" in result.output
@@ -141,7 +138,6 @@ def test_estimate_shows_a_dollar_cost_for_a_priced_model(tmp_path) -> None:
     # the default model has a static price on file -> a concrete $ figure
     result = _run(
         SRT, "-o", str(tmp_path / "o.srt"), "--estimate", "--no-cache",
-        "--no-embeddings",
     )
     assert "approx cost: $0." in result.output
 
@@ -149,7 +145,7 @@ def test_estimate_shows_a_dollar_cost_for_a_priced_model(tmp_path) -> None:
 def test_estimate_reports_no_price_for_an_unknown_model(tmp_path) -> None:
     result = _run(
         SRT, "-o", str(tmp_path / "o.srt"), "--model", "made/up-model",
-        "--estimate", "--no-cache", "--no-embeddings",
+        "--estimate", "--no-cache",
     )
     assert "no price on file" in result.output
 
@@ -160,7 +156,7 @@ def test_estimate_reports_no_price_for_an_unknown_model(tmp_path) -> None:
 def test_max_calls_below_required_aborts(tmp_path, stub) -> None:
     result = _run(
         SRT, "-o", str(tmp_path / "o.srt"), "--yes-above", "0.5",
-        "--max-calls", "0", "--no-cache", "--no-embeddings",
+        "--max-calls", "0", "--no-cache",
     )
     assert result.exit_code != 0
     assert "max-calls" in result.output
@@ -172,7 +168,7 @@ def test_max_calls_at_the_limit_proceeds(tmp_path, stub) -> None:
     out = tmp_path / "o.srt"
     result = _run(
         SRT, "-o", str(out), "--yes-above", "0.5", "--max-calls", "1",
-        "--no-cache", "--no-embeddings",
+        "--no-cache",
     )
     assert result.exit_code == 0
     assert out.exists()
@@ -187,7 +183,7 @@ def test_oov_zipf_passes_through_to_detection(tmp_path, stub) -> None:
     # flagged once the OOV ceiling is raised well above its Zipf.
     _run(
         SRT, "-o", str(out), "--yes-above", "0.0", "--oov-zipf", "5.5",
-        "--no-cache", "--no-embeddings",
+        "--no-cache",
     )
     spans = {
         e["flag"]["span"]
@@ -202,7 +198,7 @@ def test_vocab_file_passes_through_to_detection(tmp_path, stub) -> None:
     out = tmp_path / "o.srt"
     _run(
         SRT, "-o", str(out), "--yes-above", "0.5", "--vocab", str(vocab),
-        "--no-cache", "--no-embeddings",
+        "--no-cache",
     )
     spans = {
         e["flag"]["span"]
@@ -219,7 +215,7 @@ def test_eval_out_writes_a_six_column_table(tmp_path, stub) -> None:
     table = tmp_path / "eval.md"
     _run(
         SRT, "-o", str(out), "--yes-above", "0.5", "--eval-out", str(table),
-        "--no-cache", "--no-embeddings",
+        "--no-cache",
     )
     lines = table.read_text().splitlines()
     assert lines[0].split("|")[1:-1] == [
@@ -235,7 +231,7 @@ def test_eval_out_writes_a_six_column_table(tmp_path, stub) -> None:
 
 def test_no_eval_table_without_the_flag(tmp_path, stub) -> None:
     out = tmp_path / "o.srt"
-    _run(SRT, "-o", str(out), "--yes-above", "0.5", "--no-cache", "--no-embeddings")
+    _run(SRT, "-o", str(out), "--yes-above", "0.5", "--no-cache")
     assert not (tmp_path / "eval.md").exists()
 
 
@@ -250,7 +246,7 @@ def test_second_cli_run_uses_the_cache(tmp_path, monkeypatch) -> None:
     )
     cache = tmp_path / "cache.json"
     common = ("-o", str(tmp_path / "o.srt"), "--yes-above", "0.5",
-              "--cache-file", str(cache), "--no-embeddings")
+              "--cache-file", str(cache))
 
     _run(SRT, *common)
     assert len(made[0].calls) == 1
@@ -262,8 +258,8 @@ def test_second_cli_run_uses_the_cache(tmp_path, monkeypatch) -> None:
 def test_cache_file_isolation(tmp_path, stub) -> None:
     out = tmp_path / "o.srt"
     a, b = tmp_path / "a.json", tmp_path / "b.json"
-    _run(SRT, "-o", str(out), "--yes-above", "0.5", "--cache-file", str(a), "--no-embeddings")
-    _run(SRT, "-o", str(out), "--yes-above", "0.5", "--cache-file", str(b), "--no-embeddings")
+    _run(SRT, "-o", str(out), "--yes-above", "0.5", "--cache-file", str(a))
+    _run(SRT, "-o", str(out), "--yes-above", "0.5", "--cache-file", str(b))
     # each run had its own fresh stub; the b-run could not have reused a's cache
     assert len(stub[0].calls) == 1
     assert len(stub[1].calls) == 1

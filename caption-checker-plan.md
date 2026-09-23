@@ -17,12 +17,12 @@ Framed as a personal build / portfolio project, not for commercialization.
 
 ## Core Pipeline
 1. **Input parsing** — read SRT/VTT, extract cue text + timestamps, track word-level position across the transcript. ✅ `parser.py` / `models.py` (`Cue`, `Word` with per-cue and global position).
-2. **Anomaly detection** (cheap, local, no API calls): ✅ implemented as five independent detectors in `detectors/`, ordered cheapest-first and merged, beyond what was originally sketched:
+2. **Anomaly detection** (cheap, local, no API calls): ✅ implemented as four independent detectors in `detectors/`, ordered cheapest-first and merged, beyond what was originally sketched:
    - `oov` — token is neither common English (`wordfreq`) nor in the domain vocabulary.
    - `phonetic_vocab` — Double Metaphone match against the curated domain vocabulary.
    - `phonetic_internal` — Double Metaphone match against a known-good word used elsewhere in the same transcript.
    - `split_word` — 2–3 adjacent tokens that sound like one real term or common word (not in the original plan; added after real ASR output showed split-word garbles like "con sensus" → "consensus").
-   - `context_embedding` — local MiniLM sentence-embedding fit, optional (`--no-embeddings` / not installed by default, since it pulls in torch).
+   - (A fifth, `context_embedding` — local MiniLM sentence-embedding fit — was removed 2026-09-24: on the Scored corpus it caught none of the real-word errors it targeted and added false positives. A masked-LM replacement was prototyped and not shipped: about one real catch per four extra flags.)
 3. **Context-based correction** (LLM step, only for flagged residue): ✅ `correct` command / `corrector.py`. Each flag is packaged with sentence context and sent to OpenRouter for a judged correction (replacement + confidence, or a not-an-error verdict).
 4. **Output** — ✅ two paths now exist:
    - CLI (`correct -o`): interactive accept/skip/edit/accept-all review, writes corrected file + `<OUT>.flags.json` sidecar.
@@ -33,8 +33,7 @@ Framed as a personal build / portfolio project, not for commercialization.
 - **SRT/VTT parsing**: `srt`, `webvtt-py`
 - **Phonetic matching**: `jellyfish` (Double Metaphone), `metaphone`
 - **Word frequency / OOV**: `wordfreq`
-- **Local embeddings (optional)**: `sentence-transformers` (extras group `embeddings`, lazy-imported)
-- **LLM calls**: OpenRouter, model swappable via `--model` (default `google/gemini-2.0-flash-001`)
+- **LLM calls**: OpenRouter, model swappable via `--model` (default `google/gemini-2.5-flash`)
 - **CLI**: `click`
 - **Web UI** (not originally planned): `fastapi`, `uvicorn`, `jinja2`, `python-multipart`
 - **Interface**: CLI (`check`, `correct`, `roundtrip`) plus a locally-hosted web review UI (`serve`)
@@ -55,7 +54,7 @@ Framed as a personal build / portfolio project, not for commercialization.
 
 ## Model Testing (via OpenRouter)
 - Frontier models are unnecessary — this is a narrow, constrained classification/correction task, not open-ended reasoning.
-- `--model` makes swapping trivial; default is `google/gemini-2.0-flash-001`.
+- `--model` makes swapping trivial; default is `google/gemini-2.5-flash`.
 - 🔲 Not yet done: side-by-side testing across candidates (Gemini Flash, Qwen 2.5, Llama 3.1 8B/70B, other cheap options). Real transcripts are now on hand (`tests/data/`); this is unblocked but still not started — the LLM pass stays outside the regression gate per ADR-0005, so this remains a manual comparison.
 
 ## Evaluation Approach

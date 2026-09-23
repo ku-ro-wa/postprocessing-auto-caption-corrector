@@ -54,16 +54,6 @@ def test_oov_merged_with_phonetic_vocab_is_not_cold() -> None:
     assert not is_cold_flag(_flag("oov+phonetic_vocab", ["Kubernetes"]))
 
 
-def test_context_embedding_alone_is_not_cold() -> None:
-    """context_embedding also emits empty candidates, but it isn't a
-    vocabulary check, so it must not count as cold on its own."""
-    assert not is_cold_flag(_flag("context_embedding"))
-
-
-def test_oov_merged_with_context_embedding_and_no_candidates_is_cold() -> None:
-    assert is_cold_flag(_flag("oov+context_embedding"))
-
-
 # --- load_corpus ----------------------------------------------------------
 
 

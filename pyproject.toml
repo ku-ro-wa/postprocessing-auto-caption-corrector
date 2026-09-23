@@ -22,14 +22,6 @@ dependencies = [
     "wordfreq>=3.1.1",
 ]
 
-[project.optional-dependencies]
-# Local embedding model for the context-anomaly detector. Pulls in torch
-# (several hundred MB); the detector lazy-imports it and `check --no-embeddings`
-# / a graceful skip keep it opt-in.
-embeddings = [
-    "sentence-transformers>=3.0",
-]
-
 [project.scripts]
 caption-checker = "caption_checker:main"
 

@@ -3,7 +3,6 @@ from __future__ import annotations
 import json
 from pathlib import Path
 
-import pytest
 from click.testing import CliRunner
 
 from caption_checker.cli import main
@@ -12,10 +11,9 @@ from caption_checker.models import DetectConfig
 from caption_checker.parser import parse, tokenize
 
 DATA_DIR = Path(__file__).parent / "data"
-NO_EMBED = DetectConfig(enable_embeddings=False)
 
 
-def _flags(filename: str = "sample_lecture.srt", config: DetectConfig = NO_EMBED):
+def _flags(filename: str = "sample_lecture.srt", config: DetectConfig = DetectConfig()):
     return detect(parse(DATA_DIR / filename), config=config)
 
 
@@ -73,7 +71,7 @@ def test_clean_terms_not_flagged() -> None:
 
 def test_flag_rate_under_15pct() -> None:
     cues = parse(DATA_DIR / "sample_lecture.srt")
-    flags = detect(cues, config=NO_EMBED)
+    flags = detect(cues, config=DetectConfig())
     word_count = len(tokenize(cues))
     assert len(flags) / word_count < 0.15
 
@@ -105,7 +103,7 @@ def test_cli_json_output_contract() -> None:
     runner = CliRunner()
     result = runner.invoke(
         main,
-        ["check", str(DATA_DIR / "sample_lecture.srt"), "--no-embeddings",
+        ["check", str(DATA_DIR / "sample_lecture.srt"),
          "--format", "json"],
     )
     assert result.exit_code == 1  # flags present
@@ -126,7 +124,7 @@ def test_cli_text_output_and_exit_code() -> None:
     runner = CliRunner()
     result = runner.invoke(
         main,
-        ["check", str(DATA_DIR / "sample_lecture.srt"), "--no-embeddings"],
+        ["check", str(DATA_DIR / "sample_lecture.srt")],
     )
     assert result.exit_code == 1
     assert "»cubernetes«" in result.output
@@ -139,7 +137,7 @@ def test_cli_clean_file_exit_zero(tmp_path: Path) -> None:
         "1\n00:00:00,000 --> 00:00:02,000\nWelcome to the lecture.\n",
         encoding="utf-8",
     )
-    result = CliRunner().invoke(main, ["check", str(clean), "--no-embeddings"])
+    result = CliRunner().invoke(main, ["check", str(clean)])
     assert result.exit_code == 0
     assert "no likely caption errors" in result.output
 
@@ -154,36 +152,8 @@ def test_mid_sentence_name_not_corrected_to_common_word(tmp_path: Path) -> None:
         "You should ask François Chollet about it. Chollet knows.\n",
         encoding="utf-8",
     )
-    flags = detect(parse(srt), config=NO_EMBED)
+    flags = detect(parse(srt), config=DetectConfig())
     suggested = [f.global_indices[0] for f in flags if "should" in f.candidates]
     words = tokenize(parse(srt))
     assert [words[i].text for i in suggested] == ["Chollet"]
     assert words[suggested[0]].global_index == 7  # the sentence-initial one
-
-
-# --- embedding tier (optional dependency) -----------------------------------
-
-
-def test_embeddings_optional_still_flags_planted_errors() -> None:
-    """With embeddings enabled but the dep possibly absent, the three planted
-    errors must still come through from the lexical detectors."""
-    flags = _flags(config=DetectConfig(enable_embeddings=True))
-    assert _covering(flags, "cubernetes")
-    assert _covering(flags, "con sensus")
-    assert _covering(flags, "cough ka")
-
-
-def test_embedding_detector_runs_when_available() -> None:
-    pytest.importorskip("sentence_transformers")
-    from caption_checker.detectors import context_embedding
-
-    cues = parse(DATA_DIR / "sample_lecture.srt")
-    words = tokenize(cues)
-    from caption_checker.vocab import load_vocab
-
-    flags = context_embedding.find(
-        words, cues, load_vocab(), DetectConfig(enable_embeddings=True),
-        existing=[],
-    )
-    assert isinstance(flags, list)
-    assert all(f.detector == "context_embedding" for f in flags)

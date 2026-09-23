@@ -67,12 +67,6 @@ def roundtrip(file: Path, output: Path | None) -> None:
     help="Output format. 'json' is the handoff shape for the LLM step.",
 )
 @click.option(
-    "--no-embeddings",
-    is_flag=True,
-    default=False,
-    help="Skip the local context-embedding detector.",
-)
-@click.option(
     "--oov-zipf",
     type=float,
     default=None,
@@ -90,7 +84,6 @@ def check(
     file: Path,
     vocab_path: Path | None,
     out_format: str,
-    no_embeddings: bool,
     oov_zipf: float | None,
     output: Path | None,
 ) -> None:
@@ -98,7 +91,7 @@ def check(
 
     Exit status is 1 when any flag is emitted, 0 when the transcript looks clean.
     """
-    config = _detect_config(no_embeddings, oov_zipf)
+    config = _detect_config(oov_zipf)
     cues = parse(file)
     vocab = load_vocab(vocab_path, algo=config.phonetic_algo)
     flags = detect(cues, vocab=vocab, config=config)
@@ -178,12 +171,6 @@ def check(
     help="Extra domain terms (one per line) merged with the built-in list.",
 )
 @click.option(
-    "--no-embeddings",
-    is_flag=True,
-    default=False,
-    help="Skip the local context-embedding detector.",
-)
-@click.option(
     "--oov-zipf",
     type=float,
     default=None,
@@ -200,7 +187,6 @@ def correct(
     estimate: bool,
     max_calls: int | None,
     vocab_path: Path | None,
-    no_embeddings: bool,
     oov_zipf: float | None,
 ) -> None:
     """Detect likely ASR errors in FILE, judge corrections with an LLM, and
@@ -226,7 +212,7 @@ def correct(
     if output is None:
         raise click.UsageError("pass -o PATH: correct needs an explicit output path")
 
-    config = _detect_config(no_embeddings, oov_zipf)
+    config = _detect_config(oov_zipf)
     cues = parse(file)
     vocab = load_vocab(vocab_path, algo=config.phonetic_algo)
     cache = DecisionCache.load(
@@ -299,10 +285,10 @@ def serve(host: str, port: int, data_dir: Path | None) -> None:
     uvicorn.run(app, host=host, port=port)
 
 
-def _detect_config(no_embeddings: bool, oov_zipf: float | None) -> DetectConfig:
+def _detect_config(oov_zipf: float | None) -> DetectConfig:
     """The detection config both `check` and `correct` build from their shared
     pass-through options."""
-    config = DetectConfig(enable_embeddings=not no_embeddings)
+    config = DetectConfig()
     if oov_zipf is not None:
         config = replace(config, oov_zipf_max=oov_zipf)
     return config

@@ -23,7 +23,6 @@ from caption_checker.models import DETECTOR_PHONETIC_INTERNAL, DetectConfig, Fla
 from caption_checker.parser import parse
 
 DATA_DIR = Path(__file__).parent / "data"
-NO_EMBED = DetectConfig(enable_embeddings=False)
 
 SAMPLE = parse(DATA_DIR / "sample_lecture.srt")
 
@@ -61,7 +60,7 @@ def _run(cues, corrector=None, reviewer=None, **kw):
         cues,
         corrector=corrector or StubCorrector(),
         reviewer=reviewer or ACCEPT_ALL,
-        config=NO_EMBED,
+        config=DetectConfig(),
         **kw,
     )
 
@@ -186,8 +185,8 @@ def test_should_bypass_rules() -> None:
     close = flag(DETECTOR_PHONETIC_INTERNAL, ["ceiling", "sealing"])
     merged = flag("oov+phonetic_internal", ["ceiling"])
 
-    assert should_bypass(one, NO_EMBED)
-    assert not should_bypass(merged, NO_EMBED)
+    assert should_bypass(one, DetectConfig())
+    assert not should_bypass(merged, DetectConfig())
     assert not should_bypass(close, DetectConfig(bypass_jw_margin=0.15))
     assert should_bypass(close, DetectConfig(bypass_jw_margin=0.10))
 

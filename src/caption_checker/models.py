@@ -75,7 +75,6 @@ DETECTOR_OOV = "oov"
 DETECTOR_PHONETIC_VOCAB = "phonetic_vocab"
 DETECTOR_PHONETIC_INTERNAL = "phonetic_internal"
 DETECTOR_SPLIT_WORD = "split_word"
-DETECTOR_CONTEXT_EMBEDDING = "context_embedding"
 
 
 _DEFAULT_STOPWORDS = frozenset(
@@ -122,10 +121,6 @@ class DetectConfig:
     #: least this Jaro-Winkler-similar, and at least this common.
     known_neighbour_jw_min: float = 0.9
     known_neighbour_zipf_min: float = 1.5
-    embedding_model: str = "sentence-transformers/all-MiniLM-L6-v2"
-    embedding_sim_z: float = -1.5
-    embedding_candidate_zipf_max: float = 2.5
-    enable_embeddings: bool = True
     #: Internal-match bypass (see ``correct.py``): a pure ``phonetic_internal``
     #: flag with several candidates is only applied without an LLM call when the
     #: top candidate's Jaro-Winkler score beats the runner-up's by at least this

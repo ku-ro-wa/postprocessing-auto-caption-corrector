@@ -38,7 +38,7 @@ detector tuning + qualitative eval in Session 4.
 | `--eval-out PATH` | Also write a markdown eval table (verdict column blank). Off by default. |
 | `--estimate` | Dry run: print flag count → chunk count → approximate cost, then exit without calling. |
 | `--max-calls N` | Abort if the run would exceed N LLM requests. |
-| `--vocab`, `--no-embeddings`, `--oov-zipf` | Same as `check`, passed through to detection. |
+| `--vocab`, `--oov-zipf` | Same as `check`, passed through to detection. |
 
 ---
 

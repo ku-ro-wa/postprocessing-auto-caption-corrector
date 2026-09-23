@@ -38,10 +38,10 @@ from caption_checker.vocab import Vocab, load_vocab
 from caption_checker.web.models import ReviewDecision, TranscriptRecord
 from caption_checker.web.storage import Storage
 
-# Per the spec's "fixed defaults" decision: matches the CLI's validated
-# `--no-embeddings` setup exactly (default OOV threshold, built-in vocab
-# only). No tuning UI in this spec.
-SCAN_CONFIG = DetectConfig(enable_embeddings=False)
+# Per the spec's "fixed defaults" decision: matches the CLI's defaults
+# exactly (default OOV threshold, built-in vocab only). No tuning UI in this
+# spec.
+SCAN_CONFIG = DetectConfig()
 
 SUPPORTED_FORMATS = ("srt", "vtt")
 

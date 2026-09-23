@@ -7,7 +7,6 @@ from caption_checker.parser import parse, tokenize
 from caption_checker.vocab import build_doc_vocab, load_vocab
 
 DATA_DIR = Path(__file__).parent / "data"
-NO_EMBED = DetectConfig(enable_embeddings=False)
 
 
 def test_build_doc_vocab_clusters_recurring_misspellings() -> None:
@@ -19,7 +18,7 @@ def test_build_doc_vocab_clusters_recurring_misspellings() -> None:
     words = tokenize(cues)
     vocab = load_vocab()
 
-    doc_vocab = build_doc_vocab(words, vocab, NO_EMBED)
+    doc_vocab = build_doc_vocab(words, vocab, DetectConfig())
 
     assert doc_vocab.counts == {"kalshi": 13}
     assert doc_vocab.variants["kashi"] == "kalshi"
@@ -32,7 +31,7 @@ def test_build_doc_vocab_ignores_one_off_terms() -> None:
     words = tokenize(cues)
     vocab = load_vocab()
 
-    doc_vocab = build_doc_vocab(words, vocab, NO_EMBED)
+    doc_vocab = build_doc_vocab(words, vocab, DetectConfig())
 
     # "Polymarket" only appears once in the fixture: not enough recurrence
     # to be trusted as this document's own vocabulary.
@@ -53,7 +52,7 @@ def test_build_doc_vocab_distrusts_near_miss_of_a_known_word(tmp_path: Path) -> 
     text = " ".join(["I took a Corsera course on Polymarket."] * 3)
     words = tokenize(parse(_srt(tmp_path, text)))
 
-    doc_vocab = build_doc_vocab(words, load_vocab(), NO_EMBED)
+    doc_vocab = build_doc_vocab(words, load_vocab(), DetectConfig())
 
     assert "polymarket" in doc_vocab
     assert "corsera" not in doc_vocab
@@ -64,7 +63,7 @@ def test_build_doc_vocab_distrusts_near_miss_of_a_known_word(tmp_path: Path) -> 
 def test_build_doc_vocab_trusts_near_miss_once_it_recurs_enough(tmp_path: Path) -> None:
     """"Kalshi" sounds like the rarer "kalish", but repeated this often it's
     the doc's own term, not a misspelling."""
-    config = DetectConfig(enable_embeddings=False)
+    config = DetectConfig()
     text = " ".join(["Bets on Kalshi."] * config.doc_vocab_suspect_min_count)
     words = tokenize(parse(_srt(tmp_path, text)))
 

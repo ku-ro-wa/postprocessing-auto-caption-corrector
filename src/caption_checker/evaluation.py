@@ -58,9 +58,7 @@ class ScoreReport:
 
 def is_cold_flag(flag: Flag) -> bool:
     """True when a merged flag includes ``oov`` and carries no candidates at
-    all -- the system has zero vocabulary-matched context for the span.
-    ``context_embedding`` also emits empty ``candidates``, but it isn't a
-    vocabulary check, so its presence alone doesn't make a flag cold."""
+    all -- the system has zero vocabulary-matched context for the span."""
     return DETECTOR_OOV in flag.detector.split("+") and not flag.candidates
 
 

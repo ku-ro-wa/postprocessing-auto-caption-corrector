@@ -3,7 +3,7 @@ sentence context."""
 
 from __future__ import annotations
 
-from caption_checker.detectors import LEXICAL_DETECTORS, context_embedding
+from caption_checker.detectors import ALL_DETECTORS
 from caption_checker.models import Cue, DetectConfig, Flag
 from caption_checker.normalize import sentences
 from caption_checker.parser import tokenize
@@ -24,13 +24,8 @@ def detect(
     )
 
     raw: list[Flag] = []
-    for detector in LEXICAL_DETECTORS:
+    for detector in ALL_DETECTORS:
         raw.extend(detector.find(words, cues, vocab, config, doc_vocab=doc_vocab))
-
-    if config.enable_embeddings:
-        raw.extend(
-            context_embedding.find(words, cues, vocab, config, existing=list(raw))
-        )
 
     merged = _merge(raw)
     _attach_context(merged, cues, words)

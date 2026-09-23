@@ -8,8 +8,6 @@ from __future__ import annotations
 
 from pathlib import Path
 
-import pytest
-
 from caption_checker.detect import detect
 from caption_checker.evaluation import ScoreReport, load_corpus, score
 from caption_checker.models import DetectConfig
@@ -38,10 +36,10 @@ CORPUS_PATH = DATA_DIR / "scored_corpus.json"
 MIN_RECALL = 0.46
 MIN_PRECISION = 0.66
 MAX_COLD_FLAG_RATE = 0.56
-
-# The context-embedding tier (the `check`/`correct` default when installed)
-# currently adds two false positives (e.g. "Kalshi") and no catches.
-MIN_PRECISION_WITH_EMBEDDINGS = 0.61
+#
+# The context_embedding detector was removed 2026-09-24 (it caught nothing
+# and added false positives); a masked-LM replacement was prototyped and
+# left out -- ~1 real catch per 4 extra flags on this corpus.
 
 
 def _run(config: DetectConfig) -> ScoreReport:
@@ -54,18 +52,14 @@ def _run(config: DetectConfig) -> ScoreReport:
     return score(cases, flags_by_source, words_by_source)
 
 
-@pytest.mark.parametrize("with_embeddings", [False, True], ids=["lexical", "embeddings"])
-def test_regression_gate_meets_floors(with_embeddings: bool) -> None:
-    if with_embeddings:
-        pytest.importorskip("sentence_transformers")
-    report = _run(DetectConfig(enable_embeddings=with_embeddings))
-    min_precision = MIN_PRECISION_WITH_EMBEDDINGS if with_embeddings else MIN_PRECISION
+def test_regression_gate_meets_floors() -> None:
+    report = _run(DetectConfig())
     assert report.recall >= MIN_RECALL, (
         f"recall {report.recall:.2f} below floor {MIN_RECALL} "
         f"({report.false_negatives} missed real error(s))"
     )
-    assert report.precision >= min_precision, (
-        f"precision {report.precision:.2f} below floor {min_precision} "
+    assert report.precision >= MIN_PRECISION, (
+        f"precision {report.precision:.2f} below floor {MIN_PRECISION} "
         f"({report.false_positives} known-good span(s) flagged)"
     )
     assert report.cold_flag_rate <= MAX_COLD_FLAG_RATE, (

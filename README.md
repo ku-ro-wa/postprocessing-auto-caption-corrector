@@ -8,8 +8,7 @@ suggests corrections.
 ## Install
 
 ```bash
-uv sync                     # core detectors (lexical + phonetic)
-uv sync --extra embeddings  # + local semantic-context detector (downloads torch)
+uv sync
 ```
 
 ## Usage
@@ -23,9 +22,6 @@ uv run caption-checker check lecture.srt --format json
 
 # add your own domain terms, one per line
 uv run caption-checker check lecture.srt --vocab my_terms.txt
-
-# skip the embedding tier (or if the extra isn't installed)
-uv run caption-checker check lecture.srt --no-embeddings
 
 # also surface rare (not just unknown) words
 uv run caption-checker check lecture.srt --oov-zipf 2.0
@@ -61,7 +57,7 @@ far. `check` is unchanged — still read-only, still free.
 Example:
 
 ```
-$ caption-checker check tests/data/sample_lecture.srt --no-embeddings
+$ caption-checker check tests/data/sample_lecture.srt
 sample_lecture.srt: 4 likely caption errors
 
 [00:00:03,500 → 00:00:07,200] cue 2
@@ -81,7 +77,6 @@ sample_lecture.srt: 4 likely caption errors
 | `phonetic_vocab` | token sounds exactly like a curated domain term (Double Metaphone) |
 | `phonetic_internal` | token sounds like a known-good word used elsewhere in the same transcript |
 | `split_word` | 2–3 adjacent tokens joined sound like one term or a common word |
-| `context_embedding` | token is a weak semantic fit for its sentence (local MiniLM; optional) |
 
 Overlapping flags from different detectors are merged; agreement raises
 confidence. The built-in vocabulary lives at
@@ -118,7 +113,7 @@ behind these choices.
 ## Evaluation
 
 Tuning detector thresholds (in `oov`, `phonetic_vocab`, `phonetic_internal`,
-`split_word`, `context_embedding`) needs a way to confirm a change didn't
+`split_word`) needs a way to confirm a change didn't
 quietly regress previously-fixed behavior, without re-eyeballing the web
 review UI or spending on the LLM pass.
 

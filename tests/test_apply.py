@@ -13,11 +13,10 @@ from caption_checker.models import DetectConfig
 from caption_checker.parser import parse, serialize
 
 DATA_DIR = Path(__file__).parent / "data"
-NO_EMBED = DetectConfig(enable_embeddings=False)
 
 
 def _flag(cues, substring):
-    for flag in detect(cues, config=NO_EMBED):
+    for flag in detect(cues, config=DetectConfig()):
         if substring.lower() in flag.span.lower():
             return flag
     raise AssertionError(f"no flag covering {substring!r}")
