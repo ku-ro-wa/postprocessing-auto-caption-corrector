@@ -30,9 +30,14 @@ CORPUS_PATH = DATA_DIR / "scored_corpus.json"
 # misheard names (Navia, Nome, Kimmy, Quen, Viti) that were only "caught" via
 # equally wrong candidates ("now", "name", "come") the bypass would have
 # applied. Several oov merges lost those junk candidates and went cold.
-MIN_RECALL = 0.44
+#
+# Raised recall 2026-09-23: a doc-vocab term recurring only a few times is no
+# longer trusted when it's a near-miss of a known word (Corsera -> Coursera,
+# Shreas -> Shreyas), so oov flags it with that word as a candidate. The new
+# warm flags also pulled the cold-flag rate back down.
+MIN_RECALL = 0.46
 MIN_PRECISION = 0.66
-MAX_COLD_FLAG_RATE = 0.6
+MAX_COLD_FLAG_RATE = 0.56
 
 # The context-embedding tier (the `check`/`correct` default when installed)
 # currently adds two false positives (e.g. "Kalshi") and no catches.

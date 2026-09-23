@@ -38,3 +38,37 @@ def test_build_doc_vocab_ignores_one_off_terms() -> None:
     # to be trusted as this document's own vocabulary.
     assert "polymarket" not in doc_vocab.counts
     assert "polymarket" not in doc_vocab.variants
+
+
+def _srt(tmp_path: Path, text: str) -> Path:
+    path = tmp_path / "doc.srt"
+    path.write_text(f"1\n00:00:00,000 --> 00:00:09,000\n{text}\n", encoding="utf-8")
+    return path
+
+
+def test_build_doc_vocab_distrusts_near_miss_of_a_known_word(tmp_path: Path) -> None:
+    """"Corsera" x3 is a consistent mishearing of "Coursera", which wordfreq
+    knows, so it shouldn't be trusted as the doc's own term. "Polymarket" x3
+    has no such neighbour and stays trusted."""
+    text = " ".join(["I took a Corsera course on Polymarket."] * 3)
+    words = tokenize(parse(_srt(tmp_path, text)))
+
+    doc_vocab = build_doc_vocab(words, load_vocab(), NO_EMBED)
+
+    assert "polymarket" in doc_vocab
+    assert "corsera" not in doc_vocab
+    assert "corsera" not in doc_vocab.variants
+    assert "Coursera" in doc_vocab.suspects["corsera"]
+
+
+def test_build_doc_vocab_trusts_near_miss_once_it_recurs_enough(tmp_path: Path) -> None:
+    """"Kalshi" sounds like the rarer "kalish", but repeated this often it's
+    the doc's own term, not a misspelling."""
+    config = DetectConfig(enable_embeddings=False)
+    text = " ".join(["Bets on Kalshi."] * config.doc_vocab_suspect_min_count)
+    words = tokenize(parse(_srt(tmp_path, text)))
+
+    doc_vocab = build_doc_vocab(words, load_vocab(), config)
+
+    assert "kalshi" in doc_vocab
+    assert not doc_vocab.suspects

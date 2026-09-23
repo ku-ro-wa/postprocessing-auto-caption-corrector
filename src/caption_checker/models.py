@@ -113,6 +113,15 @@ class DetectConfig:
     #: Jaro-Winkler similarity floor for clustering near-duplicate
     #: misspellings of the same doc-vocab term together.
     doc_vocab_fuzzy_min: float = 0.82
+    #: A recurring unknown term that sounds and looks like a word wordfreq
+    #: does know ("Corsera" x3 vs "coursera") is as likely a consistent ASR
+    #: misspelling as the doc's own term, so it needs this many occurrences
+    #: (not ``doc_vocab_min_count``) before it's trusted.
+    doc_vocab_suspect_min_count: int = 6
+    #: What counts as that known neighbour: shares a phonetic code, is at
+    #: least this Jaro-Winkler-similar, and at least this common.
+    known_neighbour_jw_min: float = 0.9
+    known_neighbour_zipf_min: float = 1.5
     embedding_model: str = "sentence-transformers/all-MiniLM-L6-v2"
     embedding_sim_z: float = -1.5
     embedding_candidate_zipf_max: float = 2.5

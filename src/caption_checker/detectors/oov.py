@@ -37,14 +37,20 @@ def find(
             continue
         # 0.0 -> 0.9 confidence; anything with a faint frequency signal lower.
         confidence = 0.9 if zipf == 0.0 else max(0.4, 0.9 - zipf / 3.0)
+        suspects = doc_vocab.suspects.get(cleaned, [])
+        reason = f'"{word.text}" is not a common word or known term' + (
+            "" if zipf == 0.0 else f" (rare, zipf {zipf:.1f})"
+        )
+        if suspects:
+            reason += f'; it recurs, but always like a misheard "{suspects[0]}"'
         flags.append(
             make_flag(
                 [word],
                 cues_by_index,
                 detector=DETECTOR_OOV,
-                reason=f'"{word.text}" is not a common word or known term'
-                + ("" if zipf == 0.0 else f" (rare, zipf {zipf:.1f})"),
+                reason=reason,
                 confidence=confidence,
+                candidates=suspects,
             )
         )
     return flags

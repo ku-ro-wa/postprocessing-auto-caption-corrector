@@ -4,15 +4,19 @@ from __future__ import annotations
 
 from collections import Counter
 from dataclasses import dataclass, field
+from functools import lru_cache
 from pathlib import Path
 
-from wordfreq import zipf_frequency
+from wordfreq import top_n_list, zipf_frequency
 
 from caption_checker.models import DetectConfig, Word
 from caption_checker.normalize import clean, is_wordlike, trim_edges
 from caption_checker.phonetics import codes, similar
 
 DEFAULT_VOCAB_PATH = Path(__file__).parent / "data" / "domain_vocab.txt"
+
+# Deep enough to reach names and brands like "shreyas" (rank ~136k).
+_KNOWN_WORDS_TOP_N = 150_000
 
 
 @dataclass
@@ -50,6 +54,10 @@ class DocVocab:
     #: ("Caushi" -> "Kashi" -> "Kalshi") even when the two ends aren't
     #: similar enough to match directly.
     variants: dict[str, str] = field(default_factory=dict)
+    #: recurring terms *not* trusted because a known word could explain them
+    #: as a consistent misspelling (cleaned surface form -> those known
+    #: words, cased like the transcript's spelling). Offered as corrections.
+    suspects: dict[str, list[str]] = field(default_factory=dict)
 
     def __contains__(self, cleaned: str) -> bool:
         return cleaned in self.counts
@@ -120,9 +128,68 @@ def build_doc_vocab(
             owner[cand] = match
         seen_order.append(cand)
 
+    # A low-count cluster whose canonical spelling is a near-miss of a word
+    # wordfreq knows is more likely that word, misheard the same way each
+    # time ("Corsera" x3 -> "Coursera"). A term with no such neighbour
+    # ("Polymarket"), or one repeated enough to outweigh it ("Kalshi" x20 vs
+    # "kalish"), stays trusted.
+    suspects: dict[str, list[str]] = {}
+    for canon, n in list(canonical_counts.items()):
+        if n >= config.doc_vocab_suspect_min_count:
+            continue
+        if zipf_frequency(canon, "en") > config.oov_zipf_max:
+            continue
+        neighbours = known_neighbours(canon, config)
+        if not neighbours:
+            continue
+        shown = canonical_display.pop(canon)
+        del canonical_counts[canon]
+        if shown[:1].isupper():
+            neighbours = [n[:1].upper() + n[1:] for n in neighbours]
+        for variant in [v for v, o in owner.items() if o == canon]:
+            del owner[variant]
+            suspects[variant] = neighbours
+
     return DocVocab(
-        counts=canonical_counts, display=canonical_display, variants=owner
+        counts=canonical_counts,
+        display=canonical_display,
+        variants=owner,
+        suspects=suspects,
     )
+
+
+@lru_cache(maxsize=1)
+def _known_words_by_phonetic() -> dict[str, list[str]]:
+    """Phonetic code -> wordfreq's most common English words encoding to it.
+    Built lazily (~0.6s) the first time a doc-vocab term needs checking."""
+    index: dict[str, list[str]] = {}
+    for word in top_n_list("en", _KNOWN_WORDS_TOP_N):
+        if not word.replace("'", "").isalpha():
+            continue
+        for c in codes(word):
+            index.setdefault(c, []).append(word)
+    return index
+
+
+def known_neighbours(term: str, config: DetectConfig, limit: int = 3) -> list[str]:
+    """The common English words ``term`` could be a mishearing of, most
+    similar first. Similarity alone can't pick the right one ("corser" edges
+    out "coursera"), so callers pass a few on for the LLM to choose from in
+    context. Always matches on Double Metaphone, whatever
+    ``config.phonetic_algo`` says, since that's how the index is built."""
+    index = _known_words_by_phonetic()
+    scored: dict[str, float] = {}
+    for c in codes(term):
+        for word in index.get(c, []):
+            if word == term:
+                continue
+            score = similar(term, word)
+            if score < config.known_neighbour_jw_min:
+                continue
+            if zipf_frequency(word, "en") < config.known_neighbour_zipf_min:
+                continue
+            scored[word] = score
+    return sorted(scored, key=lambda w: -scored[w])[:limit]
 
 
 def _read_terms(path: Path) -> list[str]:
