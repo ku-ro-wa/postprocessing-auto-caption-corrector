@@ -56,9 +56,16 @@ _Avoid_: valid word, dictionary word.
 
 **Domain vocabulary**:
 The curated list of correct-spelling technical terms for a subject area,
-bundled as a default and extensible per run. Supplies both membership checks
+bundled as a default and extended per run by Priming terms. Supplies both membership checks
 and the phonetic index that "sounds like a real term" detectors match against.
 _Avoid_: glossary (that is this document), term list, dictionary.
+
+**Priming terms**:
+Terms supplied alongside one transcript -- a speaker's name, a product, a
+course's jargon -- that join the Domain vocabulary for that run and are also
+given to the LLM directly. What a video title or a call's company name is to
+the system.
+_Avoid_: custom vocab, hints, keywords.
 
 **Out-of-vocabulary (OOV)**:
 A token that is neither a known-good word nor a domain-vocabulary term. The
@@ -82,6 +89,13 @@ An LLM verdict on one flag: a replacement string and a confidence, or a
 declaration that the span is not an error. Distinct from a candidate, which is
 a detector's cheaper guess made before the LLM sees anything.
 _Avoid_: fix, edit (use "edit" only for the act of writing it into the file).
+
+**Read-through**:
+An LLM stage that reads the whole transcript in chunks, with the detectors'
+Flags and candidates and the Priming terms as hints, and returns Flags with
+their Corrections in one pass -- including errors no Detector raised. Not a
+Detector: it depends on their output rather than running independently.
+_Avoid_: LLM detector, LLM scan, rewrite.
 
 **Not-an-error verdict**:
 A correction that declines to change the span — the LLM judged the flag a false
@@ -135,8 +149,9 @@ exposure, since a cold flag always becomes LLM residue.
 _Avoid_: unknown flag, unmatched flag.
 
 **Reference caption**:
-A same-video caption track that isn't labeled auto-generated, used as an
-approximate answer key for the Regression gate. Not verified: it may be a
+A same-video caption track that isn't labeled auto-generated, formerly used as
+an approximate answer key for the Regression gate (replaced by Audited
+transcripts). Not verified: it may be a
 genuine post-hoc transcript, a lightly touched-up auto pass, or a
 pre-production script/TTS source that never touched the finished audio — a
 mismatch against it is spot-checked against the actual audio before being
@@ -144,10 +159,41 @@ scored as a false positive or negative.
 _Avoid_: ground truth, clean transcript, manual transcript (all overstate a
 confidence this hasn't earned).
 
+**Audited transcript**:
+An auto-generated transcript whose errors a person has listed exhaustively by
+listening to the audio against it. The closest thing this project has to
+ground truth; supersedes Reference captions as the source of Scored corpus
+entries.
+_Avoid_: manual transcript, gold transcript.
+
 **Scored corpus**:
-Transcripts paired with a Reference caption, small by necessity, used to
-compute the Regression gate's numbers.
+Should-flag / should-not-flag cases drawn from Audited transcripts, small by
+necessity, used to compute the Regression gate's numbers.
 _Avoid_: eval set, golden set.
+
+**Auto-labelled corpus**:
+Cases derived without human review by aligning an ASR system's output against
+a professional verbatim reference transcript of the same audio. Large and
+varied but noisy, and its errors come from that ASR system rather than
+YouTube's -- trusted for relative comparisons, not absolute numbers.
+_Avoid_: synthetic corpus, external benchmark.
+
+**Dev set**:
+The transcripts a change may be tuned against. Everything the Regression gate
+currently scores is Dev set.
+_Avoid_: training set.
+
+**Held-out set**:
+Transcripts never tuned against, scored only to estimate how a frozen version
+of the system generalises. Looking at one to motivate a change moves it to the
+Dev set.
+_Avoid_: test set (too easily confused with `tests/`).
+
+**Flag-level precision**:
+The share of all emitted Flags that touch a known error. Only meaningful where
+errors are listed exhaustively (Audited transcripts, Auto-labelled corpora);
+distinct from the Regression gate's case precision over hand-picked
+should-not-flag spans.
 
 **Smoke corpus**:
 A larger, unscored set of transcripts run through detection only (no LLM
