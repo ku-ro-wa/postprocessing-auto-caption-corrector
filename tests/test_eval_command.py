@@ -133,7 +133,6 @@ def _earnings_like(tmp_path: Path) -> NamedCorpus:
         manifest_path=tmp_path / "manifest.json",
         headline_kinds=("non-word", "real-word"),
         caveat="labels are noisy",
-        match_candidates=False,
     )
 
 
@@ -144,12 +143,23 @@ def test_run_eval_treats_every_manifest_source_as_exhaustive(tmp_path: Path) -> 
     assert report.entity_recall == (1, 1)  # a detection, whatever its candidates
 
 
-def test_run_eval_can_require_the_candidate_as_the_scored_corpus_does(
+def test_run_eval_scores_detection_and_tallies_candidate_matches_aside(
     tmp_path: Path,
 ) -> None:
-    corpus = replace(_earnings_like(tmp_path), match_candidates=True)
-    report = run_eval(corpus, _flag_words(2))
-    assert report.entity_recall == (0, 1)  # flagged, but no Kafka candidate
+    # ADR 0006: one rule on every corpus -- a Flag touching the error is a
+    # catch; proposing the case's candidate is a secondary number.
+    report = run_eval(_earnings_like(tmp_path), _flag_words(2))
+    assert report.recall_by_kind["real-word"] == (1, 1)
+    assert report.with_candidate_by_kind["real-word"] == (0, 1)  # no Kafka
+
+
+def test_eval_command_prints_candidate_matches_beside_detection(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    monkeypatch.setitem(CORPORA, "earnings21-dev", _earnings_like(tmp_path))
+    monkeypatch.setitem(SYSTEMS, "local", lambda: _flag_words(2))
+    result = CliRunner().invoke(main, ["eval", "--corpus", "earnings21-dev"])
+    assert "real-word: 1.000 (1/1; 0/1 with candidate)" in result.output
 
 
 def test_run_eval_passes_priming_terms_only_when_asked(tmp_path: Path) -> None:

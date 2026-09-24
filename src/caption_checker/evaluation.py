@@ -67,6 +67,10 @@ class ScoreReport:
     exhaustive_flags: int = 0
     #: (entity cases caught, entity cases); None when no case is an entity.
     entity_recall: tuple[int, int] | None = None
+    #: kind -> (should-flag cases caught by a flag proposing the case's
+    #: candidate, should-flag cases of that kind): correction quality, kept
+    #: beside detection recall rather than blended into it.
+    with_candidate_by_kind: dict[str, tuple[int, int]] = field(default_factory=dict)
 
 
 def is_cold_flag(flag: Flag) -> bool:
@@ -141,11 +145,13 @@ def score(
     else an untouched flag may just be an unlisted error.
 
     With ``match_candidates`` off, a case is caught by any flag touching it,
-    whatever its candidates -- detection recall, for corpora whose
-    candidates are a noisy verbatim reference rather than a curated fix."""
+    whatever its candidates -- detection recall, which the eval command
+    always scores (ADR 0006); the Regression gate keeps the stricter rule.
+    ``with_candidate_by_kind`` tallies the stricter rule either way."""
     true_positives = false_negatives = 0
     true_negatives = false_positives = 0
     by_kind: dict[str, list[int]] = {}
+    with_candidate: dict[str, list[int]] = {}
     entity = [0, 0]
     error_indices: dict[str, set[int]] = {}
 
@@ -154,12 +160,12 @@ def score(
         hits = _overlapping(flags_by_source.get(case.source, []), occurrences)
         if case.verdict == "should-flag":
             error_indices.setdefault(case.source, set()).update(*occurrences)
-            hit = any(
+            proposed = any(
                 case.candidate is None
-                or not match_candidates
                 or any(case.candidate.lower() in c.lower() for c in f.candidates)
                 for f in hits
             )
+            hit = proposed if match_candidates else bool(hits)
             if hit:
                 true_positives += 1
             else:
@@ -168,6 +174,9 @@ def score(
                 tally = by_kind.setdefault(case.kind, [0, 0])
                 tally[0] += hit
                 tally[1] += 1
+                strict = with_candidate.setdefault(case.kind, [0, 0])
+                strict[0] += proposed
+                strict[1] += 1
             if case.entity:
                 entity[0] += hit
                 entity[1] += 1
@@ -219,6 +228,9 @@ def score(
         flags_touching_errors=flags_touching_errors,
         exhaustive_flags=exhaustive_flags,
         entity_recall=(entity[0], entity[1]) if entity[1] else None,
+        with_candidate_by_kind={
+            k: (v[0], v[1]) for k, v in sorted(with_candidate.items())
+        },
     )
 
 
@@ -238,8 +250,7 @@ class NamedCorpus:
     An Auto-labelled corpus built into the cache also has a ``manifest_path``
     listing every source -- all exhaustive -- with its Priming terms;
     ``headline_kinds`` are the kinds its headline recall is computed over,
-    and ``caveat`` is printed with its numbers. ``match_candidates`` says
-    whether a catch must also propose the case's candidate (see ``score``)."""
+    and ``caveat`` is printed with its numbers."""
 
     cases_path: Path
     data_dir: Path
@@ -247,7 +258,6 @@ class NamedCorpus:
     manifest_path: Path | None = None
     headline_kinds: tuple[str, ...] = ()
     caveat: str | None = None
-    match_candidates: bool = True
 
 
 _TEST_DATA = Path(__file__).resolve().parents[2] / "tests" / "data"
@@ -277,9 +287,6 @@ def _earnings21(split: str) -> NamedCorpus:
         manifest_path=DEFAULT_CACHE_DIR / split / "manifest.json",
         headline_kinds=("non-word", "real-word"),
         caveat=CAVEAT,
-        # Candidates are Rev's verbatim words ("Monro Inc", "6.7%"): requiring
-        # a flag to propose them exactly would score label noise, not recall.
-        match_candidates=False,
     )
 
 
@@ -340,5 +347,7 @@ def run_eval(
         flags_by_source,
         words_by_source,
         exhaustive_sources=exhaustive,
-        match_candidates=corpus.match_candidates,
+        # Detection, on every corpus (ADR 0006): a system that flags an error
+        # but leaves the fix to a later pass still found it.
+        match_candidates=False,
     )

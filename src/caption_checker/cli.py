@@ -369,7 +369,11 @@ def _render_score(report: ScoreReport, headline_kinds: tuple[str, ...] = ()) -> 
             f"headline recall ({', '.join(headline_kinds)}): {rate} ({hit}/{total})"
         )
     for kind, (hit, total) in report.recall_by_kind.items():
-        lines.append(f"  {kind}: {hit / total:.3f} ({hit}/{total})")
+        proposed, _ = report.with_candidate_by_kind.get(kind, (0, total))
+        lines.append(
+            f"  {kind}: {hit / total:.3f} ({hit}/{total}; "
+            f"{proposed}/{total} with candidate)"
+        )
     if report.entity_recall is not None:
         hit, total = report.entity_recall
         lines.append(f"  entity: {hit / total:.3f} ({hit}/{total})")

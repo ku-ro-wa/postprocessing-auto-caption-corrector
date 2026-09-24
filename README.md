@@ -143,7 +143,10 @@ uv run caption-checker eval --corpus scored --system local
 
 Scores a system under test on a named corpus and prints recall (overall and
 by kind), case precision, Flag-level precision and cold-flag rate, each as
-its own number. Flag-level precision (flags touching any labelled error, out
+its own number. Recall counts detection on every corpus: a case is caught
+by any flag touching it, and each kind's line also shows how many of those
+flags proposed the case's candidate (ADR 0006). The pytest Regression gate
+still requires the candidate. Flag-level precision (flags touching any labelled error, out
 of all flags emitted) is computed only over transcripts whose errors are
 listed exhaustively — the 5 Audited transcripts in the Scored corpus, not the
 hand-made fixtures. Corpora and systems are registered in
@@ -169,9 +172,8 @@ dropped and counted. `earnings21-heldout` is the dataset's `eval10` list
 (11 calls) and is scored only for ADR 0006's final comparison;
 `earnings21-dev` is the first 5 other calls; the rest are never fetched.
 `--priming` hands each call's company name to the system as Priming terms.
-Headline recall covers `non-word` + `real-word`, and counts a case caught
-by any flag touching it: candidates are Rev's verbatim words, too noisy to
-require an exact match. Every number here is Google
+Headline recall covers `non-word` + `real-word`; the candidate counts are
+weak here, since candidates are Rev's verbatim words. Every number here is Google
 2021 ASR against verbatim-style, noisy labels: use it to compare systems,
 not as an absolute score.
 
