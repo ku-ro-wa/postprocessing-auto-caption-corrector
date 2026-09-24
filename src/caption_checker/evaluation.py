@@ -11,9 +11,11 @@ from pathlib import Path
 from typing import Callable, Collection, Literal
 
 from caption_checker.detect import detect
-from caption_checker.models import DETECTOR_OOV, Cue, Flag, Word
+from caption_checker.earnings21 import CAVEAT, DEFAULT_CACHE_DIR
+from caption_checker.models import DETECTOR_OOV, Cue, DetectConfig, Flag, Word
 from caption_checker.normalize import clean
 from caption_checker.parser import parse, tokenize
+from caption_checker.vocab import load_vocab
 
 Verdict = Literal["should-flag", "should-not-flag"]
 
@@ -33,7 +35,8 @@ class ScoredCase:
     it, only the occurrence of ``span`` inside that surrounding text does --
     needed when a real word is wrong in one place and right in others.
     ``kind`` is a free tag (``non-word``, ``real-word``, ``format``) that
-    recall is broken down by."""
+    recall is broken down by; ``entity`` marks a case on a named entity,
+    tallied separately whatever its kind."""
 
     source: str
     span: str
@@ -41,6 +44,7 @@ class ScoredCase:
     candidate: str | None = None
     context: str | None = None
     kind: str | None = None
+    entity: bool = False
 
 
 @dataclass(frozen=True)
@@ -61,6 +65,8 @@ class ScoreReport:
     flag_precision: float | None = None
     flags_touching_errors: int = 0
     exhaustive_flags: int = 0
+    #: (entity cases caught, entity cases); None when no case is an entity.
+    entity_recall: tuple[int, int] | None = None
 
 
 def is_cold_flag(flag: Flag) -> bool:
@@ -79,6 +85,7 @@ def load_corpus(path: str | Path) -> list[ScoredCase]:
             candidate=entry.get("candidate"),
             context=entry.get("context"),
             kind=entry.get("kind"),
+            entity=entry.get("entity", False),
         )
         for entry in raw
     ]
@@ -117,6 +124,7 @@ def score(
     flags_by_source: dict[str, list[Flag]],
     words_by_source: dict[str, list[Word]],
     exhaustive_sources: Collection[str] = (),
+    match_candidates: bool = True,
 ) -> ScoreReport:
     """Score Scored corpus ``cases`` against ``detect()`` output already
     grouped by source file, locating each case among that source's Words. A
@@ -130,10 +138,15 @@ def score(
     ``kind`` and whatever their candidates, over all flags emitted -- is
     computed only over ``exhaustive_sources``: transcripts whose errors are
     listed exhaustively (Audited transcripts, Auto-labelled corpora). Anywhere
-    else an untouched flag may just be an unlisted error."""
+    else an untouched flag may just be an unlisted error.
+
+    With ``match_candidates`` off, a case is caught by any flag touching it,
+    whatever its candidates -- detection recall, for corpora whose
+    candidates are a noisy verbatim reference rather than a curated fix."""
     true_positives = false_negatives = 0
     true_negatives = false_positives = 0
     by_kind: dict[str, list[int]] = {}
+    entity = [0, 0]
     error_indices: dict[str, set[int]] = {}
 
     for case in cases:
@@ -143,6 +156,7 @@ def score(
             error_indices.setdefault(case.source, set()).update(*occurrences)
             hit = any(
                 case.candidate is None
+                or not match_candidates
                 or any(case.candidate.lower() in c.lower() for c in f.candidates)
                 for f in hits
             )
@@ -154,6 +168,9 @@ def score(
                 tally = by_kind.setdefault(case.kind, [0, 0])
                 tally[0] += hit
                 tally[1] += 1
+            if case.entity:
+                entity[0] += hit
+                entity[1] += 1
         else:
             if hits:
                 false_positives += 1
@@ -201,12 +218,14 @@ def score(
         flag_precision=flag_precision,
         flags_touching_errors=flags_touching_errors,
         exhaustive_flags=exhaustive_flags,
+        entity_recall=(entity[0], entity[1]) if entity[1] else None,
     )
 
 
-#: A system under test: whatever turns one transcript's Cues into Flags --
-#: the local detector pipeline today, the Read-through later (ADR 0006).
-System = Callable[[list[Cue]], list[Flag]]
+#: A system under test: whatever turns one transcript's Cues, plus its
+#: Priming terms (empty when the eval runs without them), into Flags -- the
+#: local detector pipeline today, the Read-through later (ADR 0006).
+System = Callable[[list[Cue], list[str]], list[Flag]]
 
 
 @dataclass(frozen=True)
@@ -214,11 +233,21 @@ class NamedCorpus:
     """A corpus the eval command scores: its cases, the directory
     their ``source`` files live in, and which of those sources list their
     errors exhaustively (the only ones Flag-level precision is computed on).
-    An exhaustive source with no cases is still run and its flags counted."""
+    An exhaustive source with no cases is still run and its flags counted.
+
+    An Auto-labelled corpus built into the cache also has a ``manifest_path``
+    listing every source -- all exhaustive -- with its Priming terms;
+    ``headline_kinds`` are the kinds its headline recall is computed over,
+    and ``caveat`` is printed with its numbers. ``match_candidates`` says
+    whether a catch must also propose the case's candidate (see ``score``)."""
 
     cases_path: Path
     data_dir: Path
     exhaustive_sources: tuple[str, ...] = ()
+    manifest_path: Path | None = None
+    headline_kinds: tuple[str, ...] = ()
+    caveat: str | None = None
+    match_candidates: bool = True
 
 
 _TEST_DATA = Path(__file__).resolve().parents[2] / "tests" / "data"
@@ -241,8 +270,35 @@ CORPORA: dict[str, NamedCorpus] = {
 }
 
 
+def _earnings21(split: str) -> NamedCorpus:
+    return NamedCorpus(
+        cases_path=DEFAULT_CACHE_DIR / split / "cases.json",
+        data_dir=DEFAULT_CACHE_DIR / split,
+        manifest_path=DEFAULT_CACHE_DIR / split / "manifest.json",
+        headline_kinds=("non-word", "real-word"),
+        caveat=CAVEAT,
+        # Candidates are Rev's verbatim words ("Monro Inc", "6.7%"): requiring
+        # a flag to propose them exactly would score label noise, not recall.
+        match_candidates=False,
+    )
+
+
+# Auto-labelled corpora, built by `caption-checker build-earnings21`. The
+# held-out split is scored only for the final comparison (ADR 0006): looking
+# at it to motivate a change makes it a Dev set.
+CORPORA["earnings21-dev"] = _earnings21("dev")
+CORPORA["earnings21-heldout"] = _earnings21("heldout")
+
+
 def _local_pipeline() -> System:
-    return detect
+    def system(cues: list[Cue], priming_terms: list[str]) -> list[Flag]:
+        if not priming_terms:
+            return detect(cues)
+        config = DetectConfig()
+        vocab = load_vocab(terms=priming_terms, algo=config.phonetic_algo)
+        return detect(cues, vocab=vocab, config=config)
+
+    return system
 
 
 #: Systems the eval command can score, by name. Factories, so a system that
@@ -252,20 +308,37 @@ SYSTEMS: dict[str, Callable[[], System]] = {
 }
 
 
-def run_eval(corpus: NamedCorpus, system: System) -> ScoreReport:
-    """Run ``system`` over every source ``corpus`` names -- in its cases or
-    among its exhaustive sources -- and score the Flags it returns."""
+def run_eval(
+    corpus: NamedCorpus, system: System, *, priming: bool = False
+) -> ScoreReport:
+    """Run ``system`` over every source ``corpus`` names -- in its cases,
+    among its exhaustive sources, or in its manifest -- and score the Flags it
+    returns. With ``priming`` each source's Priming terms are handed to the
+    system; without, it gets none."""
+    if not corpus.cases_path.exists():
+        raise CorpusError(
+            f"{corpus.cases_path} not found; for an Earnings-21 corpus run "
+            "`caption-checker build-earnings21` first"
+        )
+    manifest: dict[str, dict] = {}
+    if corpus.manifest_path is not None:
+        manifest = json.loads(corpus.manifest_path.read_text(encoding="utf-8"))["sources"]
+    if priming and not manifest:
+        raise CorpusError("this corpus has no Priming terms to run with")
     cases = load_corpus(corpus.cases_path)
-    sources = dict.fromkeys([*(c.source for c in cases), *corpus.exhaustive_sources])
+    exhaustive = (*corpus.exhaustive_sources, *manifest)
+    sources = dict.fromkeys([*(c.source for c in cases), *exhaustive])
     flags_by_source: dict[str, list[Flag]] = {}
     words_by_source: dict[str, list[Word]] = {}
     for source in sources:
         cues = parse(corpus.data_dir / source)
-        flags_by_source[source] = system(cues)
+        terms = manifest.get(source, {}).get("priming_terms", []) if priming else []
+        flags_by_source[source] = system(cues, list(terms))
         words_by_source[source] = tokenize(cues)
     return score(
         cases,
         flags_by_source,
         words_by_source,
-        exhaustive_sources=corpus.exhaustive_sources,
+        exhaustive_sources=exhaustive,
+        match_candidates=corpus.match_candidates,
     )

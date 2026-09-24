@@ -14,3 +14,6 @@ wheels/
 
 # macOS
 .DS_Store
+
+# Derived datasets (Earnings-21 is CC BY-SA: never commit)
+.cache/

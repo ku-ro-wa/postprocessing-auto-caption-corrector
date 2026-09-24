@@ -150,6 +150,31 @@ hand-made fixtures. Corpora and systems are registered in
 `caption_checker/evaluation.py` (`CORPORA`, `SYSTEMS`) so the Read-through can
 be scored the same way (ADR 0006).
 
+**Earnings-21 Auto-labelled corpora** — built locally, never committed:
+
+```bash
+uv run caption-checker build-earnings21            # fetch + build into .cache/earnings21/
+uv run caption-checker eval --corpus earnings21-dev [--priming]
+```
+
+`build-earnings21` downloads Google's ASR output and Rev's verbatim
+references for the Earnings-21 calls
+([revdotcom/speech-datasets](https://github.com/revdotcom/speech-datasets),
+CC BY-SA 4.0) into the gitignored `.cache/earnings21/raw/`, writes Google's
+output as one SRT per call, aligns it against the reference, and turns each
+disagreement into a case: `format`, `function-word`, `non-word` or
+`real-word`, plus an `entity` tag on names. Deletions (nothing on screen),
+filler-only regions and regions over 6 tokens a side (alignment drift) are
+dropped and counted. `earnings21-heldout` is the dataset's `eval10` list
+(11 calls) and is scored only for ADR 0006's final comparison;
+`earnings21-dev` is the first 5 other calls; the rest are never fetched.
+`--priming` hands each call's company name to the system as Priming terms.
+Headline recall covers `non-word` + `real-word`, and counts a case caught
+by any flag touching it: candidates are Rev's verbatim words, too noisy to
+require an exact match. Every number here is Google
+2021 ASR against verbatim-style, noisy labels: use it to compare systems,
+not as an absolute score.
+
 **Smoke corpus** — manual, no dedicated tooling: after a threshold change
 passes the regression gate, sanity-check generalization by running `check`
 over a larger batch of real, unscored transcripts and eyeballing the result:

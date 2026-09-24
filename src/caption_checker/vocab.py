@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 from collections import Counter
+from collections.abc import Iterable
 from dataclasses import dataclass, field
 from functools import lru_cache
 from pathlib import Path
@@ -213,12 +214,17 @@ def _read_terms(path: Path) -> list[str]:
 
 
 def load_vocab(
-    extra: Path | str | None = None, *, algo: str = "metaphone"
+    extra: Path | str | None = None,
+    *,
+    terms: Iterable[str] = (),
+    algo: str = "metaphone",
 ) -> Vocab:
-    """Load the bundled default vocabulary, merged with an optional user file."""
+    """Load the bundled default vocabulary, merged with an optional user file
+    and any Priming terms supplied for this run."""
     raw_terms = _read_terms(DEFAULT_VOCAB_PATH)
     if extra is not None:
         raw_terms.extend(_read_terms(Path(extra)))
+    raw_terms.extend(t.strip() for t in terms if t.strip())
 
     vocab = Vocab()
     for term in raw_terms:

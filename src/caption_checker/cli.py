@@ -9,7 +9,13 @@ from typing import TYPE_CHECKING
 import click
 
 from caption_checker.detect import detect
-from caption_checker.evaluation import CORPORA, SYSTEMS, ScoreReport, run_eval
+from caption_checker.evaluation import (
+    CORPORA,
+    SYSTEMS,
+    CorpusError,
+    ScoreReport,
+    run_eval,
+)
 from caption_checker.models import (
     DEFAULT_MODEL,
     DetectConfig,
@@ -293,7 +299,8 @@ def serve(host: str, port: int, data_dir: Path | None) -> None:
     type=click.Choice(list(CORPORA)),
     default="scored",
     show_default=True,
-    help="Named corpus to score.",
+    help="Named corpus to score. earnings21-* need `build-earnings21` first; "
+    "earnings21-heldout is for the final comparison only (ADR 0006).",
 )
 @click.option(
     "--system",
@@ -303,20 +310,69 @@ def serve(host: str, port: int, data_dir: Path | None) -> None:
     show_default=True,
     help="System under test.",
 )
-def eval_(corpus_name: str, system_name: str) -> None:
+@click.option(
+    "--priming/--no-priming",
+    default=False,
+    show_default=True,
+    help="Hand each transcript's Priming terms (an Earnings-21 call's company "
+    "name) to the system under test.",
+)
+def eval_(corpus_name: str, system_name: str, priming: bool) -> None:
     """Score a system under test on a named corpus and print recall (overall
     and by kind), case precision, Flag-level precision and cold-flag rate as
     separate numbers. Unlike the pytest Regression gate this has no floors."""
-    report = run_eval(CORPORA[corpus_name], SYSTEMS[system_name]())
-    click.echo(f"corpus: {corpus_name}\nsystem: {system_name}\n{_render_score(report)}")
+    corpus = CORPORA[corpus_name]
+    try:
+        report = run_eval(corpus, SYSTEMS[system_name](), priming=priming)
+    except CorpusError as e:
+        raise click.ClickException(str(e)) from e
+    lines = [
+        f"corpus: {corpus_name}",
+        f"system: {system_name}",
+        f"priming: {'on' if priming else 'off'}",
+        _render_score(report, corpus.headline_kinds),
+    ]
+    if corpus.caveat:
+        lines.append(f"note: {corpus.caveat}")
+    click.echo("\n".join(lines))
 
 
-def _render_score(report: ScoreReport) -> str:
+@main.command("build-earnings21")
+def build_earnings21() -> None:
+    """Download Earnings-21 (Google ASR output + Rev references, CC BY-SA 4.0)
+    into the gitignored cache and build its Auto-labelled corpora: the
+    eval-10 Held-out set and a Dev set of 5 other calls. Raw files are
+    fetched once; the corpora are rebuilt from them every run."""
+    from caption_checker import earnings21
+
+    summary = earnings21.build()
+    for split, counts in summary.items():
+        detail = ", ".join(
+            f"{k} {v}" for k, v in sorted(counts.items()) if k not in ("calls", "cases")
+        )
+        click.echo(f"{split}: {counts['calls']} calls, {counts['cases']} cases ({detail})")
+    click.echo(f"dropped (not cases): {', '.join(earnings21.DROPPED)}")
+    click.echo(f"note: {earnings21.CAVEAT}")
+
+
+def _render_score(report: ScoreReport, headline_kinds: tuple[str, ...] = ()) -> str:
     caught = report.true_positives
     should_flag = caught + report.false_negatives
-    lines = [f"recall: {report.recall:.3f} ({caught}/{should_flag})"]
+    # With headline kinds, the overall number blends in kinds kept apart.
+    label = "all-kinds recall" if headline_kinds else "recall"
+    lines = [f"{label}: {report.recall:.3f} ({caught}/{should_flag})"]
+    if headline_kinds:
+        hit = sum(report.recall_by_kind.get(k, (0, 0))[0] for k in headline_kinds)
+        total = sum(report.recall_by_kind.get(k, (0, 0))[1] for k in headline_kinds)
+        rate = f"{hit / total:.3f}" if total else "n/a"
+        lines.append(
+            f"headline recall ({', '.join(headline_kinds)}): {rate} ({hit}/{total})"
+        )
     for kind, (hit, total) in report.recall_by_kind.items():
         lines.append(f"  {kind}: {hit / total:.3f} ({hit}/{total})")
+    if report.entity_recall is not None:
+        hit, total = report.entity_recall
+        lines.append(f"  entity: {hit / total:.3f} ({hit}/{total})")
     should_not_flag = report.true_negatives + report.false_positives
     lines.append(
         f"case precision: {report.precision:.3f} "
