@@ -6,9 +6,9 @@ Flag-level precision) for the vocabulary this module implements."""
 from __future__ import annotations
 
 import json
-from dataclasses import dataclass, field
+from dataclasses import dataclass, field, replace
 from pathlib import Path
-from typing import Callable, Collection, Literal
+from typing import TYPE_CHECKING, Callable, Collection, Literal
 
 from caption_checker.detect import detect
 from caption_checker.earnings21 import CAVEAT, DEFAULT_CACHE_DIR
@@ -16,6 +16,10 @@ from caption_checker.models import DETECTOR_OOV, Cue, DetectConfig, Flag, Word
 from caption_checker.normalize import clean
 from caption_checker.parser import parse, tokenize
 from caption_checker.vocab import load_vocab
+
+if TYPE_CHECKING:
+    from caption_checker.corrector import Spend
+    from caption_checker.readthrough import Reader
 
 Verdict = Literal["should-flag", "should-not-flag"]
 
@@ -71,6 +75,9 @@ class ScoreReport:
     #: candidate, should-flag cases of that kind): correction quality, kept
     #: beside detection recall rather than blended into it.
     with_candidate_by_kind: dict[str, tuple[int, int]] = field(default_factory=dict)
+    #: Audio covered by the scored sources (last cue end, summed), for cost
+    #: per audio hour; set by :func:`run_eval`.
+    audio_seconds: float = 0.0
 
 
 def is_cold_flag(flag: Flag) -> bool:
@@ -236,7 +243,7 @@ def score(
 
 #: A system under test: whatever turns one transcript's Cues, plus its
 #: Priming terms (empty when the eval runs without them), into Flags -- the
-#: local detector pipeline today, the Read-through later (ADR 0006).
+#: local detector pipeline or the Read-through (ADR 0006).
 System = Callable[[list[Cue], list[str]], list[Flag]]
 
 
@@ -297,21 +304,62 @@ CORPORA["earnings21-dev"] = _earnings21("dev")
 CORPORA["earnings21-heldout"] = _earnings21("heldout")
 
 
-def _local_pipeline() -> System:
-    def system(cues: list[Cue], priming_terms: list[str]) -> list[Flag]:
-        if not priming_terms:
-            return detect(cues)
-        config = DetectConfig()
-        vocab = load_vocab(terms=priming_terms, algo=config.phonetic_algo)
-        return detect(cues, vocab=vocab, config=config)
-
-    return system
+def _local_detect(cues: list[Cue], priming_terms: list[str]) -> list[Flag]:
+    if not priming_terms:
+        return detect(cues)
+    config = DetectConfig()
+    vocab = load_vocab(terms=priming_terms, algo=config.phonetic_algo)
+    return detect(cues, vocab=vocab, config=config)
 
 
-#: Systems the eval command can score, by name. Factories, so a system that
-#: needs an API key or a heavy import only pays for it when chosen.
-SYSTEMS: dict[str, Callable[[], System]] = {
+def _local_pipeline(model: str) -> System:
+    return _local_detect
+
+
+class ReadThroughSystem:
+    """The Read-through as a system under test: the local pipeline's Flags
+    go in as hints, and the Flags it claims are errors -- a verdict with a
+    replacement -- come out. A not-an-error verdict is a dismissal, not a
+    Flag; a chunk that failed twice contributes nothing and is counted in
+    ``failed_chunks``. Spend accumulates across every transcript run."""
+
+    def __init__(self, reader: Reader) -> None:
+        self.reader = reader
+        self.failed_chunks = 0
+        self.dropped = 0
+
+    @property
+    def spend(self) -> Spend:
+        return self.reader.spend
+
+    def __call__(self, cues: list[Cue], priming_terms: list[str]) -> list[Flag]:
+        from caption_checker.readthrough import read_through
+
+        result = read_through(
+            cues, _local_detect(cues, priming_terms), self.reader,
+            priming_terms=priming_terms,
+        )
+        self.failed_chunks += result.failed_chunks
+        self.dropped += result.dropped
+        return [
+            item.flag
+            for item in result.items
+            if item.correction is not None and item.correction.replacement is not None
+        ]
+
+
+def _read_through(model: str) -> System:
+    from caption_checker import readthrough
+
+    return ReadThroughSystem(readthrough.build_reader(model))
+
+
+#: Systems the eval command can score, by name, each built for a model slug
+#: (which the local pipeline ignores). Factories, so a system that needs an
+#: API key or a heavy import only pays for it when chosen.
+SYSTEMS: dict[str, Callable[[str], System]] = {
     "local": _local_pipeline,
+    "read-through": _read_through,
 }
 
 
@@ -337,12 +385,14 @@ def run_eval(
     sources = dict.fromkeys([*(c.source for c in cases), *exhaustive])
     flags_by_source: dict[str, list[Flag]] = {}
     words_by_source: dict[str, list[Word]] = {}
+    audio_seconds = 0.0
     for source in sources:
         cues = parse(corpus.data_dir / source)
         terms = manifest.get(source, {}).get("priming_terms", []) if priming else []
         flags_by_source[source] = system(cues, list(terms))
         words_by_source[source] = tokenize(cues)
-    return score(
+        audio_seconds += max((c.end.total_seconds() for c in cues), default=0.0)
+    report = score(
         cases,
         flags_by_source,
         words_by_source,
@@ -351,3 +401,4 @@ def run_eval(
         # but leaves the fix to a later pass still found it.
         match_candidates=False,
     )
+    return replace(report, audio_seconds=audio_seconds)

@@ -23,6 +23,9 @@ uv run caption-checker check lecture.srt --format json
 # add your own domain terms, one per line
 uv run caption-checker check lecture.srt --vocab my_terms.txt
 
+# Priming terms for this one transcript (a speaker, product, company)
+uv run caption-checker check lecture.srt --priming-term "Jensen Huang" --priming-term Nvidia
+
 # also surface rare (not just unknown) words
 uv run caption-checker check lecture.srt --oov-zipf 2.0
 ```
@@ -48,7 +51,18 @@ uv run caption-checker correct lecture.srt -o /dev/null --estimate
 # pick a model; cap spend; skip the cross-run decision cache
 uv run caption-checker correct lecture.srt -o out.srt \
     --model anthropic/claude-3.5-haiku --max-calls 4 --no-cache
+
+# Read-through: the model reads the whole transcript (every flag as a hint,
+# plus the Priming terms) and also reports errors no detector raised
+uv run caption-checker correct lecture.srt -o out.srt --read-through \
+    --priming-term "Jensen Huang"
 ```
+
+`--read-through` (ADR 0006) swaps the per-flag pass for one request per
+~400-word chunk. Its verdicts land in the same sidecar and review flow;
+errors it found by itself carry the `read_through` detector. It skips the
+bypass and the decision cache, and drops any verdict whose span crosses a
+cue boundary (a correction is spliced into one cue).
 
 Interactive keys: `y` accept, `n` skip, `e` edit then accept, `a` accept all
 remaining at or above this confidence, `q` stop and write what's accepted so
@@ -150,8 +164,20 @@ still requires the candidate. Flag-level precision (flags touching any labelled 
 of all flags emitted) is computed only over transcripts whose errors are
 listed exhaustively — the 5 Audited transcripts in the Scored corpus, not the
 hand-made fixtures. Corpora and systems are registered in
-`caption_checker/evaluation.py` (`CORPORA`, `SYSTEMS`) so the Read-through can
-be scored the same way (ADR 0006).
+`caption_checker/evaluation.py` (`CORPORA`, `SYSTEMS`).
+
+```bash
+uv run caption-checker eval --system read-through [--model SLUG]
+```
+
+scores the Read-through (it calls OpenRouter, so it costs money: about
+$0.05–0.07 per audio hour with the default model on the Dev sets). It counts
+only the Flags it claims are errors, and adds its spend per audio hour plus
+any failed chunks and dropped cross-cue verdicts. The default model,
+`google/gemini-2.5-flash`, was picked over `google/gemini-2.5-flash-lite`
+on the Dev sets (issue #23): Lite is about 3x cheaper but its Flag-level
+precision on the Scored corpus fell below the local pipeline's (0.57 vs
+0.71) and some of its Earnings-21 chunks failed on oversized replies.
 
 **Earnings-21 Auto-labelled corpora** — built locally, never committed:
 

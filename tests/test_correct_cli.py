@@ -263,3 +263,54 @@ def test_cache_file_isolation(tmp_path, stub) -> None:
     # each run had its own fresh stub; the b-run could not have reused a's cache
     assert len(stub[0].calls) == 1
     assert len(stub[1].calls) == 1
+
+
+# --- Read-through and Priming terms (ADR 0006) ------------------------------
+
+
+@pytest.fixture
+def reader(monkeypatch):
+    from caption_checker.readthrough import StubReader
+
+    made: list[StubReader] = []
+
+    def factory(model):
+        made.append(StubReader(extra={"leader election": "leader elections"}))
+        return made[-1]
+
+    monkeypatch.setattr("caption_checker.readthrough.build_reader", factory)
+    return made
+
+
+def test_read_through_replaces_the_per_flag_pass(tmp_path, stub, reader) -> None:
+    out = tmp_path / "o.srt"
+    result = _run(
+        SRT, "-o", str(out), "--yes-above", "0.5", "--no-cache", "--read-through",
+        "--priming-term", "Kafka",
+    )
+    assert result.exit_code == 0, result.output
+    assert stub == []  # never built the per-flag corrector
+    assert "leader elections using" in out.read_text()
+    assert reader[0].requests[0].priming_terms == ["Kafka"]
+    sidecar = json.loads((tmp_path / "o.srt.flags.json").read_text())
+    assert any(e["flag"]["detector"] == "read_through" for e in sidecar)
+
+
+def test_read_through_estimate_needs_no_reader(tmp_path, reader) -> None:
+    result = _run(SRT, "-o", str(tmp_path / "o.srt"), "--read-through", "--estimate")
+    assert result.exit_code == 0, result.output
+    assert "batches: 1" in result.output
+    assert reader == []
+
+
+def test_priming_terms_join_the_local_vocabulary(tmp_path, stub) -> None:
+    out = tmp_path / "o.srt"
+    _run(SRT, "-o", str(out), "--yes-above", "0.5", "--no-cache",
+         "--priming-term", "cubernetes")
+    assert "look at cubernetes" in out.read_text()  # now a known term
+
+
+def test_check_accepts_priming_terms() -> None:
+    result = CliRunner().invoke(main, ["check", SRT, "--priming-term", "cubernetes"])
+    assert "con sensus" in result.output  # still checked
+    assert "cubernetes" not in result.output

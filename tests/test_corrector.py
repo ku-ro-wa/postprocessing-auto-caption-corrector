@@ -16,7 +16,9 @@ from caption_checker.corrector import (
     CorrectorError,
     FlagContext,
     MissingAPIKeyError,
+    OpenRouterClient,
     OpenRouterCorrector,
+    Spend,
     StubCorrector,
     _similar_models,
 )
@@ -239,3 +241,58 @@ def test_parse_response_strips_code_fence() -> None:
     batch = [_ctx("f0", "x", ["y"])]
     reply = '```json\n[{"id":"f0","replacement":"y","confidence":0.8}]\n```'
     assert parse_response(reply, batch)[0].replacement == "y"
+
+
+def test_client_tallies_reported_usage_into_spend(monkeypatch) -> None:
+    usage = {"prompt_tokens": 100, "completion_tokens": 20, "cost": 0.002}
+
+    def fake_urlopen(request, timeout=None, context=None):  # noqa: ARG001
+        url = request if isinstance(request, str) else request.full_url
+        if url == OPENROUTER_MODELS_URL:
+            return _FakeResponse(json.dumps({"data": [{"id": "m/x"}]}).encode())
+        body = {"choices": [{"message": {"content": "hi"}}], "usage": usage}
+        return _FakeResponse(json.dumps(body).encode())
+
+    monkeypatch.setattr("urllib.request.urlopen", fake_urlopen)
+    client = OpenRouterClient("m/x", api_key="k")
+    client.chat([])
+    client.chat([])
+    assert client.spend == Spend(requests=2, prompt_tokens=200, completion_tokens=40, cost_usd=0.004)
+
+
+def test_spend_cost_is_unknown_once_a_reply_omits_it() -> None:
+    spend = Spend()
+    spend.add({"cost": 0.1})
+    spend.add({})
+    assert spend.cost_usd is None
+
+
+def test_a_truncated_reply_is_a_corrector_error(monkeypatch) -> None:
+    from http.client import IncompleteRead
+
+    class _Truncated(_FakeResponse):
+        def read(self) -> bytes:
+            raise IncompleteRead(b"{")
+
+    def fake_urlopen(request, timeout=None, context=None):  # noqa: ARG001
+        url = request if isinstance(request, str) else request.full_url
+        if url == OPENROUTER_MODELS_URL:
+            return _FakeResponse(json.dumps({"data": [{"id": "m/x"}]}).encode())
+        return _Truncated(b"")
+
+    monkeypatch.setattr("urllib.request.urlopen", fake_urlopen)
+    with pytest.raises(CorrectorError, match="request failed"):
+        OpenRouterClient("m/x", api_key="k").chat([])
+
+
+def test_a_reply_without_text_is_a_corrector_error(monkeypatch) -> None:
+    def fake_urlopen(request, timeout=None, context=None):  # noqa: ARG001
+        url = request if isinstance(request, str) else request.full_url
+        if url == OPENROUTER_MODELS_URL:
+            return _FakeResponse(json.dumps({"data": [{"id": "m/x"}]}).encode())
+        body = {"choices": [{"message": {"content": None}}]}
+        return _FakeResponse(json.dumps(body).encode())
+
+    monkeypatch.setattr("urllib.request.urlopen", fake_urlopen)
+    with pytest.raises(CorrectorError, match="no text"):
+        OpenRouterClient("m/x", api_key="k").chat([])

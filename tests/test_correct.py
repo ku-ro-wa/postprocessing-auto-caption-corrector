@@ -12,6 +12,7 @@ import pytest
 from caption_checker.cache import CachedCorrection, DecisionCache
 from caption_checker.correct import (
     InteractiveReviewer,
+    MaxCallsExceededError,
     PendingCorrection,
     ReviewDecision,
     ThresholdReviewer,
@@ -21,6 +22,7 @@ from caption_checker.correct import (
 from caption_checker.corrector import StubCorrector
 from caption_checker.models import DETECTOR_PHONETIC_INTERNAL, DetectConfig, Flag
 from caption_checker.parser import parse
+from caption_checker.readthrough import StubReader
 
 DATA_DIR = Path(__file__).parent / "data"
 
@@ -410,3 +412,62 @@ def test_interactive_n_on_not_an_error_leaves_it_alone() -> None:
     pending = [_pending("x", None, 0.8, preset="skip")]
     decisions = _review("n\n", pending)
     assert decisions[0].accepted is False
+
+
+# --- Read-through mode (ADR 0006) ---------------------------------------
+
+
+def _read(cues, reader, reviewer=None, **kw):
+    corrector = StubCorrector()
+    result = _run(
+        cues, corrector=corrector, reviewer=reviewer, read_through=True, reader=reader, **kw
+    )
+    assert corrector.calls == []  # the per-flag pass is off
+    return result
+
+
+def test_read_through_corrects_hints_and_errors_no_detector_raised() -> None:
+    reader = StubReader(extra={"leader election": "leader elections"})
+    result = _read(SAMPLE, reader)
+    joined = "\n".join(c.text for c in result.cues)
+    assert "consensus algorithms" in joined  # a hint's verdict
+    assert "leader elections using" in joined  # found by the Read-through
+    found = next(o for o in result.outcomes if o.flag.span == "leader election")
+    assert found.outcome == "applied"
+    assert found.flag.detector == "read_through"
+    assert found.correction["source"] == "read-through"
+    assert result.corrector_calls == reader.calls == 1
+
+
+def test_read_through_hands_priming_terms_to_the_reader() -> None:
+    reader = StubReader()
+    _read(SAMPLE, reader, priming_terms=["Kafka"])
+    assert reader.requests[0].priming_terms == ["Kafka"]
+
+
+def test_read_through_not_an_error_verdict_is_surfaced() -> None:
+    reader = StubReader(null_spans={"cubernetes"})
+    result = _read(SAMPLE, reader, reviewer=ThresholdReviewer(0.5))
+    rec = next(o for o in result.outcomes if o.flag.span == "cubernetes")
+    assert rec.outcome == "not-an-error"
+
+
+def test_read_through_failed_chunk_skips_its_hints() -> None:
+    result = _read(SAMPLE, StubReader(garbage=True))
+    assert {o.outcome for o in result.outcomes} == {"skipped-parse-failure"}
+    assert result.cues == SAMPLE
+
+
+def test_read_through_estimate_counts_chunks_without_calling() -> None:
+    reader = StubReader()
+    result = _read(SAMPLE, reader, estimate_only=True, read_chunk_words=20)
+    assert reader.calls == 0
+    assert result.estimate is not None
+    assert result.estimate.chunk_count == result.chunk_count > 1
+
+
+def test_read_through_refuses_more_chunks_than_max_calls() -> None:
+    reader = StubReader()
+    with pytest.raises(MaxCallsExceededError):
+        _read(SAMPLE, reader, max_calls=1, read_chunk_words=20)
+    assert reader.calls == 0

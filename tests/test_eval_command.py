@@ -157,7 +157,7 @@ def test_eval_command_prints_candidate_matches_beside_detection(
     tmp_path: Path, monkeypatch: pytest.MonkeyPatch
 ) -> None:
     monkeypatch.setitem(CORPORA, "earnings21-dev", _earnings_like(tmp_path))
-    monkeypatch.setitem(SYSTEMS, "local", lambda: _flag_words(2))
+    monkeypatch.setitem(SYSTEMS, "local", lambda model: _flag_words(2))
     result = CliRunner().invoke(main, ["eval", "--corpus", "earnings21-dev"])
     assert "real-word: 1.000 (1/1; 0/1 with candidate)" in result.output
 
@@ -192,7 +192,7 @@ def test_local_system_adds_priming_terms_to_the_domain_vocabulary(tmp_path: Path
         encoding="utf-8",
     )
     cues = parse(tmp_path / "t.srt")
-    local = SYSTEMS["local"]()
+    local = SYSTEMS["local"]("unused")
     assert any(f.span == "kubernetis" for f in local(cues, []))
     assert not any(f.span == "kubernetis" for f in local(cues, ["Kubernetis"]))
 
@@ -222,3 +222,43 @@ def test_eval_command_fails_cleanly_on_an_unbuilt_corpus(
     result = CliRunner().invoke(main, ["eval", "--corpus", "earnings21-dev"])
     assert result.exit_code != 0
     assert "build-earnings21" in result.output
+
+
+def test_eval_command_scores_the_read_through_with_its_cost(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    from caption_checker.corrector import Spend
+    from caption_checker.readthrough import StubReader
+
+    def factory(model: str) -> StubReader:
+        stub = StubReader(extra={"cough ka": "Kafka"})
+        stub.spend = Spend(requests=2, cost_usd=0.01)
+        return stub
+
+    monkeypatch.setattr("caption_checker.readthrough.build_reader", factory)
+    monkeypatch.setitem(CORPORA, "earnings21-dev", _earnings_like(tmp_path))
+    result = CliRunner().invoke(
+        main,
+        ["eval", "--corpus", "earnings21-dev", "--system", "read-through",
+         "--model", "some/model"],
+    )
+    assert result.exit_code == 0, result.output
+    assert "system: read-through (some/model)" in result.output
+    assert "real-word: 1.000 (1/1; 1/1 with candidate)" in result.output
+    # two 2-second transcripts, one spend object per system
+    assert "cost: $0.0100 for 0.001 audio hours ($9.00 per audio hour)" in result.output
+
+
+def test_read_through_system_scores_only_claimed_errors(tmp_path: Path) -> None:
+    from caption_checker.evaluation import ReadThroughSystem
+    from caption_checker.readthrough import StubReader
+
+    (tmp_path / "t.srt").write_text(SRT, encoding="utf-8")
+    cues = parse(tmp_path / "t.srt")
+    system = ReadThroughSystem(StubReader(extra={"cough ka": "Kafka", "raft": None}))  # type: ignore[dict-item]
+    assert [f.span for f in system(cues, [])] == ["cough ka"]
+
+
+def test_run_eval_measures_audio_duration(tmp_path: Path) -> None:
+    report = run_eval(_corpus(tmp_path), _flag_words())
+    assert report.audio_seconds == 4.0  # two 2-second sources

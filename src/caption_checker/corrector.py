@@ -19,10 +19,14 @@ from __future__ import annotations
 import json
 import os
 import re
+import threading
 from dataclasses import dataclass, field
-from typing import Protocol
+from typing import TYPE_CHECKING, Protocol
 
 from caption_checker.models import DEFAULT_MODEL
+
+if TYPE_CHECKING:
+    import ssl
 
 __all__ = [
     "DEFAULT_MODEL",
@@ -31,7 +35,9 @@ __all__ = [
     "CorrectorError",
     "FlagContext",
     "MissingAPIKeyError",
+    "OpenRouterClient",
     "OpenRouterCorrector",
+    "Spend",
     "StubCorrector",
     "build_corrector",
     "ensure_ids_match",
@@ -151,8 +157,31 @@ class StubCorrector:
         return out
 
 
-class OpenRouterCorrector:
-    """Real corrector, backed by OpenRouter's OpenAI-compatible endpoint."""
+@dataclass
+class Spend:
+    """What a run's LLM requests cost, as OpenRouter reported it. ``cost_usd``
+    stays None if any reply came back without a cost figure."""
+
+    requests: int = 0
+    prompt_tokens: int = 0
+    completion_tokens: int = 0
+    cost_usd: float | None = 0.0
+
+    def add(self, usage: dict) -> None:
+        self.requests += 1
+        self.prompt_tokens += int(usage.get("prompt_tokens") or 0)
+        self.completion_tokens += int(usage.get("completion_tokens") or 0)
+        cost = usage.get("cost")
+        if self.cost_usd is not None and isinstance(cost, (int, float)):
+            self.cost_usd += float(cost)
+        else:
+            self.cost_usd = None
+
+
+class OpenRouterClient:
+    """One model on OpenRouter's OpenAI-compatible chat endpoint: the
+    transport both the per-flag :class:`OpenRouterCorrector` and the
+    Read-through share. Tallies every reply's usage into ``spend``."""
 
     def __init__(
         self, model_id: str = DEFAULT_MODEL, *, api_key: str | None = None
@@ -164,18 +193,23 @@ class OpenRouterCorrector:
                 "no OpenRouter credential: set OPENROUTER_API_KEY in the "
                 "environment or in a .env file"
             )
-        # Only checked once per instance, on the first `correct()` call --
-        # `run_correction` reuses one instance across every chunk of a batch.
+        # Only checked once per instance, on the first `chat()` call --
+        # callers reuse one instance across every chunk of a run.
         self._model_checked = False
+        self._lock = threading.Lock()
+        self.spend = Spend()
 
-    def correct(self, batch: list[FlagContext]) -> list[Correction]:
+    def chat(
+        self, messages: list[dict], *, timeout: float = 60, **options: object
+    ) -> str:
+        """Send one chat turn and return the reply text. ``options`` are
+        extra request fields (e.g. ``response_format``)."""
         import ssl
+        from http.client import HTTPException
         from urllib.error import HTTPError, URLError
         from urllib.request import Request, urlopen
 
         import certifi
-
-        from caption_checker.prompt import build_messages, parse_response
 
         # Some Python installs (notably python.org's macOS builds) ship
         # without a wired-up system trust store, so the stdlib's default
@@ -183,15 +217,18 @@ class OpenRouterCorrector:
         # certifi's bundle explicitly rather than relying on the
         # environment being set up right.
         context = ssl.create_default_context(cafile=certifi.where())
-        if not self._model_checked:
-            self._check_model_available(context)
-            self._model_checked = True
+        with self._lock:
+            if not self._model_checked:
+                self._check_model_available(context)
+                self._model_checked = True
 
         body = json.dumps(
             {
                 "model": self.model_id,
-                "messages": build_messages(batch),
+                "messages": messages,
                 "temperature": 0,
+                "usage": {"include": True},
+                **options,
             }
         ).encode("utf-8")
         request = Request(
@@ -203,7 +240,7 @@ class OpenRouterCorrector:
             },
         )
         try:
-            with urlopen(request, timeout=60, context=context) as response:
+            with urlopen(request, timeout=timeout, context=context) as response:
                 payload = json.loads(response.read().decode("utf-8"))
         except HTTPError as exc:
             # exc's own str() is just the generic reason phrase (e.g. "Not
@@ -217,14 +254,21 @@ class OpenRouterCorrector:
             raise CorrectorError(
                 f"OpenRouter request failed: HTTP {exc.code} {exc.reason}: {detail}"
             ) from exc
-        except (URLError, TimeoutError, ValueError) as exc:
-            raise CorrectorError(f"OpenRouter request failed: {exc}") from exc
+        except (URLError, HTTPException, OSError, ValueError) as exc:
+            # HTTPException: a reply cut off mid-body (IncompleteRead);
+            # OSError covers TimeoutError and dropped connections.
+            raise CorrectorError(f"OpenRouter request failed: {exc!r}") from exc
 
+        with self._lock:
+            self.spend.add(payload.get("usage") or {})
         try:
             content = payload["choices"][0]["message"]["content"]
         except (KeyError, IndexError, TypeError) as exc:
             raise CorrectorError(f"unexpected OpenRouter reply: {exc}") from exc
-        return parse_response(content, batch)
+        if not isinstance(content, str):
+            # e.g. a reasoning model that spent its whole budget thinking
+            raise CorrectorError("OpenRouter reply has no text")
+        return content
 
     def _check_model_available(self, context: ssl.SSLContext) -> None:
         """Catalogue drift guard: OpenRouter periodically retires dated model
@@ -259,6 +303,21 @@ class OpenRouterCorrector:
             f"model {self.model_id!r} is no longer on OpenRouter.{hint} "
             "Set --model (CLI) or OPENROUTER_MODEL (web) to a current slug."
         )
+
+
+class OpenRouterCorrector:
+    """Real corrector, backed by OpenRouter's OpenAI-compatible endpoint."""
+
+    def __init__(
+        self, model_id: str = DEFAULT_MODEL, *, api_key: str | None = None
+    ) -> None:
+        self.model_id = model_id
+        self.client = OpenRouterClient(model_id, api_key=api_key)
+
+    def correct(self, batch: list[FlagContext]) -> list[Correction]:
+        from caption_checker.prompt import build_messages, parse_response
+
+        return parse_response(self.client.chat(build_messages(batch)), batch)
 
 
 def _similar_models(model_id: str, available: set[str]) -> list[str]:

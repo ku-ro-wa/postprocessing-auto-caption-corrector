@@ -13,6 +13,7 @@ from caption_checker.evaluation import (
     CORPORA,
     SYSTEMS,
     CorpusError,
+    ReadThroughSystem,
     ScoreReport,
     run_eval,
 )
@@ -28,6 +29,19 @@ from caption_checker.vocab import load_vocab
 
 if TYPE_CHECKING:  # keeps the free `check` path from importing the LLM stack
     from caption_checker.correct import CorrectionResult, Estimate, Reviewer
+
+
+def _priming_option(uses: str = "."):
+    """``--priming-term``, shared by ``check`` and ``correct``; ``uses`` ends
+    the help text with where else the terms go."""
+    return click.option(
+        "--priming-term",
+        "priming_terms",
+        multiple=True,
+        metavar="TERM",
+        help="A Priming term for this transcript (a speaker, product, company; "
+        "repeatable). Joins the domain vocabulary for this run" + uses,
+    )
 
 
 @click.group()
@@ -87,12 +101,14 @@ def roundtrip(file: Path, output: Path | None) -> None:
     default=None,
     help="Write the report here instead of stdout.",
 )
+@_priming_option()
 def check(
     file: Path,
     vocab_path: Path | None,
     out_format: str,
     oov_zipf: float | None,
     output: Path | None,
+    priming_terms: tuple[str, ...],
 ) -> None:
     """Flag likely ASR errors in FILE (SRT/VTT) and suggest corrections.
 
@@ -100,7 +116,7 @@ def check(
     """
     config = _detect_config(oov_zipf)
     cues = parse(file)
-    vocab = load_vocab(vocab_path, algo=config.phonetic_algo)
+    vocab = load_vocab(vocab_path, terms=priming_terms, algo=config.phonetic_algo)
     flags = detect(cues, vocab=vocab, config=config)
 
     if out_format == "json":
@@ -183,6 +199,15 @@ def check(
     default=None,
     help="Override the OOV Zipf ceiling (passed through to detection).",
 )
+@_priming_option(", and is given to the Read-through directly.")
+@click.option(
+    "--read-through",
+    is_flag=True,
+    default=False,
+    help="Replace the per-flag correction pass with the Read-through: the "
+    "model reads the whole transcript in chunks, judges every flag and "
+    "reports errors no detector raised (ADR 0006). No decision cache.",
+)
 def correct(
     file: Path,
     output: Path | None,
@@ -195,6 +220,8 @@ def correct(
     max_calls: int | None,
     vocab_path: Path | None,
     oov_zipf: float | None,
+    priming_terms: tuple[str, ...],
+    read_through: bool,
 ) -> None:
     """Detect likely ASR errors in FILE, judge corrections with an LLM, and
     write a corrected SRT/VTT plus a sidecar record of every flag.
@@ -214,6 +241,7 @@ def correct(
         write_eval_table,
         write_sidecar,
     )
+    from caption_checker import readthrough
     from caption_checker.corrector import MissingAPIKeyError, build_corrector
 
     if output is None:
@@ -221,7 +249,7 @@ def correct(
 
     config = _detect_config(oov_zipf)
     cues = parse(file)
-    vocab = load_vocab(vocab_path, algo=config.phonetic_algo)
+    vocab = load_vocab(vocab_path, terms=priming_terms, algo=config.phonetic_algo)
     cache = DecisionCache.load(
         None if no_cache else (cache_file or default_cache_path()),
         enabled=not no_cache,
@@ -237,16 +265,20 @@ def correct(
         reviewer = InteractiveReviewer()
 
     try:
+        live = not estimate
         result = run_correction(
             cues,
             reviewer=reviewer,
-            corrector=None if estimate else build_corrector(model),
+            corrector=build_corrector(model) if live and not read_through else None,
             vocab=vocab,
             config=config,
             model_id=model,
             cache=cache,
             max_calls=max_calls,
             estimate_only=estimate,
+            read_through=read_through,
+            reader=readthrough.build_reader(model) if live and read_through else None,
+            priming_terms=priming_terms,
         )
     except MissingAPIKeyError as exc:
         raise click.ClickException(str(exc)) from exc
@@ -317,21 +349,33 @@ def serve(host: str, port: int, data_dir: Path | None) -> None:
     help="Hand each transcript's Priming terms (an Earnings-21 call's company "
     "name) to the system under test.",
 )
-def eval_(corpus_name: str, system_name: str, priming: bool) -> None:
+@click.option(
+    "--model",
+    default=DEFAULT_MODEL,
+    show_default=True,
+    help="OpenRouter model slug, for a system that calls one (read-through).",
+)
+def eval_(corpus_name: str, system_name: str, priming: bool, model: str) -> None:
     """Score a system under test on a named corpus and print recall (overall
     and by kind), case precision, Flag-level precision and cold-flag rate as
     separate numbers. Unlike the pytest Regression gate this has no floors."""
+    from caption_checker.corrector import MissingAPIKeyError
+
     corpus = CORPORA[corpus_name]
     try:
-        report = run_eval(corpus, SYSTEMS[system_name](), priming=priming)
-    except CorpusError as e:
+        system = SYSTEMS[system_name](model)
+        report = run_eval(corpus, system, priming=priming)
+    except (CorpusError, MissingAPIKeyError) as e:
         raise click.ClickException(str(e)) from e
     lines = [
         f"corpus: {corpus_name}",
-        f"system: {system_name}",
+        f"system: {system_name}"
+        + (f" ({model})" if isinstance(system, ReadThroughSystem) else ""),
         f"priming: {'on' if priming else 'off'}",
         _render_score(report, corpus.headline_kinds),
     ]
+    if isinstance(system, ReadThroughSystem):
+        lines.append(_render_spend(system, report.audio_seconds))
     if corpus.caveat:
         lines.append(f"note: {corpus.caveat}")
     click.echo("\n".join(lines))
@@ -396,6 +440,27 @@ def _render_score(report: ScoreReport, headline_kinds: tuple[str, ...] = ()) -> 
         f"({report.cold_flags}/{report.total_flags} flags)"
     )
     return "\n".join(lines)
+
+
+def _render_spend(system: ReadThroughSystem, audio_seconds: float) -> str:
+    hours = audio_seconds / 3600
+    spend = system.spend
+    if spend.cost_usd is None:
+        cost = "cost: n/a (no cost reported)"
+    else:
+        per_hour = f"${spend.cost_usd / hours:.2f}" if hours else "n/a"
+        cost = (
+            f"cost: ${spend.cost_usd:.4f} for {hours:.3f} audio hours "
+            f"({per_hour} per audio hour)"
+        )
+    cost += (
+        f"; {spend.requests} requests, {spend.prompt_tokens} prompt + "
+        f"{spend.completion_tokens} completion tokens"
+    )
+    return (
+        f"{cost}\nread-through: {system.failed_chunks} failed chunks, "
+        f"{system.dropped} cross-cue verdicts dropped"
+    )
 
 
 def _detect_config(oov_zipf: float | None) -> DetectConfig:

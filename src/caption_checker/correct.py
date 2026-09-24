@@ -9,6 +9,10 @@ stays a thin wrapper that builds the real collaborators and calls this.
 Pipeline: detect -> internal-match bypass -> decision-cache lookup -> LLM pass
 over the residue (chunked, with a one-shot retry) -> review -> character-offset
 splice -> corrected file + sidecar (+ optional eval table).
+
+With ``read_through`` the middle is replaced: every Flag goes to the
+Read-through as a hint and its verdicts become the pending corrections (no
+bypass, no decision cache -- a verdict depends on the chunk around it).
 """
 
 from __future__ import annotations
@@ -17,7 +21,7 @@ import json
 import sys
 from dataclasses import dataclass, field
 from pathlib import Path
-from typing import Protocol, TextIO
+from typing import Protocol, Sequence, TextIO
 
 from caption_checker.apply import apply_corrections
 from caption_checker.cache import CachedCorrection, DecisionCache
@@ -41,6 +45,13 @@ from caption_checker.models import (
 from caption_checker.normalize import clean, is_wordlike
 from caption_checker.parser import tokenize
 from caption_checker.phonetics import codes, similar
+from caption_checker.readthrough import (
+    CHUNK_WORDS,
+    Reader,
+    build_messages,
+    plan_chunks,
+    read_through as run_read_through,
+)
 from caption_checker.vocab import Vocab
 
 CHUNK_SIZE = 25
@@ -57,6 +68,7 @@ SKIPPED_PARSE_FAILURE = "skipped-parse-failure"
 SOURCE_BYPASS = "bypass"
 SOURCE_CACHE = "cache"
 SOURCE_LLM = "llm"
+SOURCE_READ_THROUGH = "read-through"
 SOURCE_PARSE_FAILURE = "parse-failure"
 
 # --- the reviewer's default for a pending correction ----------------------
@@ -74,6 +86,7 @@ def _preset_for(replacement: str | None) -> str:
 # models fall back to a token count. Figures are order-of-magnitude only.
 _MODEL_PROMPT_PRICE: dict[str, float] = {
     "google/gemini-2.5-flash": 3.0e-7,
+    "google/gemini-2.5-flash-lite": 1.0e-7,
     "google/gemini-flash-1.5": 7.5e-8,
     "anthropic/claude-3.5-haiku": 8.0e-7,
     "openai/gpt-4o-mini": 1.5e-7,
@@ -364,15 +377,31 @@ def run_correction(
     chunk_size: int = CHUNK_SIZE,
     max_calls: int | None = None,
     estimate_only: bool = False,
+    read_through: bool = False,
+    reader: Reader | None = None,
+    priming_terms: Sequence[str] = (),
+    read_chunk_words: int = CHUNK_WORDS,
 ) -> CorrectionResult:
     config = config or DetectConfig()
     cache = cache or DecisionCache(None, enabled=False)
     words = tokenize(cues)
     cues_by_index = {c.index: c for c in cues}
+    flags = detect(cues, vocab=vocab, config=config)
 
-    flagged = _build_flagged(
-        detect(cues, vocab=vocab, config=config), cues, words
-    )
+    if read_through:
+        return _run_read_through(
+            cues,
+            flags,
+            reviewer=reviewer,
+            reader=reader,
+            model_id=model_id,
+            priming_terms=priming_terms,
+            chunk_words=read_chunk_words,
+            max_calls=max_calls,
+            estimate_only=estimate_only,
+        )
+
+    flagged = _build_flagged(flags, cues, words)
 
     pending: list[PendingCorrection] = []
     residue: list[_Flagged] = []
@@ -496,6 +525,104 @@ def run_correction(
             )
     cache.save()
 
+    corrected, outcomes = _review_and_apply(cues, pending, reviewer)
+    return CorrectionResult(
+        cues=corrected,
+        outcomes=outcomes,
+        corrector_calls=calls,
+        chunk_count=len(chunks),
+        residue_count=len(residue),
+    )
+
+
+def _run_read_through(
+    cues: list[Cue],
+    flags: list[Flag],
+    *,
+    reviewer: Reviewer,
+    reader: Reader | None,
+    model_id: str,
+    priming_terms: Sequence[str],
+    chunk_words: int,
+    max_calls: int | None,
+    estimate_only: bool,
+) -> CorrectionResult:
+    """The Read-through-on middle of :func:`run_correction`: every Flag is a
+    hint, and each verdict -- on a hint or on an error it found itself --
+    becomes a pending correction."""
+    chunks = plan_chunks(
+        cues, flags, priming_terms=priming_terms, chunk_words=chunk_words
+    )
+    if estimate_only:
+        tokens = sum(
+            len(m["content"]) // 4 for c in chunks for m in build_messages(c)
+        )
+        price = _MODEL_PROMPT_PRICE.get(model_id)
+        return CorrectionResult(
+            cues=cues,
+            outcomes=[],
+            corrector_calls=0,
+            chunk_count=len(chunks),
+            residue_count=len(flags),
+            estimate=Estimate(
+                flag_count=len(flags),
+                residue_count=len(flags),
+                chunk_count=len(chunks),
+                approx_tokens=tokens,
+                approx_cost_usd=(
+                    round(tokens * price, 6) if price is not None else None
+                ),
+            ),
+        )
+    if max_calls is not None and len(chunks) > max_calls:
+        raise MaxCallsExceededError(len(chunks), max_calls)
+    if reader is None:
+        raise ValueError("a Read-through run needs a reader")
+
+    result = run_read_through(
+        cues,
+        flags,
+        reader,
+        priming_terms=priming_terms,
+        chunk_words=chunk_words,
+        max_calls=max_calls,
+    )
+    cues_by_index = {c.index: c for c in cues}
+    pending: list[PendingCorrection] = []
+    for i, item in enumerate(result.items):
+        c = item.correction
+        pending.append(
+            PendingCorrection(
+                flag=item.flag,
+                flag_id=f"r{i}",
+                cue_text=cues_by_index[item.flag.cue_index].text.replace(
+                    "\n", " "
+                ),
+                replacement=c.replacement if c else None,
+                source=SOURCE_READ_THROUGH if c else SOURCE_PARSE_FAILURE,
+                detector_confidence=item.flag.confidence,
+                llm_confidence=c.confidence if c else None,
+                rationale=(
+                    c.rationale if c else "chunk parse failure after one retry"
+                ),
+                preset=_preset_for(c.replacement) if c else PRESET_SKIP,
+            )
+        )
+    corrected, outcomes = _review_and_apply(cues, pending, reviewer)
+    return CorrectionResult(
+        cues=corrected,
+        outcomes=outcomes,
+        corrector_calls=result.calls,
+        chunk_count=result.chunk_count,
+        residue_count=len(flags),
+    )
+
+
+def _review_and_apply(
+    cues: list[Cue], pending: list[PendingCorrection], reviewer: Reviewer
+) -> tuple[list[Cue], list[OutcomeRecord]]:
+    """Review every pending correction in transcript order, then splice the
+    accepted ones in."""
     pending.sort(
         key=lambda p: (p.flag.cue_index, min(p.flag.global_indices))
     )
@@ -524,15 +651,7 @@ def run_correction(
                 correction=_correction_dict(p, replacement, applied),
             )
         )
-
-    corrected = apply_corrections(cues, accepted)
-    return CorrectionResult(
-        cues=corrected,
-        outcomes=outcomes,
-        corrector_calls=calls,
-        chunk_count=len(chunks),
-        residue_count=len(residue),
-    )
+    return apply_corrections(cues, accepted), outcomes
 
 
 def _index_corrections(
@@ -557,7 +676,11 @@ def _classify(p: PendingCorrection, applied: bool) -> str:
         if p.source == SOURCE_CACHE:
             return CACHED
         return APPLIED
-    if p.replacement is None and p.source in (SOURCE_LLM, SOURCE_CACHE):
+    if p.replacement is None and p.source in (
+        SOURCE_LLM,
+        SOURCE_CACHE,
+        SOURCE_READ_THROUGH,
+    ):
         return NOT_AN_ERROR
     return REJECTED
 
