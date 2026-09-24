@@ -21,6 +21,9 @@ Audited transcripts, and the Earnings-21 `eval-10` Auto-labelled corpus built
 from Google's ASR output), the Read-through wins if
 
 - real-word recall is at least 2x the frozen local pipeline's (`2de1655`),
+  counting detection -- a Flag touching the error -- not an exact
+  candidate match (Earnings-21 candidates are Rev's verbatim words, too
+  noisy to require),
 - Flag-level precision is no worse than the local pipeline's, and
 - cost is under $0.10 per audio hour.
 
