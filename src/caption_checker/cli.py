@@ -9,6 +9,7 @@ from typing import TYPE_CHECKING
 import click
 
 from caption_checker.detect import detect
+from caption_checker.evaluation import CORPORA, SYSTEMS, ScoreReport, run_eval
 from caption_checker.models import (
     DEFAULT_MODEL,
     DetectConfig,
@@ -283,6 +284,58 @@ def serve(host: str, port: int, data_dir: Path | None) -> None:
     storage = Storage(data_dir or default_data_dir())
     app = create_app(storage)
     uvicorn.run(app, host=host, port=port)
+
+
+@main.command("eval")
+@click.option(
+    "--corpus",
+    "corpus_name",
+    type=click.Choice(list(CORPORA)),
+    default="scored",
+    show_default=True,
+    help="Named corpus to score.",
+)
+@click.option(
+    "--system",
+    "system_name",
+    type=click.Choice(list(SYSTEMS)),
+    default="local",
+    show_default=True,
+    help="System under test.",
+)
+def eval_(corpus_name: str, system_name: str) -> None:
+    """Score a system under test on a named corpus and print recall (overall
+    and by kind), case precision, Flag-level precision and cold-flag rate as
+    separate numbers. Unlike the pytest Regression gate this has no floors."""
+    report = run_eval(CORPORA[corpus_name], SYSTEMS[system_name]())
+    click.echo(f"corpus: {corpus_name}\nsystem: {system_name}\n{_render_score(report)}")
+
+
+def _render_score(report: ScoreReport) -> str:
+    caught = report.true_positives
+    should_flag = caught + report.false_negatives
+    lines = [f"recall: {report.recall:.3f} ({caught}/{should_flag})"]
+    for kind, (hit, total) in report.recall_by_kind.items():
+        lines.append(f"  {kind}: {hit / total:.3f} ({hit}/{total})")
+    should_not_flag = report.true_negatives + report.false_positives
+    lines.append(
+        f"case precision: {report.precision:.3f} "
+        f"({report.true_negatives}/{should_not_flag})"
+        if should_not_flag
+        else "case precision: n/a (no should-not-flag cases)"
+    )
+    lines.append(
+        f"flag-level precision: {report.flag_precision:.3f} "
+        f"({report.flags_touching_errors}/{report.exhaustive_flags} flags "
+        "on exhaustive sources)"
+        if report.flag_precision is not None
+        else "flag-level precision: n/a (no flags on exhaustive sources)"
+    )
+    lines.append(
+        f"cold-flag rate: {report.cold_flag_rate:.3f} "
+        f"({report.cold_flags}/{report.total_flags} flags)"
+    )
+    return "\n".join(lines)
 
 
 def _detect_config(oov_zipf: float | None) -> DetectConfig:

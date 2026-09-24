@@ -135,6 +135,21 @@ for candidate mismatches, then spot-check each one against the actual audio
 before adding it — a Reference caption isn't verified ground truth on its
 own.
 
+**Eval command** — manual, no floors:
+
+```bash
+uv run caption-checker eval --corpus scored --system local
+```
+
+Scores a system under test on a named corpus and prints recall (overall and
+by kind), case precision, Flag-level precision and cold-flag rate, each as
+its own number. Flag-level precision (flags touching any labelled error, out
+of all flags emitted) is computed only over transcripts whose errors are
+listed exhaustively — the 5 Audited transcripts in the Scored corpus, not the
+hand-made fixtures. Corpora and systems are registered in
+`caption_checker/evaluation.py` (`CORPORA`, `SYSTEMS`) so the Read-through can
+be scored the same way (ADR 0006).
+
 **Smoke corpus** — manual, no dedicated tooling: after a threshold change
 passes the regression gate, sanity-check generalization by running `check`
 over a larger batch of real, unscored transcripts and eyeballing the result:

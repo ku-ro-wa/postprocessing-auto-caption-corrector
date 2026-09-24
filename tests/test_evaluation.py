@@ -191,3 +191,92 @@ def test_score_raises_when_a_case_locates_nothing() -> None:
     cases = [ScoredCase("a.srt", "kubernetes", "should-flag")]
     with pytest.raises(CorpusError):
         score(cases, {"a.srt": []}, WORDS)
+
+
+# --- Flag-level precision -----------------------------------------------------
+
+
+def test_flag_precision_is_share_of_flags_touching_a_labelled_error() -> None:
+    cases = [ScoredCase("a.srt", "cough ka", "should-flag", "Kafka")]
+    flags = {
+        "a.srt": [
+            _flag("split_word", ["Kafka"], span="cough ka", indices=[1, 2]),
+            _flag("oov", span="the", indices=[0]),
+            _flag("oov", span="raft", indices=[3]),
+            _flag("oov", span="consensus", indices=[4]),
+        ]
+    }
+    report = score(cases, flags, WORDS, exhaustive_sources={"a.srt"})
+    assert report.flags_touching_errors == 1
+    assert report.exhaustive_flags == 4
+    assert report.flag_precision == 0.25
+
+
+def test_flag_precision_counts_a_touch_even_when_the_candidate_is_wrong() -> None:
+    """A flag on a real error is a true flag regardless of whether its
+    candidate would have fixed it -- recall judges the candidate, this
+    doesn't."""
+    cases = [ScoredCase("a.srt", "cough ka", "should-flag", "Kafka")]
+    flags = {"a.srt": [_flag("oov", ["Kubernetes"], span="ka", indices=[2])]}
+    report = score(cases, flags, WORDS, exhaustive_sources={"a.srt"})
+    assert report.false_negatives == 1
+    assert report.flag_precision == 1.0
+
+
+def test_flag_precision_counts_every_kind_of_labelled_error() -> None:
+    cases = [
+        ScoredCase("a.srt", "the", "should-flag", kind="function-word"),
+        ScoredCase("a.srt", "raft", "should-flag", kind="format"),
+    ]
+    flags = {
+        "a.srt": [
+            _flag("oov", span="the", indices=[0]),
+            _flag("oov", span="raft", indices=[3]),
+        ]
+    }
+    report = score(cases, flags, WORDS, exhaustive_sources={"a.srt"})
+    assert report.flag_precision == 1.0
+
+
+def test_flag_precision_does_not_credit_a_flag_on_a_should_not_flag_span() -> None:
+    cases = [ScoredCase("a.srt", "raft", "should-not-flag")]
+    flags = {"a.srt": [_flag("oov", span="raft", indices=[3])]}
+    report = score(cases, flags, WORDS, exhaustive_sources={"a.srt"})
+    assert report.flag_precision == 0.0
+
+
+def test_flag_precision_ignores_sources_whose_errors_are_not_exhaustive() -> None:
+    words = {**WORDS, "fixture.srt": [Word("raft", 1, 0, 0)]}
+    cases = [
+        ScoredCase("a.srt", "cough ka", "should-flag"),
+        ScoredCase("fixture.srt", "raft", "should-not-flag"),
+    ]
+    flags = {
+        "a.srt": [_flag("oov", span="ka", indices=[2])],
+        "fixture.srt": [_flag("oov", span="raft", indices=[0])],
+    }
+    report = score(cases, flags, words, exhaustive_sources={"a.srt"})
+    assert report.exhaustive_flags == 1
+    assert report.flag_precision == 1.0
+    assert report.total_flags == 2
+
+
+def test_flag_precision_counts_flags_on_an_exhaustive_source_with_no_cases() -> None:
+    """An Audited transcript with no labelled errors still has its flags
+    scored: every one of them is a false flag."""
+    flags = {"a.srt": [_flag("oov", span="raft", indices=[3])]}
+    report = score([], flags, WORDS, exhaustive_sources={"a.srt"})
+    assert report.flag_precision == 0.0
+
+
+def test_flag_precision_is_none_when_exhaustive_sources_produce_no_flags() -> None:
+    report = score([], {"a.srt": []}, WORDS, exhaustive_sources={"a.srt"})
+    assert report.flag_precision is None
+
+
+def test_flag_precision_is_none_without_exhaustive_sources() -> None:
+    cases = [ScoredCase("a.srt", "cough ka", "should-flag")]
+    flags = {"a.srt": [_flag("oov", span="ka", indices=[2])]}
+    report = score(cases, flags, WORDS)
+    assert report.flag_precision is None
+    assert report.exhaustive_flags == 0

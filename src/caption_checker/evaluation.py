@@ -1,17 +1,19 @@
-"""Regression-gate scoring: matches the local detector pipeline's output
-against a hand-curated Scored corpus of should-flag / should-not-flag cases.
-See CONTEXT.md's Evaluation section (Regression gate, Cold flag, Scored
-corpus) for the vocabulary this module implements."""
+"""Regression-gate and eval scoring: matches a system's Flags against a
+hand-curated Scored corpus of should-flag / should-not-flag cases. See
+CONTEXT.md's Evaluation section (Regression gate, Cold flag, Scored corpus,
+Flag-level precision) for the vocabulary this module implements."""
 
 from __future__ import annotations
 
 import json
 from dataclasses import dataclass, field
 from pathlib import Path
-from typing import Literal
+from typing import Callable, Collection, Literal
 
-from caption_checker.models import DETECTOR_OOV, Flag, Word
+from caption_checker.detect import detect
+from caption_checker.models import DETECTOR_OOV, Cue, Flag, Word
 from caption_checker.normalize import clean
+from caption_checker.parser import parse, tokenize
 
 Verdict = Literal["should-flag", "should-not-flag"]
 
@@ -54,6 +56,11 @@ class ScoreReport:
     cold_flags: int
     #: kind -> (should-flag cases caught, should-flag cases of that kind)
     recall_by_kind: dict[str, tuple[int, int]] = field(default_factory=dict)
+    #: Flag-level precision over the exhaustive sources only; None when they
+    #: produced no flags (hand-made fixtures list some errors, not all of them).
+    flag_precision: float | None = None
+    flags_touching_errors: int = 0
+    exhaustive_flags: int = 0
 
 
 def is_cold_flag(flag: Flag) -> bool:
@@ -109,6 +116,7 @@ def score(
     cases: list[ScoredCase],
     flags_by_source: dict[str, list[Flag]],
     words_by_source: dict[str, list[Word]],
+    exhaustive_sources: Collection[str] = (),
 ) -> ScoreReport:
     """Score Scored corpus ``cases`` against ``detect()`` output already
     grouped by source file, locating each case among that source's Words. A
@@ -116,15 +124,23 @@ def score(
     Recall (should-flag cases caught) and precision (should-not-flag cases
     left alone) are each computed over their own case class, never blended
     into one score; ``recall_by_kind`` breaks recall down by ``kind`` tag. Cold-flag rate is computed over
-    every flag ``detect()`` produced across the referenced sources."""
+    every flag ``detect()`` produced across the referenced sources.
+
+    Flag-level precision -- flags touching any should-flag case, of any
+    ``kind`` and whatever their candidates, over all flags emitted -- is
+    computed only over ``exhaustive_sources``: transcripts whose errors are
+    listed exhaustively (Audited transcripts, Auto-labelled corpora). Anywhere
+    else an untouched flag may just be an unlisted error."""
     true_positives = false_negatives = 0
     true_negatives = false_positives = 0
     by_kind: dict[str, list[int]] = {}
+    error_indices: dict[str, set[int]] = {}
 
     for case in cases:
         occurrences = _locate(case, words_by_source.get(case.source, []))
         hits = _overlapping(flags_by_source.get(case.source, []), occurrences)
         if case.verdict == "should-flag":
+            error_indices.setdefault(case.source, set()).update(*occurrences)
             hit = any(
                 case.candidate is None
                 or any(case.candidate.lower() in c.lower() for c in f.candidates)
@@ -159,6 +175,18 @@ def score(
     )
     cold_flag_rate = cold_flags / len(all_flags) if all_flags else 0.0
 
+    exhaustive_flags = flags_touching_errors = 0
+    for source in exhaustive_sources:
+        errors = error_indices.get(source, set())
+        for flag in flags_by_source.get(source, []):
+            exhaustive_flags += 1
+            flags_touching_errors += bool(errors.intersection(flag.global_indices))
+    # None rather than a vacuous 1.0 when nothing was flagged: a system that
+    # emits no Flags hasn't earned perfect precision.
+    flag_precision = (
+        flags_touching_errors / exhaustive_flags if exhaustive_flags else None
+    )
+
     return ScoreReport(
         recall=recall,
         precision=precision,
@@ -170,4 +198,74 @@ def score(
         total_flags=len(all_flags),
         cold_flags=cold_flags,
         recall_by_kind={k: (v[0], v[1]) for k, v in sorted(by_kind.items())},
+        flag_precision=flag_precision,
+        flags_touching_errors=flags_touching_errors,
+        exhaustive_flags=exhaustive_flags,
+    )
+
+
+#: A system under test: whatever turns one transcript's Cues into Flags --
+#: the local detector pipeline today, the Read-through later (ADR 0006).
+System = Callable[[list[Cue]], list[Flag]]
+
+
+@dataclass(frozen=True)
+class NamedCorpus:
+    """A corpus the eval command scores: its cases, the directory
+    their ``source`` files live in, and which of those sources list their
+    errors exhaustively (the only ones Flag-level precision is computed on).
+    An exhaustive source with no cases is still run and its flags counted."""
+
+    cases_path: Path
+    data_dir: Path
+    exhaustive_sources: tuple[str, ...] = ()
+
+
+_TEST_DATA = Path(__file__).resolve().parents[2] / "tests" / "data"
+
+CORPORA: dict[str, NamedCorpus] = {
+    # Cases from the 5 Audited transcripts plus the hand-made fixtures' planted
+    # cases, which count toward recall and case precision but not Flag-level
+    # precision. Every number here is a Dev set number.
+    "scored": NamedCorpus(
+        cases_path=_TEST_DATA / "scored_corpus.json",
+        data_dir=_TEST_DATA,
+        exhaustive_sources=(
+            "agi-are-we-there-yet.auto.vtt",
+            "ai-researchers-pace-demand.auto.srt",
+            "andrew-ng-ai-opportunities.auto.vtt",
+            "prediction-markets-ads.auto.srt",
+            "social-media-addictive.auto.srt",
+        ),
+    ),
+}
+
+
+def _local_pipeline() -> System:
+    return detect
+
+
+#: Systems the eval command can score, by name. Factories, so a system that
+#: needs an API key or a heavy import only pays for it when chosen.
+SYSTEMS: dict[str, Callable[[], System]] = {
+    "local": _local_pipeline,
+}
+
+
+def run_eval(corpus: NamedCorpus, system: System) -> ScoreReport:
+    """Run ``system`` over every source ``corpus`` names -- in its cases or
+    among its exhaustive sources -- and score the Flags it returns."""
+    cases = load_corpus(corpus.cases_path)
+    sources = dict.fromkeys([*(c.source for c in cases), *corpus.exhaustive_sources])
+    flags_by_source: dict[str, list[Flag]] = {}
+    words_by_source: dict[str, list[Word]] = {}
+    for source in sources:
+        cues = parse(corpus.data_dir / source)
+        flags_by_source[source] = system(cues)
+        words_by_source[source] = tokenize(cues)
+    return score(
+        cases,
+        flags_by_source,
+        words_by_source,
+        exhaustive_sources=corpus.exhaustive_sources,
     )
