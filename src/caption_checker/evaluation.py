@@ -265,6 +265,9 @@ class NamedCorpus:
     manifest_path: Path | None = None
     headline_kinds: tuple[str, ...] = ()
     caveat: str | None = None
+    #: A Held-out set: scored only for a final comparison, never while
+    #: tuning (the eval command demands ``--final``).
+    held_out: bool = False
 
 
 _TEST_DATA = Path(__file__).resolve().parents[2] / "tests" / "data"
@@ -294,6 +297,7 @@ def _earnings21(split: str) -> NamedCorpus:
         manifest_path=DEFAULT_CACHE_DIR / split / "manifest.json",
         headline_kinds=("non-word", "real-word"),
         caveat=CAVEAT,
+        held_out=split == "heldout",
     )
 
 

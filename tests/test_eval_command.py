@@ -262,3 +262,19 @@ def test_read_through_system_scores_only_claimed_errors(tmp_path: Path) -> None:
 def test_run_eval_measures_audio_duration(tmp_path: Path) -> None:
     report = run_eval(_corpus(tmp_path), _flag_words())
     assert report.audio_seconds == 4.0  # two 2-second sources
+
+
+def test_eval_command_refuses_a_held_out_corpus_without_final(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    held_out = replace(_earnings_like(tmp_path), held_out=True)
+    monkeypatch.setitem(CORPORA, "earnings21-heldout", held_out)
+    refused = CliRunner().invoke(main, ["eval", "--corpus", "earnings21-heldout"])
+    assert refused.exit_code != 0
+    assert "--final" in refused.output
+    final = CliRunner().invoke(main, ["eval", "--corpus", "earnings21-heldout", "--final"])
+    assert final.exit_code == 0, final.output
+
+
+def test_only_the_earnings21_eval10_split_is_held_out() -> None:
+    assert [name for name, c in CORPORA.items() if c.held_out] == ["earnings21-heldout"]

@@ -355,13 +355,28 @@ def serve(host: str, port: int, data_dir: Path | None) -> None:
     show_default=True,
     help="OpenRouter model slug, for a system that calls one (read-through).",
 )
-def eval_(corpus_name: str, system_name: str, priming: bool, model: str) -> None:
+@click.option(
+    "--final",
+    is_flag=True,
+    default=False,
+    help="Required to score a Held-out set: only for a final comparison, "
+    "never while tuning (ADR 0006).",
+)
+def eval_(
+    corpus_name: str, system_name: str, priming: bool, model: str, final: bool
+) -> None:
     """Score a system under test on a named corpus and print recall (overall
     and by kind), case precision, Flag-level precision and cold-flag rate as
     separate numbers. Unlike the pytest Regression gate this has no floors."""
     from caption_checker.corrector import MissingAPIKeyError
 
     corpus = CORPORA[corpus_name]
+    if corpus.held_out and not final:
+        raise click.ClickException(
+            f"{corpus_name} is a Held-out set, scored only for a final "
+            "comparison (ADR 0006); pass --final if that is what this run is. "
+            "Looking at it to motivate a change moves it to the Dev set."
+        )
     try:
         system = SYSTEMS[system_name](model)
         report = run_eval(corpus, system, priming=priming)

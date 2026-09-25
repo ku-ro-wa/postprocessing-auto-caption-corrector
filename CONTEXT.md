@@ -37,9 +37,11 @@ One anomaly test that scans the transcript and emits flags. Detectors are
 independent and ordered cheapest-first; their flags are merged afterwards.
 
 **Flag**:
-A detector's claim that a span is a likely ASR error, with the reason it was
-raised, zero or more candidates, and a confidence. Flags from different
-detectors that cover overlapping spans are merged into one.
+A claim that a span is a likely ASR error, with the reason it was raised,
+zero or more candidates, and a confidence. Raised by a Detector, or by the
+Read-through for an error no Detector raised; every Flag records which.
+Flags from different detectors that cover overlapping spans are merged into
+one.
 _Avoid_: hit, match, warning.
 
 **Candidate**:

@@ -195,7 +195,8 @@ disagreement into a case: `format`, `function-word`, `non-word` or
 `real-word`, plus an `entity` tag on names. Deletions (nothing on screen),
 filler-only regions and regions over 6 tokens a side (alignment drift) are
 dropped and counted. `earnings21-heldout` is the dataset's `eval10` list
-(11 calls) and is scored only for ADR 0006's final comparison;
+(11 calls) and is scored only for ADR 0006's final comparison (`eval`
+refuses it without `--final`);
 `earnings21-dev` is the first 5 other calls; the rest are never fetched.
 `--priming` hands each call's company name to the system as Priming terms.
 Headline recall covers `non-word` + `real-word`; the candidate counts are
