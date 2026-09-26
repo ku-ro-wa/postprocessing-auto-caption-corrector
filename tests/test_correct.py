@@ -5,6 +5,7 @@ outcome records, and the number of corrector calls. Never the network."""
 from __future__ import annotations
 
 import io
+import json
 from pathlib import Path
 
 import pytest
@@ -22,7 +23,7 @@ from caption_checker.correct import (
 from caption_checker.corrector import StubCorrector
 from caption_checker.models import DETECTOR_PHONETIC_INTERNAL, DetectConfig, Flag
 from caption_checker.parser import parse
-from caption_checker.readthrough import StubReader
+from caption_checker.readthrough import ChunkRequest, ChunkVerdict, StubReader, parse_reply
 
 DATA_DIR = Path(__file__).parent / "data"
 
@@ -471,6 +472,44 @@ def test_read_through_refuses_more_chunks_than_max_calls() -> None:
     with pytest.raises(MaxCallsExceededError):
         _read(SAMPLE, reader, max_calls=1, read_chunk_words=20)
     assert reader.calls == 0
+
+
+RUN_TOGETHER = """1
+00:00:00,000 --> 00:00:03,000
+We ship AIdriven tools and deploy on cubernetes.
+"""
+
+
+class ReplyReader:
+    """Answers each hint the way the model does -- a JSON reply, through
+    ``parse_reply`` -- with a scripted replacement, or null (not an error)."""
+
+    def __init__(self, replacement_for: dict[str, str]) -> None:
+        self.replacement_for = replacement_for
+        self.spend = StubReader().spend
+
+    def read(self, request: ChunkRequest) -> list[ChunkVerdict]:
+        verdicts = [
+            [h.start, h.end, h.span, self.replacement_for.get(h.span), "misheard",
+             0.9, h.id, "x"]
+            for h in request.hints
+        ]
+        return parse_reply(json.dumps({"verdicts": verdicts}), request)
+
+
+def test_read_through_hint_correction_to_word_boundaries_is_preset_to_accept(
+    tmp_path,
+) -> None:
+    # The model's "AI-driven" has the span's letters but not its words: the
+    # reviewer sees it preset to accept, not dismissed as not-an-error.
+    cues = _cues(RUN_TOGETHER, tmp_path)
+    reviewer = FuncReviewer(lambda p: ("accept", p.replacement))
+    reader = ReplyReader({"AIdriven": "AI-driven", "cubernetes": "Cubernetes"})
+    result = _read(cues, reader, reviewer=reviewer)
+    preset = {p.flag.span: (p.replacement, p.preset) for p in reviewer.seen}
+    assert preset["AIdriven"] == ("AI-driven", "accept")
+    assert preset["cubernetes"] == (None, "skip")  # case only: not an error
+    assert result.cues[0].text == "We ship AI-driven tools and deploy on cubernetes."
 
 
 CROSS = """1

@@ -293,19 +293,19 @@ CORPORA: dict[str, NamedCorpus] = {
 # 5 more Audited transcripts, audited after the local pipeline was frozen
 # (issue #22): more varied subjects and speakers than the Scored corpus, and
 # errors only -- should-not-flag cases would mean picking spans after seeing
-# a system's Flags. A Held-out set (ADR 0006).
-_AUDITED_HELDOUT = (
+# a system's Flags. A Held-out set for ADR 0006's verdict; its misses then
+# motivated issue #27, which moved it to the Dev set.
+_AUDITED_DEV = (
     "fixing-vocal-positions-kpop-groups.auto.srt",
     "makeup-brands-hate-project-pan.auto.srt",
     "overpriced-coffee-personality-trait.auto.srt",
     "why-ceos-make-so-much-money-now.auto.srt",
     "why-every-resto-has-the-same-desserts.auto.srt",
 )
-CORPORA["audited-heldout"] = NamedCorpus(
-    cases_path=_TEST_DATA / "audited_heldout_corpus.json",
+CORPORA["audited-dev"] = NamedCorpus(
+    cases_path=_TEST_DATA / "audited_dev_corpus.json",
     data_dir=_TEST_DATA,
-    exhaustive_sources=_AUDITED_HELDOUT,
-    held_out=True,
+    exhaustive_sources=_AUDITED_DEV,
 )
 
 

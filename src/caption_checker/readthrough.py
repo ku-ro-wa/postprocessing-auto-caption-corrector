@@ -13,6 +13,7 @@ review don't know the difference. Not a Detector: it depends on their output.
 from __future__ import annotations
 
 import json
+import re
 import threading
 from concurrent.futures import ThreadPoolExecutor
 from dataclasses import dataclass, field, replace
@@ -288,10 +289,12 @@ def parse_reply(content: str, request: ChunkRequest) -> list[ChunkVerdict]:
 
     A verdict whose range disagrees with its ``span`` text is moved to the
     nearest place that text occurs; one that can't be placed at all is
-    dropped (a hint's falls back to the hint's own range). A replacement that
-    only changes case, punctuation or spacing, or whose ``cause`` is anything
-    but ``misheard`` (the speaker's own grammar or style), is no correction:
-    a hint's verdict becomes not-an-error, any other is dropped. Raises
+    dropped (a hint's falls back to the hint's own range). A replacement is
+    no correction when its ``cause`` is anything but ``misheard`` (the
+    speaker's own grammar or style), or when it only changes case or
+    punctuation -- and, for a new find, spacing; a change to a hint's word
+    boundaries counts. A hint's verdict with no correction becomes
+    not-an-error; any other is dropped. Raises
     :class:`CorrectorError` -- a failed chunk -- on anything that isn't a
     JSON list of verdicts, or when a hint has no verdict."""
     text = content.strip()
@@ -327,12 +330,17 @@ def parse_reply(content: str, request: ChunkRequest) -> list[ChunkVerdict]:
         if placed is None:
             continue
         replacement = item.get("replacement")
+        span_text = " ".join(
+            t for gi, t in request.words if placed[0] <= gi <= placed[1]
+        )
+        # A hint's span is already suspect, so moving its word boundaries
+        # ("con sensus" -> "consensus") is a Correction; a new find must
+        # change what a listener would hear, since the model proposes many
+        # boundary-only changes to words that were right.
+        normalise = _words if hint is not None else _letters
         if replacement is not None and (
             item.get("cause", "misheard") != "misheard"
-            or _letters(str(replacement))
-            == _letters(
-                " ".join(t for gi, t in request.words if placed[0] <= gi <= placed[1])
-            )
+            or normalise(str(replacement)) == normalise(span_text)
         ):
             if hint is None:
                 continue
@@ -370,6 +378,12 @@ def _letters(text: str) -> str:
     """``text`` with case, punctuation and spacing gone -- what's left is
     what a listener would hear."""
     return "".join(ch for ch in text.casefold() if ch.isalnum())
+
+
+def _words(text: str) -> tuple[str, ...]:
+    """``text`` with case and punctuation gone but its word breaks kept --
+    what a reader would see as its words ("Anthropic's" is two)."""
+    return tuple(re.findall(r"[^\W_]+", text.casefold()))
 
 
 def _place(

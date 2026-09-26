@@ -67,3 +67,39 @@ ADR 0004 still holds: the LLM pass runs only when triggered, with the
 session's key. Its ~5-10% pre-filter rationale no longer describes what
 reaches the LLM, since the Read-through reads every word; spend stays gated
 by the explicit trigger (about $0.05 per audio hour, above).
+
+## Follow-up (#27)
+
+The non-word caveat above was mostly the reply parser, not the model. Its
+check for a formatting-only reply ignored spacing, so a hint whose span was
+the wrong words came back not-an-error, even though the model had corrected
+it ("con sensus" -> "consensus", "anthropics" -> "Anthropic's", "AIdriven" ->
+"AI-driven"). A hint's verdict now counts as a Correction when it moves a word
+boundary. A new find still has to change the letters: extending the rule to
+new finds caught no more non-word errors and cost Earnings-21 Flag-level
+precision (0.873 -> 0.857).
+
+Measured on the same cached replies, before -> after (local in brackets):
+
+| Dev set | Non-word recall | Flag-level precision |
+|---|---|---|
+| Scored | 39 -> 40 of 41 (41) | 0.771 -> 0.768 |
+| Audited (was Held-out) | 9 -> 12 of 15 (14) | 0.780 -> 0.782 |
+| Earnings-21 dev | 12 -> 12 of 14 (12) | 0.872 -> 0.873 |
+
+The prompt is unchanged, so cost is unchanged ($0.05 per audio hour).
+
+What is left is genuine dismissals, mostly K-pop names such as "Kaewan" and
+"Yuha". Their local candidates are empty or wrong. A policy that kept every
+dismissed OOV hint as a disagreement was rejected:
+- only 7 of the 28 dismissed OOV hints touch an error;
+- it would drop Audited Flag-level precision to about 0.67 for 3 more
+  non-word catches;
+- presetting those hints to their local candidates would apply wrong
+  replacements.
+
+The reviewer still sees these hints, preset to skip.
+
+Looking at these misses made the Audited Held-out set a Dev set
+(`audited-dev`). Any later claim about the Read-through needs fresh Held-out
+data.

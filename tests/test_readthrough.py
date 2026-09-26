@@ -16,6 +16,7 @@ from caption_checker.parser import parse
 from caption_checker.readthrough import (
     DETECTOR_READ_THROUGH,
     ChunkRequest,
+    Hint,
     StubReader,
     build_messages,
     parse_reply,
@@ -128,6 +129,30 @@ def test_parse_reply_treats_a_formatting_only_change_as_no_error(cues) -> None:
     )
     [v] = parse_reply(reply, chunk)  # the new find is dropped as a no-op
     assert v.hint == "h0" and v.replacement is None
+
+
+@pytest.mark.parametrize(
+    ("span", "replacement"),
+    [
+        ("con sensus", "consensus"),  # a word split in two
+        ("AIdriven", "AI-driven"),  # two words run together
+        ("anthropics", "Anthropic's"),
+    ],
+)
+def test_parse_reply_keeps_a_hint_correction_that_moves_word_boundaries(
+    span, replacement
+) -> None:
+    # Same letters, but not the same words: a reader sees the difference, so
+    # this is a Correction, not a formatting-only echo of the span.
+    tokens = ["The", *span.split(), "layer."]
+    end = len(tokens) - 2
+    hint = Hint(
+        id="h0", start=1, end=end, span=span, candidates=[], reason="not a known word"
+    )
+    request = ChunkRequest(words=list(enumerate(tokens)), hints=[hint])
+    reply = json.dumps([[1, end, span, replacement, "misheard", 0.9, "h0", "x"]])
+    [v] = parse_reply(reply, request)
+    assert v.replacement == replacement
 
 
 def test_parse_reply_keeps_only_misheard_causes(cues) -> None:

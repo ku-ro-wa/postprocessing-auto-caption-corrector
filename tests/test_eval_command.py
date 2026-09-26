@@ -278,18 +278,18 @@ def test_eval_command_refuses_a_held_out_corpus_without_final(
     assert final.exit_code == 0, final.output
 
 
-def test_only_the_two_adr_0006_sets_are_held_out() -> None:
+def test_only_earnings21_heldout_is_still_held_out() -> None:
+    # The Audited Held-out set moved to the Dev set once its misses
+    # motivated a change (issue #27).
     assert {name for name, c in CORPORA.items() if c.held_out} == {
         "earnings21-heldout",
-        "audited-heldout",
     }
 
 
-def test_audited_held_out_corpus_locates_every_case_in_its_five_transcripts() -> None:
+def test_audited_dev_corpus_locates_every_case_in_its_five_transcripts() -> None:
     # Scored with no Flags at all: checks the corpus itself (every span
-    # locates, every transcript is exhaustive and has errors listed) without
-    # running any system over a Held-out set.
-    corpus = CORPORA["audited-heldout"]
+    # locates, every transcript is exhaustive and has errors listed).
+    corpus = CORPORA["audited-dev"]
     cases = load_corpus(corpus.cases_path)
     assert len(corpus.exhaustive_sources) == 5
     assert {c.source for c in cases} == set(corpus.exhaustive_sources)
