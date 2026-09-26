@@ -308,6 +308,22 @@ CORPORA["audited-dev"] = NamedCorpus(
     exhaustive_sources=_AUDITED_DEV,
 )
 
+# 5 fresh Audited transcripts (issue #31), errors only like audited-dev: a
+# Held-out set for #28's final scoring, so no Read-through has run on them.
+_AUDITED_HELDOUT_2 = (
+    "horrors-found-on-school-laptops.auto.srt",
+    "how-dark-mode-killed-good-design.auto.srt",
+    "nepo-babies-taking-over-pop.auto.srt",
+    "perfume-101.auto.srt",
+    "thunder-by-imagine-dragons-should-be-studied.auto.srt",
+)
+CORPORA["audited-heldout-2"] = NamedCorpus(
+    cases_path=_TEST_DATA / "audited_heldout_2_corpus.json",
+    data_dir=_TEST_DATA,
+    exhaustive_sources=_AUDITED_HELDOUT_2,
+    held_out=True,
+)
+
 
 def _earnings21(split: str) -> NamedCorpus:
     return NamedCorpus(

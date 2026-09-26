@@ -1,0 +1,1492 @@
+1
+00:00:00,040 --> 00:00:03,800
+I've been a dark mode user for basically
+
+2
+00:00:01,719 --> 00:00:05,720
+as long as I can remember mainly because
+
+3
+00:00:03,800 --> 00:00:07,720
+the alternative feels like it requires
+
+4
+00:00:05,720 --> 00:00:09,240
+eclipse glasses and I sort of assume
+
+5
+00:00:07,720 --> 00:00:11,440
+that everybody on the internet was in
+
+6
+00:00:09,240 --> 00:00:14,920
+agreement dark mode is better than light
+
+7
+00:00:11,440 --> 00:00:16,680
+mode look at that versus that but after
+
+8
+00:00:14,920 --> 00:00:19,080
+an argument with friends evolved into an
+
+9
+00:00:16,680 --> 00:00:21,800
+obsession I accidentally spent weeks
+
+10
+00:00:19,080 --> 00:00:23,599
+researching The Rise and the risks of
+
+11
+00:00:21,800 --> 00:00:26,320
+dark mode and I'm starting to worry that
+
+12
+00:00:23,599 --> 00:00:27,840
+dark mode is killing good design thank
+
+13
+00:00:26,320 --> 00:00:29,560
+you to hostinger for sponsoring this
+
+14
+00:00:27,840 --> 00:00:30,640
+video and to our patrons for supporting
+
+15
+00:00:29,560 --> 00:00:32,599
+the channel
+
+16
+00:00:30,640 --> 00:00:34,680
+do you guys use dark mode on your phone
+
+17
+00:00:32,599 --> 00:00:36,399
+no why did you say it like a slur
+
+18
+00:00:34,680 --> 00:00:38,440
+Melissa would you like to read a book
+
+19
+00:00:36,399 --> 00:00:40,079
+like you're reading a website from 2008
+
+20
+00:00:38,440 --> 00:00:42,120
+on the dark web do you think the dark
+
+21
+00:00:40,079 --> 00:00:44,039
+web is just dark websites is this what
+
+22
+00:00:42,120 --> 00:00:45,680
+you think the dark web is listen
+
+23
+00:00:44,039 --> 00:00:47,760
+everyone knows that this is a silly
+
+24
+00:00:45,680 --> 00:00:49,399
+conversation that no one should have
+
+25
+00:00:47,760 --> 00:00:51,440
+because dark mode is good when it is
+
+26
+00:00:49,399 --> 00:00:53,399
+dark and light mode is good when it is
+
+27
+00:00:51,440 --> 00:00:55,440
+light no dark mode is supposed to be
+
+28
+00:00:53,399 --> 00:00:57,239
+like easier it's better for your eyes
+
+29
+00:00:55,440 --> 00:00:59,320
+like all of the time why isn't it called
+
+30
+00:00:57,239 --> 00:01:01,600
+better for your eyes all the time mode
+
+31
+00:00:59,320 --> 00:01:04,600
+no I swear I read a thing at some point
+
+32
+00:01:01,600 --> 00:01:06,799
+where it was just like it's easier to
+
+33
+00:01:04,600 --> 00:01:09,080
+read says it's easier to read if it's
+
+34
+00:01:06,799 --> 00:01:10,479
+dark says who so in case you didn't know
+
+35
+00:01:09,080 --> 00:01:12,799
+the mission of this channel is to
+
+36
+00:01:10,479 --> 00:01:14,560
+encourage curiosity that means that I
+
+37
+00:01:12,799 --> 00:01:16,439
+don't think that there are any stupid
+
+38
+00:01:14,560 --> 00:01:18,400
+questions at least until I heard tah and
+
+39
+00:01:16,439 --> 00:01:20,240
+Melissa question dark mode but they are
+
+40
+00:01:18,400 --> 00:01:22,799
+my friends so I'm going to do the kind
+
+41
+00:01:20,240 --> 00:01:25,079
+thing and spend way too long trying to
+
+42
+00:01:22,799 --> 00:01:27,280
+prove them wrong ooh that rhymes let's
+
+43
+00:01:25,079 --> 00:01:29,439
+do it I started by reading articles and
+
+44
+00:01:27,280 --> 00:01:31,280
+Reddit threads to get a refresher on why
+
+45
+00:01:29,439 --> 00:01:34,320
+people think dark mode is better than
+
+46
+00:01:31,280 --> 00:01:36,399
+light mode the idea is why you guys over
+
+47
+00:01:34,320 --> 00:01:38,399
+there get over here the idea is that if
+
+48
+00:01:36,399 --> 00:01:41,720
+I can prove that these claims are true
+
+49
+00:01:38,399 --> 00:01:43,920
+then dark mode wins if I
+
+50
+00:01:41,720 --> 00:01:45,399
+can't I want to think about that the
+
+51
+00:01:43,920 --> 00:01:47,159
+whole process took a little over an
+
+52
+00:01:45,399 --> 00:01:49,119
+afternoon but eventually I found that
+
+53
+00:01:47,159 --> 00:01:51,560
+the whole debate can basically be boiled
+
+54
+00:01:49,119 --> 00:01:53,280
+down into three claims it's better for
+
+55
+00:01:51,560 --> 00:01:55,600
+your health at night it uses less
+
+56
+00:01:53,280 --> 00:01:57,159
+battery power and it's easier to read so
+
+57
+00:01:55,600 --> 00:01:59,039
+I looked into some academic research on
+
+58
+00:01:57,159 --> 00:02:00,560
+those claims pretty easy there aren't
+
+59
+00:01:59,039 --> 00:02:02,119
+that many but here's what I found the
+
+60
+00:02:00,560 --> 00:02:03,719
+health argument claims that dark mode
+
+61
+00:02:02,119 --> 00:02:05,560
+reduces the amount of blue light hitting
+
+62
+00:02:03,719 --> 00:02:07,479
+your eyes which improves your sleep and
+
+63
+00:02:05,560 --> 00:02:09,360
+the lower overall brightness reduces eye
+
+64
+00:02:07,479 --> 00:02:10,920
+strain however it's still up for debate
+
+65
+00:02:09,360 --> 00:02:12,560
+whether the color of light alone
+
+66
+00:02:10,920 --> 00:02:13,879
+actually affects your sleep that much
+
+67
+00:02:12,560 --> 00:02:15,640
+and while a lot of people myself
+
+68
+00:02:13,879 --> 00:02:18,400
+included use dark mode because light
+
+69
+00:02:15,640 --> 00:02:20,560
+mode feels like a flash bomb it probably
+
+70
+00:02:18,400 --> 00:02:22,599
+isn't the main source of our eye strain
+
+71
+00:02:20,560 --> 00:02:24,360
+in dark rooms your pupils expand making
+
+72
+00:02:22,599 --> 00:02:26,640
+it harder to focus your vision which
+
+73
+00:02:24,360 --> 00:02:28,519
+might cause fatigue so if you're using
+
+74
+00:02:26,640 --> 00:02:29,920
+your phone at night it might actually be
+
+75
+00:02:28,519 --> 00:02:31,800
+better to brighten your surround
+
+76
+00:02:29,920 --> 00:02:33,239
+roundings instead of darkening your
+
+77
+00:02:31,800 --> 00:02:34,959
+screen but if you actually care about
+
+78
+00:02:33,239 --> 00:02:37,280
+your eye Health the best choice is
+
+79
+00:02:34,959 --> 00:02:39,200
+unfortunately obvious you got to stop
+
+80
+00:02:37,280 --> 00:02:41,000
+using your phone so much when we look at
+
+81
+00:02:39,200 --> 00:02:43,120
+screens we actually end up blinking
+
+82
+00:02:41,000 --> 00:02:45,360
+shockingly less than usual which leads
+
+83
+00:02:43,120 --> 00:02:47,519
+to dry eyes and research is emerging
+
+84
+00:02:45,360 --> 00:02:49,360
+that an entire generation of iPad kids
+
+85
+00:02:47,519 --> 00:02:51,159
+have worse Vision because of it but
+
+86
+00:02:49,360 --> 00:02:52,760
+let's assume you don't actually care and
+
+87
+00:02:51,159 --> 00:02:54,920
+you just want to use your phone for as
+
+88
+00:02:52,760 --> 00:02:57,040
+long as possible dark mode can
+
+89
+00:02:54,920 --> 00:02:58,560
+definitely help on OLED screens which is
+
+90
+00:02:57,040 --> 00:03:00,720
+becoming the norm for modern mobile
+
+91
+00:02:58,560 --> 00:03:03,040
+devices displaying darker colors
+
+92
+00:03:00,720 --> 00:03:04,799
+requires less battery power so all that
+
+93
+00:03:03,040 --> 00:03:06,400
+remains is readability now there are a
+
+94
+00:03:04,799 --> 00:03:08,360
+few papers out there that explore
+
+95
+00:03:06,400 --> 00:03:10,239
+whether it is easier to read in dark
+
+96
+00:03:08,360 --> 00:03:12,440
+mode however these sample groups can
+
+97
+00:03:10,239 --> 00:03:14,280
+vary a lot and I'm a little bit worried
+
+98
+00:03:12,440 --> 00:03:16,720
+that it doesn't accurately reflect you
+
+99
+00:03:14,280 --> 00:03:19,080
+guys watching this so I did a little
+
+100
+00:03:16,720 --> 00:03:20,640
+experiment my steampunk phase finally
+
+101
+00:03:19,080 --> 00:03:22,799
+came in handy in order to see how
+
+102
+00:03:20,640 --> 00:03:24,640
+display modes impact readability I coded
+
+103
+00:03:22,799 --> 00:03:26,599
+a few games I tested proof reading with
+
+104
+00:03:24,640 --> 00:03:27,560
+a typing test processing speed with a
+
+105
+00:03:26,599 --> 00:03:30,840
+Stroop
+
+106
+00:03:27,560 --> 00:03:32,599
+test but yeah and legibility with a
+
+107
+00:03:30,840 --> 00:03:33,760
+bunch of differently sized characters
+
+108
+00:03:32,599 --> 00:03:36,720
+kind of like what you see at an eye
+
+109
+00:03:33,760 --> 00:03:40,159
+doctor Zed I created two versions of
+
+110
+00:03:36,720 --> 00:03:41,959
+each game a light mode and a dark mode
+
+111
+00:03:40,159 --> 00:03:44,000
+then I use my hosting or business web
+
+112
+00:03:41,959 --> 00:03:45,120
+hosting plan to get this project online
+
+113
+00:03:44,000 --> 00:03:46,439
+if you want to try out these games
+
+114
+00:03:45,120 --> 00:03:48,159
+they're Linked In the description now I
+
+115
+00:03:46,439 --> 00:03:50,720
+usually just upload my files and call it
+
+116
+00:03:48,159 --> 00:03:52,840
+a day but it turns out search engines
+
+117
+00:03:50,720 --> 00:03:54,840
+hate my lazy code in fact if you search
+
+118
+00:03:52,840 --> 00:03:57,879
+spell check game which is a game that I
+
+119
+00:03:54,840 --> 00:04:01,319
+made I'm the third search result second
+
+120
+00:03:57,879 --> 00:04:03,400
+place Reddit first place a complete dupe
+
+121
+00:04:01,319 --> 00:04:05,680
+of my game that I have nothing to do
+
+122
+00:04:03,400 --> 00:04:07,959
+with I did ask for it though dup my
+
+123
+00:04:05,680 --> 00:04:09,760
+website so this time I set up a hosting
+
+124
+00:04:07,959 --> 00:04:12,840
+or managed WordPress which comes with a
+
+125
+00:04:09,760 --> 00:04:15,360
+free domain and email topnotch security
+
+126
+00:04:12,840 --> 00:04:17,359
+and of course search engine friendly
+
+127
+00:04:15,360 --> 00:04:18,799
+themes I quickly put the website
+
+128
+00:04:17,359 --> 00:04:21,440
+together and just embedded my games
+
+129
+00:04:18,799 --> 00:04:22,560
+using custom HTML blocks and now look at
+
+130
+00:04:21,440 --> 00:04:24,479
+the search
+
+131
+00:04:22,560 --> 00:04:26,160
+results but the best part is that
+
+132
+00:04:24,479 --> 00:04:28,000
+WordPress comes with a bunch of plugins
+
+133
+00:04:26,160 --> 00:04:29,759
+that let me push my idea even further
+
+134
+00:04:28,000 --> 00:04:31,360
+than I could with my coding ability
+
+135
+00:04:29,759 --> 00:04:33,360
+alone I collected a whole bunch of
+
+136
+00:04:31,360 --> 00:04:35,280
+information using a forms plug-in and I
+
+137
+00:04:33,360 --> 00:04:36,720
+randomized the order people saw a test
+
+138
+00:04:35,280 --> 00:04:38,560
+and whether they saw a dark mode or
+
+139
+00:04:36,720 --> 00:04:41,120
+light mode version of the website using
+
+140
+00:04:38,560 --> 00:04:42,400
+an AB test plug-in science and then I
+
+141
+00:04:41,120 --> 00:04:45,320
+shared it with y'all and got a
+
+142
+00:04:42,400 --> 00:04:47,880
+reasonable amount of responses psych I
+
+143
+00:04:45,320 --> 00:04:49,479
+got over 2,000 it was wild seeing how
+
+144
+00:04:47,880 --> 00:04:51,639
+just a few lazy lines of code could
+
+145
+00:04:49,479 --> 00:04:53,160
+become all of this a complex website
+
+146
+00:04:51,639 --> 00:04:55,240
+with randomized experiments that could
+
+147
+00:04:53,160 --> 00:04:56,880
+reach across the world and that is
+
+148
+00:04:55,240 --> 00:04:59,240
+thanks to hostinger who puts all of
+
+149
+00:04:56,880 --> 00:05:01,680
+these resources together for a fraction
+
+150
+00:04:59,240 --> 00:05:04,320
+of the usual cost W if you go to
+
+151
+00:05:01,680 --> 00:05:06,000
+hostinger.com slans inprogress you will
+
+152
+00:05:04,320 --> 00:05:08,560
+find everything you need to create a
+
+153
+00:05:06,000 --> 00:05:11,080
+website including a free domain free
+
+154
+00:05:08,560 --> 00:05:12,600
+website migration and 24/7 customer
+
+155
+00:05:11,080 --> 00:05:14,680
+support I honestly think it's worth it
+
+156
+00:05:12,600 --> 00:05:18,319
+just to secure your own name but if you
+
+157
+00:05:14,680 --> 00:05:20,120
+want you can once again dup my website
+
+158
+00:05:18,319 --> 00:05:22,400
+and try to usurp me in the search
+
+159
+00:05:20,120 --> 00:05:23,840
+results I came prepared this time just
+
+160
+00:05:22,400 --> 00:05:26,199
+click the link in the description and
+
+161
+00:05:23,840 --> 00:05:27,639
+use code answering progress at checkout
+
+162
+00:05:26,199 --> 00:05:29,280
+thank you once again to hostinger for
+
+163
+00:05:27,639 --> 00:05:31,160
+sponsoring this video and supporting the
+
+164
+00:05:29,280 --> 00:05:33,199
+channel but now it's time to interpret
+
+165
+00:05:31,160 --> 00:05:35,919
+some results all right I've got some
+
+166
+00:05:33,199 --> 00:05:37,919
+graphs for you H ironically I think I
+
+167
+00:05:35,919 --> 00:05:39,440
+need to use my code editor and light
+
+168
+00:05:37,919 --> 00:05:41,199
+mode so that you could actually see my
+
+169
+00:05:39,440 --> 00:05:43,000
+face anyway since we're controlling for
+
+170
+00:05:41,199 --> 00:05:47,039
+time in every test we can get an idea of
+
+171
+00:05:43,000 --> 00:05:47,039
+each individually isn't useful because
+
+172
+00:05:47,840 --> 00:05:52,560
+what of a panda data frame made up of
+
+173
+00:05:50,360 --> 00:05:55,160
+the value counts of the original data
+
+174
+00:05:52,560 --> 00:05:57,160
+set what okay ignore all the boring
+
+175
+00:05:55,160 --> 00:05:59,000
+stuff basically what this graph shows is
+
+176
+00:05:57,160 --> 00:06:01,520
+that light mode users always scored
+
+177
+00:05:59,000 --> 00:06:04,520
+better when using light mode on the
+
+178
+00:06:01,520 --> 00:06:06,880
+other hand dark mode users didn't always
+
+179
+00:06:04,520 --> 00:06:08,759
+do better with dark mode when it comes
+
+180
+00:06:06,880 --> 00:06:10,960
+to legibility light mode consistently
+
+181
+00:06:08,759 --> 00:06:13,199
+led to higher scores compared to dark
+
+182
+00:06:10,960 --> 00:06:14,520
+mode regardless of preference and
+
+183
+00:06:13,199 --> 00:06:16,080
+interestingly this is in line with
+
+184
+00:06:14,520 --> 00:06:17,639
+research which finds that the higher
+
+185
+00:06:16,080 --> 00:06:19,680
+brightness of light mode actually
+
+186
+00:06:17,639 --> 00:06:21,440
+constricts your pupil to improve your
+
+187
+00:06:19,680 --> 00:06:23,039
+vision the main exception is for folks
+
+188
+00:06:21,440 --> 00:06:25,680
+with low vision where brightness doesn't
+
+189
+00:06:23,039 --> 00:06:27,720
+matter as much as contrast so which mode
+
+190
+00:06:25,680 --> 00:06:29,720
+wins well your eye health is mainly
+
+191
+00:06:27,720 --> 00:06:31,960
+managed by your screen time and your
+
+192
+00:06:29,720 --> 00:06:33,280
+battery life is mainly managed by your
+
+193
+00:06:31,960 --> 00:06:35,759
+charger so you could say that
+
+194
+00:06:33,280 --> 00:06:37,880
+readability or legibility is actually
+
+195
+00:06:35,759 --> 00:06:40,639
+the only claim where display mode plays
+
+196
+00:06:37,880 --> 00:06:43,360
+the most important role if that's the
+
+197
+00:06:40,639 --> 00:06:45,199
+case then light mode wins I know it kind
+
+198
+00:06:43,360 --> 00:06:46,960
+of sounds like I'm grasping at straws
+
+199
+00:06:45,199 --> 00:06:48,919
+and that's because I am when I started
+
+200
+00:06:46,960 --> 00:06:50,919
+this video I expected to find a clear
+
+201
+00:06:48,919 --> 00:06:53,039
+winner I wanted it to be dark mode but I
+
+202
+00:06:50,919 --> 00:06:55,199
+was ready for light mode or adaptive
+
+203
+00:06:53,039 --> 00:06:58,039
+mode I wasn't prepared for the reality
+
+204
+00:06:55,199 --> 00:06:59,240
+that it doesn't seem to matter like dark
+
+205
+00:06:58,039 --> 00:07:01,160
+mode is technically better for your
+
+206
+00:06:59,240 --> 00:07:02,400
+battery and more ergonomic in the dark
+
+207
+00:07:01,160 --> 00:07:04,400
+and light mode can lead to clearer
+
+208
+00:07:02,400 --> 00:07:06,599
+vision and reduce eye strain because it
+
+209
+00:07:04,400 --> 00:07:08,720
+is so uncomfortable to look at it'll
+
+210
+00:07:06,599 --> 00:07:11,639
+force you to look away from your screen
+
+211
+00:07:08,720 --> 00:07:13,039
+more often which is actually what helps
+
+212
+00:07:11,639 --> 00:07:15,240
+but if we ignore that all of that's like
+
+213
+00:07:13,039 --> 00:07:17,240
+comparing apples and oranges the real
+
+214
+00:07:15,240 --> 00:07:19,479
+reason that there isn't a winner is
+
+215
+00:07:17,240 --> 00:07:21,560
+because those apples and oranges are
+
+216
+00:07:19,479 --> 00:07:23,560
+tiny these pros and cons have such a
+
+217
+00:07:21,560 --> 00:07:25,639
+marginal effect in day-to-day life or
+
+218
+00:07:23,560 --> 00:07:29,000
+rely on circumstances that are so
+
+219
+00:07:25,639 --> 00:07:30,960
+specific that on average in most cases
+
+220
+00:07:29,000 --> 00:07:32,759
+they aren't worth bringing up and I'm
+
+221
+00:07:30,960 --> 00:07:36,080
+not the only one who believes that and
+
+222
+00:07:32,759 --> 00:07:39,599
+I'd like to show you a new side of
+
+223
+00:07:36,080 --> 00:07:43,080
+Mojave we call it dark
+
+224
+00:07:39,599 --> 00:07:45,479
+mode okay so in 2018 Apple releases dark
+
+225
+00:07:43,080 --> 00:07:47,800
+mode on their Mac operating system it
+
+226
+00:07:45,479 --> 00:07:49,840
+builds off of this 2014 update where the
+
+227
+00:07:47,800 --> 00:07:52,199
+primary focus was just one thing
+
+228
+00:07:49,840 --> 00:07:54,879
+Aesthetics and it's so great for pros it
+
+229
+00:07:52,199 --> 00:07:56,960
+makes photographic content pop off the
+
+230
+00:07:54,879 --> 00:07:59,159
+screen so Apple launches dark mode with
+
+231
+00:07:56,960 --> 00:08:01,159
+their primary user base in mind artist
+
+232
+00:07:59,159 --> 00:08:03,400
+and designers who want to be able to
+
+233
+00:08:01,159 --> 00:08:05,080
+focus on their work and also mimic the
+
+234
+00:08:03,400 --> 00:08:06,960
+environments where it might be seen
+
+235
+00:08:05,080 --> 00:08:08,960
+battery life and ergonomics aren't even
+
+236
+00:08:06,960 --> 00:08:11,120
+mentioned but that doesn't stop a wave
+
+237
+00:08:08,960 --> 00:08:13,280
+of apps and services from using those
+
+238
+00:08:11,120 --> 00:08:16,199
+claims to justify why they started
+
+239
+00:08:13,280 --> 00:08:18,199
+offering dark mode after 2018 and this
+
+240
+00:08:16,199 --> 00:08:19,879
+is like super weird to me because after
+
+241
+00:08:18,199 --> 00:08:22,080
+just one week of some pretty basic
+
+242
+00:08:19,879 --> 00:08:23,840
+research I found that the reality of
+
+243
+00:08:22,080 --> 00:08:25,680
+those claims aren't as compelling as
+
+244
+00:08:23,840 --> 00:08:27,680
+they originally appear they're all
+
+245
+00:08:25,680 --> 00:08:30,280
+generally true but they're not seemingly
+
+246
+00:08:27,680 --> 00:08:32,680
+worth the time money and effort for
+
+247
+00:08:30,280 --> 00:08:34,760
+major services to overhaul their design
+
+248
+00:08:32,680 --> 00:08:36,719
+choices to accommodate dark mode but
+
+249
+00:08:34,760 --> 00:08:39,320
+they did it anyway and I just want to
+
+250
+00:08:36,719 --> 00:08:41,640
+know why like the real reason I don't
+
+251
+00:08:39,320 --> 00:08:43,640
+want to sound conspiratorial but it
+
+252
+00:08:41,640 --> 00:08:46,480
+can't just be battery life and
+
+253
+00:08:43,640 --> 00:08:48,440
+ergonomics right so what was it I
+
+254
+00:08:46,480 --> 00:08:50,200
+started by asking why dark mode was
+
+255
+00:08:48,440 --> 00:08:52,680
+invented because I know it predates
+
+256
+00:08:50,200 --> 00:08:55,120
+Apple in 2018 but the further I searched
+
+257
+00:08:52,680 --> 00:08:57,120
+the more obvious it became that I'm
+
+258
+00:08:55,120 --> 00:09:00,680
+asking the wrong question because it
+
+259
+00:08:57,120 --> 00:09:02,160
+turns out dark mode actually came first
+
+260
+00:09:00,680 --> 00:09:04,360
+now I'm certain that plenty of you
+
+261
+00:09:02,160 --> 00:09:07,200
+already knew this but for those of us
+
+262
+00:09:04,360 --> 00:09:09,200
+who don't here's a quick history lesson
+
+263
+00:09:07,200 --> 00:09:11,800
+welcome when computers first came around
+
+264
+00:09:09,200 --> 00:09:13,519
+they used cathode ray tubes or CRT
+
+265
+00:09:11,800 --> 00:09:15,079
+displays the screen was coated in
+
+266
+00:09:13,519 --> 00:09:17,000
+phosphors that Lit Up When shot with
+
+267
+00:09:15,079 --> 00:09:18,839
+electrons but technical limitations
+
+268
+00:09:17,000 --> 00:09:20,600
+meant that CRT displays only lit up
+
+269
+00:09:18,839 --> 00:09:22,640
+where needed this resulted in light
+
+270
+00:09:20,600 --> 00:09:25,720
+content on a dark background wait a
+
+271
+00:09:22,640 --> 00:09:28,200
+second is that dark
+
+272
+00:09:25,720 --> 00:09:30,079
+mode but by the'80s we were able to
+
+273
+00:09:28,200 --> 00:09:31,720
+consistently light up the full screen
+
+274
+00:09:30,079 --> 00:09:34,440
+and computer companies could replace
+
+275
+00:09:31,720 --> 00:09:37,000
+text displays with graphical user
+
+276
+00:09:34,440 --> 00:09:39,000
+interfaces gooey the term gooey is just
+
+277
+00:09:37,000 --> 00:09:41,120
+so gross there were infinite
+
+278
+00:09:39,000 --> 00:09:44,399
+possibilities Limitless design
+
+279
+00:09:41,120 --> 00:09:46,640
+opportunities so what did they settle on
+
+280
+00:09:44,399 --> 00:09:49,760
+oh making documents look like paper and
+
+281
+00:09:46,640 --> 00:09:52,320
+waste baskets look like waste baskets
+
+282
+00:09:49,760 --> 00:09:54,360
+wasn't groundbreaking but that was kind
+
+283
+00:09:52,320 --> 00:09:56,120
+of the point personal computers were so
+
+284
+00:09:54,360 --> 00:09:58,079
+new to the average person that designers
+
+285
+00:09:56,120 --> 00:10:00,240
+intentionally bridge that knowledge Gap
+
+286
+00:09:58,079 --> 00:10:02,640
+by using skew morphic design which
+
+287
+00:10:00,240 --> 00:10:04,920
+mimics tangible objects and experiences
+
+288
+00:10:02,640 --> 00:10:07,600
+in the digital world and it turns out a
+
+289
+00:10:04,920 --> 00:10:09,240
+pretty common physical experience is
+
+290
+00:10:07,600 --> 00:10:10,800
+light mode but this suggests that dark
+
+291
+00:10:09,240 --> 00:10:12,800
+mode and light mode weren't originally
+
+292
+00:10:10,800 --> 00:10:15,480
+intended to be competition they were
+
+293
+00:10:12,800 --> 00:10:18,079
+just familiar to different groups of
+
+294
+00:10:15,480 --> 00:10:20,000
+people now interestingly this also makes
+
+295
+00:10:18,079 --> 00:10:22,200
+them an early example of Universal
+
+296
+00:10:20,000 --> 00:10:24,680
+Design since they consider an individual
+
+297
+00:10:22,200 --> 00:10:26,360
+user's needs and experience this was
+
+298
+00:10:24,680 --> 00:10:27,760
+shockingly rare for the time because
+
+299
+00:10:26,360 --> 00:10:30,120
+most things were designed from an
+
+300
+00:10:27,760 --> 00:10:32,040
+individual programmer's perspective or a
+
+301
+00:10:30,120 --> 00:10:34,120
+marketing one the actual person who was
+
+302
+00:10:32,040 --> 00:10:36,440
+going to use the product was rarely
+
+303
+00:10:34,120 --> 00:10:38,320
+considered and this totally reframes the
+
+304
+00:10:36,440 --> 00:10:40,399
+way I think about dark mode and light
+
+305
+00:10:38,320 --> 00:10:42,480
+mode because I think it was doomed to
+
+306
+00:10:40,399 --> 00:10:44,680
+fail you see I was trying to prove that
+
+307
+00:10:42,480 --> 00:10:46,839
+one display mode was objectively better
+
+308
+00:10:44,680 --> 00:10:49,480
+than the other using averages but I
+
+309
+00:10:46,839 --> 00:10:52,079
+forgot that good design isn't for the
+
+310
+00:10:49,480 --> 00:10:53,920
+average it's for a person and that
+
+311
+00:10:52,079 --> 00:10:56,120
+person can evolve when Apple first
+
+312
+00:10:53,920 --> 00:10:58,000
+started playing with dark mode in 2014
+
+313
+00:10:56,120 --> 00:11:01,120
+it coincided with the company's overall
+
+314
+00:10:58,000 --> 00:11:03,079
+shift away from skoric design it was no
+
+315
+00:11:01,120 --> 00:11:05,440
+longer necessary since their ideal user
+
+316
+00:11:03,079 --> 00:11:07,120
+was familiar enough with technology that
+
+317
+00:11:05,440 --> 00:11:10,040
+they could adapt to uniquely digital
+
+318
+00:11:07,120 --> 00:11:12,279
+features like dark mode so I guess the
+
+319
+00:11:10,040 --> 00:11:15,200
+real winner of the dark mode light mode
+
+320
+00:11:12,279 --> 00:11:17,639
+debate is actually all of us the people
+
+321
+00:11:15,200 --> 00:11:22,040
+who are benefiting from the options that
+
+322
+00:11:17,639 --> 00:11:25,079
+come with good thoughtful design oh
+
+323
+00:11:22,040 --> 00:11:29,360
+sorry um
+
+324
+00:11:25,079 --> 00:11:32,480
+just what the exciting new ways cane
+
+325
+00:11:29,360 --> 00:11:34,360
+with color look for app icons when we go
+
+326
+00:11:32,480 --> 00:11:36,240
+into dark mode has gone too far and it's
+
+327
+00:11:34,360 --> 00:11:38,040
+killing good design last week when I was
+
+328
+00:11:36,240 --> 00:11:40,399
+supposed to be finishing up this video
+
+329
+00:11:38,040 --> 00:11:42,480
+Apple launched iOS 18 and with it an
+
+330
+00:11:40,399 --> 00:11:44,720
+update to dark mode specifically dark
+
+331
+00:11:42,480 --> 00:11:46,240
+mode icons with an optional tint I lost
+
+332
+00:11:44,720 --> 00:11:49,600
+another week just trying to figure out
+
+333
+00:11:46,240 --> 00:11:52,120
+why it bugged me so much let's turn it
+
+334
+00:11:49,600 --> 00:11:53,720
+on Isn't that cool I thought it was
+
+335
+00:11:52,120 --> 00:11:55,959
+because of the way he clearly doesn't
+
+336
+00:11:53,720 --> 00:11:57,279
+think it's cool it's pre-recorded he
+
+337
+00:11:55,959 --> 00:11:58,880
+could have done it again but I think
+
+338
+00:11:57,279 --> 00:12:00,839
+it's actually because unlike previous
+
+339
+00:11:58,880 --> 00:12:02,800
+dark mod mode Updates this time they
+
+340
+00:12:00,839 --> 00:12:04,800
+never specify who they think this is
+
+341
+00:12:02,800 --> 00:12:06,120
+useful for now usually when the use case
+
+342
+00:12:04,800 --> 00:12:08,519
+isn't obvious the answer is
+
+343
+00:12:06,120 --> 00:12:10,639
+accessibility which is great except that
+
+344
+00:12:08,519 --> 00:12:12,480
+can't possibly be the case here because
+
+345
+00:12:10,639 --> 00:12:14,519
+the photo they use to announce the dark
+
+346
+00:12:12,480 --> 00:12:16,839
+mode tint feature doesn't comply with
+
+347
+00:12:14,519 --> 00:12:18,160
+the web content accessibility guidelines
+
+348
+00:12:16,839 --> 00:12:20,160
+instead it feels like they've kind of
+
+349
+00:12:18,160 --> 00:12:22,639
+lost sight of what people actually want
+
+350
+00:12:20,160 --> 00:12:24,760
+from dark mode and part of me can't even
+
+351
+00:12:22,639 --> 00:12:27,199
+blame them because over the past 40
+
+352
+00:12:24,760 --> 00:12:29,600
+years dark mode has come to represent so
+
+353
+00:12:27,199 --> 00:12:31,920
+many different things terminal hair AG
+
+354
+00:12:29,600 --> 00:12:34,240
+high contrast battery efficiency low
+
+355
+00:12:31,920 --> 00:12:36,680
+brightness simplification and more those
+
+356
+00:12:34,240 --> 00:12:38,560
+are a lot of valid design considerations
+
+357
+00:12:36,680 --> 00:12:40,560
+but the issue is that Apple didn't want
+
+358
+00:12:38,560 --> 00:12:42,279
+to consider them this update feels like
+
+359
+00:12:40,560 --> 00:12:44,440
+apple doing the bare minimum and leaving
+
+360
+00:12:42,279 --> 00:12:46,079
+the onus on users to figure out how to
+
+361
+00:12:44,440 --> 00:12:47,880
+actually make it useful it's this
+
+362
+00:12:46,079 --> 00:12:50,399
+laziness that I found increasingly
+
+363
+00:12:47,880 --> 00:12:52,320
+common in so many apps and services that
+
+364
+00:12:50,399 --> 00:12:54,000
+become so obsessed with offering new
+
+365
+00:12:52,320 --> 00:12:56,360
+features that they've stopped
+
+366
+00:12:54,000 --> 00:12:58,160
+considering how a person an individual
+
+367
+00:12:56,360 --> 00:13:00,240
+is going to use them all which makes all
+
+368
+00:12:58,160 --> 00:13:02,720
+of those options that once represented
+
+369
+00:13:00,240 --> 00:13:06,000
+good design an opportunity for companies
+
+370
+00:13:02,720 --> 00:13:07,480
+to offload their ux work onto us or
+
+371
+00:13:06,000 --> 00:13:09,199
+maybe all personalization is a good
+
+372
+00:13:07,480 --> 00:13:13,680
+thing and I'm just overthinking it but
+
+373
+00:13:09,199 --> 00:13:13,680
+either way have a lovely day
+

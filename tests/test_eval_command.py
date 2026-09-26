@@ -397,7 +397,9 @@ def test_run_eval_measures_audio_duration(tmp_path: Path) -> None:
     assert report.audio_seconds == 4.0  # two 2-second sources
 
 
-@pytest.mark.parametrize("name", ["earnings21-heldout", "earnings21-heldout-2"])
+@pytest.mark.parametrize(
+    "name", ["earnings21-heldout", "earnings21-heldout-2", "audited-heldout-2"]
+)
 def test_eval_command_refuses_a_held_out_corpus_without_final(
     tmp_path: Path, monkeypatch: pytest.MonkeyPatch, name: str
 ) -> None:
@@ -410,19 +412,23 @@ def test_eval_command_refuses_a_held_out_corpus_without_final(
     assert final.exit_code == 0, final.output
 
 
-def test_only_the_earnings21_heldout_sets_are_still_held_out() -> None:
-    # The Audited Held-out set moved to the Dev set once its misses
-    # motivated a change (issue #27); heldout-2 is fresh for #28.
+def test_only_the_final_comparison_sets_are_held_out() -> None:
+    # The first Audited Held-out set moved to the Dev set once its misses
+    # motivated a change (issue #27); earnings21-heldout-2 and
+    # audited-heldout-2 are fresh for #28's final scoring.
     assert {name for name, c in CORPORA.items() if c.held_out} == {
         "earnings21-heldout",
         "earnings21-heldout-2",
+        "audited-heldout-2",
     }
 
 
-def test_audited_dev_corpus_locates_every_case_in_its_five_transcripts() -> None:
+@pytest.mark.parametrize("name", ["audited-dev", "audited-heldout-2"])
+def test_audited_corpus_locates_every_case_in_its_five_transcripts(name: str) -> None:
     # Scored with no Flags at all: checks the corpus itself (every span
-    # locates, every transcript is exhaustive and has errors listed).
-    corpus = CORPORA["audited-dev"]
+    # locates, every transcript is exhaustive and has errors listed) without
+    # running any system over a Held-out set.
+    corpus = CORPORA[name]
     cases = load_corpus(corpus.cases_path)
     assert len(corpus.exhaustive_sources) == 5
     assert {c.source for c in cases} == set(corpus.exhaustive_sources)
@@ -430,3 +436,15 @@ def test_audited_dev_corpus_locates_every_case_in_its_five_transcripts() -> None
     words = {s: tokenize(parse(corpus.data_dir / s)) for s in corpus.exhaustive_sources}
     report = score(cases, {}, words, exhaustive_sources=corpus.exhaustive_sources)
     assert report.false_negatives == len(cases)
+
+
+def test_audited_heldout_2_shares_no_transcript_with_another_corpus() -> None:
+    fresh = set(CORPORA["audited-heldout-2"].exhaustive_sources)
+    committed = {
+        name: c
+        for name, c in CORPORA.items()
+        if c.manifest_path is None and name != "audited-heldout-2"
+    }
+    for name, corpus in committed.items():
+        used = {c.source for c in load_corpus(corpus.cases_path)}
+        assert not fresh & (used | set(corpus.exhaustive_sources)), name

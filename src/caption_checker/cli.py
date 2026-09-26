@@ -342,8 +342,8 @@ def serve(host: str, port: int, data_dir: Path | None) -> None:
     default="scored",
     show_default=True,
     help="Named corpus to score. earnings21-* need `build-earnings21` first; "
-    "earnings21-heldout (ADR 0006) and earnings21-heldout-2 (#28) are for a "
-    "final comparison only.",
+    "earnings21-heldout (ADR 0006), earnings21-heldout-2 and audited-heldout-2 "
+    "(#28) are for a final comparison only.",
 )
 @click.option(
     "--system",

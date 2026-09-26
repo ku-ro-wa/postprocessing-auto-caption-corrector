@@ -209,8 +209,24 @@ precision is vacuous and Flag-level precision is the number to read. This was
 the Audited Held-out set, scored once with `--final` for ADR 0006's verdict.
 Issue #27 then studied its misses to design a fix, so it moved to the Dev set
 and `eval` no longer asks for `--final`. Any later claim about the
-Read-through needs fresh Held-out data; only `earnings21-heldout` and
-`earnings21-heldout-2` are still held out.
+Read-through needs fresh Held-out data; only `earnings21-heldout`,
+`earnings21-heldout-2` and `audited-heldout-2` are still held out.
+
+**Second Audited Held-out set** — `audited-heldout-2`, final comparison only:
+
+```bash
+uv run caption-checker eval --corpus audited-heldout-2 --final
+```
+
+Five fresh Audited transcripts (`tests/data/audited_heldout_2_corpus.json`,
+issue #31): school-laptop surveillance, dark mode, nepo babies in pop,
+perfume and a song breakdown, all with unaccented speakers. Their errors were
+listed by an audio pass before any system ran on them, and like `audited-dev`
+they list errors only. Only the local pipeline (unchanged in detection since
+its freeze at `2de1655`) has been scored on them; no Read-through has.
+The set is kept for the Read-through configuration comparison's final
+scoring (#28), so `eval` refuses it without `--final`. Looking at a
+system's Flags on it to motivate a change moves it to the Dev set.
 
 **Earnings-21 Auto-labelled corpora** — built locally, never committed:
 

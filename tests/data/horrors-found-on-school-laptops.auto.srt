@@ -1,0 +1,2088 @@
+1
+00:00:03,929 --> 00:00:05,949
+[music]
+
+2
+00:00:09,760 --> 00:00:13,400
+November 2009.
+
+3
+00:00:14,410 --> 00:00:16,430
+[music]
+
+4
+00:00:16,640 --> 00:00:19,650
+A 10th grader is called into the
+
+5
+00:00:18,240 --> 00:00:21,119
+assistant vice principal's office
+
+6
+00:00:19,650 --> 00:00:24,480
+[music] shortly after arriving at
+
+7
+00:00:21,119 --> 00:00:26,160
+school. Butterflies flutter inside him.
+
+8
+00:00:24,480 --> 00:00:28,480
+It's clear the authority [music] figure
+
+9
+00:00:26,160 --> 00:00:30,400
+currently staring him down is upset over
+
+10
+00:00:28,480 --> 00:00:33,520
+something.
+
+11
+00:00:30,400 --> 00:00:35,200
+She accuses him of quote improper
+
+12
+00:00:33,520 --> 00:00:36,559
+behavior.
+
+13
+00:00:35,200 --> 00:00:39,200
+He doesn't know what she's talking
+
+14
+00:00:36,559 --> 00:00:40,879
+about. The school official slides a
+
+15
+00:00:39,200 --> 00:00:44,879
+photo across the [music] table asking
+
+16
+00:00:40,879 --> 00:00:47,360
+the boy to explain it. He picks it up.
+
+17
+00:00:44,879 --> 00:00:50,079
+It's him [music]
+
+18
+00:00:47,360 --> 00:00:53,199
+in his bedroom at home.
+
+19
+00:00:50,079 --> 00:00:54,640
+He's never seen this before. Wait, how
+
+20
+00:00:53,199 --> 00:00:57,120
+did the school get a hold of this
+
+21
+00:00:54,640 --> 00:01:00,160
+picture? And who even took it in the
+
+22
+00:00:57,120 --> 00:01:02,239
+first place?
+
+23
+00:01:00,160 --> 00:01:04,239
+This single interaction would result in
+
+24
+00:01:02,239 --> 00:01:06,159
+a snowballing series of horrifying
+
+25
+00:01:04,239 --> 00:01:07,760
+discoveries about the nature of this
+
+26
+00:01:06,159 --> 00:01:10,799
+school district's student laptop
+
+27
+00:01:07,760 --> 00:01:14,159
+program. The first case of its kind, but
+
+28
+00:01:10,799 --> 00:01:15,920
+unfortunately not the last. Let's not
+
+29
+00:01:14,159 --> 00:01:17,759
+get ahead of ourselves, though. To
+
+30
+00:01:15,920 --> 00:01:20,479
+understand this case, we need to learn
+
+31
+00:01:17,759 --> 00:01:22,560
+about where it takes place. Our story
+
+32
+00:01:20,479 --> 00:01:25,040
+starts 12 mi outside downtown
+
+33
+00:01:22,560 --> 00:01:27,040
+Philadelphia in the sleepy suburb of
+
+34
+00:01:25,040 --> 00:01:29,680
+Lower Marian.
+
+35
+00:01:27,040 --> 00:01:31,759
+Home to just over 63,000 residents,
+
+36
+00:01:29,680 --> 00:01:32,640
+Lower Marian's urban landscape looks
+
+37
+00:01:31,759 --> 00:01:33,920
+much like the sorts [music] of
+
+38
+00:01:32,640 --> 00:01:36,079
+neighborhoods you would see in a
+
+39
+00:01:33,920 --> 00:01:38,560
+Hollywood movie. With everything from
+
+40
+00:01:36,079 --> 00:01:40,799
+grand tutor and colonial revival to
+
+41
+00:01:38,560 --> 00:01:43,759
+menacingly large McMansions dotting the
+
+42
+00:01:40,799 --> 00:01:46,240
+winding treeine residential streets, it
+
+43
+00:01:43,759 --> 00:01:48,399
+all gives an air of money. And indeed,
+
+44
+00:01:46,240 --> 00:01:51,840
+the people who call Lower Marian home
+
+45
+00:01:48,399 --> 00:01:53,316
+seem to have a lot of it. In 2007, the
+
+46
+00:01:51,840 --> 00:01:56,240
+average family income for the area
+
+47
+00:01:53,316 --> 00:01:58,159
+[music] was $148,000,
+
+48
+00:01:56,240 --> 00:02:00,960
+just under three times the national
+
+49
+00:01:58,159 --> 00:02:02,799
+average of the United States. It's no
+
+50
+00:02:00,960 --> 00:02:04,719
+surprise then that in the only western
+
+51
+00:02:02,799 --> 00:02:06,960
+country where public schooling is mostly
+
+52
+00:02:04,719 --> 00:02:08,640
+funded on a local level that schools in
+
+53
+00:02:06,960 --> 00:02:11,200
+an area like lower Maran are
+
+54
+00:02:08,640 --> 00:02:14,080
+exceptionally well provided for with as
+
+55
+00:02:11,200 --> 00:02:17,520
+much as $32,000 being spent per student
+
+56
+00:02:14,080 --> 00:02:20,000
+per year in the district. In 2009, some
+
+57
+00:02:17,520 --> 00:02:21,920
+of that money would go to a new program,
+
+58
+00:02:20,000 --> 00:02:23,520
+one that sought to purchase laptops that
+
+59
+00:02:21,920 --> 00:02:25,760
+students could use to complete their
+
+60
+00:02:23,520 --> 00:02:28,080
+work in a more realworld professional
+
+61
+00:02:25,760 --> 00:02:30,080
+way and to just enhance the academic
+
+62
+00:02:28,080 --> 00:02:31,599
+experience overall.
+
+63
+00:02:30,080 --> 00:02:33,599
+This was something of a trend in the
+
+64
+00:02:31,599 --> 00:02:35,280
+late 2000s. And if you're the same age
+
+65
+00:02:33,599 --> 00:02:37,440
+as me, you'll no doubt remember
+
+66
+00:02:35,280 --> 00:02:40,239
+antiquated computer labs with their rows
+
+67
+00:02:37,440 --> 00:02:42,400
+of off-white CRT monitors slowly being
+
+68
+00:02:40,239 --> 00:02:44,319
+exchanged for carts containing racks of
+
+69
+00:02:42,400 --> 00:02:45,760
+laptops that teachers could just wheel
+
+70
+00:02:44,319 --> 00:02:48,239
+out for their students whenever they
+
+71
+00:02:45,760 --> 00:02:50,301
+needed them. My memories of this time
+
+72
+00:02:48,239 --> 00:02:52,239
+mostly consist of chunky Toshiba laptops
+
+73
+00:02:50,301 --> 00:02:53,840
+[music] that were somehow slower than
+
+74
+00:02:52,239 --> 00:02:55,440
+they looked and you could only really
+
+75
+00:02:53,840 --> 00:02:57,120
+use them during class when the teacher
+
+76
+00:02:55,440 --> 00:02:58,560
+would hand one to you with the only
+
+77
+00:02:57,120 --> 00:03:00,239
+exception being when you would check one
+
+78
+00:02:58,560 --> 00:03:02,720
+out of the library to use during study
+
+79
+00:03:00,239 --> 00:03:05,680
+hall or something. This was certainly
+
+80
+00:03:02,720 --> 00:03:07,200
+not how it worked in Lower Marian. No,
+
+81
+00:03:05,680 --> 00:03:09,920
+these students weren't using thick
+
+82
+00:03:07,200 --> 00:03:11,920
+tibas. They were using MacBooks.
+
+83
+00:03:09,920 --> 00:03:13,920
+Moreover, it wasn't just an inschool
+
+84
+00:03:11,920 --> 00:03:15,599
+replacement for a computer lab. These
+
+85
+00:03:13,920 --> 00:03:18,159
+MacBooks were distributed to students
+
+86
+00:03:15,599 --> 00:03:19,840
+under a one-to-one program, meaning each
+
+87
+00:03:18,159 --> 00:03:22,000
+and every student would have a single
+
+88
+00:03:19,840 --> 00:03:23,519
+laptop that would be theirs full-time,
+
+89
+00:03:22,000 --> 00:03:25,760
+even bringing them home with them after
+
+90
+00:03:23,519 --> 00:03:28,400
+school. I'm sure many of you watching
+
+91
+00:03:25,760 --> 00:03:30,159
+who are still attending school past 2015
+
+92
+00:03:28,400 --> 00:03:31,760
+likely remember receiving a Chromebook
+
+93
+00:03:30,159 --> 00:03:34,319
+that you could use at home under a
+
+94
+00:03:31,760 --> 00:03:36,080
+similar 1:1 program. But this wasn't
+
+95
+00:03:34,319 --> 00:03:38,560
+nearly as common of a thing in the late
+
+96
+00:03:36,080 --> 00:03:40,879
+2000s. The Lower Marian School District
+
+97
+00:03:38,560 --> 00:03:42,799
+was truly ahead of the curve with this.
+
+98
+00:03:40,879 --> 00:03:44,480
+Being the trailblazers they were, the
+
+99
+00:03:42,799 --> 00:03:46,400
+school district didn't really have any
+
+100
+00:03:44,480 --> 00:03:48,319
+set precedents to follow when it came to
+
+101
+00:03:46,400 --> 00:03:50,879
+policing the use and misuse of these
+
+102
+00:03:48,319 --> 00:03:52,159
+school devices. You can keep an eye on
+
+103
+00:03:50,879 --> 00:03:53,920
+what somebody is doing with school
+
+104
+00:03:52,159 --> 00:03:56,000
+property in school, but how are you
+
+105
+00:03:53,920 --> 00:03:57,840
+supposed to do that once you're at home?
+
+106
+00:03:56,000 --> 00:03:59,360
+The Lower Marian School District is one
+
+107
+00:03:57,840 --> 00:04:01,680
+of the most well-unded public school
+
+108
+00:03:59,360 --> 00:04:03,360
+programs in the country, but MacBooks
+
+109
+00:04:01,680 --> 00:04:04,959
+are expensive no matter where you live
+
+110
+00:04:03,360 --> 00:04:06,282
+in the world. And school officials
+
+111
+00:04:04,959 --> 00:04:07,439
+weren't just about to leave them to
+
+112
+00:04:06,282 --> 00:04:10,000
+[music] the mercy of their teenage
+
+113
+00:04:07,439 --> 00:04:12,000
+owners. To potentially mitigate the
+
+114
+00:04:10,000 --> 00:04:14,080
+issue of liability, the school district
+
+115
+00:04:12,000 --> 00:04:16,880
+purchased a piece of software called
+
+116
+00:04:14,080 --> 00:04:19,600
+LANREV, a systems life cycle management
+
+117
+00:04:16,880 --> 00:04:21,280
+software. In plain English, IT
+
+118
+00:04:19,600 --> 00:04:22,880
+administrators can use this kind of
+
+119
+00:04:21,280 --> 00:04:24,479
+software to manage many different
+
+120
+00:04:22,880 --> 00:04:26,479
+computers at the same time,
+
+121
+00:04:24,479 --> 00:04:28,320
+automatically installing software and
+
+122
+00:04:26,479 --> 00:04:30,479
+copying and deleting data on multiple
+
+123
+00:04:28,320 --> 00:04:32,400
+machines simultaneously.
+
+124
+00:04:30,479 --> 00:04:34,240
+Another key part of these IT management
+
+125
+00:04:32,400 --> 00:04:36,320
+solutions are security and tracking
+
+126
+00:04:34,240 --> 00:04:38,720
+features. Some of them amounting to
+
+127
+00:04:36,320 --> 00:04:40,343
+purposeful spyware that logs what users
+
+128
+00:04:38,720 --> 00:04:42,960
+are doing and then reports it back to IT
+
+129
+00:04:40,343 --> 00:04:44,800
+[music] administrators. Lanrev in
+
+130
+00:04:42,960 --> 00:04:46,800
+particular had a feature called theft
+
+131
+00:04:44,800 --> 00:04:49,040
+track which was designed to help recover
+
+132
+00:04:46,800 --> 00:04:50,880
+lost or stolen computers. When
+
+133
+00:04:49,040 --> 00:04:52,800
+activated, theft track could capture
+
+134
+00:04:50,880 --> 00:04:55,600
+three things automatically at set time
+
+135
+00:04:52,800 --> 00:04:58,400
+intervals. The devices IP address, a
+
+136
+00:04:55,600 --> 00:05:02,639
+screenshot of the desktop, and a photo
+
+137
+00:04:58,400 --> 00:05:04,320
+taken with the laptop's built-in webcam.
+
+138
+00:05:02,639 --> 00:05:06,240
+There were only two people working for
+
+139
+00:05:04,320 --> 00:05:08,240
+the lower Maran school district that had
+
+140
+00:05:06,240 --> 00:05:11,440
+the administrative access to use these
+
+141
+00:05:08,240 --> 00:05:14,479
+features. Is coordinator Carol Cafiro
+
+142
+00:05:11,440 --> 00:05:16,800
+and network technician Michael Pervix.
+
+143
+00:05:14,479 --> 00:05:18,479
+In 2008, just a year before the
+
+144
+00:05:16,800 --> 00:05:20,880
+schoolboard handed out laptops for
+
+145
+00:05:18,479 --> 00:05:22,639
+students to take home. Perix would film
+
+146
+00:05:20,880 --> 00:05:24,560
+a training video demonstrating some of
+
+147
+00:05:22,639 --> 00:05:27,360
+the different features of LANREV,
+
+148
+00:05:24,560 --> 00:05:29,759
+including theft track. He also talks
+
+149
+00:05:27,360 --> 00:05:31,759
+about something he describes as curtain
+
+150
+00:05:29,759 --> 00:05:33,440
+mode, which could allow technicians to
+
+151
+00:05:31,759 --> 00:05:35,840
+make use of all these affforementioned
+
+152
+00:05:33,440 --> 00:05:37,680
+monitoring features secretly without the
+
+153
+00:05:35,840 --> 00:05:40,320
+student knowing that someone was
+
+154
+00:05:37,680 --> 00:05:43,680
+watching them. This brings us back to
+
+155
+00:05:40,320 --> 00:05:45,440
+November 2009. 15-year-old Blake Robbins
+
+156
+00:05:43,680 --> 00:05:47,520
+has just been handed a photo of himself
+
+157
+00:05:45,440 --> 00:05:49,280
+holding something in front of his face.
+
+158
+00:05:47,520 --> 00:05:51,759
+The assistant vice principal, Lynn
+
+159
+00:05:49,280 --> 00:05:54,720
+Matsco, insists that it's a pill, but
+
+160
+00:05:51,759 --> 00:05:56,720
+Blake says it's a yellow Mike candy. She
+
+161
+00:05:54,720 --> 00:05:59,120
+further accuses the teen of using and
+
+162
+00:05:56,720 --> 00:06:01,919
+selling drugs, something he adamantly
+
+163
+00:05:59,120 --> 00:06:03,520
+refuts. The angry school official goes
+
+164
+00:06:01,919 --> 00:06:06,560
+on to tell Blake that she's been
+
+165
+00:06:03,520 --> 00:06:09,680
+watching him, not just at school, but at
+
+166
+00:06:06,560 --> 00:06:11,280
+home as well. She says that she's been
+
+167
+00:06:09,680 --> 00:06:13,199
+looking through the webcam on his school
+
+168
+00:06:11,280 --> 00:06:15,600
+laptop and that she's even been reading
+
+169
+00:06:13,199 --> 00:06:17,919
+what he's been typing. She confidently
+
+170
+00:06:15,600 --> 00:06:20,639
+states that she's sure he's using and
+
+171
+00:06:17,919 --> 00:06:22,880
+selling drugs. Blake at this point is
+
+172
+00:06:20,639 --> 00:06:25,120
+horrified, not because of Matskco's
+
+173
+00:06:22,880 --> 00:06:27,680
+allegations, but rather that she's been
+
+174
+00:06:25,120 --> 00:06:30,479
+so egregiously and casually invading his
+
+175
+00:06:27,680 --> 00:06:32,080
+privacy. That night, Matskco would call
+
+176
+00:06:30,479 --> 00:06:33,759
+Blake's parents, telling them everything
+
+177
+00:06:32,080 --> 00:06:36,319
+she had spoke to their son about earlier
+
+178
+00:06:33,759 --> 00:06:38,080
+that day. Just like Blake had, his
+
+179
+00:06:36,319 --> 00:06:40,160
+parents asked how she had gotten this
+
+180
+00:06:38,080 --> 00:06:41,840
+photo of Blake with the supposed pill.
+
+181
+00:06:40,160 --> 00:06:44,160
+and Matsco responded telling them that
+
+182
+00:06:41,840 --> 00:06:46,319
+the school district has the ability to
+
+183
+00:06:44,160 --> 00:06:48,639
+remotely activate any student's webcam
+
+184
+00:06:46,319 --> 00:06:50,720
+at any time to view or copy whatever was
+
+185
+00:06:48,639 --> 00:06:52,960
+visible without the consent or knowledge
+
+186
+00:06:50,720 --> 00:06:54,560
+of anyone in the camera's site. The
+
+187
+00:06:52,960 --> 00:06:56,479
+parents ended the call confirming that
+
+188
+00:06:54,560 --> 00:06:58,639
+Blake had indeed just been eating a box
+
+189
+00:06:56,479 --> 00:07:00,479
+of Mike and that day and the team would
+
+190
+00:06:58,639 --> 00:07:02,319
+end up facing any punishment at home or
+
+191
+00:07:00,479 --> 00:07:04,639
+at school. But this is just the
+
+192
+00:07:02,319 --> 00:07:06,479
+beginning of the story.
+
+193
+00:07:04,639 --> 00:07:08,479
+2 months later in February, Blake's
+
+194
+00:07:06,479 --> 00:07:10,240
+family would file a class action lawsuit
+
+195
+00:07:08,479 --> 00:07:12,080
+against the school board, alleging
+
+196
+00:07:10,240 --> 00:07:14,319
+violations of multiple civil rights
+
+197
+00:07:12,080 --> 00:07:16,479
+laws, digital communications acts,
+
+198
+00:07:14,319 --> 00:07:18,720
+wiretapping laws, and even the Fourth
+
+199
+00:07:16,479 --> 00:07:20,240
+Amendment. For my fellow non-Americans
+
+200
+00:07:18,720 --> 00:07:21,759
+out there, that's the one that protects
+
+201
+00:07:20,240 --> 00:07:24,240
+people against unreasonable search and
+
+202
+00:07:21,759 --> 00:07:25,759
+seizures by government institutions. The
+
+203
+00:07:24,240 --> 00:07:27,680
+suit alleged that the school board had
+
+204
+00:07:25,759 --> 00:07:29,680
+indiscriminately remotely activated what
+
+205
+00:07:27,680 --> 00:07:32,240
+amounted to hidden cameras in students
+
+206
+00:07:29,680 --> 00:07:33,759
+homes without their consent. Blake may
+
+207
+00:07:32,240 --> 00:07:36,240
+have been the first case to spark this
+
+208
+00:07:33,759 --> 00:07:37,759
+fire, but soon enough it would burn much
+
+209
+00:07:36,240 --> 00:07:40,319
+brighter than anyone had ever
+
+210
+00:07:37,759 --> 00:07:42,080
+anticipated. For one thing, it wasn't
+
+211
+00:07:40,319 --> 00:07:44,479
+just a single photo that Matsco had
+
+212
+00:07:42,080 --> 00:07:46,560
+captured of Blake. She also had pictures
+
+213
+00:07:44,479 --> 00:07:48,560
+of him sleeping and others that we
+
+214
+00:07:46,560 --> 00:07:50,479
+probably shouldn't discuss on YouTube.
+
+215
+00:07:48,560 --> 00:07:53,599
+In total, the schoolboard had collected
+
+216
+00:07:50,479 --> 00:07:55,120
+400 hidden camera photos. Soon enough, a
+
+217
+00:07:53,599 --> 00:07:57,680
+second student would file a similar
+
+218
+00:07:55,120 --> 00:08:00,720
+lawsuit against the school district, Jol
+
+219
+00:07:57,680 --> 00:08:02,560
+Hassan. I'll admit this one is quite a
+
+220
+00:08:00,720 --> 00:08:04,479
+bit more disturbing.
+
+221
+00:08:02,560 --> 00:08:06,479
+Matskco been spying on Blake to find
+
+222
+00:08:04,479 --> 00:08:08,160
+some reason to get him in trouble, but
+
+223
+00:08:06,479 --> 00:08:10,000
+internal school emails revealed that
+
+224
+00:08:08,160 --> 00:08:12,000
+multiple district employees have been
+
+225
+00:08:10,000 --> 00:08:14,160
+taking photos with Jalil's webcam for
+
+226
+00:08:12,000 --> 00:08:15,840
+entertainment purposes, with one
+
+227
+00:08:14,160 --> 00:08:18,960
+employee describing the students home
+
+228
+00:08:15,840 --> 00:08:21,440
+life as a soap opera. Another employee
+
+229
+00:08:18,960 --> 00:08:24,240
+would respond to that, stating, quote,
+
+230
+00:08:21,440 --> 00:08:25,599
+>> "I know. I love it."
+
+231
+00:08:24,240 --> 00:08:27,280
+The school board would state that they
+
+232
+00:08:25,599 --> 00:08:29,919
+had only remotely activated student
+
+233
+00:08:27,280 --> 00:08:32,240
+webcams a total of 42 times over 14
+
+234
+00:08:29,919 --> 00:08:33,919
+months, but that figure would soon grow
+
+235
+00:08:32,240 --> 00:08:36,479
+astronomically.
+
+236
+00:08:33,919 --> 00:08:38,240
+By April 2010, just 2 months after
+
+237
+00:08:36,479 --> 00:08:40,479
+Blake's parents initially filed their
+
+238
+00:08:38,240 --> 00:08:43,279
+lawsuit, the schoolboard would admit to
+
+239
+00:08:40,479 --> 00:08:46,160
+taking a total of 30,000 hidden camera
+
+240
+00:08:43,279 --> 00:08:47,760
+photos over the previous 2 years. With
+
+241
+00:08:46,160 --> 00:08:49,440
+only two members of staff having the
+
+242
+00:08:47,760 --> 00:08:51,040
+administrative power to activate Theft
+
+243
+00:08:49,440 --> 00:08:53,200
+Track at all, the buck would ultimately
+
+244
+00:08:51,040 --> 00:08:54,800
+stop with them. and Mike Perix and Carol
+
+245
+00:08:53,200 --> 00:08:57,040
+Cafaro would both be placed on
+
+246
+00:08:54,800 --> 00:09:00,000
+administrative leave while the FBI began
+
+247
+00:08:57,040 --> 00:09:01,440
+a criminal investigation. Carol, the IS
+
+248
+00:09:00,000 --> 00:09:03,279
+coordinator, would invoke her fifth
+
+249
+00:09:01,440 --> 00:09:05,040
+amendment right and refuse to answer
+
+250
+00:09:03,279 --> 00:09:07,920
+questions during her deposition,
+
+251
+00:09:05,040 --> 00:09:09,920
+something her lawyer would admit, quote,
+
+252
+00:09:07,920 --> 00:09:11,760
+>> looked bad.
+
+253
+00:09:09,920 --> 00:09:14,320
+>> In a subsequent court filing, the same
+
+254
+00:09:11,760 --> 00:09:16,959
+lawyer would argue that Blake had quote
+
+255
+00:09:14,320 --> 00:09:18,560
+no legitimate expectation of privacy.
+
+256
+00:09:16,959 --> 00:09:20,399
+They alleged that the student had failed
+
+257
+00:09:18,560 --> 00:09:22,160
+to pay an insurance fee on his laptop
+
+258
+00:09:20,399 --> 00:09:24,959
+and had a history of damaging school
+
+259
+00:09:22,160 --> 00:09:26,800
+property. In October of that year, the
+
+260
+00:09:24,959 --> 00:09:29,360
+school board would ultimately agree to a
+
+261
+00:09:26,800 --> 00:09:31,760
+$610,000 settlement for both Blake and
+
+262
+00:09:29,360 --> 00:09:33,200
+Jul's cases. A federal judge would order
+
+263
+00:09:31,760 --> 00:09:35,440
+the school board to halt all remote
+
+264
+00:09:33,200 --> 00:09:37,279
+webcam monitoring. The FBI, however,
+
+265
+00:09:35,440 --> 00:09:38,880
+would not file any criminal charges,
+
+266
+00:09:37,279 --> 00:09:40,640
+stating there wasn't any evidence that
+
+267
+00:09:38,880 --> 00:09:42,560
+could establish a criminal intent beyond
+
+268
+00:09:40,640 --> 00:09:44,399
+a reasonable doubt. A ruling that the
+
+269
+00:09:42,560 --> 00:09:46,480
+school board was reportedly very pleased
+
+270
+00:09:44,399 --> 00:09:48,240
+with. Regardless of the outcome, this
+
+271
+00:09:46,480 --> 00:09:49,920
+whole debacle proved to be a cautionary
+
+272
+00:09:48,240 --> 00:09:52,160
+tale for the wider public about the
+
+273
+00:09:49,920 --> 00:09:53,600
+nature of school laptops. Dystopian
+
+274
+00:09:52,160 --> 00:09:55,200
+invasions of privacy by state
+
+275
+00:09:53,600 --> 00:09:56,720
+institutions isn't really what people
+
+276
+00:09:55,200 --> 00:09:59,120
+are likely expecting when it comes to
+
+277
+00:09:56,720 --> 00:10:00,640
+children's academic devices, but it does
+
+278
+00:09:59,120 --> 00:10:02,160
+make sense when you think about it. A
+
+279
+00:10:00,640 --> 00:10:04,399
+school laptop isn't very different from
+
+280
+00:10:02,160 --> 00:10:06,320
+a work laptop. I'm sure anybody watching
+
+281
+00:10:04,399 --> 00:10:08,000
+this video who has a work laptop fully
+
+282
+00:10:06,320 --> 00:10:10,399
+expects it to be chalk full of tracking
+
+283
+00:10:08,000 --> 00:10:12,320
+software of all kinds. Maybe not secret
+
+284
+00:10:10,399 --> 00:10:14,000
+webcam recording software, but then
+
+285
+00:10:12,320 --> 00:10:15,519
+again, I'm sure many of you put a little
+
+286
+00:10:14,000 --> 00:10:17,519
+sticker over your webcam when you're not
+
+287
+00:10:15,519 --> 00:10:19,360
+using it. When I had a work laptop, I
+
+288
+00:10:17,519 --> 00:10:20,959
+didn't use it for anything personal. I
+
+289
+00:10:19,360 --> 00:10:22,800
+was aware of the nature of IT device
+
+290
+00:10:20,959 --> 00:10:24,480
+management. I knew that if I had some
+
+291
+00:10:22,800 --> 00:10:26,160
+problem with my computer, an IT
+
+292
+00:10:24,480 --> 00:10:28,480
+technician could easily remote desktop
+
+293
+00:10:26,160 --> 00:10:30,160
+into it without my permission. Because I
+
+294
+00:10:28,480 --> 00:10:32,320
+was aware, I could mitigate the privacy
+
+295
+00:10:30,160 --> 00:10:33,600
+risk a work computer could pose. But how
+
+296
+00:10:32,320 --> 00:10:35,440
+many high school students do you think
+
+297
+00:10:33,600 --> 00:10:36,880
+have that sort of knowledge? Or middle
+
+298
+00:10:35,440 --> 00:10:38,480
+school students, or primary school
+
+299
+00:10:36,880 --> 00:10:40,640
+students, for that matter? I certainly
+
+300
+00:10:38,480 --> 00:10:42,320
+didn't when I was younger. Moreover,
+
+301
+00:10:40,640 --> 00:10:43,839
+most school employees just kind of
+
+302
+00:10:42,320 --> 00:10:45,600
+expect students to treat their devices
+
+303
+00:10:43,839 --> 00:10:47,200
+horribly, and they likely see it as
+
+304
+00:10:45,600 --> 00:10:49,040
+within their best interest to track as
+
+305
+00:10:47,200 --> 00:10:50,640
+much data as they can in the event a
+
+306
+00:10:49,040 --> 00:10:52,399
+student decides to shortcircuit their
+
+307
+00:10:50,640 --> 00:10:54,240
+Chromebook for fun or something. That
+
+308
+00:10:52,399 --> 00:10:56,000
+was an actual Tik Tok trend, by the way.
+
+309
+00:10:54,240 --> 00:10:57,680
+Let's be clear, though. School laptops
+
+310
+00:10:56,000 --> 00:11:00,000
+are not work computers, and students
+
+311
+00:10:57,680 --> 00:11:01,920
+aren't employees. Schools also aren't
+
+312
+00:11:00,000 --> 00:11:03,519
+employers. They're state institutions.
+
+313
+00:11:01,920 --> 00:11:04,959
+And the idea of government employees
+
+314
+00:11:03,519 --> 00:11:06,880
+spying on children in their homes
+
+315
+00:11:04,959 --> 00:11:08,399
+without parental consent is something
+
+316
+00:11:06,880 --> 00:11:10,640
+that's going to sound horrible no matter
+
+317
+00:11:08,399 --> 00:11:12,720
+how you spin it. And unfortunately,
+
+318
+00:11:10,640 --> 00:11:15,040
+Lower Marian was far from the end of the
+
+319
+00:11:12,720 --> 00:11:16,800
+story.
+
+320
+00:11:15,040 --> 00:11:18,399
+The incident revolving around the lower
+
+321
+00:11:16,800 --> 00:11:21,040
+Maran school board would go on to be
+
+322
+00:11:18,399 --> 00:11:22,560
+known to the public as webcam gate and
+
+323
+00:11:21,040 --> 00:11:24,480
+it would garner a massive amount of
+
+324
+00:11:22,560 --> 00:11:26,399
+attention leading to several other
+
+325
+00:11:24,480 --> 00:11:27,920
+school boards suns setting their own IT
+
+326
+00:11:26,399 --> 00:11:29,839
+security solutions that allowed
+
+327
+00:11:27,920 --> 00:11:31,760
+employees to activate student webcams
+
+328
+00:11:29,839 --> 00:11:34,399
+before they too faced class action
+
+329
+00:11:31,760 --> 00:11:36,000
+lawsuits. You have to remember though
+
+330
+00:11:34,399 --> 00:11:38,959
+this is still the early days of school
+
+331
+00:11:36,000 --> 00:11:40,959
+laptop programs. As the 2010s rolled on,
+
+332
+00:11:38,959 --> 00:11:42,880
+onetoone school computer programs would
+
+333
+00:11:40,959 --> 00:11:44,560
+start to become ever more common,
+
+334
+00:11:42,880 --> 00:11:47,360
+especially with the introduction of a
+
+335
+00:11:44,560 --> 00:11:49,360
+particular category of lowcost laptop,
+
+336
+00:11:47,360 --> 00:11:51,440
+the Chromebook.
+
+337
+00:11:49,360 --> 00:11:53,040
+If you were born in the 2000s, there's a
+
+338
+00:11:51,440 --> 00:11:55,120
+good chance you were given a Chromebook
+
+339
+00:11:53,040 --> 00:11:57,440
+at some point by your school. These
+
+340
+00:11:55,120 --> 00:11:59,760
+devices run something called Chrome OS,
+
+341
+00:11:57,440 --> 00:12:01,760
+a sandboxed Linux-based operating system
+
+342
+00:11:59,760 --> 00:12:04,240
+that's mostly designed to run Google web
+
+343
+00:12:01,760 --> 00:12:06,000
+apps. The locked down and inflexible
+
+344
+00:12:04,240 --> 00:12:07,839
+nature of these devices combined with
+
+345
+00:12:06,000 --> 00:12:09,519
+their low cost made them a natural
+
+346
+00:12:07,839 --> 00:12:10,959
+choice for school boards that wanted to
+
+347
+00:12:09,519 --> 00:12:12,800
+try their hand at assigning their
+
+348
+00:12:10,959 --> 00:12:14,720
+students a permanent school device that
+
+349
+00:12:12,800 --> 00:12:16,079
+they could take home with them. And
+
+350
+00:12:14,720 --> 00:12:18,000
+let's not lose sight of the bigger
+
+351
+00:12:16,079 --> 00:12:19,760
+picture. These programs have helped many
+
+352
+00:12:18,000 --> 00:12:21,600
+students in rural and low-income areas
+
+353
+00:12:19,760 --> 00:12:23,440
+who wouldn't otherwise have access to a
+
+354
+00:12:21,600 --> 00:12:24,959
+computer to use for their schoolwork.
+
+355
+00:12:23,440 --> 00:12:26,959
+The whole idea of giving students
+
+356
+00:12:24,959 --> 00:12:29,600
+personal laptops was to make education
+
+357
+00:12:26,959 --> 00:12:31,360
+more equitable. But in execution, it
+
+358
+00:12:29,600 --> 00:12:34,320
+hasn't exactly maintained the sense of
+
+359
+00:12:31,360 --> 00:12:36,800
+idealism. The consequences of 1:1
+
+360
+00:12:34,320 --> 00:12:38,720
+Chromebook programs has been immense.
+
+361
+00:12:36,800 --> 00:12:40,639
+The sandbox nature of the software has
+
+362
+00:12:38,720 --> 00:12:42,320
+led to younger people not learning
+
+363
+00:12:40,639 --> 00:12:44,320
+essential computer skills like file
+
+364
+00:12:42,320 --> 00:12:45,920
+management. And you can find countless
+
+365
+00:12:44,320 --> 00:12:47,600
+teachers on the internet commiserating
+
+366
+00:12:45,920 --> 00:12:49,279
+about students that lack the patience
+
+367
+00:12:47,600 --> 00:12:50,639
+and intuition to perform basic
+
+368
+00:12:49,279 --> 00:12:53,440
+troubleshooting when they run into
+
+369
+00:12:50,639 --> 00:12:55,040
+software problems. Of course, we can't
+
+370
+00:12:53,440 --> 00:12:56,800
+forget about the horrible fates that
+
+371
+00:12:55,040 --> 00:12:59,200
+often befall these cheap academic
+
+372
+00:12:56,800 --> 00:13:01,040
+devices. Go on the tech support core
+
+373
+00:12:59,200 --> 00:13:02,720
+subreddit and you can see the insane
+
+374
+00:13:01,040 --> 00:13:04,560
+conditions some of these Chromebooks get
+
+375
+00:13:02,720 --> 00:13:06,959
+returned in, with some of them even
+
+376
+00:13:04,560 --> 00:13:08,720
+being completely obliterated.
+
+377
+00:13:06,959 --> 00:13:11,040
+Look, everybody knows that students
+
+378
+00:13:08,720 --> 00:13:13,279
+treat Chromebooks badly. What I don't
+
+379
+00:13:11,040 --> 00:13:15,040
+see talked about nearly as much is the
+
+380
+00:13:13,279 --> 00:13:17,200
+amount of surveillance schools have on
+
+381
+00:13:15,040 --> 00:13:18,639
+these devices and the students who use
+
+382
+00:13:17,200 --> 00:13:20,399
+them.
+
+383
+00:13:18,639 --> 00:13:22,079
+Webcam monitoring may have become a
+
+384
+00:13:20,399 --> 00:13:23,920
+taboo, but schools definitely didn't
+
+385
+00:13:22,079 --> 00:13:25,600
+stop finding other ways to surveil what
+
+386
+00:13:23,920 --> 00:13:28,240
+students were doing on their laptops and
+
+387
+00:13:25,600 --> 00:13:29,519
+Chromebooks. There's an entire sector of
+
+388
+00:13:28,240 --> 00:13:31,360
+school safety companies that
+
+389
+00:13:29,519 --> 00:13:33,200
+schoolboards contract to scan student
+
+390
+00:13:31,360 --> 00:13:35,040
+devices for any sort of alarming
+
+391
+00:13:33,200 --> 00:13:38,000
+communications, supposedly in the name
+
+392
+00:13:35,040 --> 00:13:40,160
+of helping address kids. Gaggle is one
+
+393
+00:13:38,000 --> 00:13:42,079
+of these companies. They started off by
+
+394
+00:13:40,160 --> 00:13:43,519
+selling a service that can scan students
+
+395
+00:13:42,079 --> 00:13:45,680
+emails and documents for certain
+
+396
+00:13:43,519 --> 00:13:47,440
+keywords related to bullying and drugs.
+
+397
+00:13:45,680 --> 00:13:49,440
+But as the years rolled by, and
+
+398
+00:13:47,440 --> 00:13:51,760
+especially as AI found its way into
+
+399
+00:13:49,440 --> 00:13:53,279
+every tech product, Gaggle 2 would make
+
+400
+00:13:51,760 --> 00:13:55,760
+use of this new technology to
+
+401
+00:13:53,279 --> 00:13:57,920
+supercharge their surveillance. By the
+
+402
+00:13:55,760 --> 00:14:00,639
+mid2020s, they were keeping tabs on
+
+403
+00:13:57,920 --> 00:14:02,800
+almost 6 million students across 1500
+
+404
+00:14:00,639 --> 00:14:04,639
+school districts using techniques that
+
+405
+00:14:02,800 --> 00:14:06,240
+would fit perfectly in the world of
+
+406
+00:14:04,639 --> 00:14:08,079
+1984.
+
+407
+00:14:06,240 --> 00:14:09,279
+Basically, every piece of text that pops
+
+408
+00:14:08,079 --> 00:14:10,959
+up on the screen of a student's
+
+409
+00:14:09,279 --> 00:14:13,199
+Chromebook gets scanned for flagged
+
+410
+00:14:10,959 --> 00:14:15,279
+keywords and an AI system will perform a
+
+411
+00:14:13,199 --> 00:14:17,120
+sentiment analysis to flag any phrases
+
+412
+00:14:15,279 --> 00:14:19,680
+that are communicating flagged ideas or
+
+413
+00:14:17,120 --> 00:14:22,240
+information. Again, this is all done in
+
+414
+00:14:19,680 --> 00:14:24,000
+the name of student safety. Everything
+
+415
+00:14:22,240 --> 00:14:25,920
+gets logged in real time without the
+
+416
+00:14:24,000 --> 00:14:28,000
+students knowledge. The software even
+
+417
+00:14:25,920 --> 00:14:29,600
+incorporates ODR to copy text from
+
+418
+00:14:28,000 --> 00:14:31,360
+images and videos that appear on the
+
+419
+00:14:29,600 --> 00:14:33,760
+screen. There is no getting around the
+
+420
+00:14:31,360 --> 00:14:35,839
+surveillance. If anything gets flagged
+
+421
+00:14:33,760 --> 00:14:37,680
+by the AI, it then gets passed off to a
+
+422
+00:14:35,839 --> 00:14:39,360
+human employee for review who are
+
+423
+00:14:37,680 --> 00:14:41,199
+supposed to assess the context of these
+
+424
+00:14:39,360 --> 00:14:43,120
+reports and toss out false positives
+
+425
+00:14:41,199 --> 00:14:45,760
+such as runchy song lyrics and passages
+
+426
+00:14:43,120 --> 00:14:47,600
+from literature. If the employee does
+
+427
+00:14:45,760 --> 00:14:49,360
+approve a report, however, it then gets
+
+428
+00:14:47,600 --> 00:14:51,519
+passed off to school officials and
+
+429
+00:14:49,360 --> 00:14:53,040
+sometimes they even go directly to law
+
+430
+00:14:51,519 --> 00:14:55,519
+enforcement.
+
+431
+00:14:53,040 --> 00:14:57,360
+In 2022, the Center for Democracy and
+
+432
+00:14:55,519 --> 00:14:59,120
+Technology would run a national survey
+
+433
+00:14:57,360 --> 00:15:00,560
+gathering data from teachers, parents,
+
+434
+00:14:59,120 --> 00:15:02,320
+and students about these surveillance
+
+435
+00:15:00,560 --> 00:15:04,000
+systems. And the results were
+
+436
+00:15:02,320 --> 00:15:05,600
+disturbing.
+
+437
+00:15:04,000 --> 00:15:07,040
+While these companies and schoolboards
+
+438
+00:15:05,600 --> 00:15:08,720
+claimed to keep tabs on their students
+
+439
+00:15:07,040 --> 00:15:11,440
+digital activities in the name of their
+
+440
+00:15:08,720 --> 00:15:13,120
+safety, the survey found that 78% of
+
+441
+00:15:11,440 --> 00:15:15,279
+teachers said students were mostly
+
+442
+00:15:13,120 --> 00:15:16,880
+flagged for disciplinary violations,
+
+443
+00:15:15,279 --> 00:15:20,079
+just like Blake Robbins was all the way
+
+444
+00:15:16,880 --> 00:15:21,760
+back in 2010. Only 54% of teachers said
+
+445
+00:15:20,079 --> 00:15:22,959
+that they had seen this monitoring lead
+
+446
+00:15:21,760 --> 00:15:26,079
+to students getting referred to
+
+447
+00:15:22,959 --> 00:15:27,680
+counseling. Even worse, Giggle's keyword
+
+448
+00:15:26,079 --> 00:15:30,240
+list had historically contained the
+
+449
+00:15:27,680 --> 00:15:32,480
+terms gay and lesbian, leading to cases
+
+450
+00:15:30,240 --> 00:15:34,160
+of still closeted students getting outed
+
+451
+00:15:32,480 --> 00:15:35,440
+because school employees got a glimpse
+
+452
+00:15:34,160 --> 00:15:37,760
+into their private life through their
+
+453
+00:15:35,440 --> 00:15:39,440
+Chromebook. 13% of students who
+
+454
+00:15:37,760 --> 00:15:41,680
+responded to the survey said that either
+
+455
+00:15:39,440 --> 00:15:44,399
+they or someone they knew were outed as
+
+456
+00:15:41,680 --> 00:15:47,040
+a result of Chromebook surveillance. In
+
+457
+00:15:44,399 --> 00:15:48,480
+2023, a Tennessee eighth grader made an
+
+458
+00:15:47,040 --> 00:15:50,079
+offensive joke while chatting online
+
+459
+00:15:48,480 --> 00:15:52,639
+with her classmates in a private group
+
+460
+00:15:50,079 --> 00:15:54,720
+chat on her Chromebook. GG flight the
+
+461
+00:15:52,639 --> 00:15:56,480
+interaction and within a couple hours
+
+462
+00:15:54,720 --> 00:15:59,040
+police arrived at her school and put her
+
+463
+00:15:56,480 --> 00:16:00,959
+under arrest. She was interrogated,
+
+464
+00:15:59,040 --> 00:16:03,199
+subject to a humiliating search and
+
+465
+00:16:00,959 --> 00:16:04,880
+spent the night in a jail cell. She'd
+
+466
+00:16:03,199 --> 00:16:06,639
+end up getting sentenced to 8 weeks
+
+467
+00:16:04,880 --> 00:16:08,160
+house arrest with her family maintaining
+
+468
+00:16:06,639 --> 00:16:09,920
+that the remarks that triggered this
+
+469
+00:16:08,160 --> 00:16:12,160
+whole thing were simply a joke made in
+
+470
+00:16:09,920 --> 00:16:14,320
+poor taste by a child only intended to
+
+471
+00:16:12,160 --> 00:16:16,720
+be shared with a couple of her friends.
+
+472
+00:16:14,320 --> 00:16:18,800
+A 2025 class action lawsuit by students
+
+473
+00:16:16,720 --> 00:16:21,199
+in Lawrence, Kansas, characterized a
+
+474
+00:16:18,800 --> 00:16:22,959
+service offered by Gaggle as a quote
+
+475
+00:16:21,199 --> 00:16:24,880
+sweeping suspicionless monitoring
+
+476
+00:16:22,959 --> 00:16:27,120
+program. Something that violated their
+
+477
+00:16:24,880 --> 00:16:28,720
+First and Fourth Amendment rights. Look,
+
+478
+00:16:27,120 --> 00:16:30,880
+I'm sure you can tell by my tone in this
+
+479
+00:16:28,720 --> 00:16:32,000
+video exactly what I think of all this.
+
+480
+00:16:30,880 --> 00:16:33,360
+I'm not going to tell you what you
+
+481
+00:16:32,000 --> 00:16:35,199
+should think. I'm sure these companies
+
+482
+00:16:33,360 --> 00:16:36,639
+have helped some students as well.
+
+483
+00:16:35,199 --> 00:16:38,240
+Regardless though, you can't argue
+
+484
+00:16:36,639 --> 00:16:39,759
+against the importance for parents and
+
+485
+00:16:38,240 --> 00:16:41,920
+students to be aware of the nature of
+
+486
+00:16:39,759 --> 00:16:43,839
+modern school computers. For students
+
+487
+00:16:41,920 --> 00:16:45,920
+watching this, the Chromebook or iPad or
+
+488
+00:16:43,839 --> 00:16:48,079
+laptop might be in your possession, but
+
+489
+00:16:45,920 --> 00:16:50,079
+make no mistake, it is very much not
+
+490
+00:16:48,079 --> 00:16:52,000
+yours. If you wouldn't say it out loud
+
+491
+00:16:50,079 --> 00:16:53,759
+directly to your teacher or principal,
+
+492
+00:16:52,000 --> 00:16:56,000
+you absolutely should not write it in
+
+493
+00:16:53,759 --> 00:16:57,600
+your Chromebook. It's unfortunate, but
+
+494
+00:16:56,000 --> 00:16:59,279
+you have to have the expectation that
+
+495
+00:16:57,600 --> 00:17:01,040
+everything going into these machines is
+
+496
+00:16:59,279 --> 00:17:02,639
+being read by somebody. For parents
+
+497
+00:17:01,040 --> 00:17:04,079
+watching, if your child has some sort of
+
+498
+00:17:02,639 --> 00:17:05,679
+school device, have a discussion with
+
+499
+00:17:04,079 --> 00:17:07,520
+them about it. It's important for them
+
+500
+00:17:05,679 --> 00:17:08,959
+to make the distinction between a truly
+
+501
+00:17:07,520 --> 00:17:10,720
+personal device that they fully own
+
+502
+00:17:08,959 --> 00:17:12,400
+themselves and one that's merely been
+
+503
+00:17:10,720 --> 00:17:14,400
+loan to them by a private company or an
+
+504
+00:17:12,400 --> 00:17:16,079
+institution. They might not always have
+
+505
+00:17:14,400 --> 00:17:17,360
+your child's best interest at heart.
+
+506
+00:17:16,079 --> 00:17:19,520
+That was certainly the case for Blake
+
+507
+00:17:17,360 --> 00:17:20,720
+Robins and Julie Hassan. I was lucky
+
+508
+00:17:19,520 --> 00:17:22,160
+enough to grow up during a time when
+
+509
+00:17:20,720 --> 00:17:24,400
+this just wasn't really much of a
+
+510
+00:17:22,160 --> 00:17:26,079
+problem. Though maybe if I was born in a
+
+511
+00:17:24,400 --> 00:17:28,000
+certain wealthy Philadelphia suburb,
+
+512
+00:17:26,079 --> 00:17:29,120
+that might not have been the case. Guys,
+
+513
+00:17:28,000 --> 00:17:30,559
+thank you so much for making it to the
+
+514
+00:17:29,120 --> 00:17:32,480
+end of this video. Subscribe if you want
+
+515
+00:17:30,559 --> 00:17:33,919
+to watch more content like this. And uh
+
+516
+00:17:32,480 --> 00:17:35,520
+follow me on Instagram if you want to
+
+517
+00:17:33,919 --> 00:17:37,280
+keep up with me off YouTube. I've been
+
+518
+00:17:35,520 --> 00:17:41,167
+trying to be more active there. And of
+
+519
+00:17:37,280 --> 00:17:41,167
+course, have a good night. [music]
+
+520
+00:17:45,042 --> 00:17:47,062
+[music]
+
+521
+00:17:53,557 --> 00:17:55,577
+[music]
+
+522
+00:18:00,762 --> 00:18:02,782
+>> [music]
+

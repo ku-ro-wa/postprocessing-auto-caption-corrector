@@ -1,0 +1,651 @@
+[
+  {
+    "source": "how-dark-mode-killed-good-design.auto.srt",
+    "span": "tah",
+    "verdict": "should-flag",
+    "candidate": "Taha",
+    "kind": "real-word",
+    "entity": true
+  },
+  {
+    "source": "how-dark-mode-killed-good-design.auto.srt",
+    "span": "want",
+    "verdict": "should-flag",
+    "candidate": "don't want",
+    "context": "I want to think",
+    "kind": "real-word"
+  },
+  {
+    "source": "how-dark-mode-killed-good-design.auto.srt",
+    "span": "Zed",
+    "verdict": "should-flag",
+    "candidate": "Z",
+    "kind": "format"
+  },
+  {
+    "source": "how-dark-mode-killed-good-design.auto.srt",
+    "span": "hosting or",
+    "verdict": "should-flag",
+    "candidate": "Hostinger",
+    "kind": "real-word",
+    "entity": true
+  },
+  {
+    "source": "how-dark-mode-killed-good-design.auto.srt",
+    "span": "dup",
+    "verdict": "should-flag",
+    "candidate": "dupe",
+    "kind": "real-word"
+  },
+  {
+    "source": "how-dark-mode-killed-good-design.auto.srt",
+    "span": "topnotch",
+    "verdict": "should-flag",
+    "candidate": "top-notch",
+    "kind": "format"
+  },
+  {
+    "source": "how-dark-mode-killed-good-design.auto.srt",
+    "span": "W",
+    "verdict": "should-flag",
+    "candidate": "woah",
+    "kind": "real-word"
+  },
+  {
+    "source": "how-dark-mode-killed-good-design.auto.srt",
+    "span": "slans inprogress",
+    "verdict": "should-flag",
+    "candidate": "/answerinprogress",
+    "kind": "non-word",
+    "entity": true
+  },
+  {
+    "source": "how-dark-mode-killed-good-design.auto.srt",
+    "span": "answering progress",
+    "verdict": "should-flag",
+    "candidate": "ANSWERINPROGRESS",
+    "kind": "real-word",
+    "entity": true
+  },
+  {
+    "source": "how-dark-mode-killed-good-design.auto.srt",
+    "span": "you H",
+    "verdict": "should-flag",
+    "candidate": "ya, hm",
+    "context": "for you H",
+    "kind": "real-word"
+  },
+  {
+    "source": "how-dark-mode-killed-good-design.auto.srt",
+    "span": "and",
+    "verdict": "should-flag",
+    "candidate": "in",
+    "context": "code editor and light",
+    "kind": "real-word"
+  },
+  {
+    "source": "how-dark-mode-killed-good-design.auto.srt",
+    "span": "artist",
+    "verdict": "should-flag",
+    "candidate": "artists",
+    "context": "artist and designers",
+    "kind": "real-word"
+  },
+  {
+    "source": "how-dark-mode-killed-good-design.auto.srt",
+    "span": "the'80s",
+    "verdict": "should-flag",
+    "candidate": "the 80s",
+    "kind": "format"
+  },
+  {
+    "source": "how-dark-mode-killed-good-design.auto.srt",
+    "span": "gooey",
+    "verdict": "should-flag",
+    "candidate": "GUI",
+    "kind": "real-word"
+  },
+  {
+    "source": "how-dark-mode-killed-good-design.auto.srt",
+    "span": "bridge",
+    "verdict": "should-flag",
+    "candidate": "bridged",
+    "kind": "real-word"
+  },
+  {
+    "source": "how-dark-mode-killed-good-design.auto.srt",
+    "span": "skew morphic",
+    "verdict": "should-flag",
+    "candidate": "skeuomorphic",
+    "kind": "real-word"
+  },
+  {
+    "source": "how-dark-mode-killed-good-design.auto.srt",
+    "span": "skoric",
+    "verdict": "should-flag",
+    "candidate": "skeuomorphic",
+    "kind": "non-word"
+  },
+  {
+    "source": "how-dark-mode-killed-good-design.auto.srt",
+    "span": "hair AG",
+    "verdict": "should-flag",
+    "candidate": "heritage",
+    "context": "terminal hair AG",
+    "kind": "real-word"
+  },
+  {
+    "source": "perfume-101.auto.srt",
+    "span": "perfumer ISM",
+    "verdict": "should-flag",
+    "candidate": "perfumerism",
+    "kind": "format",
+    "entity": true
+  },
+  {
+    "source": "perfume-101.auto.srt",
+    "span": "Isco",
+    "verdict": "should-flag",
+    "candidate": "ISIPCA",
+    "kind": "real-word",
+    "entity": true
+  },
+  {
+    "source": "perfume-101.auto.srt",
+    "span": "personto",
+    "verdict": "should-flag",
+    "candidate": "person to",
+    "kind": "format"
+  },
+  {
+    "source": "perfume-101.auto.srt",
+    "span": "an",
+    "verdict": "should-flag",
+    "candidate": "and",
+    "context": "go an oil",
+    "kind": "real-word"
+  },
+  {
+    "source": "perfume-101.auto.srt",
+    "span": "seage",
+    "verdict": "should-flag",
+    "candidate": "sillage",
+    "kind": "non-word"
+  },
+  {
+    "source": "perfume-101.auto.srt",
+    "span": "cage",
+    "verdict": "should-flag",
+    "candidate": "sillage",
+    "context": "longevity and cage",
+    "kind": "real-word"
+  },
+  {
+    "source": "perfume-101.auto.srt",
+    "span": "UD",
+    "verdict": "should-flag",
+    "candidate": "Oud",
+    "context": "UD for greatness",
+    "kind": "real-word",
+    "entity": true
+  },
+  {
+    "source": "perfume-101.auto.srt",
+    "span": "tiot",
+    "verdict": "should-flag",
+    "candidate": "Tihota",
+    "kind": "non-word",
+    "entity": true
+  },
+  {
+    "source": "perfume-101.auto.srt",
+    "span": "chot",
+    "verdict": "should-flag",
+    "candidate": "Tihota",
+    "kind": "real-word",
+    "entity": true
+  },
+  {
+    "source": "perfume-101.auto.srt",
+    "span": "PID",
+    "verdict": "should-flag",
+    "candidate": "pyramid",
+    "context": "perfume PID",
+    "kind": "real-word"
+  },
+  {
+    "source": "perfume-101.auto.srt",
+    "span": "Bas",
+    "verdict": "should-flag",
+    "candidate": "base",
+    "kind": "real-word"
+  },
+  {
+    "source": "perfume-101.auto.srt",
+    "span": "bergamont",
+    "verdict": "should-flag",
+    "candidate": "bergamot",
+    "kind": "non-word"
+  },
+  {
+    "source": "perfume-101.auto.srt",
+    "span": "pachuli",
+    "verdict": "should-flag",
+    "candidate": "patchouli",
+    "kind": "non-word"
+  },
+  {
+    "source": "perfume-101.auto.srt",
+    "span": "solle",
+    "verdict": "should-flag",
+    "candidate": "Sole",
+    "kind": "non-word",
+    "entity": true
+  },
+  {
+    "source": "perfume-101.auto.srt",
+    "span": "bulgary",
+    "verdict": "should-flag",
+    "candidate": "Bvlgari",
+    "kind": "non-word",
+    "entity": true
+  },
+  {
+    "source": "perfume-101.auto.srt",
+    "span": "naroli",
+    "verdict": "should-flag",
+    "candidate": "neroli",
+    "kind": "non-word"
+  },
+  {
+    "source": "perfume-101.auto.srt",
+    "span": "pedig",
+    "verdict": "should-flag",
+    "candidate": "petitgrain",
+    "kind": "non-word"
+  },
+  {
+    "source": "perfume-101.auto.srt",
+    "span": "sandal water",
+    "verdict": "should-flag",
+    "candidate": "sandalwood",
+    "kind": "real-word"
+  },
+  {
+    "source": "perfume-101.auto.srt",
+    "span": "extr of perfum",
+    "verdict": "should-flag",
+    "candidate": "extrait de parfum",
+    "kind": "non-word"
+  },
+  {
+    "source": "perfume-101.auto.srt",
+    "span": "wrist",
+    "verdict": "should-flag",
+    "candidate": "wrists",
+    "context": "rubbing your wrist",
+    "kind": "real-word"
+  },
+  {
+    "source": "perfume-101.auto.srt",
+    "span": "in",
+    "verdict": "should-flag",
+    "context": "stain in your",
+    "kind": "real-word"
+  },
+  {
+    "source": "perfume-101.auto.srt",
+    "span": "intered",
+    "verdict": "should-flag",
+    "candidate": "interesting",
+    "kind": "non-word"
+  },
+  {
+    "source": "perfume-101.auto.srt",
+    "span": "mugir",
+    "verdict": "should-flag",
+    "candidate": "Mugler",
+    "kind": "non-word",
+    "entity": true
+  },
+  {
+    "source": "perfume-101.auto.srt",
+    "span": "superdos",
+    "verdict": "should-flag",
+    "candidate": "super-dosed",
+    "kind": "non-word"
+  },
+  {
+    "source": "perfume-101.auto.srt",
+    "span": "allaround",
+    "verdict": "should-flag",
+    "candidate": "all around",
+    "kind": "format"
+  },
+  {
+    "source": "perfume-101.auto.srt",
+    "span": "dead cool",
+    "verdict": "should-flag",
+    "candidate": "DedCool",
+    "kind": "real-word",
+    "entity": true
+  },
+  {
+    "source": "perfume-101.auto.srt",
+    "span": "sish Naro",
+    "verdict": "should-flag",
+    "candidate": "Sol de Janeiro",
+    "kind": "non-word",
+    "entity": true
+  },
+  {
+    "source": "perfume-101.auto.srt",
+    "span": "nutum",
+    "verdict": "should-flag",
+    "candidate": "Naturium",
+    "kind": "non-word",
+    "entity": true
+  },
+  {
+    "source": "horrors-found-on-school-laptops.auto.srt",
+    "span": "mi",
+    "verdict": "should-flag",
+    "candidate": "miles",
+    "context": "12 mi",
+    "kind": "format"
+  },
+  {
+    "source": "horrors-found-on-school-laptops.auto.srt",
+    "span": "Marian",
+    "verdict": "should-flag",
+    "candidate": "Merion",
+    "kind": "real-word",
+    "entity": true
+  },
+  {
+    "source": "horrors-found-on-school-laptops.auto.srt",
+    "span": "Maran",
+    "verdict": "should-flag",
+    "candidate": "Merion",
+    "kind": "real-word",
+    "entity": true
+  },
+  {
+    "source": "horrors-found-on-school-laptops.auto.srt",
+    "span": "tutor",
+    "verdict": "should-flag",
+    "candidate": "Tudor",
+    "context": "grand tutor",
+    "kind": "real-word"
+  },
+  {
+    "source": "horrors-found-on-school-laptops.auto.srt",
+    "span": "treeine",
+    "verdict": "should-flag",
+    "candidate": "tree line",
+    "kind": "non-word"
+  },
+  {
+    "source": "horrors-found-on-school-laptops.auto.srt",
+    "span": "realworld",
+    "verdict": "should-flag",
+    "candidate": "real world",
+    "kind": "format"
+  },
+  {
+    "source": "horrors-found-on-school-laptops.auto.srt",
+    "span": "you're",
+    "verdict": "should-flag",
+    "candidate": "they're",
+    "context": "once you're at home",
+    "kind": "real-word"
+  },
+  {
+    "source": "horrors-found-on-school-laptops.auto.srt",
+    "span": "well-unded",
+    "verdict": "should-flag",
+    "candidate": "well-funded",
+    "kind": "non-word"
+  },
+  {
+    "source": "horrors-found-on-school-laptops.auto.srt",
+    "span": "Cafiro",
+    "verdict": "should-flag",
+    "candidate": "Cafiero",
+    "kind": "non-word",
+    "entity": true
+  },
+  {
+    "source": "horrors-found-on-school-laptops.auto.srt",
+    "span": "Cafaro",
+    "verdict": "should-flag",
+    "candidate": "Cafiero",
+    "kind": "non-word",
+    "entity": true
+  },
+  {
+    "source": "horrors-found-on-school-laptops.auto.srt",
+    "span": "Pervix",
+    "verdict": "should-flag",
+    "candidate": "Perbix",
+    "kind": "non-word",
+    "entity": true
+  },
+  {
+    "source": "horrors-found-on-school-laptops.auto.srt",
+    "span": "Perix",
+    "verdict": "should-flag",
+    "candidate": "Perbix",
+    "kind": "non-word",
+    "entity": true
+  },
+  {
+    "source": "horrors-found-on-school-laptops.auto.srt",
+    "span": "affforementioned",
+    "verdict": "should-flag",
+    "candidate": "aforementioned",
+    "kind": "non-word"
+  },
+  {
+    "source": "horrors-found-on-school-laptops.auto.srt",
+    "span": "Mike",
+    "verdict": "should-flag",
+    "candidate": "Mike and Ike",
+    "context": "yellow Mike candy",
+    "kind": "real-word",
+    "entity": true
+  },
+  {
+    "source": "horrors-found-on-school-laptops.auto.srt",
+    "span": "refuts",
+    "verdict": "should-flag",
+    "candidate": "refutes",
+    "kind": "non-word"
+  },
+  {
+    "source": "horrors-found-on-school-laptops.auto.srt",
+    "span": "team",
+    "verdict": "should-flag",
+    "candidate": "teen",
+    "context": "and the team",
+    "kind": "real-word"
+  },
+  {
+    "source": "horrors-found-on-school-laptops.auto.srt",
+    "span": "Jol",
+    "verdict": "should-flag",
+    "candidate": "Jaleil",
+    "kind": "real-word",
+    "entity": true
+  },
+  {
+    "source": "horrors-found-on-school-laptops.auto.srt",
+    "span": "Julie",
+    "verdict": "should-flag",
+    "candidate": "Jaleil",
+    "context": "Julie Hassan",
+    "kind": "real-word",
+    "entity": true
+  },
+  {
+    "source": "horrors-found-on-school-laptops.auto.srt",
+    "span": "Jalil's",
+    "verdict": "should-flag",
+    "candidate": "Jaleil's",
+    "kind": "non-word",
+    "entity": true
+  },
+  {
+    "source": "horrors-found-on-school-laptops.auto.srt",
+    "span": "Jul's",
+    "verdict": "should-flag",
+    "candidate": "Jaleil's",
+    "kind": "non-word",
+    "entity": true
+  },
+  {
+    "source": "horrors-found-on-school-laptops.auto.srt",
+    "span": "Matsco",
+    "verdict": "should-flag",
+    "candidate": "Matsko",
+    "kind": "non-word",
+    "entity": true
+  },
+  {
+    "source": "horrors-found-on-school-laptops.auto.srt",
+    "span": "schoolboard",
+    "verdict": "should-flag",
+    "candidate": "school board",
+    "kind": "format"
+  },
+  {
+    "source": "horrors-found-on-school-laptops.auto.srt",
+    "span": "suns setting",
+    "verdict": "should-flag",
+    "candidate": "sunsetting",
+    "kind": "real-word"
+  },
+  {
+    "source": "horrors-found-on-school-laptops.auto.srt",
+    "span": "onetoone",
+    "verdict": "should-flag",
+    "candidate": "one-to-one",
+    "kind": "format"
+  },
+  {
+    "source": "horrors-found-on-school-laptops.auto.srt",
+    "span": "lowcost",
+    "verdict": "should-flag",
+    "candidate": "low cost",
+    "kind": "format"
+  },
+  {
+    "source": "horrors-found-on-school-laptops.auto.srt",
+    "span": "core",
+    "verdict": "should-flag",
+    "candidate": "gore",
+    "context": "tech support core",
+    "kind": "real-word"
+  },
+  {
+    "source": "horrors-found-on-school-laptops.auto.srt",
+    "span": "2",
+    "verdict": "should-flag",
+    "candidate": "too",
+    "context": "Gaggle 2",
+    "kind": "real-word"
+  },
+  {
+    "source": "horrors-found-on-school-laptops.auto.srt",
+    "span": "mid2020s",
+    "verdict": "should-flag",
+    "candidate": "mid-2020s",
+    "kind": "format"
+  },
+  {
+    "source": "horrors-found-on-school-laptops.auto.srt",
+    "span": "runchy",
+    "verdict": "should-flag",
+    "candidate": "raunchy",
+    "kind": "non-word"
+  },
+  {
+    "source": "horrors-found-on-school-laptops.auto.srt",
+    "span": "Giggle's",
+    "verdict": "should-flag",
+    "candidate": "Gaggle's",
+    "kind": "non-word",
+    "entity": true
+  },
+  {
+    "source": "horrors-found-on-school-laptops.auto.srt",
+    "span": "loan",
+    "verdict": "should-flag",
+    "candidate": "loaned",
+    "context": "loan to them",
+    "kind": "real-word"
+  },
+  {
+    "source": "thunder-by-imagine-dragons-should-be-studied.auto.srt",
+    "span": "ac cappella",
+    "verdict": "should-flag",
+    "candidate": "a cappella",
+    "kind": "real-word"
+  },
+  {
+    "source": "thunder-by-imagine-dragons-should-be-studied.auto.srt",
+    "span": "f",
+    "verdict": "should-flag",
+    "context": "just f It",
+    "kind": "real-word"
+  },
+  {
+    "source": "thunder-by-imagine-dragons-should-be-studied.auto.srt",
+    "span": "tepin",
+    "verdict": "should-flag",
+    "candidate": "T-Pain",
+    "kind": "real-word",
+    "entity": true
+  },
+  {
+    "source": "nepo-babies-taking-over-pop.auto.srt",
+    "span": "Left",
+    "verdict": "should-flag",
+    "candidate": "Lefty",
+    "context": "Stella Left",
+    "kind": "real-word",
+    "entity": true
+  },
+  {
+    "source": "nepo-babies-taking-over-pop.auto.srt",
+    "span": "Is this",
+    "verdict": "should-flag",
+    "candidate": "This is",
+    "context": "Is this for Noah",
+    "kind": "real-word"
+  },
+  {
+    "source": "nepo-babies-taking-over-pop.auto.srt",
+    "span": "You know me",
+    "verdict": "should-flag",
+    "candidate": "and only",
+    "context": "You know me, Noah",
+    "kind": "real-word"
+  },
+  {
+    "source": "nepo-babies-taking-over-pop.auto.srt",
+    "span": "with",
+    "verdict": "should-flag",
+    "candidate": "by",
+    "context": "Stick Season with Stella",
+    "kind": "real-word"
+  },
+  {
+    "source": "nepo-babies-taking-over-pop.auto.srt",
+    "span": "Holcomb",
+    "verdict": "should-flag",
+    "candidate": "Holbert",
+    "kind": "real-word",
+    "entity": true
+  }
+]
