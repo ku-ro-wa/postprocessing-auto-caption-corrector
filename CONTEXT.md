@@ -104,6 +104,13 @@ The default LLM pass of both `correct` and the web UI; the older per-flag
 pass, which sends only the Residue, is its opt-out (`--per-flag`, CLI only).
 _Avoid_: LLM detector, LLM scan, rewrite.
 
+**Read-through configuration**:
+The model, prompt and reply format a Read-through runs with, judged and
+frozen as one unit. Comparing models means comparing configurations: each
+model may carry its own prompt adjustments.
+_Avoid_: "model" when the prompt is part of what's meant; A/B test (the
+comparison is offline, on Dev and Held-out sets, not a live traffic split).
+
 **Not-an-error verdict**:
 A correction that declines to change the span — the LLM judged the flag a false
 positive. Surfaced to the reviewer as a pre-declined item they can override,
