@@ -335,6 +335,28 @@ def test_eval_command_refuses_a_bad_read_through_configuration(
     assert made == []  # failed before building a Reader
 
 
+@pytest.mark.parametrize(
+    ("name", "model"),
+    [
+        ("gemini-3.8-flash-v4", "google/gemini-3.8-flash"),
+        ("deepseek-v4-pro-v4", "deepseek/deepseek-v4-pro"),
+        ("qwen3.6-plus-v4", "qwen/qwen3.6-plus"),
+    ],
+)
+def test_eval_command_runs_a_reasoning_model_with_prompt_v4(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch, name: str, model: str
+) -> None:
+    # #28's shortlist runs with reasoning off, which these models only do
+    # when asked; the prompt and reply format stay v4's.
+    result, made = _eval_read_through(tmp_path, monkeypatch, "--config", name)
+    assert result.exit_code == 0, result.output
+    [(config, _)] = made
+    assert config.model_id == model
+    assert config.build_messages is build_messages
+    assert config.parse_reply is parse_reply
+    assert f"system: read-through ({name}: {model})" in result.output
+
+
 def test_eval_command_reports_request_errors_apart_from_failed_chunks(
     tmp_path: Path, monkeypatch: pytest.MonkeyPatch
 ) -> None:

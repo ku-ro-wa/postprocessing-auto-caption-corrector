@@ -593,12 +593,15 @@ def _without_overlaps(
 @dataclass(frozen=True)
 class ReadThroughConfig:
     """A Read-through configuration (CONTEXT.md): the model, prompt and reply
-    format a Read-through runs with, judged and frozen as one unit."""
+    format a Read-through runs with, judged and frozen as one unit.
+    ``request_options`` are extra OpenRouter request fields, e.g. to turn
+    off reasoning a model does by default."""
 
     name: str
     model_id: str
     build_messages: Callable[[ChunkRequest], list[dict]] = build_messages
     parse_reply: Callable[[str, ChunkRequest], list[ChunkVerdict]] = parse_reply
+    request_options: dict[str, object] = field(default_factory=dict)
 
 
 def v4(model_id: str) -> ReadThroughConfig:
@@ -606,10 +609,30 @@ def v4(model_id: str) -> ReadThroughConfig:
     return ReadThroughConfig(name="v4", model_id=model_id)
 
 
+_REASONING_OFF: dict[str, object] = {"reasoning": {"enabled": False}}
+
 #: Registered configurations, by name. Once one has been scored, change it
-#: only by registering another under a new name.
+#: only by registering another under a new name. #28's shortlist runs with
+#: reasoning off; the models below reason unless told not to.
 CONFIGS: dict[str, ReadThroughConfig] = {
     "flash-v4": replace(v4(DEFAULT_MODEL), name="flash-v4"),
+    # Reasoning can't be disabled on this model; minimal effort is the
+    # closest it allows.
+    "gemini-3.8-flash-v4": ReadThroughConfig(
+        name="gemini-3.8-flash-v4",
+        model_id="google/gemini-3.8-flash",
+        request_options={"reasoning": {"effort": "minimal"}},
+    ),
+    "deepseek-v4-pro-v4": ReadThroughConfig(
+        name="deepseek-v4-pro-v4",
+        model_id="deepseek/deepseek-v4-pro",
+        request_options=_REASONING_OFF,
+    ),
+    "qwen3.6-plus-v4": ReadThroughConfig(
+        name="qwen3.6-plus-v4",
+        model_id="qwen/qwen3.6-plus",
+        request_options=_REASONING_OFF,
+    ),
 }
 #: The configuration eval runs when given neither a name nor a model.
 DEFAULT_CONFIG = "flash-v4"
@@ -729,6 +752,7 @@ class OpenRouterReader:
             self.config.build_messages(request),
             timeout=180,
             response_format={"type": "json_object"},
+            **self.config.request_options,
         )
         return self.config.parse_reply(content, request)
 

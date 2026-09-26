@@ -186,7 +186,10 @@ retired slug) are counted apart, with one such error shown, so they aren't
 mistaken for a model failing the reply format. `--config` runs a registered
 Read-through configuration (model, prompt and reply format; `CONFIGS` in
 `caption_checker/readthrough.py`), by default `flash-v4`; `--model SLUG`
-instead runs today's prompt (v4) with that model. The default model,
+instead runs today's prompt (v4) with that model. Models that reason by
+default have a registered v4 configuration that turns reasoning off (or to
+minimal effort where it can't be off), e.g. `--config deepseek-v4-pro-v4`,
+since #28's comparison runs with reasoning off. The default model,
 `google/gemini-2.5-flash`, was picked over `google/gemini-2.5-flash-lite`
 on the Dev sets (issue #23): Lite is about 3x cheaper but its Flag-level
 precision on the Scored corpus fell below the local pipeline's (0.57 vs

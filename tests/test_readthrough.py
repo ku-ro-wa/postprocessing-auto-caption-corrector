@@ -355,6 +355,31 @@ def test_openrouter_reader_builds_and_reads_as_its_configuration_says(
     assert sent == [[{"role": "user", "content": "custom"}]]
 
 
+@pytest.mark.parametrize(
+    ("name", "extra"),
+    [
+        ("flash-v4", {}),  # today's request, unchanged
+        ("gemini-3.8-flash-v4", {"reasoning": {"effort": "minimal"}}),
+        ("deepseek-v4-pro-v4", {"reasoning": {"enabled": False}}),
+        ("qwen3.6-plus-v4", {"reasoning": {"enabled": False}}),
+    ],
+)
+def test_openrouter_reader_sends_its_configurations_request_options(
+    monkeypatch: pytest.MonkeyPatch, name: str, extra: dict
+) -> None:
+    monkeypatch.setenv("OPENROUTER_API_KEY", "test-key")
+    reader = OpenRouterReader(CONFIGS[name])
+    sent: list[dict] = []
+
+    def chat(messages: list[dict], **options: object) -> str:
+        sent.append(options)
+        return "[]"
+
+    monkeypatch.setattr(reader.client, "chat", chat)
+    reader.read(ChunkRequest(words=[(0, "a")]))
+    assert sent == [{"timeout": 180, "response_format": {"type": "json_object"}, **extra}]
+
+
 def test_flash_v4_sends_the_messages_prompt_v4_was_scored_with() -> None:
     # A snapshot of build_messages at f333419, before configurations existed:
     # flash-v4 is frozen, so a prompt change belongs in a new configuration.
