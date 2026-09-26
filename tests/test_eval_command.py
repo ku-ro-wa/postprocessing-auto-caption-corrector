@@ -266,23 +266,25 @@ def test_run_eval_measures_audio_duration(tmp_path: Path) -> None:
     assert report.audio_seconds == 4.0  # two 2-second sources
 
 
+@pytest.mark.parametrize("name", ["earnings21-heldout", "earnings21-heldout-2"])
 def test_eval_command_refuses_a_held_out_corpus_without_final(
-    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch, name: str
 ) -> None:
     held_out = replace(_earnings_like(tmp_path), held_out=True)
-    monkeypatch.setitem(CORPORA, "earnings21-heldout", held_out)
-    refused = CliRunner().invoke(main, ["eval", "--corpus", "earnings21-heldout"])
+    monkeypatch.setitem(CORPORA, name, held_out)
+    refused = CliRunner().invoke(main, ["eval", "--corpus", name])
     assert refused.exit_code != 0
     assert "--final" in refused.output
-    final = CliRunner().invoke(main, ["eval", "--corpus", "earnings21-heldout", "--final"])
+    final = CliRunner().invoke(main, ["eval", "--corpus", name, "--final"])
     assert final.exit_code == 0, final.output
 
 
-def test_only_earnings21_heldout_is_still_held_out() -> None:
+def test_only_the_earnings21_heldout_sets_are_still_held_out() -> None:
     # The Audited Held-out set moved to the Dev set once its misses
-    # motivated a change (issue #27).
+    # motivated a change (issue #27); heldout-2 is fresh for #28.
     assert {name for name, c in CORPORA.items() if c.held_out} == {
         "earnings21-heldout",
+        "earnings21-heldout-2",
     }
 
 

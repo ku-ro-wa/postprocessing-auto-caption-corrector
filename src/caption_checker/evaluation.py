@@ -316,15 +316,16 @@ def _earnings21(split: str) -> NamedCorpus:
         manifest_path=DEFAULT_CACHE_DIR / split / "manifest.json",
         headline_kinds=("non-word", "real-word"),
         caveat=CAVEAT,
-        held_out=split == "heldout",
+        held_out=split in ("heldout", "heldout-2"),
     )
 
 
 # Auto-labelled corpora, built by `caption-checker build-earnings21`. The
-# held-out split is scored only for the final comparison (ADR 0006): looking
-# at it to motivate a change makes it a Dev set.
+# held-out splits are scored only for a final comparison (ADR 0006; heldout-2
+# for #28's): looking at one to motivate a change makes it a Dev set.
 CORPORA["earnings21-dev"] = _earnings21("dev")
 CORPORA["earnings21-heldout"] = _earnings21("heldout")
+CORPORA["earnings21-heldout-2"] = _earnings21("heldout-2")
 
 
 def _local_detect(cues: list[Cue], priming_terms: list[str]) -> list[Flag]:

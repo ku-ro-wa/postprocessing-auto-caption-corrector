@@ -338,7 +338,8 @@ def serve(host: str, port: int, data_dir: Path | None) -> None:
     default="scored",
     show_default=True,
     help="Named corpus to score. earnings21-* need `build-earnings21` first; "
-    "earnings21-heldout is for the final comparison only (ADR 0006).",
+    "earnings21-heldout (ADR 0006) and earnings21-heldout-2 (#28) are for a "
+    "final comparison only.",
 )
 @click.option(
     "--system",
@@ -406,8 +407,9 @@ def eval_(
 def build_earnings21() -> None:
     """Download Earnings-21 (Google ASR output + Rev references, CC BY-SA 4.0)
     into the gitignored cache and build its Auto-labelled corpora: the
-    eval-10 Held-out set and a Dev set of 5 other calls. Raw files are
-    fetched once; the corpora are rebuilt from them every run."""
+    eval-10 Held-out set, a Dev set of 5 other calls and heldout-2, a seeded
+    draw of 10 of the rest. Raw files are fetched once; the corpora are
+    rebuilt from them every run."""
     from caption_checker import earnings21
 
     summary = earnings21.build()

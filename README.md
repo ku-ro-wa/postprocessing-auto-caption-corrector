@@ -201,8 +201,8 @@ precision is vacuous and Flag-level precision is the number to read. This was
 the Audited Held-out set, scored once with `--final` for ADR 0006's verdict.
 Issue #27 then studied its misses to design a fix, so it moved to the Dev set
 and `eval` no longer asks for `--final`. Any later claim about the
-Read-through needs fresh Held-out data; only `earnings21-heldout` is still
-held out.
+Read-through needs fresh Held-out data; only `earnings21-heldout` and
+`earnings21-heldout-2` are still held out.
 
 **Earnings-21 Auto-labelled corpora** — built locally, never committed:
 
@@ -222,7 +222,10 @@ filler-only regions and regions over 6 tokens a side (alignment drift) are
 dropped and counted. `earnings21-heldout` is the dataset's `eval10` list
 (11 calls) and is scored only for ADR 0006's final comparison (`eval`
 refuses it without `--final`);
-`earnings21-dev` is the first 5 other calls; the rest are never fetched.
+`earnings21-dev` is the first 5 other calls. `earnings21-heldout-2` is a
+fixed-seed draw of 10 of the calls left, kept for the Read-through
+configuration comparison's final scoring (#28) and likewise refused without
+`--final`; the remaining calls are never fetched.
 `--priming` hands each call's company name to the system as Priming terms.
 Headline recall covers `non-word` + `real-word`; the candidate counts are
 weak here, since candidates are Rev's verbatim words. Every number here is Google

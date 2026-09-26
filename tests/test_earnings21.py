@@ -259,15 +259,12 @@ def test_every_case_locates_in_the_generated_cues() -> None:
 
 # --- building the corpora --------------------------------------------------
 
-META = """file_id,audio_length,sample_rate,company_name,financial_quarter,sector,speaker_switches,unique_speakers,curator_id
-100,60,24000,Held Co,1,Tech,1,1,1
-200,60,24000,Dev One Inc,1,Tech,1,1,1
-300,60,24000,Dev Two Inc,1,Tech,1,1,1
-400,60,24000,Parked Corp,1,Tech,1,1,1
-"""
-EVAL10 = """file_id,audio_length,sample_rate,company_name,financial_quarter,sector,utterances,unique_speakers,curator_id
-100,60,24000,Held Co,1,Tech,1,1,1
-"""
+CALL_IDS = ("100", "200", "300", "400", "500", "600", "700", "800", "900")
+_COLUMNS = "file_id,audio_length,sample_rate,company_name,financial_quarter,sector"
+META = _COLUMNS + ",speaker_switches,unique_speakers,curator_id\n" + "".join(
+    f"{call_id},60,24000,Co {call_id},1,Tech,1,1,1\n" for call_id in CALL_IDS
+)
+EVAL10 = _COLUMNS + ",utterances,unique_speakers,curator_id\n100,60,24000,Co 100,1,Tech,1,1,1\n"
 
 
 def _fake_remote() -> dict[str, bytes]:
@@ -275,11 +272,15 @@ def _fake_remote() -> dict[str, bytes]:
         "earnings21-file-metadata.csv": META,
         "eval10-file-metadata.csv": EVAL10,
     }
-    for call_id in ("100", "200", "300", "400"):
+    for call_id in CALL_IDS:
         files[f"output/google/{call_id}.nlp"] = _hyp_words("our cops were up")
         files[f"transcripts/nlp_references/{call_id}.nlp"] = _ref_words("our comps were up")
         files[f"transcripts/wer_tags/{call_id}.wer_tag.json"] = "{}"
     return {k: v.encode() for k, v in files.items()}
+
+
+def _sources(cache_dir: Path, split: str) -> list[str]:
+    return list(json.loads((cache_dir / split / "manifest.json").read_text())["sources"])
 
 
 def test_build_writes_held_out_and_dev_corpora_from_the_cache(tmp_path: Path) -> None:
@@ -290,38 +291,73 @@ def test_build_writes_held_out_and_dev_corpora_from_the_cache(tmp_path: Path) ->
         fetched.append(path)
         return remote[path]
 
-    summary = build(tmp_path, fetch=fetch, dev_size=2)
+    summary = build(tmp_path, fetch=fetch, dev_size=2, heldout2_size=2)
 
-    heldout = json.loads((tmp_path / "heldout" / "manifest.json").read_text())
     dev = json.loads((tmp_path / "dev" / "manifest.json").read_text())
-    assert list(heldout["sources"]) == ["100.srt"]
-    assert list(dev["sources"]) == ["200.srt", "300.srt"]  # 400 is held back
-    assert dev["sources"]["200.srt"]["priming_terms"] == ["Dev One Inc"]
+    assert _sources(tmp_path, "heldout") == ["100.srt"]
+    assert _sources(tmp_path, "dev") == ["200.srt", "300.srt"]
+    assert dev["sources"]["200.srt"]["priming_terms"] == ["Co 200"]
     assert (tmp_path / "dev" / "200.srt").read_text().startswith("1\n00:00:00,000 --> ")
     cases = json.loads((tmp_path / "dev" / "cases.json").read_text())
     assert [(c["source"], c["span"]) for c in cases] == [("200.srt", "cops"), ("300.srt", "cops")]
-    assert not any("400" in p for p in fetched)
     assert summary["dev"]["cases"] == 2
 
     # Raw downloads are cached: a rebuild fetches nothing.
     fetched.clear()
-    build(tmp_path, fetch=fetch, dev_size=2)
+    build(tmp_path, fetch=fetch, dev_size=2, heldout2_size=2)
     assert fetched == []
 
 
-def test_a_failed_build_leaves_the_previous_corpus_intact(tmp_path: Path) -> None:
+def test_heldout_2_is_a_seeded_draw_from_the_calls_in_no_other_split(
+    tmp_path: Path,
+) -> None:
     remote = _fake_remote()
-    build(tmp_path, fetch=remote.__getitem__, dev_size=2)
-    before = (tmp_path / "dev" / "cases.json").read_text()
+    fetched: list[str] = []
+
+    def fetch(path: str) -> bytes:
+        fetched.append(path)
+        return remote[path]
+
+    summary = build(tmp_path, fetch=fetch, dev_size=2, heldout2_size=3)
+
+    drawn = _sources(tmp_path, "heldout-2")
+    assert drawn == ["400.srt", "500.srt", "800.srt"]  # pinned by the fixed seed
+    assert not set(drawn) & set(_sources(tmp_path, "heldout") + _sources(tmp_path, "dev"))
+    manifest = json.loads((tmp_path / "heldout-2" / "manifest.json").read_text())
+    assert manifest["sources"]["800.srt"]["priming_terms"] == ["Co 800"]
+    assert summary["heldout-2"]["calls"] == 3
+
+    # The calls left over stay held back: never fetched. (Per-call files sit
+    # in subdirectories; the metadata CSVs don't.)
+    fetched_calls = {Path(p).name.split(".")[0] for p in fetched if "/" in p}
+    assert fetched_calls == {"100", "200", "300", "400", "500", "800"}
+
+    # The same draw on a rebuild.
+    build(tmp_path, fetch=fetch, dev_size=2, heldout2_size=3)
+    assert _sources(tmp_path, "heldout-2") == drawn
+
+
+def test_build_refuses_a_heldout_2_larger_than_the_calls_left(tmp_path: Path) -> None:
+    with pytest.raises(ValueError, match="heldout-2"):
+        build(tmp_path, fetch=_fake_remote().__getitem__, dev_size=2, heldout2_size=7)
+
+
+@pytest.mark.parametrize("split, call_id", [("dev", "300"), ("heldout-2", "800")])
+def test_a_failed_build_leaves_the_previous_corpus_intact(
+    tmp_path: Path, split: str, call_id: str
+) -> None:
+    remote = _fake_remote()
+    build(tmp_path, fetch=remote.__getitem__, dev_size=2, heldout2_size=3)
+    before = (tmp_path / split / "cases.json").read_text()
+    srts = sorted(p.name for p in (tmp_path / split).glob("*.srt"))
 
     broken = dict(remote)
-    broken["output/google/300.nlp"] = _hyp_words("").encode()  # nothing to align
-    for cached in (tmp_path / "raw" / "output" / "google").glob("300.nlp"):
-        cached.unlink()
+    broken[f"output/google/{call_id}.nlp"] = _hyp_words("").encode()  # nothing to align
+    (tmp_path / "raw" / "output" / "google" / f"{call_id}.nlp").unlink()
     with pytest.raises(ValueError):
-        build(tmp_path, fetch=broken.__getitem__, dev_size=2)
-    assert (tmp_path / "dev" / "cases.json").read_text() == before
-    assert sorted(p.name for p in (tmp_path / "dev").glob("*.srt")) == ["200.srt", "300.srt"]
+        build(tmp_path, fetch=broken.__getitem__, dev_size=2, heldout2_size=3)
+    assert (tmp_path / split / "cases.json").read_text() == before
+    assert sorted(p.name for p in (tmp_path / split).glob("*.srt")) == srts
 
 
 def test_build_command_reports_each_split_with_the_caveat(
@@ -332,11 +368,12 @@ def test_build_command_reports_each_split_with_the_caveat(
     monkeypatch.setattr(
         earnings21,
         "build",
-        lambda: real_build(tmp_path, fetch=remote.__getitem__, dev_size=2),
+        lambda: real_build(tmp_path, fetch=remote.__getitem__, dev_size=2, heldout2_size=3),
     )
     result = CliRunner().invoke(main, ["build-earnings21"])
     assert result.exit_code == 0, result.output
     assert "heldout: 1 calls, 1 cases" in result.output
     assert "dev: 2 calls, 2 cases" in result.output
+    assert "heldout-2: 3 calls, 3 cases" in result.output
     assert "real-word 2" in result.output
     assert "Google's 2021 ASR" in result.output

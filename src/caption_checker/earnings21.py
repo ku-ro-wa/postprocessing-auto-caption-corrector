@@ -14,6 +14,7 @@ import ast
 import csv
 import io
 import json
+import random
 import re
 import shutil
 from collections import Counter
@@ -53,6 +54,10 @@ FILLERS = frozenset("uh um uhm mm mhm hmm er ah eh huh".split())
 MAX_REGION_TOKENS = 6
 #: Region labels that never become a case; counted in the build stats.
 DROPPED = ("deletion", "filler", "drift")
+
+#: Seed for drawing ``heldout-2`` for #28's comparison. The value is
+#: arbitrary; it is fixed so anyone rebuilding the corpus gets the same calls.
+HELDOUT2_SEED = 28
 
 _MIN_CUE_SECONDS = 0.01
 _NON_SPEECH_RE = re.compile(r"^(<[^>]*>|\*+)$")  # "<crosstalk>", "*"
@@ -398,21 +403,34 @@ def build(
     *,
     fetch: Fetch = fetch_remote,
     dev_size: int = 5,
+    heldout2_size: int = 10,
 ) -> dict[str, dict]:
-    """Build the Held-out (``eval-10``) and Dev (the first ``dev_size`` other
-    calls, in metadata order) corpora under ``cache_dir``. Raw downloads are
-    cached under ``raw/``; each split directory is rebuilt from them and
-    holds one SRT per call, ``cases.json`` and a ``manifest.json`` listing
-    every source with its Priming terms (the company name). Remaining calls
-    are held back and never fetched. Returns per-split summary counts."""
+    """Build the Held-out (``eval-10``), Dev (the first ``dev_size`` other
+    calls, in metadata order) and second Held-out (``heldout-2``: a draw of
+    ``heldout2_size`` of the calls left, by ID, seeded with ``HELDOUT2_SEED``)
+    corpora under ``cache_dir``. Raw downloads are cached under ``raw/``;
+    each split directory is rebuilt from them and holds one SRT per call,
+    ``cases.json`` and a ``manifest.json`` listing every source with its
+    Priming terms (the company name). Remaining calls are held back and never
+    fetched. Returns per-split summary counts."""
     calls = _metadata(_cached(cache_dir, "earnings21-file-metadata.csv", fetch))
     eval10 = {
         row["file_id"]
         for row in _metadata(_cached(cache_dir, "eval10-file-metadata.csv", fetch))
     }
+    rest = [row for row in calls if row["file_id"] not in eval10]
+    dev = rest[:dev_size]
+    left = sorted(row["file_id"] for row in rest[dev_size:])
+    if heldout2_size > len(left):
+        raise ValueError(
+            f"heldout-2 needs {heldout2_size} calls but only {len(left)} are left"
+        )
+    # Drawn from sorted IDs, so the upstream CSV's row order can't change it.
+    drawn = set(random.Random(HELDOUT2_SEED).sample(left, heldout2_size))
     splits = {
         "heldout": [row for row in calls if row["file_id"] in eval10],
-        "dev": [row for row in calls if row["file_id"] not in eval10][:dev_size],
+        "dev": dev,
+        "heldout-2": [row for row in calls if row["file_id"] in drawn],
     }
 
     summary: dict[str, dict] = {}
