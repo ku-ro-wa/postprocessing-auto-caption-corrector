@@ -17,7 +17,7 @@ import re
 import threading
 from concurrent.futures import ThreadPoolExecutor
 from dataclasses import dataclass, field, replace
-from typing import Protocol, Sequence
+from typing import Callable, Protocol, Sequence
 
 from caption_checker.corrector import (
     Correction,
@@ -568,6 +568,34 @@ def _without_overlaps(
     return kept
 
 
+# --- configurations --------------------------------------------------------------
+
+
+@dataclass(frozen=True)
+class ReadThroughConfig:
+    """A Read-through configuration (CONTEXT.md): the model, prompt and reply
+    format a Read-through runs with, judged and frozen as one unit."""
+
+    name: str
+    model_id: str
+    build_messages: Callable[[ChunkRequest], list[dict]] = build_messages
+    parse_reply: Callable[[str, ChunkRequest], list[ChunkVerdict]] = parse_reply
+
+
+def v4(model_id: str) -> ReadThroughConfig:
+    """Prompt v4 -- today's prompt and reply format -- with any model."""
+    return ReadThroughConfig(name="v4", model_id=model_id)
+
+
+#: Registered configurations, by name. Once one has been scored, change it
+#: only by registering another under a new name.
+CONFIGS: dict[str, ReadThroughConfig] = {
+    "flash-v4": replace(v4(DEFAULT_MODEL), name="flash-v4"),
+}
+#: The configuration eval runs when given neither a name nor a model.
+DEFAULT_CONFIG = "flash-v4"
+
+
 # --- readers -------------------------------------------------------------------
 
 
@@ -655,16 +683,17 @@ def _find(span: str, request: ChunkRequest) -> tuple[int, int] | None:
 
 
 class OpenRouterReader:
-    """The real Reader: one OpenRouter chat call per chunk."""
+    """The real Reader: one OpenRouter chat call per chunk, built and read
+    as its configuration says."""
 
     def __init__(
         self,
-        model_id: str = DEFAULT_MODEL,
+        config: ReadThroughConfig = CONFIGS[DEFAULT_CONFIG],
         *,
         api_key: str | None = None,
     ) -> None:
-        self.model_id = model_id
-        self.client = OpenRouterClient(model_id, api_key=api_key)
+        self.config = config
+        self.client = OpenRouterClient(config.model_id, api_key=api_key)
 
     @property
     def spend(self) -> Spend:
@@ -672,13 +701,13 @@ class OpenRouterReader:
 
     def read(self, request: ChunkRequest) -> list[ChunkVerdict]:
         content = self.client.chat(
-            build_messages(request),
+            self.config.build_messages(request),
             timeout=180,
             response_format={"type": "json_object"},
         )
-        return parse_reply(content, request)
+        return self.config.parse_reply(content, request)
 
 
-def build_reader(model_id: str) -> OpenRouterReader:
+def build_reader(config: ReadThroughConfig) -> OpenRouterReader:
     """Factory the CLI and eval call; tests monkeypatch this to inject a stub."""
-    return OpenRouterReader(model_id)
+    return OpenRouterReader(config)

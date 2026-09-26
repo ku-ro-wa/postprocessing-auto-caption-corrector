@@ -283,7 +283,11 @@ def correct(
             max_calls=max_calls,
             estimate_only=estimate,
             read_through=read_through,
-            reader=readthrough.build_reader(model) if live and read_through else None,
+            reader=(
+                readthrough.build_reader(readthrough.v4(model))
+                if live and read_through
+                else None
+            ),
             priming_terms=priming_terms,
         )
     except MissingAPIKeyError as exc:
@@ -357,10 +361,16 @@ def serve(host: str, port: int, data_dir: Path | None) -> None:
     "name) to the system under test.",
 )
 @click.option(
+    "--config",
+    "config_name",
+    default=None,
+    help="Registered Read-through configuration (model, prompt and reply "
+    "format) to run.  [default: flash-v4]",
+)
+@click.option(
     "--model",
-    default=DEFAULT_MODEL,
-    show_default=True,
-    help="OpenRouter model slug, for a system that calls one (read-through).",
+    default=None,
+    help="OpenRouter model slug to run prompt v4 with, instead of --config.",
 )
 @click.option(
     "--final",
@@ -370,11 +380,17 @@ def serve(host: str, port: int, data_dir: Path | None) -> None:
     "never while tuning (ADR 0006).",
 )
 def eval_(
-    corpus_name: str, system_name: str, priming: bool, model: str, final: bool
+    corpus_name: str,
+    system_name: str,
+    priming: bool,
+    config_name: str | None,
+    model: str | None,
+    final: bool,
 ) -> None:
     """Score a system under test on a named corpus and print recall (overall
     and by kind), case precision, Flag-level precision and cold-flag rate as
     separate numbers. Unlike the pytest Regression gate this has no floors."""
+    from caption_checker import readthrough
     from caption_checker.corrector import MissingAPIKeyError
 
     corpus = CORPORA[corpus_name]
@@ -384,15 +400,33 @@ def eval_(
             "comparison (ADR 0006); pass --final if that is what this run is. "
             "Looking at it to motivate a change moves it to the Dev set."
         )
+    if config_name is not None and model is not None:
+        raise click.UsageError(
+            "pass --config or --model, not both: a configuration names its own model"
+        )
+    if config_name is not None and config_name not in readthrough.CONFIGS:
+        raise click.UsageError(
+            f"no Read-through configuration named {config_name!r}; "
+            f"registered: {', '.join(readthrough.CONFIGS)}"
+        )
+    config = (
+        readthrough.v4(model)
+        if model is not None
+        else readthrough.CONFIGS[config_name or readthrough.DEFAULT_CONFIG]
+    )
     try:
-        system = SYSTEMS[system_name](model)
+        system = SYSTEMS[system_name](config)
         report = run_eval(corpus, system, priming=priming)
     except (CorpusError, MissingAPIKeyError) as e:
         raise click.ClickException(str(e)) from e
     lines = [
         f"corpus: {corpus_name}",
         f"system: {system_name}"
-        + (f" ({model})" if isinstance(system, ReadThroughSystem) else ""),
+        + (
+            f" ({config.name}: {config.model_id})"
+            if isinstance(system, ReadThroughSystem)
+            else ""
+        ),
         f"priming: {'on' if priming else 'off'}",
         _render_score(report, corpus.headline_kinds),
     ]

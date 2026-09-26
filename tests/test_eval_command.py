@@ -9,7 +9,7 @@ from datetime import timedelta
 from pathlib import Path
 
 import pytest
-from click.testing import CliRunner
+from click.testing import CliRunner, Result
 
 from caption_checker.cli import main
 from caption_checker.evaluation import (
@@ -24,6 +24,13 @@ from caption_checker.evaluation import (
 )
 from caption_checker.models import Cue, Flag
 from caption_checker.parser import parse, tokenize
+from caption_checker.readthrough import (
+    CONFIGS,
+    ReadThroughConfig,
+    StubReader,
+    build_messages,
+    parse_reply,
+)
 
 SRT = """1
 00:00:00,000 --> 00:00:02,000
@@ -194,7 +201,7 @@ def test_local_system_adds_priming_terms_to_the_domain_vocabulary(tmp_path: Path
         encoding="utf-8",
     )
     cues = parse(tmp_path / "t.srt")
-    local = SYSTEMS["local"]("unused")
+    local = SYSTEMS["local"](CONFIGS["flash-v4"])
     assert any(f.span == "kubernetis" for f in local(cues, []))
     assert not any(f.span == "kubernetis" for f in local(cues, ["Kubernetis"]))
 
@@ -230,9 +237,11 @@ def test_eval_command_scores_the_read_through_with_its_cost(
     tmp_path: Path, monkeypatch: pytest.MonkeyPatch
 ) -> None:
     from caption_checker.corrector import Spend
-    from caption_checker.readthrough import StubReader
 
-    def factory(model: str) -> StubReader:
+    configs: list[ReadThroughConfig] = []
+
+    def factory(config: ReadThroughConfig) -> StubReader:
+        configs.append(config)
         stub = StubReader(extra={"cough ka": "Kafka"})
         stub.spend = Spend(requests=2, cost_usd=0.01)
         return stub
@@ -245,16 +254,89 @@ def test_eval_command_scores_the_read_through_with_its_cost(
          "--model", "some/model"],
     )
     assert result.exit_code == 0, result.output
-    assert "system: read-through (some/model)" in result.output
+    # --model alone means prompt v4 with that model
+    [config] = configs
+    assert config.model_id == "some/model"
+    assert config.build_messages is build_messages
+    assert config.parse_reply is parse_reply
+    assert "system: read-through (v4: some/model)" in result.output
     assert "real-word: 1.000 (1/1; 1/1 with candidate)" in result.output
     # two 2-second transcripts, one spend object per system
     assert "cost: $0.0100 for 0.001 audio hours ($9.00 per audio hour)" in result.output
 
 
+def _eval_read_through(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch, *args: str
+) -> tuple[Result, list[tuple[ReadThroughConfig, StubReader]]]:
+    """Run ``eval --system read-through`` on a small Dev-like corpus with a
+    stand-in Reader; return the result and each (configuration, Reader) the
+    factory was asked for."""
+    made: list[tuple[ReadThroughConfig, StubReader]] = []
+
+    def factory(config: ReadThroughConfig) -> StubReader:
+        made.append((config, StubReader(extra={"cough ka": "Kafka"})))
+        return made[-1][1]
+
+    monkeypatch.setattr("caption_checker.readthrough.build_reader", factory)
+    monkeypatch.setitem(CORPORA, "earnings21-dev", _earnings_like(tmp_path))
+    result = CliRunner().invoke(
+        main,
+        ["eval", "--corpus", "earnings21-dev", "--system", "read-through", *args],
+    )
+    return result, made
+
+
+def test_eval_command_runs_a_registered_read_through_configuration(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    result, made = _eval_read_through(tmp_path, monkeypatch, "--config", "flash-v4")
+    assert result.exit_code == 0, result.output
+    [(config, reader)] = made
+    assert config is CONFIGS["flash-v4"]
+    assert "system: read-through (flash-v4: google/gemini-2.5-flash)" in result.output
+    assert "real-word: 1.000 (1/1; 1/1 with candidate)" in result.output
+    # flash-v4 is today's Read-through: the same messages for the same
+    # chunk, and the same reading of the same reply
+    assert reader.requests
+    for request in reader.requests:
+        assert config.build_messages(request) == build_messages(request)
+    request = reader.requests[0]
+    gi, text = request.words[0]
+    verdicts = [[h.start, h.end, h.span, None, "misheard", 0.5, h.id, "w"] for h in request.hints]
+    verdicts.append([gi, gi, text, "X", "misheard", 0.95, None, "w"])
+    reply = json.dumps({"verdicts": verdicts})
+    assert parse_reply(reply, request)
+    assert config.parse_reply(reply, request) == parse_reply(reply, request)
+
+
+def test_flash_v4_is_the_default_read_through_configuration(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    result, made = _eval_read_through(tmp_path, monkeypatch)
+    assert result.exit_code == 0, result.output
+    assert [config for config, _ in made] == [CONFIGS["flash-v4"]]
+    assert "system: read-through (flash-v4: google/gemini-2.5-flash)" in result.output
+
+
+@pytest.mark.parametrize(
+    ("args", "message"),
+    [
+        (("--config", "flash-v4", "--model", "some/model"), "not both"),
+        (("--config", "no-such-config"), "no-such-config"),
+    ],
+)
+def test_eval_command_refuses_a_bad_read_through_configuration(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch, args: tuple[str, ...], message: str
+) -> None:
+    result, made = _eval_read_through(tmp_path, monkeypatch, *args)
+    assert result.exit_code != 0
+    assert message in result.output
+    assert "Traceback" not in result.output
+    assert made == []  # failed before building a Reader
+
+
 def test_read_through_system_scores_only_claimed_errors(tmp_path: Path) -> None:
     from caption_checker.evaluation import ReadThroughSystem
-    from caption_checker.readthrough import StubReader
-
     (tmp_path / "t.srt").write_text(SRT, encoding="utf-8")
     cues = parse(tmp_path / "t.srt")
     system = ReadThroughSystem(StubReader(extra={"cough ka": "Kafka", "raft": None}))  # type: ignore[dict-item]

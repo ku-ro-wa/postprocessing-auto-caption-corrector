@@ -32,6 +32,7 @@ from caption_checker.readthrough import (
     OpenRouterReader,
     Reader,
     read_through,
+    v4,
 )
 from caption_checker.vocab import Vocab, load_vocab
 from caption_checker.web.models import ReviewDecision, TranscriptRecord
@@ -155,7 +156,7 @@ def run_correction(
     model = model if model is not None else os.environ.get("OPENROUTER_MODEL", DEFAULT_MODEL)
     cues = storage.load_cues(record.session_id, record.id)
     try:
-        active_reader = reader or OpenRouterReader(model, api_key=api_key)
+        active_reader = reader or OpenRouterReader(v4(model), api_key=api_key)
         result = read_through(cues, record.flags, active_reader, priming_terms=priming_terms)
         if result.chunk_count and result.failed_chunks == result.chunk_count:
             raise CorrectorError(

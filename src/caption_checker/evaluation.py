@@ -19,7 +19,7 @@ from caption_checker.vocab import load_vocab
 
 if TYPE_CHECKING:
     from caption_checker.corrector import Spend
-    from caption_checker.readthrough import Reader
+    from caption_checker.readthrough import Reader, ReadThroughConfig
 
 Verdict = Literal["should-flag", "should-not-flag"]
 
@@ -336,7 +336,7 @@ def _local_detect(cues: list[Cue], priming_terms: list[str]) -> list[Flag]:
     return detect(cues, vocab=vocab, config=config)
 
 
-def _local_pipeline(model: str) -> System:
+def _local_pipeline(config: ReadThroughConfig) -> System:
     return _local_detect
 
 
@@ -370,16 +370,16 @@ class ReadThroughSystem:
         ]
 
 
-def _read_through(model: str) -> System:
+def _read_through(config: ReadThroughConfig) -> System:
     from caption_checker import readthrough
 
-    return ReadThroughSystem(readthrough.build_reader(model))
+    return ReadThroughSystem(readthrough.build_reader(config))
 
 
-#: Systems the eval command can score, by name, each built for a model slug
-#: (which the local pipeline ignores). Factories, so a system that needs an
-#: API key or a heavy import only pays for it when chosen.
-SYSTEMS: dict[str, Callable[[str], System]] = {
+#: Systems the eval command can score, by name, each built for a Read-through
+#: configuration (which the local pipeline ignores). Factories, so a system
+#: that needs an API key or a heavy import only pays for it when chosen.
+SYSTEMS: dict[str, Callable[[ReadThroughConfig], System]] = {
     "local": _local_pipeline,
     "read-through": _read_through,
 }

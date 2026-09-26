@@ -175,13 +175,16 @@ hand-made fixtures. Corpora and systems are registered in
 `caption_checker/evaluation.py` (`CORPORA`, `SYSTEMS`).
 
 ```bash
-uv run caption-checker eval --system read-through [--model SLUG]
+uv run caption-checker eval --system read-through [--config NAME | --model SLUG]
 ```
 
 scores the Read-through (it calls OpenRouter, so it costs money: about
 $0.05–0.07 per audio hour with the default model on the Dev sets). It counts
 only the Flags it claims are errors, and adds its spend per audio hour plus
-any failed chunks. The default model,
+any failed chunks. `--config` runs a registered Read-through configuration
+(model, prompt and reply format; `CONFIGS` in
+`caption_checker/readthrough.py`), by default `flash-v4`; `--model SLUG`
+instead runs today's prompt (v4) with that model. The default model,
 `google/gemini-2.5-flash`, was picked over `google/gemini-2.5-flash-lite`
 on the Dev sets (issue #23): Lite is about 3x cheaper but its Flag-level
 precision on the Scored corpus fell below the local pipeline's (0.57 vs

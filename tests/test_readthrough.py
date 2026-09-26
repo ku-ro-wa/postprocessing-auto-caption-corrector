@@ -4,6 +4,7 @@ network."""
 
 from __future__ import annotations
 
+import hashlib
 import json
 from dataclasses import replace
 from pathlib import Path
@@ -14,9 +15,13 @@ from caption_checker.corrector import CorrectorError
 from caption_checker.detect import detect
 from caption_checker.parser import parse
 from caption_checker.readthrough import (
+    CONFIGS,
     DETECTOR_READ_THROUGH,
     ChunkRequest,
+    ChunkVerdict,
     Hint,
+    OpenRouterReader,
+    ReadThroughConfig,
     StubReader,
     build_messages,
     parse_reply,
@@ -292,3 +297,42 @@ def test_max_calls_caps_requests_including_retries(cues) -> None:
     reader = StubReader(garbage=True)
     read_through(cues, [], reader, chunk_words=4, max_calls=3)
     assert reader.calls == 3
+
+
+def test_openrouter_reader_builds_and_reads_as_its_configuration_says(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    monkeypatch.setenv("OPENROUTER_API_KEY", "test-key")
+    verdict = ChunkVerdict(start=0, end=0, replacement="X", confidence=1.0)
+    config = ReadThroughConfig(
+        name="test",
+        model_id="some/model",
+        build_messages=lambda request: [{"role": "user", "content": "custom"}],
+        parse_reply=lambda content, request: [verdict] if content == "reply" else [],
+    )
+    reader = OpenRouterReader(config)
+    sent: list[list[dict]] = []
+
+    def chat(messages: list[dict], **options: object) -> str:
+        sent.append(messages)
+        return "reply"
+
+    monkeypatch.setattr(reader.client, "chat", chat)
+    assert reader.client.model_id == "some/model"
+    assert reader.read(ChunkRequest(words=[(0, "a")])) == [verdict]
+    assert sent == [[{"role": "user", "content": "custom"}]]
+
+
+def test_flash_v4_sends_the_messages_prompt_v4_was_scored_with() -> None:
+    # A snapshot of build_messages at f333419, before configurations existed:
+    # flash-v4 is frozen, so a prompt change belongs in a new configuration.
+    request = ChunkRequest(
+        words=[(3, "we"), (4, "run"), (5, "cubernetes.")],
+        hints=[Hint("h0", 5, 5, "cubernetes.", ["Kubernetes"], "not in vocabulary")],
+        before="So today",
+        after="and then",
+        priming_terms=["Kafka", "Raft"],
+    )
+    messages = CONFIGS["flash-v4"].build_messages(request)
+    digest = hashlib.sha256(json.dumps(messages, ensure_ascii=False).encode()).hexdigest()
+    assert digest == "54ca44927fe372376de4924ceb14445a67efd7bc2d3051642eb09c799f5f5ed5"
