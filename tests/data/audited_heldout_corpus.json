@@ -1,0 +1,797 @@
+[
+  {
+    "source": "makeup-brands-hate-project-pan.auto.srt",
+    "span": "air",
+    "verdict": "should-flag",
+    "candidate": "err",
+    "context": "To air on the side",
+    "kind": "real-word"
+  },
+  {
+    "source": "makeup-brands-hate-project-pan.auto.srt",
+    "span": "bat",
+    "verdict": "should-flag",
+    "candidate": "bad",
+    "context": "bat shimmers",
+    "kind": "real-word"
+  },
+  {
+    "source": "makeup-brands-hate-project-pan.auto.srt",
+    "span": "bat",
+    "verdict": "should-flag",
+    "candidate": "bad",
+    "context": "bat metallics",
+    "kind": "real-word"
+  },
+  {
+    "source": "makeup-brands-hate-project-pan.auto.srt",
+    "span": "dom",
+    "verdict": "should-flag",
+    "candidate": "ASMR",
+    "context": "dom sounds",
+    "kind": "real-word"
+  },
+  {
+    "source": "makeup-brands-hate-project-pan.auto.srt",
+    "span": "drover",
+    "verdict": "should-flag",
+    "candidate": "drawer",
+    "kind": "real-word"
+  },
+  {
+    "source": "makeup-brands-hate-project-pan.auto.srt",
+    "span": "dreamover",
+    "verdict": "should-flag",
+    "candidate": "dream drawer",
+    "kind": "non-word"
+  },
+  {
+    "source": "makeup-brands-hate-project-pan.auto.srt",
+    "span": "home",
+    "verdict": "should-flag",
+    "candidate": "haul",
+    "context": "PR home",
+    "kind": "real-word"
+  },
+  {
+    "source": "makeup-brands-hate-project-pan.auto.srt",
+    "span": "Muhammad",
+    "verdict": "should-flag",
+    "candidate": "maham",
+    "kind": "real-word",
+    "entity": true
+  },
+  {
+    "source": "makeup-brands-hate-project-pan.auto.srt",
+    "span": "coasters",
+    "verdict": "should-flag",
+    "candidate": "Kosas",
+    "kind": "real-word",
+    "entity": true
+  },
+  {
+    "source": "makeup-brands-hate-project-pan.auto.srt",
+    "span": "sculp",
+    "verdict": "should-flag",
+    "candidate": "sculpt",
+    "context": "brow sculp",
+    "kind": "real-word"
+  },
+  {
+    "source": "makeup-brands-hate-project-pan.auto.srt",
+    "span": "he",
+    "verdict": "should-flag",
+    "candidate": "they",
+    "context": "he like sent her",
+    "kind": "real-word"
+  },
+  {
+    "source": "makeup-brands-hate-project-pan.auto.srt",
+    "span": "SE",
+    "verdict": "should-flag",
+    "candidate": "Saie",
+    "context": "from SE",
+    "kind": "real-word",
+    "entity": true
+  },
+  {
+    "source": "makeup-brands-hate-project-pan.auto.srt",
+    "span": "Flur",
+    "verdict": "should-flag",
+    "candidate": "Fleur",
+    "kind": "real-word",
+    "entity": true
+  },
+  {
+    "source": "makeup-brands-hate-project-pan.auto.srt",
+    "span": "Koda Lee",
+    "verdict": "should-flag",
+    "candidate": "Caudalie",
+    "kind": "real-word",
+    "entity": true
+  },
+  {
+    "source": "makeup-brands-hate-project-pan.auto.srt",
+    "span": "Ven Perfect",
+    "verdict": "should-flag",
+    "candidate": "Vinoperfect",
+    "kind": "real-word",
+    "entity": true
+  },
+  {
+    "source": "makeup-brands-hate-project-pan.auto.srt",
+    "span": "Mark",
+    "verdict": "should-flag",
+    "candidate": "MAC",
+    "context": "blushes, Mark?",
+    "kind": "real-word",
+    "entity": true
+  },
+  {
+    "source": "makeup-brands-hate-project-pan.auto.srt",
+    "span": "overconume",
+    "verdict": "should-flag",
+    "candidate": "overconsume",
+    "kind": "non-word"
+  },
+  {
+    "source": "makeup-brands-hate-project-pan.auto.srt",
+    "span": "12 per",
+    "verdict": "should-flag",
+    "candidate": "12 pans per",
+    "context": "about 12 per eyeshadow",
+    "kind": "real-word"
+  },
+  {
+    "source": "makeup-brands-hate-project-pan.auto.srt",
+    "span": "£1,800",
+    "verdict": "should-flag",
+    "candidate": "1,800 pans",
+    "kind": "real-word"
+  },
+  {
+    "source": "makeup-brands-hate-project-pan.auto.srt",
+    "span": "pens",
+    "verdict": "should-flag",
+    "candidate": "pans",
+    "context": "104 pens",
+    "kind": "real-word"
+  },
+  {
+    "source": "makeup-brands-hate-project-pan.auto.srt",
+    "span": "canning",
+    "verdict": "should-flag",
+    "candidate": "panning",
+    "context": "project canning",
+    "kind": "real-word"
+  },
+  {
+    "source": "makeup-brands-hate-project-pan.auto.srt",
+    "span": "shallow",
+    "verdict": "should-flag",
+    "candidate": "Shelly",
+    "context": "shallow listed",
+    "kind": "real-word",
+    "entity": true
+  },
+  {
+    "source": "makeup-brands-hate-project-pan.auto.srt",
+    "span": "refine",
+    "verdict": "should-flag",
+    "candidate": "re-find",
+    "context": "to refine things",
+    "kind": "real-word"
+  },
+  {
+    "source": "makeup-brands-hate-project-pan.auto.srt",
+    "span": "lowby",
+    "verdict": "should-flag",
+    "candidate": "low-buy",
+    "kind": "non-word"
+  },
+  {
+    "source": "makeup-brands-hate-project-pan.auto.srt",
+    "span": "balac",
+    "verdict": "should-flag",
+    "candidate": "ballet",
+    "context": "balac classes",
+    "kind": "non-word"
+  },
+  {
+    "source": "overpriced-coffee-personality-trait.auto.srt",
+    "span": "Silicone",
+    "verdict": "should-flag",
+    "candidate": "Silicon",
+    "context": "Silicone Valley",
+    "kind": "real-word",
+    "entity": true
+  },
+  {
+    "source": "overpriced-coffee-personality-trait.auto.srt",
+    "span": "minttasting",
+    "verdict": "should-flag",
+    "candidate": "mid-tasting",
+    "kind": "non-word"
+  },
+  {
+    "source": "overpriced-coffee-personality-trait.auto.srt",
+    "span": "$2120",
+    "verdict": "should-flag",
+    "candidate": "$21.20",
+    "kind": "format"
+  },
+  {
+    "source": "overpriced-coffee-personality-trait.auto.srt",
+    "span": "ZDOC",
+    "verdict": "should-flag",
+    "candidate": "Zocdoc",
+    "kind": "non-word",
+    "entity": true
+  },
+  {
+    "source": "overpriced-coffee-personality-trait.auto.srt",
+    "span": "sock",
+    "verdict": "should-flag",
+    "candidate": "Zocdoc",
+    "context": "With sock",
+    "kind": "real-word",
+    "entity": true
+  },
+  {
+    "source": "overpriced-coffee-personality-trait.auto.srt",
+    "span": "highquality",
+    "verdict": "should-flag",
+    "candidate": "high quality",
+    "kind": "format"
+  },
+  {
+    "source": "overpriced-coffee-personality-trait.auto.srt",
+    "span": "in-et network",
+    "verdict": "should-flag",
+    "candidate": "in-network",
+    "kind": "real-word"
+  },
+  {
+    "source": "overpriced-coffee-personality-trait.auto.srt",
+    "span": "dumb",
+    "verdict": "should-flag",
+    "candidate": "um,",
+    "context": "dumb really busy",
+    "kind": "real-word"
+  },
+  {
+    "source": "overpriced-coffee-personality-trait.auto.srt",
+    "span": "zdoc.com/advasion",
+    "verdict": "should-flag",
+    "candidate": "zocdoc.com/edvasian",
+    "kind": "non-word",
+    "entity": true
+  },
+  {
+    "source": "overpriced-coffee-personality-trait.auto.srt",
+    "span": "zoocdoc.com/advasion",
+    "verdict": "should-flag",
+    "candidate": "zocdoc.com/edvasian",
+    "kind": "non-word",
+    "entity": true
+  },
+  {
+    "source": "overpriced-coffee-personality-trait.auto.srt",
+    "span": "Good.",
+    "verdict": "should-flag",
+    "candidate": "Goode",
+    "context": "Fiona. Good.",
+    "kind": "real-word",
+    "entity": true
+  },
+  {
+    "source": "overpriced-coffee-personality-trait.auto.srt",
+    "span": "Sacred",
+    "verdict": "should-flag",
+    "candidate": "Sakrid",
+    "kind": "real-word",
+    "entity": true
+  },
+  {
+    "source": "overpriced-coffee-personality-trait.auto.srt",
+    "span": "breathe",
+    "verdict": "should-flag",
+    "candidate": "breathed",
+    "context": "chicken breathe",
+    "kind": "real-word"
+  },
+  {
+    "source": "overpriced-coffee-personality-trait.auto.srt",
+    "span": "$1711",
+    "verdict": "should-flag",
+    "candidate": "$17.11",
+    "kind": "format"
+  },
+  {
+    "source": "overpriced-coffee-personality-trait.auto.srt",
+    "span": "to2",
+    "verdict": "should-flag",
+    "candidate": "to 2",
+    "context": "1 to2",
+    "kind": "format"
+  },
+  {
+    "source": "overpriced-coffee-personality-trait.auto.srt",
+    "span": "industrialsized",
+    "verdict": "should-flag",
+    "candidate": "industrial-sized",
+    "kind": "format"
+  },
+  {
+    "source": "overpriced-coffee-personality-trait.auto.srt",
+    "span": "Goo",
+    "verdict": "should-flag",
+    "candidate": "Goop",
+    "context": "Goo Kitchen",
+    "kind": "real-word",
+    "entity": true
+  },
+  {
+    "source": "overpriced-coffee-personality-trait.auto.srt",
+    "span": "something",
+    "verdict": "should-flag",
+    "candidate": "something cents",
+    "context": "$32 and something",
+    "kind": "real-word"
+  },
+  {
+    "source": "overpriced-coffee-personality-trait.auto.srt",
+    "span": "who",
+    "verdict": "should-flag",
+    "candidate": "we",
+    "context": "who just cycled",
+    "kind": "real-word"
+  },
+  {
+    "source": "overpriced-coffee-personality-trait.auto.srt",
+    "span": "fun",
+    "verdict": "should-flag",
+    "candidate": "fund",
+    "context": "trust fun baby",
+    "kind": "real-word"
+  },
+  {
+    "source": "overpriced-coffee-personality-trait.auto.srt",
+    "span": "dulu",
+    "verdict": "should-flag",
+    "candidate": "delulu",
+    "kind": "real-word"
+  },
+  {
+    "source": "overpriced-coffee-personality-trait.auto.srt",
+    "span": "you",
+    "verdict": "should-flag",
+    "candidate": "he",
+    "context": "if you saw what",
+    "kind": "real-word"
+  },
+  {
+    "source": "overpriced-coffee-personality-trait.auto.srt",
+    "span": "Haley",
+    "verdict": "should-flag",
+    "candidate": "Hailey",
+    "context": "Haley Bieber",
+    "kind": "real-word",
+    "entity": true
+  },
+  {
+    "source": "fixing-vocal-positions-kpop-groups.auto.srt",
+    "span": "More than on",
+    "verdict": "should-flag",
+    "candidate": "moving on",
+    "kind": "real-word"
+  },
+  {
+    "source": "fixing-vocal-positions-kpop-groups.auto.srt",
+    "span": "Liz",
+    "verdict": "should-flag",
+    "candidate": "Leeseo",
+    "context": "see Liz and Wonyoung",
+    "kind": "real-word",
+    "entity": true
+  },
+  {
+    "source": "fixing-vocal-positions-kpop-groups.auto.srt",
+    "span": "Liz",
+    "verdict": "should-flag",
+    "candidate": "Leeseo",
+    "context": "Liz has already proven",
+    "kind": "real-word",
+    "entity": true
+  },
+  {
+    "source": "fixing-vocal-positions-kpop-groups.auto.srt",
+    "span": "Heart to Heart",
+    "verdict": "should-flag",
+    "candidate": "Hearts2Hearts",
+    "kind": "real-word",
+    "entity": true
+  },
+  {
+    "source": "fixing-vocal-positions-kpop-groups.auto.srt",
+    "span": "one",
+    "verdict": "should-flag",
+    "candidate": "once",
+    "context": "SM's one high standard",
+    "kind": "real-word"
+  },
+  {
+    "source": "fixing-vocal-positions-kpop-groups.auto.srt",
+    "span": "Yuha",
+    "verdict": "should-flag",
+    "candidate": "Ye-on",
+    "context": "When it comes to Yuha",
+    "kind": "non-word",
+    "entity": true
+  },
+  {
+    "source": "fixing-vocal-positions-kpop-groups.auto.srt",
+    "span": "Ean",
+    "verdict": "should-flag",
+    "candidate": "Ian",
+    "kind": "real-word",
+    "entity": true
+  },
+  {
+    "source": "fixing-vocal-positions-kpop-groups.auto.srt",
+    "span": "Jo, Yun, and Ana",
+    "verdict": "should-flag",
+    "candidate": "Jiwoo, Juun, and A-na",
+    "kind": "real-word",
+    "entity": true
+  },
+  {
+    "source": "fixing-vocal-positions-kpop-groups.auto.srt",
+    "span": "Meow",
+    "verdict": "should-flag",
+    "candidate": "Meovv",
+    "kind": "real-word",
+    "entity": true
+  },
+  {
+    "source": "fixing-vocal-positions-kpop-groups.auto.srt",
+    "span": "Kaewan",
+    "verdict": "should-flag",
+    "candidate": "Gawon",
+    "kind": "non-word",
+    "entity": true
+  },
+  {
+    "source": "fixing-vocal-positions-kpop-groups.auto.srt",
+    "span": "Suen",
+    "verdict": "should-flag",
+    "candidate": "Sooin",
+    "kind": "real-word",
+    "entity": true
+  },
+  {
+    "source": "fixing-vocal-positions-kpop-groups.auto.srt",
+    "span": "Yena",
+    "verdict": "should-flag",
+    "candidate": "Ella",
+    "kind": "real-word",
+    "entity": true
+  },
+  {
+    "source": "fixing-vocal-positions-kpop-groups.auto.srt",
+    "span": "Hana",
+    "verdict": "should-flag",
+    "candidate": "Anna",
+    "kind": "real-word",
+    "entity": true
+  },
+  {
+    "source": "fixing-vocal-positions-kpop-groups.auto.srt",
+    "span": "boss",
+    "verdict": "should-flag",
+    "candidate": "bus",
+    "context": "struggle boss",
+    "kind": "real-word"
+  },
+  {
+    "source": "fixing-vocal-positions-kpop-groups.auto.srt",
+    "span": "Hanbin",
+    "verdict": "should-flag",
+    "candidate": "Taerae",
+    "context": "main vocalist is Hanbin",
+    "kind": "real-word",
+    "entity": true
+  },
+  {
+    "source": "fixing-vocal-positions-kpop-groups.auto.srt",
+    "span": "He",
+    "verdict": "should-flag",
+    "candidate": "Jiwoong",
+    "context": "He makes a solid",
+    "kind": "real-word",
+    "entity": true
+  },
+  {
+    "source": "fixing-vocal-positions-kpop-groups.auto.srt",
+    "span": "Soojin",
+    "verdict": "should-flag",
+    "candidate": "Yuqi",
+    "kind": "real-word",
+    "entity": true
+  },
+  {
+    "source": "fixing-vocal-positions-kpop-groups.auto.srt",
+    "span": "Jeongwon",
+    "verdict": "should-flag",
+    "candidate": "Jungwon",
+    "kind": "non-word",
+    "entity": true
+  },
+  {
+    "source": "why-ceos-make-so-much-money-now.auto.srt",
+    "span": "20122",
+    "verdict": "should-flag",
+    "candidate": "2022",
+    "kind": "format"
+  },
+  {
+    "source": "why-ceos-make-so-much-money-now.auto.srt",
+    "span": "Dan Tumi",
+    "verdict": "should-flag",
+    "candidate": "Dan Toomey",
+    "kind": "real-word",
+    "entity": true
+  },
+  {
+    "source": "why-ceos-make-so-much-money-now.auto.srt",
+    "span": "danant Tumi",
+    "verdict": "should-flag",
+    "candidate": "Dan Toomey",
+    "kind": "non-word",
+    "entity": true
+  },
+  {
+    "source": "why-ceos-make-so-much-money-now.auto.srt",
+    "span": "ex itive",
+    "verdict": "should-flag",
+    "candidate": "executive",
+    "kind": "non-word"
+  },
+  {
+    "source": "why-ceos-make-so-much-money-now.auto.srt",
+    "span": "stock rated",
+    "verdict": "should-flag",
+    "candidate": "stock-related",
+    "kind": "real-word"
+  },
+  {
+    "source": "why-ceos-make-so-much-money-now.auto.srt",
+    "span": "9s",
+    "verdict": "should-flag",
+    "candidate": "90s",
+    "kind": "format"
+  },
+  {
+    "source": "why-ceos-make-so-much-money-now.auto.srt",
+    "span": "R",
+    "verdict": "should-flag",
+    "candidate": "rule",
+    "context": "a R implemented",
+    "kind": "real-word"
+  },
+  {
+    "source": "why-ceos-make-so-much-money-now.auto.srt",
+    "span": "Su nais",
+    "verdict": "should-flag",
+    "candidate": "Sue Nabi",
+    "kind": "real-word",
+    "entity": true
+  },
+  {
+    "source": "why-ceos-make-so-much-money-now.auto.srt",
+    "span": "tsunami",
+    "verdict": "should-flag",
+    "candidate": "Sue Nabi",
+    "kind": "real-word",
+    "entity": true
+  },
+  {
+    "source": "why-ceos-make-so-much-money-now.auto.srt",
+    "span": "Ki",
+    "verdict": "should-flag",
+    "candidate": "Coty",
+    "context": "of Ki a",
+    "kind": "real-word",
+    "entity": true
+  },
+  {
+    "source": "why-ceos-make-so-much-money-now.auto.srt",
+    "span": "cot",
+    "verdict": "should-flag",
+    "candidate": "Coty",
+    "kind": "real-word",
+    "entity": true
+  },
+  {
+    "source": "why-ceos-make-so-much-money-now.auto.srt",
+    "span": "catch and Strays",
+    "verdict": "should-flag",
+    "candidate": "catching strays",
+    "kind": "real-word"
+  },
+  {
+    "source": "why-ceos-make-so-much-money-now.auto.srt",
+    "span": "46",
+    "verdict": "should-flag",
+    "candidate": "146",
+    "context": "nearly 46 million",
+    "kind": "real-word"
+  },
+  {
+    "source": "why-ceos-make-so-much-money-now.auto.srt",
+    "span": "one",
+    "verdict": "should-flag",
+    "candidate": "when",
+    "context": "companies one the",
+    "kind": "real-word"
+  },
+  {
+    "source": "why-ceos-make-so-much-money-now.auto.srt",
+    "span": "market maret",
+    "verdict": "should-flag",
+    "candidate": "markets",
+    "kind": "real-word"
+  },
+  {
+    "source": "why-ceos-make-so-much-money-now.auto.srt",
+    "span": "replace in",
+    "verdict": "should-flag",
+    "candidate": "replacing",
+    "context": "no replace in",
+    "kind": "real-word"
+  },
+  {
+    "source": "why-ceos-make-so-much-money-now.auto.srt",
+    "span": "Grant",
+    "verdict": "should-flag",
+    "candidate": "granted",
+    "context": "now Grant",
+    "kind": "real-word"
+  },
+  {
+    "source": "why-ceos-make-so-much-money-now.auto.srt",
+    "span": "deaf",
+    "verdict": "should-flag",
+    "candidate": "def",
+    "kind": "real-word"
+  },
+  {
+    "source": "why-ceos-make-so-much-money-now.auto.srt",
+    "span": "zat's",
+    "verdict": "should-flag",
+    "candidate": "zaddies",
+    "kind": "non-word"
+  },
+  {
+    "source": "why-ceos-make-so-much-money-now.auto.srt",
+    "span": "icon",
+    "verdict": "should-flag",
+    "candidate": "Icahn",
+    "context": "Carl icon",
+    "kind": "real-word",
+    "entity": true
+  },
+  {
+    "source": "why-ceos-make-so-much-money-now.auto.srt",
+    "span": "bencard",
+    "verdict": "should-flag",
+    "candidate": "endcard",
+    "kind": "non-word"
+  },
+  {
+    "source": "why-ceos-make-so-much-money-now.auto.srt",
+    "span": "and cards",
+    "verdict": "should-flag",
+    "candidate": "endcards",
+    "context": "YouTube and cards",
+    "kind": "real-word"
+  },
+  {
+    "source": "why-ceos-make-so-much-money-now.auto.srt",
+    "span": "en card",
+    "verdict": "should-flag",
+    "candidate": "endcard",
+    "kind": "real-word"
+  },
+  {
+    "source": "why-ceos-make-so-much-money-now.auto.srt",
+    "span": "10 card",
+    "verdict": "should-flag",
+    "candidate": "endcard",
+    "kind": "real-word"
+  },
+  {
+    "source": "why-every-resto-has-the-same-desserts.auto.srt",
+    "span": "Entre",
+    "verdict": "should-flag",
+    "candidate": "entree",
+    "kind": "real-word"
+  },
+  {
+    "source": "why-every-resto-has-the-same-desserts.auto.srt",
+    "span": "Katherine",
+    "verdict": "should-flag",
+    "candidate": "Kathryn",
+    "kind": "real-word",
+    "entity": true
+  },
+  {
+    "source": "why-every-resto-has-the-same-desserts.auto.srt",
+    "span": "educ",
+    "verdict": "should-flag",
+    "candidate": "education",
+    "kind": "real-word",
+    "entity": true
+  },
+  {
+    "source": "why-every-resto-has-the-same-desserts.auto.srt",
+    "span": "ENT",
+    "verdict": "should-flag",
+    "candidate": "entrees",
+    "context": "the ENT will",
+    "kind": "real-word"
+  },
+  {
+    "source": "why-every-resto-has-the-same-desserts.auto.srt",
+    "span": "Skyrocket at",
+    "verdict": "should-flag",
+    "candidate": "skyrocketed",
+    "kind": "real-word"
+  },
+  {
+    "source": "why-every-resto-has-the-same-desserts.auto.srt",
+    "span": "DOR",
+    "verdict": "should-flag",
+    "candidate": "due to a",
+    "kind": "real-word"
+  },
+  {
+    "source": "why-every-resto-has-the-same-desserts.auto.srt",
+    "span": "into",
+    "verdict": "should-flag",
+    "context": "into entirely",
+    "kind": "real-word"
+  },
+  {
+    "source": "why-every-resto-has-the-same-desserts.auto.srt",
+    "span": "Blu host",
+    "verdict": "should-flag",
+    "candidate": "Bluehost",
+    "kind": "real-word",
+    "entity": true
+  },
+  {
+    "source": "why-every-resto-has-the-same-desserts.auto.srt",
+    "span": "start it",
+    "verdict": "should-flag",
+    "candidate": "started",
+    "context": "getting start it",
+    "kind": "real-word"
+  },
+  {
+    "source": "why-every-resto-has-the-same-desserts.auto.srt",
+    "span": "Jen Z",
+    "verdict": "should-flag",
+    "candidate": "Gen Z",
+    "kind": "real-word"
+  },
+  {
+    "source": "why-every-resto-has-the-same-desserts.auto.srt",
+    "span": "blanch",
+    "verdict": "should-flag",
+    "candidate": "Blanche",
+    "context": "Lucy blanch",
+    "kind": "real-word",
+    "entity": true
+  }
+]

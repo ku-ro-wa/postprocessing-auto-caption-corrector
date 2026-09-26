@@ -18,10 +18,12 @@ from caption_checker.evaluation import (
     CorpusError,
     NamedCorpus,
     System,
+    load_corpus,
     run_eval,
+    score,
 )
 from caption_checker.models import Cue, Flag
-from caption_checker.parser import parse
+from caption_checker.parser import parse, tokenize
 
 SRT = """1
 00:00:00,000 --> 00:00:02,000
@@ -276,5 +278,22 @@ def test_eval_command_refuses_a_held_out_corpus_without_final(
     assert final.exit_code == 0, final.output
 
 
-def test_only_the_earnings21_eval10_split_is_held_out() -> None:
-    assert [name for name, c in CORPORA.items() if c.held_out] == ["earnings21-heldout"]
+def test_only_the_two_adr_0006_sets_are_held_out() -> None:
+    assert {name for name, c in CORPORA.items() if c.held_out} == {
+        "earnings21-heldout",
+        "audited-heldout",
+    }
+
+
+def test_audited_held_out_corpus_locates_every_case_in_its_five_transcripts() -> None:
+    # Scored with no Flags at all: checks the corpus itself (every span
+    # locates, every transcript is exhaustive and has errors listed) without
+    # running any system over a Held-out set.
+    corpus = CORPORA["audited-heldout"]
+    cases = load_corpus(corpus.cases_path)
+    assert len(corpus.exhaustive_sources) == 5
+    assert {c.source for c in cases} == set(corpus.exhaustive_sources)
+    assert all(c.verdict == "should-flag" and c.kind for c in cases)
+    words = {s: tokenize(parse(corpus.data_dir / s)) for s in corpus.exhaustive_sources}
+    report = score(cases, {}, words, exhaustive_sources=corpus.exhaustive_sources)
+    assert report.false_negatives == len(cases)

@@ -179,6 +179,20 @@ on the Dev sets (issue #23): Lite is about 3x cheaper but its Flag-level
 precision on the Scored corpus fell below the local pipeline's (0.57 vs
 0.71) and some of its Earnings-21 chunks failed on oversized replies.
 
+**Audited Held-out set** — `audited-heldout`, final comparison only:
+
+```bash
+uv run caption-checker eval --corpus audited-heldout --final
+```
+
+Five more Audited transcripts (`tests/data/audited_heldout_corpus.json`,
+issue #22): K-pop, makeup, coffee, CEO pay and restaurant desserts, two with
+accented main speakers. They were audited after the local pipeline was frozen
+at `2de1655`. They list errors only (no should-not-flag cases), so case
+precision is vacuous and Flag-level precision is the number to read. Like
+`earnings21-heldout`, `eval` refuses it without `--final`, and a video used
+to motivate a change moves to the Dev set.
+
 **Earnings-21 Auto-labelled corpora** — built locally, never committed:
 
 ```bash
