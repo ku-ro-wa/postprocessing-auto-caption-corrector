@@ -1,5 +1,5 @@
 ---
-status: proposed
+status: accepted
 ---
 
 # Bring an LLM Read-through into the eval loop, judged on Held-out sets
@@ -40,3 +40,19 @@ one real catch per four extra flags); the context-embedding detector (caught
 nothing). **Parked**: continued local recall work, other ASR vendors'
 Earnings-21 outputs, a wider OpenRouter model comparison -- see the plan's map
 issue for the full list and what would revive each.
+
+## Result (2026-09-26)
+
+Scored once with `eval --final`. Local is `2de1655`'s detection code; the
+only change since is that Priming terms now feed the vocab. The
+Read-through is the configuration frozen at `33ca55b` (`gemini-2.5-flash`).
+
+| Held-out set | Real-word recall | Flag-level precision | Cost / audio hr |
+|---|---|---|---|
+| Audited | 22/79 vs 6/79 (3.7x) | 0.780 vs 0.343 | $0.05 |
+| Earnings-21 `eval-10` | 409 vs 49 of 3985 (8.3x) | 0.874 vs 0.514 | $0.06 |
+| ... with Priming terms | 435 vs 49 of 3985 (8.9x) | 0.884 vs 0.516 | $0.06 |
+
+(Read-through vs local.) The Read-through meets every condition on both
+sets. One caveat: on the Audited set it caught fewer non-word errors than
+local (9/15 vs 14/15).
