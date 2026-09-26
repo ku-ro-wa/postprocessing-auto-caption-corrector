@@ -345,11 +345,15 @@ class ReadThroughSystem:
     go in as hints, and the Flags it claims are errors -- a verdict with a
     replacement -- come out. A not-an-error verdict is a dismissal, not a
     Flag; a chunk that failed twice contributes nothing and is counted in
-    ``failed_chunks``. Spend accumulates across every transcript run."""
+    ``failed_chunks`` -- and in ``request_failed_chunks`` too when it was
+    lost to request errors, with no unreadable reply. Spend accumulates across every transcript
+    run."""
 
     def __init__(self, reader: Reader) -> None:
         self.reader = reader
         self.failed_chunks = 0
+        self.request_failed_chunks = 0
+        self.last_request_error: str | None = None
 
     @property
     def spend(self) -> Spend:
@@ -363,6 +367,8 @@ class ReadThroughSystem:
             priming_terms=priming_terms,
         )
         self.failed_chunks += result.failed_chunks
+        self.request_failed_chunks += result.request_failed_chunks
+        self.last_request_error = result.last_request_error or self.last_request_error
         return [
             item.flag
             for item in result.items

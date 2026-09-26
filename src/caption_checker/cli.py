@@ -514,9 +514,12 @@ def _render_spend(system: ReadThroughSystem, audio_seconds: float) -> str:
         f"; {spend.requests} requests, {spend.prompt_tokens} prompt + "
         f"{spend.completion_tokens} completion tokens"
     )
-    return (
-        f"{cost}\nread-through: {system.failed_chunks} failed chunks"
-    )
+    # Request errors (no credit, network) are told apart so they aren't
+    # read as the model failing the reply format.
+    requests = f"{system.request_failed_chunks} on request errors"
+    if system.last_request_error is not None:
+        requests += f", last: {system.last_request_error}"
+    return f"{cost}\nread-through: {system.failed_chunks} failed chunks ({requests})"
 
 
 def _detect_config(oov_zipf: float | None) -> DetectConfig:

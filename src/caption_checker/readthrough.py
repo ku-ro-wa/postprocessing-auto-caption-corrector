@@ -23,6 +23,7 @@ from caption_checker.corrector import (
     Correction,
     CorrectorError,
     OpenRouterClient,
+    RequestError,
     Spend,
 )
 from caption_checker.detectors.base import index_cues, make_flag
@@ -113,6 +114,10 @@ class ReadThroughResult:
     calls: int
     chunk_count: int
     failed_chunks: int = 0
+    #: Failed chunks lost to request errors (no credit, network) with no
+    #: unreadable reply on any attempt, and the last such error recorded.
+    request_failed_chunks: int = 0
+    last_request_error: str | None = None
 
 
 class Reader(Protocol):
@@ -430,8 +435,9 @@ def read_through(
     min_confidence: float = MIN_CONFIDENCE,
 ) -> ReadThroughResult:
     """Read ``cues`` chunk by chunk with the local ``flags`` as hints. Each
-    chunk is retried once on a malformed reply; a chunk that fails twice
-    keeps its hints unjudged. ``max_calls`` caps requests, retries included.
+    chunk is retried once on a malformed reply or failed request; a chunk
+    that fails twice keeps its hints unjudged. ``max_calls`` caps requests,
+    retries included.
     New finds under ``min_confidence`` are discarded; every hint keeps its
     verdict whatever the confidence."""
     chunks = plan_chunks(
@@ -441,19 +447,30 @@ def read_through(
     by_gi = {w.global_index: w for w in words}
     hint_flags = {min(f.global_indices): f for f in flags}
     calls = 0
+    request_failed = 0
+    last_request_error: str | None = None
     lock = threading.Lock()
 
     def ask(chunk: ChunkRequest) -> list[ChunkVerdict] | None:
-        nonlocal calls
+        nonlocal calls, request_failed, last_request_error
+        request_error: str | None = None
+        bad_reply = False
         for _attempt in (1, 2):
             with lock:
                 if max_calls is not None and calls >= max_calls:
-                    return None
+                    break
                 calls += 1
             try:
                 return reader.read(chunk)
+            except RequestError as exc:
+                request_error = str(exc)
             except CorrectorError:
-                continue
+                bad_reply = True
+        # One unreadable reply puts the chunk on the model's format.
+        if request_error is not None and not bad_reply:
+            with lock:
+                request_failed += 1
+                last_request_error = request_error
         return None
 
     with ThreadPoolExecutor(max_workers=max(1, workers)) as pool:
@@ -500,6 +517,8 @@ def read_through(
         calls=calls,
         chunk_count=len(chunks),
         failed_chunks=failed,
+        request_failed_chunks=request_failed,
+        last_request_error=last_request_error,
     )
 
 
@@ -612,6 +631,8 @@ class StubReader:
     - ``replacement_for`` / ``confidence_for`` -- per-span overrides.
     - ``widen`` -- ``{hint span: wider span text}`` to answer a hint with.
     - ``garbage`` -- raise :class:`CorrectorError` on every call.
+    - ``request_error`` -- raise :class:`RequestError` with this message on
+      every call.
     """
 
     def __init__(
@@ -623,6 +644,7 @@ class StubReader:
         confidence_for: dict[str, float] | None = None,
         widen: dict[str, str] | None = None,
         garbage: bool = False,
+        request_error: str | None = None,
         default_confidence: float = 0.9,
     ) -> None:
         self.extra = extra or {}
@@ -631,6 +653,7 @@ class StubReader:
         self.confidence_for = confidence_for or {}
         self.widen = widen or {}
         self.garbage = garbage
+        self.request_error = request_error
         self.default_confidence = default_confidence
         self.calls = 0
         self.requests: list[ChunkRequest] = []
@@ -641,6 +664,8 @@ class StubReader:
         with self._lock:
             self.calls += 1
             self.requests.append(request)
+        if self.request_error is not None:
+            raise RequestError(self.request_error)
         if self.garbage:
             raise CorrectorError("stub: garbage reply")
         out: list[ChunkVerdict] = []

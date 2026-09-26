@@ -18,6 +18,7 @@ from caption_checker.corrector import (
     MissingAPIKeyError,
     OpenRouterClient,
     OpenRouterCorrector,
+    RequestError,
     Spend,
     StubCorrector,
     _similar_models,
@@ -128,7 +129,8 @@ def test_correct_fails_fast_on_retired_model(monkeypatch) -> None:
     )
     corrector = OpenRouterCorrector("google/gemini-2.0-flash-001", api_key="k")
 
-    with pytest.raises(CorrectorError, match="no longer on OpenRouter"):
+    # a request error, so eval never reads a bad slug as format failures
+    with pytest.raises(RequestError, match="no longer on OpenRouter"):
         corrector.correct([_ctx("f0", "sensus", ["consensus"])])
 
     assert calls == [OPENROUTER_MODELS_URL]  # never reached the completions call
@@ -281,7 +283,38 @@ def test_a_truncated_reply_is_a_corrector_error(monkeypatch) -> None:
         return _Truncated(b"")
 
     monkeypatch.setattr("urllib.request.urlopen", fake_urlopen)
-    with pytest.raises(CorrectorError, match="request failed"):
+    with pytest.raises(RequestError, match="request failed"):
+        OpenRouterClient("m/x", api_key="k").chat([])
+
+
+def test_an_http_error_is_a_request_error_with_openrouters_reason(monkeypatch) -> None:
+    import io
+    from urllib.error import HTTPError
+
+    def fake_urlopen(request, timeout=None, context=None):  # noqa: ARG001
+        url = request if isinstance(request, str) else request.full_url
+        if url == OPENROUTER_MODELS_URL:
+            return _FakeResponse(json.dumps({"data": [{"id": "m/x"}]}).encode())
+        body = json.dumps({"error": {"message": "exceed your available credits"}})
+        raise HTTPError(url, 402, "Payment Required", {}, io.BytesIO(body.encode()))
+
+    monkeypatch.setattr("urllib.request.urlopen", fake_urlopen)
+    with pytest.raises(RequestError, match="HTTP 402 .*available credits"):
+        OpenRouterClient("m/x", api_key="k").chat([])
+
+
+def test_an_error_body_without_choices_is_a_request_error(monkeypatch) -> None:
+    # OpenRouter answers some upstream provider failures with HTTP 200 and
+    # an error object in place of choices.
+    def fake_urlopen(request, timeout=None, context=None):  # noqa: ARG001
+        url = request if isinstance(request, str) else request.full_url
+        if url == OPENROUTER_MODELS_URL:
+            return _FakeResponse(json.dumps({"data": [{"id": "m/x"}]}).encode())
+        body = {"error": {"code": 502, "message": "provider returned error"}}
+        return _FakeResponse(json.dumps(body).encode())
+
+    monkeypatch.setattr("urllib.request.urlopen", fake_urlopen)
+    with pytest.raises(RequestError, match="provider returned error"):
         OpenRouterClient("m/x", api_key="k").chat([])
 
 
@@ -294,5 +327,6 @@ def test_a_reply_without_text_is_a_corrector_error(monkeypatch) -> None:
         return _FakeResponse(json.dumps(body).encode())
 
     monkeypatch.setattr("urllib.request.urlopen", fake_urlopen)
-    with pytest.raises(CorrectorError, match="no text"):
+    with pytest.raises(CorrectorError, match="no text") as raised:
         OpenRouterClient("m/x", api_key="k").chat([])
+    assert not isinstance(raised.value, RequestError)  # a reply came back

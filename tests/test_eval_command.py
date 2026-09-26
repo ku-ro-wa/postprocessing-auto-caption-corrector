@@ -335,6 +335,33 @@ def test_eval_command_refuses_a_bad_read_through_configuration(
     assert made == []  # failed before building a Reader
 
 
+def test_eval_command_reports_request_errors_apart_from_failed_chunks(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    def factory(config: ReadThroughConfig) -> StubReader:  # noqa: ARG001
+        return StubReader(request_error="HTTP 402 Payment Required: no credit")
+
+    monkeypatch.setattr("caption_checker.readthrough.build_reader", factory)
+    monkeypatch.setitem(CORPORA, "earnings21-dev", _earnings_like(tmp_path))
+    result = CliRunner().invoke(
+        main, ["eval", "--corpus", "earnings21-dev", "--system", "read-through"]
+    )
+    assert result.exit_code == 0, result.output
+    # one chunk per transcript, both lost to the request, not the reply
+    assert (
+        "read-through: 2 failed chunks (2 on request errors, last: "
+        "HTTP 402 Payment Required: no credit)" in result.output
+    )
+
+
+def test_eval_command_reports_failed_chunks_without_request_errors(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    result, _ = _eval_read_through(tmp_path, monkeypatch)
+    assert result.exit_code == 0, result.output
+    assert "read-through: 0 failed chunks (0 on request errors)\n" in result.output
+
+
 def test_read_through_system_scores_only_claimed_errors(tmp_path: Path) -> None:
     from caption_checker.evaluation import ReadThroughSystem
     (tmp_path / "t.srt").write_text(SRT, encoding="utf-8")

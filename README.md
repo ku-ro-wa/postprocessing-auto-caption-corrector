@@ -181,8 +181,10 @@ uv run caption-checker eval --system read-through [--config NAME | --model SLUG]
 scores the Read-through (it calls OpenRouter, so it costs money: about
 $0.05–0.07 per audio hour with the default model on the Dev sets). It counts
 only the Flags it claims are errors, and adds its spend per audio hour plus
-any failed chunks. `--config` runs a registered Read-through configuration
-(model, prompt and reply format; `CONFIGS` in
+any failed chunks. Chunks lost to a failed request (no credit, network,
+retired slug) are counted apart, with one such error shown, so they aren't
+mistaken for a model failing the reply format. `--config` runs a registered
+Read-through configuration (model, prompt and reply format; `CONFIGS` in
 `caption_checker/readthrough.py`), by default `flash-v4`; `--model SLUG`
 instead runs today's prompt (v4) with that model. The default model,
 `google/gemini-2.5-flash`, was picked over `google/gemini-2.5-flash-lite`

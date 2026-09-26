@@ -37,6 +37,7 @@ __all__ = [
     "MissingAPIKeyError",
     "OpenRouterClient",
     "OpenRouterCorrector",
+    "RequestError",
     "Spend",
     "StubCorrector",
     "build_corrector",
@@ -87,6 +88,11 @@ class Correction:
 
 class CorrectorError(RuntimeError):
     """The model reply could not be turned into corrections for this batch."""
+
+
+class RequestError(CorrectorError):
+    """The request itself failed -- an HTTP error (no credit, bad slug, rate
+    limit) or a dropped connection -- so there is no reply to judge."""
 
 
 def ensure_ids_match(got: set[str], want: set[str]) -> None:
@@ -251,16 +257,22 @@ class OpenRouterClient:
                 detail = json.loads(detail)["error"]["message"]
             except (json.JSONDecodeError, KeyError, TypeError):
                 pass
-            raise CorrectorError(
+            raise RequestError(
                 f"OpenRouter request failed: HTTP {exc.code} {exc.reason}: {detail}"
             ) from exc
         except (URLError, HTTPException, OSError, ValueError) as exc:
             # HTTPException: a reply cut off mid-body (IncompleteRead);
             # OSError covers TimeoutError and dropped connections.
-            raise CorrectorError(f"OpenRouter request failed: {exc!r}") from exc
+            raise RequestError(f"OpenRouter request failed: {exc!r}") from exc
 
         with self._lock:
             self.spend.add(payload.get("usage") or {})
+        if isinstance(payload, dict) and "error" in payload and "choices" not in payload:
+            # Some upstream provider failures come back as HTTP 200 with an
+            # error object instead of a reply.
+            error = payload["error"]
+            message = error.get("message") if isinstance(error, dict) else error
+            raise RequestError(f"OpenRouter request failed: {message}")
         try:
             content = payload["choices"][0]["message"]["content"]
         except (KeyError, IndexError, TypeError) as exc:
@@ -299,7 +311,7 @@ class OpenRouterClient:
             if suggestions
             else ""
         )
-        raise CorrectorError(
+        raise RequestError(
             f"model {self.model_id!r} is no longer on OpenRouter.{hint} "
             "Set --model (CLI) or OPENROUTER_MODEL (web) to a current slug."
         )

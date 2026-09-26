@@ -11,7 +11,7 @@ from pathlib import Path
 
 import pytest
 
-from caption_checker.corrector import CorrectorError
+from caption_checker.corrector import CorrectorError, RequestError
 from caption_checker.detect import detect
 from caption_checker.parser import parse
 from caption_checker.readthrough import (
@@ -291,6 +291,38 @@ def test_a_chunk_is_retried_once_then_its_hints_fail(cues) -> None:
     assert result.failed_chunks == 1
     [item] = result.items
     assert item.flag.span == "cubernetes" and item.correction is None
+
+
+def test_a_chunk_whose_requests_fail_is_counted_as_a_request_failure(cues) -> None:
+    # A request error (no credit, network) says nothing about the model's
+    # reply format, so eval must be able to tell the two apart.
+    reader = StubReader(request_error="HTTP 402 Payment Required: no credit")
+    result = read_through(cues, detect(cues), reader)
+    assert result.failed_chunks == 1
+    assert result.request_failed_chunks == 1
+    assert result.last_request_error == "HTTP 402 Payment Required: no credit"
+
+
+def test_an_unreadable_reply_is_not_a_request_failure(cues) -> None:
+    result = read_through(cues, detect(cues), StubReader(garbage=True))
+    assert result.failed_chunks == 1
+    assert result.request_failed_chunks == 0
+    assert result.last_request_error is None
+
+
+def test_a_chunk_with_any_unreadable_reply_is_not_a_request_failure(cues) -> None:
+    # One unreadable reply is enough to show the model's format is at
+    # fault, whichever attempt it came on.
+    class OneOfEach(StubReader):
+        def read(self, request: ChunkRequest) -> list[ChunkVerdict]:
+            self.calls += 1
+            if self.calls == 1:
+                raise RequestError("HTTP 402 Payment Required")
+            raise CorrectorError("reply is not JSON")
+
+    result = read_through(cues, detect(cues), OneOfEach())
+    assert result.failed_chunks == 1
+    assert result.request_failed_chunks == 0
 
 
 def test_max_calls_caps_requests_including_retries(cues) -> None:
