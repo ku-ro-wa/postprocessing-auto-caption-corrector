@@ -23,7 +23,9 @@ _Avoid_: token (reserve "token" for the raw pre-position string).
 
 **Span**:
 The stretch of transcript text a flag covers — one Word, or several adjacent
-Words when the suspected error crosses token boundaries.
+Words when the suspected error crosses token boundaries. A Read-through span
+may also cross a Cue boundary; its Correction is written into the Cue it
+starts in (ADR 0001).
 
 **Sentence context**:
 The full sentence a flagged span sits in, reconstructed across cue boundaries.

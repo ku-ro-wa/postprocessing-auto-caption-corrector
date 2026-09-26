@@ -349,7 +349,6 @@ class ReadThroughSystem:
     def __init__(self, reader: Reader) -> None:
         self.reader = reader
         self.failed_chunks = 0
-        self.dropped = 0
 
     @property
     def spend(self) -> Spend:
@@ -363,7 +362,6 @@ class ReadThroughSystem:
             priming_terms=priming_terms,
         )
         self.failed_chunks += result.failed_chunks
-        self.dropped += result.dropped
         return [
             item.flag
             for item in result.items

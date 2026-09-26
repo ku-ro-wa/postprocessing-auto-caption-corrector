@@ -422,6 +422,38 @@ class TestExport:
         assert 'filename="sample_lecture.corrected.vtt"' in response.headers["content-disposition"]
 
 
+class TestCrossCueFlag:
+    def test_a_find_across_cues_is_highlighted_and_exported(self, tmp_path: Path) -> None:
+        path = tmp_path / "cross.srt"
+        path.write_text(
+            "1\n00:00:00,000 --> 00:00:02,000\nwe reached con\n\n"
+            "2\n00:00:02,000 --> 00:00:04,000\nsensus\n\n"
+            "3\n00:00:04,000 --> 00:00:06,000\nquickly.\n",
+            encoding="utf-8",
+        )
+        client = _make_client(tmp_path, reader=StubReader(extra={"con sensus": "consensus"}))
+        transcript_id = _upload(client, "cross.srt", path)
+
+        page = client.post(
+            f"/transcripts/{transcript_id}/correct",
+            data={"api_key": "sk-or-test"},
+            follow_redirects=True,
+        ).text
+        # the context runs across the Cue boundary, with the whole span marked
+        assert "we reached <mark>con sensus</mark> quickly." in page
+        assert "cues 1–2" in page
+
+        client.post(
+            f"/transcripts/{transcript_id}/flags/0/decision",
+            data={"action": "accept", "text": ""},
+        )
+        exported = client.get(f"/transcripts/{transcript_id}/export").text
+        assert exported == (
+            "1\n00:00:00,000 --> 00:00:02,000\nwe reached consensus\n\n"
+            "2\n00:00:04,000 --> 00:00:06,000\nquickly.\n\n"
+        )
+
+
 class TestDelete:
     def test_delete_removes_transcript(self, tmp_path: Path) -> None:
         client = _make_client(tmp_path)

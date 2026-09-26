@@ -9,6 +9,9 @@ from caption_checker.models import Cue, Word
 # Characters we strip from the edges of a token before any lookup. Keeps
 # interior punctuation (e.g. "gRPC", "co-routine") intact.
 _EDGE_PUNCT = "\"'`.,;:!?()[]{}<>«»•–—…“”‘’"
+#: What a multi-Word span sheds at its edges: punctuation, and the spaces
+#: left between it and the Words when a whole edge Word is punctuation.
+_SPAN_EDGE = _EDGE_PUNCT + " \t\n"
 
 _SENTENCE_SPLIT_RE = re.compile(r"(?<=[.!?])\s+")
 _DIGIT_RE = re.compile(r"\d")

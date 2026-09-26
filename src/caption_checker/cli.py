@@ -480,8 +480,7 @@ def _render_spend(system: ReadThroughSystem, audio_seconds: float) -> str:
         f"{spend.completion_tokens} completion tokens"
     )
     return (
-        f"{cost}\nread-through: {system.failed_chunks} failed chunks, "
-        f"{system.dropped} cross-cue verdicts dropped"
+        f"{cost}\nread-through: {system.failed_chunks} failed chunks"
     )
 
 

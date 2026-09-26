@@ -22,10 +22,11 @@ from pathlib import Path
 from typing import Sequence
 from uuid import uuid4
 
+from caption_checker.apply import apply_corrections, cues_spanned
 from caption_checker.corrector import Correction, CorrectorError, MissingAPIKeyError
 from caption_checker.detect import detect
 from caption_checker.models import DEFAULT_MODEL, DetectConfig, Flag
-from caption_checker.parser import serialize
+from caption_checker.parser import serialize, tokenize
 from caption_checker.readthrough import (
     DETECTOR_READ_THROUGH,
     OpenRouterReader,
@@ -231,26 +232,17 @@ def set_decision(record: TranscriptRecord, flag_id: int, *, action: str, text: s
 
 
 def export_transcript(storage: Storage, record: TranscriptRecord) -> str:
-    """Apply every accepted Review Decision's text back into its Flag's Cue
-    and serialize to the Transcript's original format. Flags left pending
-    or rejected keep their Cue's original text."""
+    """Splice every accepted Review Decision's text into the Flag's span
+    (``apply_corrections``, ADR 0001 -- a span across Cues included) and
+    serialize to the Transcript's original format. Flags left pending or
+    rejected keep their original text."""
     cues = storage.load_cues(record.session_id, record.id)
-    by_cue: dict[int, list[tuple[int, ReviewDecision]]] = {}
-    for flag_id, (flag, decision) in enumerate(zip(record.flags, record.decisions)):
-        if decision.status == "accepted" and decision.text is not None:
-            by_cue.setdefault(flag.cue_index, []).append((flag_id, decision))
-
-    for cue in cues:
-        edits = by_cue.get(cue.index)
-        if not edits:
-            continue
-        text = cue.text
-        for flag_id, decision in edits:
-            span = record.flags[flag_id].span
-            text = text.replace(span, decision.text or "", 1)
-        cue.text = text
-
-    return serialize(cues, format=record.format)
+    accepted = [
+        (flag, decision.text)
+        for flag, decision in zip(record.flags, record.decisions)
+        if decision.status == "accepted" and decision.text is not None
+    ]
+    return serialize(apply_corrections(cues, accepted), format=record.format)
 
 
 @dataclass
@@ -266,14 +258,19 @@ class FlagRow:
     decision: ReviewDecision
     dismissed: bool
     default_text: str
+    #: "cue 7", or "cues 7–8" for a span across a Cue boundary.
+    cue_label: str
 
 
-def transcript_rows(record: TranscriptRecord) -> list[FlagRow]:
+def transcript_rows(storage: Storage, record: TranscriptRecord) -> list[FlagRow]:
     """One row per Flag, in transcript order — the Read-through's own finds
     are appended to ``record.flags`` but listed where they occur."""
+    cues = storage.load_cues(record.session_id, record.id)
+    words_by_gi = {w.global_index: w for w in tokenize(cues)}
     rows = []
     for flag_id, flag in enumerate(record.flags):
         correction = record.corrections[flag_id] if record.corrections else None
+        spanned = cues_spanned(flag, cues, words_by_gi)
         rows.append(
             FlagRow(
                 id=flag_id,
@@ -282,6 +279,11 @@ def transcript_rows(record: TranscriptRecord) -> list[FlagRow]:
                 decision=record.decisions[flag_id],
                 dismissed=correction is not None and correction.replacement is None,
                 default_text=_default_replacement(flag, correction),
+                cue_label=(
+                    f"cues {spanned[0].index}–{spanned[-1].index}"
+                    if len(spanned) > 1
+                    else f"cue {flag.cue_index}"
+                ),
             )
         )
     rows.sort(key=lambda r: (r.flag.cue_index, min(r.flag.global_indices)))

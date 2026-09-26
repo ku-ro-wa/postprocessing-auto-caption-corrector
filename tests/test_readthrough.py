@@ -192,11 +192,18 @@ def test_a_not_an_error_verdict_is_kept_on_its_hint(cues) -> None:
     assert item.correction.replacement is None
 
 
-def test_a_span_across_cues_is_dropped(cues) -> None:
+def test_a_new_find_across_cues_is_kept_on_its_first_cue(cues) -> None:
     reader = StubReader(extra={"fast. Hang": "fast. Huang"})
-    result = read_through(cues, [], reader)
-    assert result.items == []
-    assert result.dropped == 1
+    [item] = read_through(cues, [], reader).items
+    assert item.flag.span == "fast. Hang"
+    assert item.flag.global_indices == [10, 11]
+    assert item.flag.cue_index == 2
+    assert (item.flag.start, item.flag.end) == (cues[1].start, cues[2].end)
+    # the review context runs across the boundary
+    assert item.flag.context == (
+        "The chad GPT model is fast. Hang the CEO spoke at length."
+    )
+    assert item.correction.replacement == "fast. Huang"
 
 
 def test_overlapping_verdicts_keep_the_more_confident_one(cues) -> None:
@@ -215,13 +222,19 @@ def test_a_hint_outranks_a_more_confident_new_find_over_it(cues) -> None:
     assert item.flag.span == "cubernetes"  # the hint keeps its verdict
 
 
-def test_a_hint_widened_across_cues_falls_back_to_its_own_span(cues) -> None:
+def test_a_hint_widened_across_cues_keeps_the_wider_span(cues) -> None:
     flags = [f for f in detect(cues) if f.span == "cubernetes"]
-    reader = StubReader(widen={"cubernetes": "cubernetes. The"})
-    result = read_through(cues, flags, reader)
-    [item] = result.items
-    assert item.flag is flags[0]
-    assert item.correction.replacement == "Kubernetes"
+    reader = StubReader(
+        widen={"cubernetes": "cubernetes. The"},
+        replacement_for={"cubernetes. The": "Kubernetes. The"},
+    )
+    [item] = read_through(cues, flags, reader).items
+    assert item.hint is flags[0]
+    assert item.flag.global_indices == [4, 5]
+    assert item.flag.cue_index == 1
+    assert item.flag.detector == f"{flags[0].detector}+{DETECTOR_READ_THROUGH}"
+    assert "cubernetes. The" in item.flag.context
+    assert item.correction.replacement == "Kubernetes. The"
 
 
 def test_a_hint_cannot_widen_over_another_hint(cues) -> None:

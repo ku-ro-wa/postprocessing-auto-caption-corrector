@@ -471,3 +471,35 @@ def test_read_through_refuses_more_chunks_than_max_calls() -> None:
     with pytest.raises(MaxCallsExceededError):
         _read(SAMPLE, reader, max_calls=1, read_chunk_words=20)
     assert reader.calls == 0
+
+
+CROSS = """1
+00:00:00,000 --> 00:00:02,000
+we reached con
+
+2
+00:00:02,000 --> 00:00:04,000
+sensus quickly.
+"""
+
+
+def test_read_through_applies_a_correction_across_cues(tmp_path) -> None:
+    cues = _cues(CROSS, tmp_path)
+    reviewer = FuncReviewer(lambda p: ("accept", p.replacement))
+    result = _read(cues, StubReader(extra={"con sensus": "consensus"}), reviewer=reviewer)
+    [p] = [p for p in reviewer.seen if p.flag.span == "con sensus"]
+    # review sees the text of every Cue the span touches
+    assert p.cue_text == "we reached con sensus quickly."
+    assert [c.text for c in result.cues] == ["we reached consensus", "quickly."]
+
+
+def test_interactive_render_names_every_cue_a_span_touches(tmp_path) -> None:
+    cues = _cues(CROSS, tmp_path)
+    reviewer = FuncReviewer(lambda p: ("skip", None))
+    _read(cues, StubReader(extra={"con sensus": "consensus"}), reviewer=reviewer)
+    [p] = [p for p in reviewer.seen if p.flag.span == "con sensus"]
+    err = io.StringIO()
+    InteractiveReviewer(stdin=io.StringIO("n\n"), stderr=err).review([p])
+    out = err.getvalue()
+    assert "cues 1–2" in out
+    assert "we reached »con sensus« quickly." in out

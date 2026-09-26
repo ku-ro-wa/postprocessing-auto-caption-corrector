@@ -3,7 +3,7 @@
 from __future__ import annotations
 
 from caption_checker.models import Cue, Flag, Word
-from caption_checker.normalize import trim_edges
+from caption_checker.normalize import _SPAN_EDGE
 
 
 def index_cues(cues: list[Cue]) -> dict[int, Cue]:
@@ -11,11 +11,10 @@ def index_cues(cues: list[Cue]) -> dict[int, Cue]:
 
 
 def span_text(span_words: list[Word]) -> str:
-    """Surface text of a span with only the outer punctuation trimmed."""
-    parts = [w.text for w in span_words]
-    parts[0] = trim_edges(parts[0]) or parts[0]
-    parts[-1] = trim_edges(parts[-1]) or parts[-1]
-    return " ".join(parts)
+    """Surface text of a span with only the outer punctuation trimmed --
+    interior punctuation ("fast. Hang") stays, as the splice keeps it."""
+    raw = " ".join(w.text for w in span_words)
+    return raw.strip(_SPAN_EDGE) or raw
 
 
 def make_flag(

@@ -23,7 +23,7 @@ from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Protocol, Sequence, TextIO
 
-from caption_checker.apply import apply_corrections
+from caption_checker.apply import apply_corrections, cues_spanned
 from caption_checker.cache import CachedCorrection, DecisionCache
 from caption_checker.corrector import (
     Correction,
@@ -119,6 +119,9 @@ class PendingCorrection:
     llm_confidence: float | None
     rationale: str
     preset: str  # PRESET_ACCEPT | PRESET_SKIP -- the reviewer's default
+    #: The last Cue the span reaches, when it crosses a Cue boundary;
+    #: ``cue_text`` then holds every Cue it touches.
+    end_cue_index: int | None = None
 
     @property
     def headline_confidence(self) -> float:
@@ -271,8 +274,13 @@ class InteractiveReviewer:
     def _render(self, p: PendingCorrection) -> None:
         f = p.flag
         marked = p.cue_text.replace(f.span, f"»{f.span}«", 1)
+        where = (
+            f"cues {f.cue_index}–{p.end_cue_index}"
+            if p.end_cue_index is not None
+            else f"cue {f.cue_index}"
+        )
         lines = [
-            f"[{format_timestamp(f.start)}] cue {f.cue_index}  ({p.source})",
+            f"[{format_timestamp(f.start)}] {where}  ({p.source})",
             f"  {marked}",
         ]
         if p.replacement is None:
@@ -587,17 +595,17 @@ def _run_read_through(
         chunk_words=chunk_words,
         max_calls=max_calls,
     )
-    cues_by_index = {c.index: c for c in cues}
+    words_by_gi = {w.global_index: w for w in tokenize(cues)}
     pending: list[PendingCorrection] = []
     for i, item in enumerate(result.items):
         c = item.correction
+        spanned = cues_spanned(item.flag, cues, words_by_gi)
         pending.append(
             PendingCorrection(
                 flag=item.flag,
                 flag_id=f"r{i}",
-                cue_text=cues_by_index[item.flag.cue_index].text.replace(
-                    "\n", " "
-                ),
+                cue_text=" ".join(cue.text.replace("\n", " ") for cue in spanned),
+                end_cue_index=spanned[-1].index if len(spanned) > 1 else None,
                 replacement=c.replacement if c else None,
                 source=SOURCE_READ_THROUGH if c else SOURCE_PARSE_FAILURE,
                 detector_confidence=item.flag.confidence,

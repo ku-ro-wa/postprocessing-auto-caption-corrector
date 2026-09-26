@@ -1,7 +1,7 @@
 {% set status = "dismissed" if row.dismissed else row.decision.status %}
 <div class="flag-card {{ status }}" id="flag-{{ row.id }}">
   <div class="flag-meta">
-    [{{ row.flag.start|ts }} → {{ row.flag.end|ts }}] cue {{ row.flag.cue_index }}
+    [{{ row.flag.start|ts }} → {{ row.flag.end|ts }}] {{ row.cue_label }}
     &middot; {{ row.flag.detector }} &middot; confidence {{ "%.2f"|format(row.flag.confidence) }}
     <span class="status-pill">{{ status }}</span>
   </div>

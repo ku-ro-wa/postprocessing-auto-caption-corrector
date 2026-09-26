@@ -152,7 +152,7 @@ class TestRunCorrection:
         stub = StubReader(extra={"leader election": "leader elections"})
         service.run_correction(storage, record, api_key="test-key", reader=stub)
 
-        rows = service.transcript_rows(record)
+        rows = service.transcript_rows(storage, record)
 
         starts = [min(r.flag.global_indices) for r in rows]
         assert starts == sorted(starts)
@@ -166,7 +166,7 @@ class TestRunCorrection:
 
         service.run_correction(storage, record, api_key="test-key", reader=stub)
 
-        row = next(r for r in service.transcript_rows(record) if r.flag.span == "con sensus")
+        row = next(r for r in service.transcript_rows(storage, record) if r.flag.span == "con sensus")
         assert row.dismissed
         assert row.decision.status == "pending"  # skipped on export unless overridden
 
@@ -352,7 +352,7 @@ class TestTranscriptRows:
         record = _upload_sample(storage, session_id)
         flag_id = next(i for i, f in enumerate(record.flags) if f.candidates)
 
-        rows = service.transcript_rows(record)
+        rows = service.transcript_rows(storage, record)
 
         assert rows[flag_id].default_text == record.flags[flag_id].candidates[0]
 
@@ -365,7 +365,7 @@ class TestTranscriptRows:
             id=str(flag_id), replacement="LLM Replacement", confidence=0.9
         )
 
-        rows = service.transcript_rows(record)
+        rows = service.transcript_rows(storage, record)
 
         assert rows[flag_id].default_text == "LLM Replacement"
 
@@ -376,7 +376,7 @@ class TestTranscriptRows:
         flag_id = 0
         record.flags[flag_id].candidates = []
 
-        rows = service.transcript_rows(record)
+        rows = service.transcript_rows(storage, record)
 
         assert rows[flag_id].default_text == record.flags[flag_id].span
 

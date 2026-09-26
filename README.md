@@ -181,7 +181,7 @@ uv run caption-checker eval --system read-through [--model SLUG]
 scores the Read-through (it calls OpenRouter, so it costs money: about
 $0.05–0.07 per audio hour with the default model on the Dev sets). It counts
 only the Flags it claims are errors, and adds its spend per audio hour plus
-any failed chunks and dropped cross-cue verdicts. The default model,
+any failed chunks. The default model,
 `google/gemini-2.5-flash`, was picked over `google/gemini-2.5-flash-lite`
 on the Dev sets (issue #23): Lite is about 3x cheaper but its Flag-level
 precision on the Scored corpus fell below the local pipeline's (0.57 vs

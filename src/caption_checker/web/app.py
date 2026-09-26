@@ -135,7 +135,7 @@ def create_app(storage: Storage, *, reader: Reader | None = None) -> FastAPI:
             "transcript.html",
             {
                 "transcript": record,
-                "rows": service.transcript_rows(record),
+                "rows": service.transcript_rows(storage, record),
                 "summary": service.correction_summary(record),
                 "has_session_key": bool(storage.get_session_api_key(session_id)),
                 "has_server_key": bool(os.environ.get("OPENROUTER_API_KEY")),
@@ -198,7 +198,7 @@ def create_app(storage: Storage, *, reader: Reader | None = None) -> FastAPI:
             raise HTTPException(status_code=400, detail=str(exc)) from exc
 
         storage.save_transcript(record)
-        row = next(r for r in service.transcript_rows(record) if r.id == flag_id)
+        row = next(r for r in service.transcript_rows(storage, record) if r.id == flag_id)
         return templates.TemplateResponse(
             request, "partials/flag_row.html", {"transcript": record, "row": row}
         )

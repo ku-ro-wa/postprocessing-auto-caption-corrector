@@ -112,10 +112,6 @@ class ReadThroughResult:
     calls: int
     chunk_count: int
     failed_chunks: int = 0
-    #: Verdicts whose span crosses a Cue boundary (a correction can only be
-    #: spliced into one Cue): a new find is thrown away, a widened hint
-    #: goes back to its own span.
-    dropped: int = 0
 
 
 class Reader(Protocol):
@@ -452,7 +448,7 @@ def read_through(
     context_of = {gi: text for text, idxs in sentences(cues, words) for gi in idxs}
     cues_by_index = index_cues(cues)
     items: list[ReadItem] = []
-    failed = dropped = 0
+    failed = 0
     for n, (chunk, verdicts) in enumerate(zip(chunks, replies)):
         if verdicts is None:
             failed += 1
@@ -468,15 +464,8 @@ def read_through(
                 continue
             hint = next((h for h in chunk.hints if h.id == v.hint), None)
             span_words = [by_gi[gi] for gi in range(v.start, v.end + 1)]
-            if len({w.cue_index for w in span_words}) != 1:
-                dropped += 1
-                if hint is None:
-                    continue
-                # a hint keeps its verdict on its own span, unwidened
-                v = replace(v, start=hint.start, end=hint.end)
-                span_words = [by_gi[gi] for gi in range(v.start, v.end + 1)]
             flag = _flag_for(v, hint, span_words, hint_flags, cues_by_index)
-            flag.context = flag.context or context_of.get(v.start, "")
+            flag.context = flag.context or _context(span_words, context_of)
             correction = Correction(
                 id=f"c{n}.{k}",
                 replacement=v.replacement,
@@ -497,8 +486,18 @@ def read_through(
         calls=calls,
         chunk_count=len(chunks),
         failed_chunks=failed,
-        dropped=dropped,
     )
+
+
+def _context(span_words: list[Word], context_of: dict[int, str]) -> str:
+    """The sentence a span sits in -- or, for one that runs across a sentence
+    end (as a span across a Cue boundary may), every sentence it touches."""
+    parts: list[str] = []
+    for w in span_words:
+        text = context_of.get(w.global_index, "")
+        if text and text not in parts:
+            parts.append(text)
+    return " ".join(parts)
 
 
 def _flag_for(
