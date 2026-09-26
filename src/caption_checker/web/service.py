@@ -1,39 +1,37 @@
 """Orchestration for the web layer: upload+scan, the LLM correct pass,
 recording Review Decisions, and assembling an Export. Calls the same core
 entry points the CLI uses (``parser.parse``/``serialize``, ``detect.detect``,
-and the ``corrector`` module's ``Corrector`` seam) — no new core-pipeline
-logic lives here.
+and ``readthrough.read_through`` over its ``Reader`` seam) — no new
+core-pipeline logic lives here.
 
-Unlike the CLI's own ``correct`` command (``correct.py``, with its
-interactive/threshold ``Reviewer`` and its own ``ReviewDecision``/cache/
-bypass machinery for a single synchronous run), the web layer's job is to
-call an LLM for a verdict and then hold each Flag's Review Decision open
-across many separate HTTP requests — so only the ``Corrector`` protocol
-itself (the actual "ask an LLM" seam) is reused here, not ``correct.py``'s
-CLI-specific orchestration.
+The web `correct` pass is the Read-through (ADR 0006). Unlike the CLI's own
+``correct`` command (``correct.py``, with its interactive/threshold
+``Reviewer`` for a single synchronous run), the web layer's job is to get
+the Read-through's verdicts and then hold each Flag's Review Decision open
+across many separate HTTP requests — so only ``read_through`` itself is
+reused here, not ``correct.py``'s CLI-specific orchestration.
 """
 
 from __future__ import annotations
 
 import os
-from dataclasses import dataclass
+from dataclasses import dataclass, replace
 from datetime import datetime, timezone
 from functools import lru_cache
 from pathlib import Path
+from typing import Sequence
 from uuid import uuid4
 
-from caption_checker.correct import CHUNK_SIZE
-from caption_checker.corrector import (
-    Corrector,
-    CorrectorError,
-    Correction,
-    FlagContext,
-    MissingAPIKeyError,
-    OpenRouterCorrector,
-)
+from caption_checker.corrector import Correction, CorrectorError, MissingAPIKeyError
 from caption_checker.detect import detect
 from caption_checker.models import DEFAULT_MODEL, DetectConfig, Flag
 from caption_checker.parser import serialize
+from caption_checker.readthrough import (
+    DETECTOR_READ_THROUGH,
+    OpenRouterReader,
+    Reader,
+    read_through,
+)
 from caption_checker.vocab import Vocab, load_vocab
 from caption_checker.web.models import ReviewDecision, TranscriptRecord
 from caption_checker.web.storage import Storage
@@ -103,24 +101,25 @@ def upload_transcript(
     return record
 
 
-def _flag_context(flag_id: str, flag: Flag) -> FlagContext:
-    return FlagContext(
-        id=flag_id,
-        span=flag.span,
-        sentence=flag.context or flag.span,
-        candidates=list(flag.candidates),
-        detector=flag.detector,
-        reason=flag.reason,
-        nearby=("", ""),
-        related=[],
-    )
-
-
 def _same_text(a: str, b: str) -> bool:
     def normalize(s: str) -> str:
         return "".join(ch.lower() for ch in s if ch.isalnum())
 
     return normalize(a) == normalize(b)
+
+
+def _without_echo(flag: Flag, correction: Correction | None) -> Correction | None:
+    """``correction``, downgraded to not-an-error when it only repeats the
+    Flag's own span. Seen in practice: a model can propose a "correction"
+    identical to the original span. Nothing to act on, so don't treat it as
+    an actionable replacement."""
+    if (
+        correction is not None
+        and correction.replacement is not None
+        and _same_text(correction.replacement, flag.span)
+    ):
+        return replace(correction, replacement=None)
+    return correction
 
 
 def run_correction(
@@ -129,65 +128,66 @@ def run_correction(
     *,
     api_key: str,
     model: str | None = None,
-    corrector: Corrector | None = None,
+    reader: Reader | None = None,
+    priming_terms: Sequence[str] = (),
 ) -> TranscriptRecord:
-    """Run the LLM `correct` pass over every Flag on ``record``.
+    """Run the Read-through over ``record``, its Flags as hints and
+    ``priming_terms`` given to the model.
 
-    A no-op when ``record`` already has Corrections from a prior successful
-    run: re-running `correct` on an already-corrected Transcript, and any
-    diffing/versioning across multiple passes, is explicitly out of scope —
-    only a *failed* run (no Corrections yet, ``correct_error`` set) is
-    retriable.
+    Each hint's verdict becomes that Flag's Correction (a verdict that widens
+    a hint replaces the Flag's span in place); each error the Read-through
+    found by itself is appended as a new Flag with a pending Review Decision.
+    A chunk that fails leaves its Flags unjudged and is counted in
+    ``failed_chunks``.
 
-    On failure, the record is persisted with ``correct_error`` set (a
-    visible, retriable state) and the error is re-raised for the caller to
-    report; on success, prior Corrections are replaced and any error is
-    cleared. Review Decisions are left untouched either way.
+    A no-op when ``record`` is already corrected: re-running `correct`, and
+    any diffing/versioning across multiple passes, is explicitly out of
+    scope — only a *failed* run (every chunk failed, or no API key;
+    ``correct_error`` set) is retriable; the chunks of a partly failed run
+    are not. On failure the record is persisted
+    with ``correct_error`` set and the error re-raised for the caller to
+    report.
     """
-    if record.has_corrections:
-        return record
-
-    if not record.flags:
-        record.corrections = []
-        record.correct_error = None
-        storage.save_transcript(record)
+    if record.corrected:
         return record
 
     model = model if model is not None else os.environ.get("OPENROUTER_MODEL", DEFAULT_MODEL)
+    cues = storage.load_cues(record.session_id, record.id)
     try:
-        active_corrector = corrector or OpenRouterCorrector(model, api_key=api_key)
-        by_id: dict[str, Correction] = {}
-        for start in range(0, len(record.flags), CHUNK_SIZE):
-            batch = list(enumerate(record.flags))[start : start + CHUNK_SIZE]
-            batch_ctx = [_flag_context(str(i), flag) for i, flag in batch]
-            for result in active_corrector.correct(batch_ctx):
-                by_id[result.id] = result
+        active_reader = reader or OpenRouterReader(model, api_key=api_key)
+        result = read_through(cues, record.flags, active_reader, priming_terms=priming_terms)
+        if result.chunk_count and result.failed_chunks == result.chunk_count:
+            raise CorrectorError(
+                f"The Read-through failed on all {result.chunk_count} chunk(s); "
+                "nothing was judged. Try again."
+            )
     except (MissingAPIKeyError, CorrectorError) as exc:
         record.correct_error = str(exc)
         storage.save_transcript(record)
         raise
 
-    corrections: list[Correction | None] = []
-    for i, flag in enumerate(record.flags):
-        correction = by_id.get(str(i))
-        if (
-            correction is not None
-            and correction.replacement is not None
-            and _same_text(correction.replacement, flag.span)
-        ):
-            # Seen in practice: a model can propose a "correction" identical
-            # to the original span. Nothing to act on, so don't treat it as
-            # an actionable replacement.
-            correction = Correction(
-                id=correction.id,
-                replacement=None,
-                confidence=correction.confidence,
-                rationale=correction.rationale,
-            )
-        corrections.append(correction)
+    index_of = {id(flag): i for i, flag in enumerate(record.flags)}
+    corrections: list[Correction | None] = [None] * len(record.flags)
+    for item in result.items:
+        correction = _without_echo(item.flag, item.correction)
+        if item.hint is None:
+            record.flags.append(item.flag)
+            corrections.append(correction)
+            record.decisions.append(ReviewDecision())
+            continue
+        i = index_of[id(item.hint)]
+        if item.flag is not item.hint:
+            # Widened: an accepted text was written for the narrower span.
+            record.flags[i] = item.flag
+            if record.decisions[i].status == "accepted":
+                record.decisions[i] = ReviewDecision()
+        corrections[i] = correction
 
     record.corrections = corrections
     record.correct_error = None
+    record.corrected_at = _now_iso()
+    record.chunk_count = result.chunk_count
+    record.failed_chunks = result.failed_chunks
     storage.save_transcript(record)
     return record
 
@@ -269,6 +269,8 @@ class FlagRow:
 
 
 def transcript_rows(record: TranscriptRecord) -> list[FlagRow]:
+    """One row per Flag, in transcript order — the Read-through's own finds
+    are appended to ``record.flags`` but listed where they occur."""
     rows = []
     for flag_id, flag in enumerate(record.flags):
         correction = record.corrections[flag_id] if record.corrections else None
@@ -282,6 +284,7 @@ def transcript_rows(record: TranscriptRecord) -> list[FlagRow]:
                 default_text=_default_replacement(flag, correction),
             )
         )
+    rows.sort(key=lambda r: (r.flag.cue_index, min(r.flag.global_indices)))
     return rows
 
 
@@ -290,12 +293,14 @@ class CorrectionSummary:
     confirmed: int
     dismissed: int
     total: int
+    found: int
 
 
 def correction_summary(record: TranscriptRecord) -> CorrectionSummary | None:
-    if not record.has_corrections:
+    if not record.corrected:
         return None
     confirmed = sum(1 for c in record.corrections if c is not None and c.replacement is not None)
     dismissed = sum(1 for c in record.corrections if c is not None and c.replacement is None)
     total = sum(1 for c in record.corrections if c is not None)
-    return CorrectionSummary(confirmed=confirmed, dismissed=dismissed, total=total)
+    found = sum(1 for f in record.flags if f.detector == DETECTOR_READ_THROUGH)
+    return CorrectionSummary(confirmed=confirmed, dismissed=dismissed, total=total, found=found)

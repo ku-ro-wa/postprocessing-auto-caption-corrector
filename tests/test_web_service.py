@@ -4,18 +4,33 @@ from pathlib import Path
 
 import pytest
 
-from caption_checker.corrector import Correction, CorrectorError, FlagContext, StubCorrector
+from caption_checker.corrector import Correction, CorrectorError
+from caption_checker.readthrough import ChunkRequest, ChunkVerdict, StubReader
 from caption_checker.web import service
 from caption_checker.web.storage import Storage
 
 DATA_DIR = Path(__file__).parent / "data"
 
 
-class _AssertNotCalledCorrector:
-    """A ``Corrector`` that fails the test if it's ever invoked."""
+class _AssertNotCalledReader(StubReader):
+    """A ``Reader`` that fails the test if it's ever invoked."""
 
-    def correct(self, batch: list[FlagContext]) -> list[Correction]:
-        raise AssertionError("should not call the corrector again once already corrected")
+    def read(self, request: ChunkRequest) -> list[ChunkVerdict]:
+        raise AssertionError("should not call the reader again once already corrected")
+
+
+class _FailingOn(StubReader):
+    """A ``StubReader`` whose every request for a chunk containing ``word``
+    fails, as a malformed reply would."""
+
+    def __init__(self, word: str, **kwargs) -> None:
+        super().__init__(**kwargs)
+        self.word = word
+
+    def read(self, request: ChunkRequest) -> list[ChunkVerdict]:
+        if any(text.strip(".,") == self.word for _, text in request.words):
+            raise CorrectorError("stub: garbage reply")
+        return super().read(request)
 
 
 @pytest.fixture
@@ -66,62 +81,195 @@ class TestUploadTranscript:
         assert storage.list_transcripts(session_id) == []
 
 
+def _long_transcript(sentences: int, *, marker_at: int) -> bytes:
+    """An SRT long enough for several Read-through chunks (40-word
+    sentences, one per Cue), with the non-word "zzqx" in Cue ``marker_at``."""
+    blocks = []
+    for i in range(sentences):
+        words = ["the", "cat", "sat", "on", "the", "mat"] * 6 + ["and", "then", "it", "slept."]
+        if i == marker_at:
+            words[0] = "zzqx"
+        blocks.append(
+            f"{i + 1}\n00:00:{i:02d},000 --> 00:00:{i:02d},900\n{' '.join(words)}\n"
+        )
+    return "\n".join(blocks).encode()
+
+
 class TestRunCorrection:
-    def test_populates_corrections_aligned_with_flags(
+    """The web `correct` pass is the Read-through (ADR 0006), over the
+    ``Reader`` seam."""
+
+    def test_hint_verdicts_align_with_their_flags(
         self, storage: Storage, session_id: str
     ) -> None:
         record = _upload_sample(storage, session_id)
-        stub = StubCorrector(replacement_for={f.span: "fixed" for f in record.flags})
+        local = list(record.flags)
+        stub = StubReader(replacement_for={"cubernetes": "Kubernetes"})
 
-        result = service.run_correction(storage, record, api_key="test-key", corrector=stub)
+        result = service.run_correction(storage, record, api_key="test-key", reader=stub)
 
-        assert len(result.corrections) == len(result.flags)
-        assert all(c is not None and c.replacement == "fixed" for c in result.corrections)
+        assert result.flags == local  # no finds scripted -> nothing appended
+        flag_id = next(i for i, f in enumerate(local) if f.span == "cubernetes")
+        assert result.corrections[flag_id].replacement == "Kubernetes"
+        assert all(c is not None for c in result.corrections)
         assert result.correct_error is None
+        reloaded = storage.load_transcript(session_id, record.id)
+        assert reloaded is not None and reloaded.corrected
+
+    def test_new_finds_are_appended_as_flags_with_pending_decisions(
+        self, storage: Storage, session_id: str
+    ) -> None:
+        record = _upload_sample(storage, session_id)
+        n_local = len(record.flags)
+        stub = StubReader(extra={"leader election": "leader elections"})
+
+        service.run_correction(storage, record, api_key="test-key", reader=stub)
 
         reloaded = storage.load_transcript(session_id, record.id)
         assert reloaded is not None
-        assert reloaded.has_corrections
+        assert len(reloaded.flags) == len(reloaded.corrections) == len(reloaded.decisions)
+        assert len(reloaded.flags) == n_local + 1
+        found = reloaded.flags[n_local]
+        assert (found.span, found.detector) == ("leader election", "read_through")
+        assert reloaded.corrections[n_local].replacement == "leader elections"
+        assert reloaded.decisions[n_local].status == "pending"
+
+    def test_a_new_find_exports_like_a_local_flag(
+        self, storage: Storage, session_id: str
+    ) -> None:
+        record = _upload_sample(storage, session_id)
+        stub = StubReader(extra={"leader election": "leader elections"})
+        service.run_correction(storage, record, api_key="test-key", reader=stub)
+
+        service.set_decision(record, len(record.flags) - 1, action="accept", text=None)
+
+        assert "leader elections using" in service.export_transcript(storage, record)
+
+    def test_rows_list_new_finds_in_transcript_order(
+        self, storage: Storage, session_id: str
+    ) -> None:
+        record = _upload_sample(storage, session_id)
+        stub = StubReader(extra={"leader election": "leader elections"})
+        service.run_correction(storage, record, api_key="test-key", reader=stub)
+
+        rows = service.transcript_rows(record)
+
+        starts = [min(r.flag.global_indices) for r in rows]
+        assert starts == sorted(starts)
+        assert rows[[r.flag.span for r in rows].index("leader election")].id == len(record.flags) - 1
+
+    def test_dismissed_hints_are_kept_and_marked_dismissed(
+        self, storage: Storage, session_id: str
+    ) -> None:
+        record = _upload_sample(storage, session_id)
+        stub = StubReader(null_spans={"con sensus"})
+
+        service.run_correction(storage, record, api_key="test-key", reader=stub)
+
+        row = next(r for r in service.transcript_rows(record) if r.flag.span == "con sensus")
+        assert row.dismissed
+        assert row.decision.status == "pending"  # skipped on export unless overridden
+
+    def test_widened_hint_replaces_its_flag_in_place(
+        self, storage: Storage, session_id: str
+    ) -> None:
+        record = _upload_sample(storage, session_id)
+        flag_id = next(i for i, f in enumerate(record.flags) if f.span == "cubernetes")
+        service.set_decision(record, flag_id, action="accept", text="Kubernetes")
+        stub = StubReader(
+            widen={"cubernetes": "look at cubernetes"},
+            replacement_for={"look at cubernetes": "look at Kubernetes"},
+        )
+
+        service.run_correction(storage, record, api_key="test-key", reader=stub)
+
+        assert record.flags[flag_id].span == "look at cubernetes"
+        assert record.corrections[flag_id].replacement == "look at Kubernetes"
+        # the accepted text was for the narrower span: back to pending
+        assert record.decisions[flag_id].status == "pending"
+
+    def test_failed_chunks_are_counted_and_leave_their_flags_unjudged(
+        self, storage: Storage, session_id: str
+    ) -> None:
+        content = _long_transcript(30, marker_at=25)
+        record = service.upload_transcript(storage, session_id, "long.srt", content)
+        marker = next(i for i, f in enumerate(record.flags) if f.span == "zzqx")
+
+        service.run_correction(
+            storage, record, api_key="test-key", reader=_FailingOn("zzqx")
+        )
+
+        reloaded = storage.load_transcript(session_id, record.id)
+        assert reloaded is not None
+        assert reloaded.corrected
+        assert reloaded.chunk_count > 1
+        assert reloaded.failed_chunks == 1
+        assert reloaded.corrections[marker] is None
+        assert reloaded.correct_error is None
+
+    def test_priming_terms_reach_the_reader(
+        self, storage: Storage, session_id: str
+    ) -> None:
+        record = _upload_sample(storage, session_id)
+        stub = StubReader()
+
+        service.run_correction(
+            storage, record, api_key="test-key", reader=stub, priming_terms=["Kafka", "Raft"]
+        )
+
+        assert stub.requests[0].priming_terms == ["Kafka", "Raft"]
+
+    def test_runs_on_a_transcript_with_no_local_flags(
+        self, storage: Storage, session_id: str
+    ) -> None:
+        content = b"1\n00:00:00,000 --> 00:00:02,000\nThe whether is fine today.\n"
+        record = service.upload_transcript(storage, session_id, "clean.srt", content)
+        assert record.flags == []
+        stub = StubReader(extra={"whether": "weather"})
+
+        service.run_correction(storage, record, api_key="test-key", reader=stub)
+
+        assert [f.span for f in record.flags] == ["whether"]
+        assert record.corrected
 
     def test_noop_when_already_corrected(self, storage: Storage, session_id: str) -> None:
         """Re-running `correct` on an already-corrected Transcript is out of
         scope — only a failed run is retriable."""
         record = _upload_sample(storage, session_id)
-        stub = StubCorrector(replacement_for={f.span: "fixed" for f in record.flags})
-        service.run_correction(storage, record, api_key="test-key", corrector=stub)
+        service.run_correction(storage, record, api_key="test-key", reader=StubReader())
         first_corrections = list(record.corrections)
 
         result = service.run_correction(
-            storage, record, api_key="test-key", corrector=_AssertNotCalledCorrector()
+            storage, record, api_key="test-key", reader=_AssertNotCalledReader()
         )
 
         assert result.corrections == first_corrections
 
-    def test_failure_sets_retriable_error_and_reraises(
+    def test_every_chunk_failing_sets_retriable_error_and_reraises(
         self, storage: Storage, session_id: str
     ) -> None:
         record = _upload_sample(storage, session_id)
-        stub = StubCorrector(garbage_spans={f.span for f in record.flags})
 
         with pytest.raises(CorrectorError):
-            service.run_correction(storage, record, api_key="test-key", corrector=stub)
+            service.run_correction(
+                storage, record, api_key="test-key", reader=StubReader(garbage=True)
+            )
 
         reloaded = storage.load_transcript(session_id, record.id)
         assert reloaded is not None
         assert reloaded.correct_error is not None
-        assert not reloaded.has_corrections
+        assert not reloaded.corrected
 
     def test_noop_correction_downgraded_to_dismissed(
         self, storage: Storage, session_id: str
     ) -> None:
         record = _upload_sample(storage, session_id)
-        flag = next(f for f in record.flags if "cubernetes" in f.span.lower())
-        flag_id = record.flags.index(flag)
+        flag_id = next(i for i, f in enumerate(record.flags) if f.span == "cubernetes")
         # The stub echoes the flag's own span back as its "correction" --
         # exactly the same-text no-op the web layer needs to downgrade.
-        stub = StubCorrector(replacement_for={flag.span: flag.span})
+        stub = StubReader(replacement_for={"cubernetes": "cubernetes"})
 
-        result = service.run_correction(storage, record, api_key="test-key", corrector=stub)
+        result = service.run_correction(storage, record, api_key="test-key", reader=stub)
 
         assert result.corrections[flag_id] is not None
         assert result.corrections[flag_id].replacement is None

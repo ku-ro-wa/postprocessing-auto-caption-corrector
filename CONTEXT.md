@@ -66,7 +66,8 @@ _Avoid_: glossary (that is this document), term list, dictionary.
 Terms supplied alongside one transcript -- a speaker's name, a product, a
 course's jargon -- that join the Domain vocabulary for that run and are also
 given to the LLM directly. What a video title or a call's company name is to
-the system.
+the system. In the web UI they are entered with the `correct` run, after the
+upload's local scan, so they reach only the LLM.
 _Avoid_: custom vocab, hints, keywords.
 
 **Out-of-vocabulary (OOV)**:
@@ -97,6 +98,8 @@ An LLM stage that reads the whole transcript in chunks, with the detectors'
 Flags and candidates and the Priming terms as hints, and returns Flags with
 their Corrections in one pass -- including errors no Detector raised. Not a
 Detector: it depends on their output rather than running independently.
+The default LLM pass of both `correct` and the web UI; the older per-flag
+pass, which sends only the Residue, is its opt-out (`--per-flag`, CLI only).
 _Avoid_: LLM detector, LLM scan, rewrite.
 
 **Not-an-error verdict**:
@@ -209,7 +212,8 @@ _Avoid_: test set (too easily confused with `tests/`).
 **Transcript**:
 A caption file (SRT/VTT), parsed into Cues, uploaded through the web review
 UI (`caption-checker serve`) and belonging to the Session that uploaded it.
-Everything else on this page (Flags, Corrections) attaches to one.
+Everything else on this page (Flags, Corrections) attaches to one. Its Flags
+are the local scan's, plus any the Read-through found when `correct` ran.
 _Avoid_: upload, file, document.
 
 **Session**:

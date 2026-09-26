@@ -9,6 +9,7 @@ below rather than being repeated per route.
 from __future__ import annotations
 
 import os
+import re
 from pathlib import Path
 
 from fastapi import FastAPI, Form, HTTPException, Request, UploadFile
@@ -17,7 +18,8 @@ from fastapi.templating import Jinja2Templates
 from markupsafe import Markup, escape
 from starlette.middleware.base import BaseHTTPMiddleware, RequestResponseEndpoint
 
-from caption_checker.corrector import Corrector, CorrectorError, MissingAPIKeyError
+from caption_checker.corrector import CorrectorError, MissingAPIKeyError
+from caption_checker.readthrough import Reader
 from caption_checker.web import service
 from caption_checker.web.models import TranscriptRecord
 from caption_checker.web.storage import Storage
@@ -79,10 +81,15 @@ class _SessionCookieMiddleware(BaseHTTPMiddleware):
         return response
 
 
-def create_app(storage: Storage, *, corrector: Corrector | None = None) -> FastAPI:
-    """``corrector`` lets tests inject a ``StubCorrector`` (or any other
-    ``Corrector``) at the same seam ``caption_checker.correct`` uses for the
-    CLI's own tests — no route in this app talks to OpenRouter directly."""
+def _priming_terms(raw: str) -> list[str]:
+    """The Priming terms field: one term per line or comma-separated."""
+    return [t.strip() for t in re.split(r"[,\n]", raw) if t.strip()]
+
+
+def create_app(storage: Storage, *, reader: Reader | None = None) -> FastAPI:
+    """``reader`` lets tests inject a ``StubReader`` (or any other
+    ``Reader``) at the same seam the CLI's Read-through tests use — no route
+    in this app talks to OpenRouter directly."""
     app = FastAPI(title="caption-checker")
     app.add_middleware(_SessionCookieMiddleware, storage=storage)
     templates = Jinja2Templates(directory=str(TEMPLATES_DIR))
@@ -136,7 +143,12 @@ def create_app(storage: Storage, *, corrector: Corrector | None = None) -> FastA
         )
 
     @app.post("/transcripts/{transcript_id}/correct")
-    def correct(request: Request, transcript_id: str, api_key: str = Form("")) -> Response:
+    def correct(
+        request: Request,
+        transcript_id: str,
+        api_key: str = Form(""),
+        priming_terms: str = Form(""),
+    ) -> Response:
         session_id = request.state.session_id
         record = load_or_404(session_id, transcript_id)
 
@@ -156,7 +168,11 @@ def create_app(storage: Storage, *, corrector: Corrector | None = None) -> FastA
         else:
             try:
                 service.run_correction(
-                    storage, record, api_key=resolved_key, corrector=corrector
+                    storage,
+                    record,
+                    api_key=resolved_key,
+                    reader=reader,
+                    priming_terms=_priming_terms(priming_terms),
                 )
             except (MissingAPIKeyError, CorrectorError):
                 pass  # record.correct_error already set by run_correction

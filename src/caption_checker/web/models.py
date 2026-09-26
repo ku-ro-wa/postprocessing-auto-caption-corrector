@@ -31,9 +31,11 @@ class ReviewDecision:
 
 @dataclass
 class TranscriptRecord:
-    """One uploaded Transcript: its Flags (from the automatic local scan),
-    any Corrections (from an explicit ``correct`` run), and the reviewer's
-    Review Decisions — one per Flag, aligned by list index."""
+    """One uploaded Transcript: its Flags (from the automatic local scan,
+    plus any the Read-through found), any Corrections (from an explicit
+    ``correct`` run), and the reviewer's Review Decisions — one per Flag,
+    aligned by list index. ``corrected_at`` marks a completed run;
+    ``failed_chunks`` of its ``chunk_count`` chunks came back unjudged."""
 
     id: str
     session_id: str
@@ -44,6 +46,9 @@ class TranscriptRecord:
     corrections: list[Correction | None] = field(default_factory=list)
     decisions: list[ReviewDecision] = field(default_factory=list)
     correct_error: str | None = None
+    corrected_at: str | None = None
+    chunk_count: int = 0
+    failed_chunks: int = 0
 
     @property
     def reviewed_count(self) -> int:
@@ -52,6 +57,13 @@ class TranscriptRecord:
     @property
     def has_corrections(self) -> bool:
         return any(c is not None for c in self.corrections)
+
+    @property
+    def corrected(self) -> bool:
+        """Whether `correct` has completed. Records from before
+        ``corrected_at`` existed count as corrected once they hold any
+        Correction."""
+        return self.corrected_at is not None or self.has_corrections
 
 
 @dataclass
@@ -122,6 +134,9 @@ def record_to_dict(record: TranscriptRecord) -> dict:
         "corrections": [correction_to_dict(c) for c in record.corrections],
         "decisions": [decision_to_dict(d) for d in record.decisions],
         "correct_error": record.correct_error,
+        "corrected_at": record.corrected_at,
+        "chunk_count": record.chunk_count,
+        "failed_chunks": record.failed_chunks,
     }
 
 
@@ -139,4 +154,7 @@ def record_from_dict(data: dict) -> TranscriptRecord:
         corrections=corrections,
         decisions=decisions,
         correct_error=data.get("correct_error"),
+        corrected_at=data.get("corrected_at"),
+        chunk_count=data.get("chunk_count", 0),
+        failed_chunks=data.get("failed_chunks", 0),
     )

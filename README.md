@@ -32,11 +32,11 @@ uv run caption-checker check lecture.srt --oov-zipf 2.0
 
 ### Correcting a transcript
 
-`correct` runs the same detection as `check`, then resolves the cheap cases
-locally, sends the rest to an LLM (OpenRouter) for a judged correction, lets you
-review, and writes a corrected file plus a `<OUT>.flags.json` sidecar recording
-what became of every flag. It writes files and spends money, so it is a
-separate verb from `check` and needs an explicit `-o`.
+`correct` runs the same detection as `check`, then has an LLM (OpenRouter)
+read the whole transcript -- the Read-through (ADR 0006) -- lets you review,
+and writes a corrected file plus a `<OUT>.flags.json` sidecar recording what
+became of every flag. It writes files and spends money, so it is a separate
+verb from `check` and needs an explicit `-o`.
 
 ```bash
 # interactive review; needs OPENROUTER_API_KEY (env or .env)
@@ -45,24 +45,27 @@ uv run caption-checker correct lecture.srt -o lecture.fixed.srt
 # unattended: apply every correction at or above a confidence, skip the rest
 uv run caption-checker correct lecture.srt -o lecture.fixed.srt --yes-above 0.8
 
-# see the price before committing (no API call)
+# Priming terms: names and terms known to occur in this recording
+uv run caption-checker correct lecture.srt -o out.srt --priming-term "Jensen Huang"
+
+# see the price of the pass that would run, before committing (no API call)
 uv run caption-checker correct lecture.srt -o /dev/null --estimate
 
-# pick a model; cap spend; skip the cross-run decision cache
+# pick a model; cap spend
 uv run caption-checker correct lecture.srt -o out.srt \
-    --model anthropic/claude-3.5-haiku --max-calls 4 --no-cache
+    --model anthropic/claude-3.5-haiku --max-calls 4
 
-# Read-through: the model reads the whole transcript (every flag as a hint,
-# plus the Priming terms) and also reports errors no detector raised
-uv run caption-checker correct lecture.srt -o out.srt --read-through \
-    --priming-term "Jensen Huang"
+# the older per-flag pass instead (skip the cross-run decision cache too)
+uv run caption-checker correct lecture.srt -o out.srt --per-flag --no-cache
 ```
 
-`--read-through` (ADR 0006) swaps the per-flag pass for one request per
-~400-word chunk. Its verdicts land in the same sidecar and review flow;
-errors it found by itself carry the `read_through` detector. It skips the
-bypass and the decision cache, and drops any verdict whose span crosses a
-cue boundary (a correction is spliced into one cue).
+The Read-through sends one request per ~400-word chunk, with every flag as a
+hint plus the Priming terms, and also reports errors no detector raised;
+those carry the `read_through` detector. It has no bypass or decision cache,
+and drops any verdict whose span crosses a cue boundary (a correction is
+spliced into one cue). `--per-flag` sends only the flagged spans that the
+internal-match bypass and the decision cache (`--cache-file`, `--no-cache`)
+don't resolve -- cheaper, but it can't find what the detectors missed.
 
 Interactive keys: `y` accept, `n` skip, `e` edit then accept, `a` accept all
 remaining at or above this confidence, `q` stop and write what's accepted so
@@ -115,10 +118,15 @@ uv run caption-checker serve  # http://127.0.0.1:8000
 Upload an SRT/VTT through the browser to get it scanned automatically by
 the local detectors, then review each Flag in context — accept, reject, or
 edit a suggestion before accepting — and download a corrected file that
-reflects only your accepted Review Decisions. The LLM `correct` pass only
-ever runs when you trigger it on a specific transcript; it uses your own
-OpenRouter key entered in the browser, falling back to the server's
-`OPENROUTER_API_KEY` only for local/dev use. Uploads and review state are
+reflects only your accepted Review Decisions. The LLM pass -- the
+Read-through, with any Priming terms you enter next to the key -- only ever
+runs when you trigger it on a specific transcript. Errors it finds that the
+local scan missed join the transcript as new Flags to review like any other;
+Flags it judged not an error are shown as dismissed and left unchanged. If
+some chunks of the transcript failed, the page says how many, and the Flags
+in them stay unjudged (only a run where every chunk failed can be retried). It uses your own OpenRouter key entered in the
+browser, falling back to the server's `OPENROUTER_API_KEY` only for
+local/dev use. Uploads and review state are
 private to your browser session and persist across server restarts. See
 `docs/adr/0003-web-ui-upload-session-persisted.md` and
 `docs/adr/0004-llm-correction-manual-session-keyed.md` for the reasoning

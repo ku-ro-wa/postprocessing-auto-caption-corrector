@@ -97,10 +97,13 @@ class ChunkVerdict:
 @dataclass
 class ReadItem:
     """A Flag the Read-through returned. ``correction`` is None only when its
-    chunk failed twice -- the hint is kept, unjudged."""
+    chunk failed twice -- the hint is kept, unjudged. ``hint`` is the local
+    Flag it answers (``flag`` itself unless the verdict widened it), or None
+    for an error the Read-through found by itself."""
 
     flag: Flag
     correction: Correction | None
+    hint: Flag | None = None
 
 
 @dataclass
@@ -454,10 +457,11 @@ def read_through(
         if verdicts is None:
             failed += 1
             items.extend(
-                ReadItem(hint_flags[h.start], None) for h in chunk.hints
+                ReadItem(hint_flags[h.start], None, hint_flags[h.start])
+                for h in chunk.hints
             )
             continue
-        answered: list[tuple[ReadItem, Flag]] = []  # (verdict, its hint)
+        answered: list[ReadItem] = []  # verdicts on hints
         found: list[ReadItem] = []
         for k, v in enumerate(verdicts):
             if v.hint is None and v.confidence < min_confidence:
@@ -479,11 +483,12 @@ def read_through(
                 confidence=v.confidence,
                 rationale=v.rationale,
             )
-            item = ReadItem(flag, correction)
             if hint is None:
-                found.append(item)
+                found.append(ReadItem(flag, correction))
             else:
-                answered.append((item, hint_flags[hint.start]))
+                answered.append(
+                    ReadItem(flag, correction, hint_flags[hint.start])
+                )
         items.extend(_without_overlaps(answered, found))
 
     items.sort(key=lambda i: min(i.flag.global_indices))
@@ -525,16 +530,21 @@ def _flag_for(
 
 
 def _without_overlaps(
-    answered: list[tuple[ReadItem, Flag]], found: list[ReadItem]
+    answered: list[ReadItem], found: list[ReadItem]
 ) -> list[ReadItem]:
     """One verdict per Word, since a Word can only be spliced once. Every
     hint keeps its verdict -- on its own span if a widened one would collide
-    -- and the Read-through's own finds fill the gaps, most confident first."""
+    with another verdict or another hint's own span -- and the Read-through's
+    own finds fill the gaps, most confident first."""
     kept: list[ReadItem] = []
     taken: set[int] = set()
-    for item, hint_flag in answered:
-        if taken.intersection(item.flag.global_indices):
-            item = ReadItem(hint_flag, item.correction)
+    hint_words = [set(i.hint.global_indices) for i in answered if i.hint is not None]
+    for item in answered:
+        if item.hint is not None and item.flag is not item.hint:
+            own = set(item.hint.global_indices)
+            others = set().union(*(w for w in hint_words if w != own))
+            if (taken | others).intersection(item.flag.global_indices):
+                item = replace(item, flag=item.hint)
         taken.update(item.flag.global_indices)
         kept.append(item)
     for item in sorted(found, key=lambda i: -(i.correction.confidence if i.correction else 0.0)):

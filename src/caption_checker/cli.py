@@ -159,13 +159,14 @@ def check(
     "--cache-file",
     type=click.Path(dir_okay=False, path_type=Path),
     default=None,
-    help="Decision-cache location. Default: ~/.cache/caption-checker/corrections.json.",
+    help="Decision-cache location (--per-flag only). "
+    "Default: ~/.cache/caption-checker/corrections.json.",
 )
 @click.option(
     "--no-cache",
     is_flag=True,
     default=False,
-    help="Do not read or write the decision cache.",
+    help="Do not read or write the decision cache (--per-flag only).",
 )
 @click.option(
     "--eval-out",
@@ -177,8 +178,8 @@ def check(
     "--estimate",
     is_flag=True,
     default=False,
-    help="Print flag count, batch count and approximate cost, then exit "
-    "without calling the model.",
+    help="Print flag count, batch count and approximate cost of the pass "
+    "that would run, then exit without calling the model.",
 )
 @click.option(
     "--max-calls",
@@ -201,12 +202,12 @@ def check(
 )
 @_priming_option(", and is given to the Read-through directly.")
 @click.option(
-    "--read-through",
+    "--per-flag",
     is_flag=True,
     default=False,
-    help="Replace the per-flag correction pass with the Read-through: the "
-    "model reads the whole transcript in chunks, judges every flag and "
-    "reports errors no detector raised (ADR 0006). No decision cache.",
+    help="Run the per-flag correction pass instead of the Read-through: the "
+    "model sees only the flagged spans, after the internal-match bypass and "
+    "the decision cache (the Read-through-off mode of ADR 0006).",
 )
 def correct(
     file: Path,
@@ -221,10 +222,14 @@ def correct(
     vocab_path: Path | None,
     oov_zipf: float | None,
     priming_terms: tuple[str, ...],
-    read_through: bool,
+    per_flag: bool,
 ) -> None:
     """Detect likely ASR errors in FILE, judge corrections with an LLM, and
     write a corrected SRT/VTT plus a sidecar record of every flag.
+
+    By default the LLM pass is the Read-through: the model reads the whole
+    transcript in chunks, judges every flag and reports errors no detector
+    raised (ADR 0006).
 
     Unlike 'check' this writes files, can be interactive, and spends money;
     exit status is 0 on completion even if some flags were left uncorrected.
@@ -264,6 +269,7 @@ def correct(
     else:
         reviewer = InteractiveReviewer()
 
+    read_through = not per_flag
     try:
         live = not estimate
         result = run_correction(
@@ -286,7 +292,7 @@ def correct(
         raise click.ClickException(str(exc)) from exc
 
     if result.estimate is not None:
-        _print_estimate(result.estimate, model)
+        _print_estimate(result.estimate, model, read_through=read_through)
         return
 
     out_format = file.suffix.lower().lstrip(".")
@@ -502,25 +508,22 @@ def _refuse_non_interactive(cues, vocab, config) -> None:
     )
 
 
-def _print_estimate(est: "Estimate", model: str) -> None:
+def _print_estimate(est: "Estimate", model: str, *, read_through: bool) -> None:
     cost = (
         f"${est.approx_cost_usd:.6f}"
         if est.approx_cost_usd is not None
         else f"n/a (~{est.approx_tokens} prompt tokens; no price on file for "
         "this model)"
     )
-    click.echo(
-        "\n".join(
-            [
-                f"model: {model}",
-                f"flags: {est.flag_count}",
-                f"residue (after bypass + cache): {est.residue_count}",
-                f"batches: {est.chunk_count}",
-                f"approx cost: {cost}",
-            ]
-        ),
-        err=True,
-    )
+    lines = [
+        f"pass: {'read-through' if read_through else 'per-flag'}",
+        f"model: {model}",
+        f"flags: {est.flag_count}",
+    ]
+    if not read_through:  # the Read-through has no bypass or cache
+        lines.append(f"residue (after bypass + cache): {est.residue_count}")
+    lines += [f"batches: {est.chunk_count}", f"approx cost: {cost}"]
+    click.echo("\n".join(lines), err=True)
 
 
 def _print_run_report(

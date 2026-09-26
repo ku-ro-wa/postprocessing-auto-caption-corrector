@@ -10,18 +10,22 @@
   {{ transcript.flags|length }} flag{{ "" if transcript.flags|length == 1 else "s" }}
   &middot; {{ transcript.reviewed_count }} reviewed
   {% if summary %}
-    &middot; LLM confirmed {{ summary.confirmed }}, dismissed {{ summary.dismissed }}
+    &middot; LLM confirmed {{ summary.confirmed }}, dismissed {{ summary.dismissed }}, found {{ summary.found }} new
   {% endif %}
 </p>
 
 <section>
-  <h3>LLM second opinion</h3>
+  <h3>LLM Read-through</h3>
   {% if transcript.correct_error %}
     <div class="error">{{ transcript.correct_error }}</div>
   {% endif %}
-  {% if transcript.has_corrections %}
-    <p class="muted">Correction pass complete. Re-running isn't supported yet — see each Flag below for the LLM's verdict.</p>
+  {% if transcript.corrected %}
+    <p class="muted">Read-through complete. Re-running isn't supported yet — see each Flag below for the LLM's verdict.</p>
+    {% if transcript.failed_chunks %}
+      <div class="error">{{ transcript.failed_chunks }} of {{ transcript.chunk_count }} chunks failed: the Flags in them were left unjudged.</div>
+    {% endif %}
   {% else %}
+  <p class="muted">The model reads the whole transcript, judges every Flag below and adds errors the local scan missed.</p>
   <form action="/transcripts/{{ transcript.id }}/correct" method="post">
     {% if not has_session_key and not has_server_key %}
       <label>OpenRouter API key: <input type="password" name="api_key" placeholder="sk-or-..."></label>
@@ -30,7 +34,10 @@
     {% else %}
       <p class="muted">Using the OpenRouter key saved for this session. Enter a different one to replace it: <input type="password" name="api_key" placeholder="sk-or-..."></p>
     {% endif %}
-    <button class="btn" type="submit">Run correct pass</button>
+    <label>Priming terms (names and terms in this recording, comma-separated):
+      <input type="text" name="priming_terms" placeholder="Kafka, Raft, Jensen Huang">
+    </label>
+    <button class="btn" type="submit">Run Read-through</button>
   </form>
   {% endif %}
 </section>

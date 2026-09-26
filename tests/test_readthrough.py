@@ -5,6 +5,7 @@ network."""
 from __future__ import annotations
 
 import json
+from dataclasses import replace
 from pathlib import Path
 
 import pytest
@@ -221,6 +222,14 @@ def test_a_hint_widened_across_cues_falls_back_to_its_own_span(cues) -> None:
     [item] = result.items
     assert item.flag is flags[0]
     assert item.correction.replacement == "Kubernetes"
+
+
+def test_a_hint_cannot_widen_over_another_hint(cues) -> None:
+    [kube] = detect(cues)
+    deploy = replace(kube, span="deploy", global_indices=[2], candidates=["employ"])
+    reader = StubReader(widen={"deploy": "deploy on cubernetes"})
+    result = read_through(cues, [deploy, kube], reader)
+    assert [i.flag for i in result.items] == [deploy, kube]  # each on its own span
 
 
 def test_new_finds_below_the_confidence_floor_are_dropped_but_hints_kept(cues) -> None:

@@ -56,3 +56,14 @@ Read-through is the configuration frozen at `33ca55b` (`gemini-2.5-flash`).
 (Read-through vs local.) The Read-through meets every condition on both
 sets. One caveat: on the Audited set it caught fewer non-word errors than
 local (9/15 vs 14/15).
+
+## Follow-up (#25)
+
+The Read-through is now the default LLM pass: `correct` runs it unless
+`--per-flag` asks for the per-flag pass, and the web UI's Correct action
+runs it, with Priming terms entered next to the API key. The web UI has no
+per-flag mode; the Read-through-off mode this ADR keeps lives in the CLI.
+ADR 0004 still holds: the LLM pass runs only when triggered, with the
+session's key. Its ~5-10% pre-filter rationale no longer describes what
+reaches the LLM, since the Read-through reads every word; spend stays gated
+by the explicit trigger (about $0.05 per audio hour, above).

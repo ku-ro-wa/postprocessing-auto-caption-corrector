@@ -5,7 +5,7 @@ from pathlib import Path
 import pytest
 from fastapi.testclient import TestClient
 
-from caption_checker.corrector import Corrector, StubCorrector
+from caption_checker.readthrough import Reader, StubReader
 from caption_checker.web.app import create_app
 from caption_checker.web.storage import Storage
 
@@ -18,8 +18,8 @@ def _storage_for(tmp_path: Path) -> Storage:
     return Storage(tmp_path / "data")
 
 
-def _make_client(tmp_path: Path, corrector: Corrector | None = None) -> TestClient:
-    app = create_app(_storage_for(tmp_path), corrector=corrector)
+def _make_client(tmp_path: Path, reader: Reader | None = None) -> TestClient:
+    app = create_app(_storage_for(tmp_path), reader=reader)
     return TestClient(app)
 
 
@@ -237,8 +237,8 @@ class TestCorrectPass:
         assert "api key" in response.text.lower()
 
     def test_correct_with_session_key_populates_corrections(self, tmp_path: Path) -> None:
-        stub = StubCorrector(replacement_for={"cubernetes": "Kubernetes"})
-        client = _make_client(tmp_path, corrector=stub)
+        stub = StubReader(replacement_for={"cubernetes": "Kubernetes"})
+        client = _make_client(tmp_path, reader=stub)
         transcript_id = _upload(client)
 
         response = client.post(
@@ -258,11 +258,11 @@ class TestCorrectPass:
     ) -> None:
         # sample_lecture.srt yields 4 flags: "con sensus", "cough ka" (x2),
         # "cubernetes". Dismiss the first three, confirm the last.
-        stub = StubCorrector(
+        stub = StubReader(
             null_spans={"con sensus", "cough ka"},
             replacement_for={"cubernetes": "Kubernetes"},
         )
-        client = _make_client(tmp_path, corrector=stub)
+        client = _make_client(tmp_path, reader=stub)
         transcript_id = _upload(client)
 
         response = client.post(
@@ -275,8 +275,8 @@ class TestCorrectPass:
         assert "dismissed 3" in response.text.lower()
 
     def test_correct_does_not_rerun_once_corrected(self, tmp_path: Path) -> None:
-        stub = StubCorrector(replacement_for={"cubernetes": "Kubernetes"})
-        client = _make_client(tmp_path, corrector=stub)
+        stub = StubReader(replacement_for={"cubernetes": "Kubernetes"})
+        client = _make_client(tmp_path, reader=stub)
         transcript_id = _upload(client)
         client.post(
             f"/transcripts/{transcript_id}/correct",
@@ -289,8 +289,8 @@ class TestCorrectPass:
         assert 'name="api_key"' not in page.text
 
     def test_correct_failure_is_retriable_not_a_500(self, tmp_path: Path) -> None:
-        stub = StubCorrector(garbage_spans={"cubernetes"})
-        client = _make_client(tmp_path, corrector=stub)
+        stub = StubReader(garbage=True)
+        client = _make_client(tmp_path, reader=stub)
         transcript_id = _upload(client)
 
         response = client.post(
@@ -300,6 +300,58 @@ class TestCorrectPass:
         )
         assert response.status_code == 200
         assert "error" in response.text.lower() or "failed" in response.text.lower()
+        assert 'name="api_key"' in response.text  # retriable
+
+    def test_form_has_a_priming_terms_field(self, tmp_path: Path) -> None:
+        client = _make_client(tmp_path)
+        transcript_id = _upload(client)
+
+        page = client.get(f"/transcripts/{transcript_id}")
+
+        assert 'name="priming_terms"' in page.text
+
+    def test_priming_terms_field_is_used_for_the_run(self, tmp_path: Path) -> None:
+        stub = StubReader()
+        client = _make_client(tmp_path, reader=stub)
+        transcript_id = _upload(client)
+
+        client.post(
+            f"/transcripts/{transcript_id}/correct",
+            data={"api_key": "sk-or-test", "priming_terms": "Kafka, Raft\nKubernetes"},
+        )
+
+        assert stub.requests[0].priming_terms == ["Kafka", "Raft", "Kubernetes"]
+
+    def test_read_through_finds_show_as_reviewable_flags(self, tmp_path: Path) -> None:
+        stub = StubReader(extra={"leader election": "leader elections"})
+        client = _make_client(tmp_path, reader=stub)
+        transcript_id = _upload(client)
+
+        page = client.post(
+            f"/transcripts/{transcript_id}/correct",
+            data={"api_key": "sk-or-test"},
+            follow_redirects=True,
+        )
+
+        assert "read_through" in page.text
+        assert "5 flags" in page.text  # 4 local + 1 found
+        assert "found 1 new" in page.text
+        assert 'hx-post="/transcripts/%s/flags/4/decision"' % transcript_id in page.text
+
+    def test_failed_chunks_are_reported_on_the_page(self, tmp_path: Path) -> None:
+        client = _make_client(tmp_path, reader=StubReader())
+        transcript_id = _upload(client)
+        storage = _storage_for(tmp_path)
+        session_id = client.cookies["cc_session"]
+        record = storage.load_transcript(session_id, transcript_id)
+        assert record is not None
+        record.corrected_at, record.chunk_count, record.failed_chunks = "t", 3, 2
+        storage.save_transcript(record)
+
+        page = client.get(f"/transcripts/{transcript_id}")
+
+        assert "2 of 3 chunks failed" in page.text
+        assert "left unjudged" in page.text
 
 
 class TestExport:

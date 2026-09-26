@@ -1,5 +1,6 @@
-"""The ``correct`` command over the ``CliRunner`` seam. ``build_corrector`` is
-monkeypatched to a ``StubCorrector`` so nothing touches the network."""
+"""The ``correct`` command over the ``CliRunner`` seam. ``build_reader`` (the
+default Read-through) and ``build_corrector`` (``--per-flag``) are
+monkeypatched to stubs so nothing touches the network."""
 
 from __future__ import annotations
 
@@ -54,7 +55,7 @@ def test_non_tty_without_yes_above_names_a_flag(stub) -> None:
 def test_non_tty_with_yes_above_completes(tmp_path, stub) -> None:
     out = tmp_path / "out.srt"
     result = _run(
-        SRT, "-o", str(out), "--yes-above", "0.5", "--no-cache",
+        "--per-flag", SRT, "-o", str(out), "--yes-above", "0.5", "--no-cache",
     )
     assert result.exit_code == 0
     assert "consensus algorithms" in out.read_text()
@@ -64,7 +65,7 @@ def test_non_tty_with_yes_above_completes(tmp_path, stub) -> None:
 def test_vtt_is_supported(tmp_path, stub) -> None:
     out = tmp_path / "out.vtt"
     result = _run(
-        VTT, "-o", str(out), "--yes-above", "0.5", "--no-cache",
+        "--per-flag", VTT, "-o", str(out), "--yes-above", "0.5", "--no-cache",
     )
     assert result.exit_code == 0
     assert "consensus algorithms" in out.read_text()
@@ -75,7 +76,7 @@ def test_vtt_is_supported(tmp_path, stub) -> None:
 
 def test_sidecar_has_one_valid_entry_per_flag(tmp_path, stub) -> None:
     out = tmp_path / "out.srt"
-    _run(SRT, "-o", str(out), "--yes-above", "0.5", "--no-cache")
+    _run("--per-flag", SRT, "-o", str(out), "--yes-above", "0.5", "--no-cache")
 
     sidecar = json.loads((tmp_path / "out.srt.flags.json").read_text())
     valid = {
@@ -91,7 +92,7 @@ def test_sidecar_has_one_valid_entry_per_flag(tmp_path, stub) -> None:
 def test_exit_zero_even_when_nothing_meets_the_threshold(tmp_path, stub) -> None:
     out = tmp_path / "out.srt"
     result = _run(
-        SRT, "-o", str(out), "--yes-above", "0.999", "--no-cache",
+        "--per-flag", SRT, "-o", str(out), "--yes-above", "0.999", "--no-cache",
     )
     assert result.exit_code == 0
     # stub confidence is 0.9 < 0.999 -> everything left uncorrected
@@ -126,7 +127,7 @@ def test_estimate_counts_reflect_the_bypass(tmp_path, stub) -> None:
         encoding="utf-8",
     )
     result = _run(
-        str(fixture), "-o", str(tmp_path / "o.srt"), "--estimate",
+        "--per-flag", str(fixture), "-o", str(tmp_path / "o.srt"), "--estimate",
         "--no-cache",
     )
     assert "flags: 1" in result.output
@@ -155,7 +156,7 @@ def test_estimate_reports_no_price_for_an_unknown_model(tmp_path) -> None:
 
 def test_max_calls_below_required_aborts(tmp_path, stub) -> None:
     result = _run(
-        SRT, "-o", str(tmp_path / "o.srt"), "--yes-above", "0.5",
+        "--per-flag", SRT, "-o", str(tmp_path / "o.srt"), "--yes-above", "0.5",
         "--max-calls", "0", "--no-cache",
     )
     assert result.exit_code != 0
@@ -167,7 +168,7 @@ def test_max_calls_below_required_aborts(tmp_path, stub) -> None:
 def test_max_calls_at_the_limit_proceeds(tmp_path, stub) -> None:
     out = tmp_path / "o.srt"
     result = _run(
-        SRT, "-o", str(out), "--yes-above", "0.5", "--max-calls", "1",
+        "--per-flag", SRT, "-o", str(out), "--yes-above", "0.5", "--max-calls", "1",
         "--no-cache",
     )
     assert result.exit_code == 0
@@ -182,7 +183,7 @@ def test_oov_zipf_passes_through_to_detection(tmp_path, stub) -> None:
     # "driven" (in "event driven") is a real, moderately common word: only
     # flagged once the OOV ceiling is raised well above its Zipf.
     _run(
-        SRT, "-o", str(out), "--yes-above", "0.0", "--oov-zipf", "5.5",
+        "--per-flag", SRT, "-o", str(out), "--yes-above", "0.0", "--oov-zipf", "5.5",
         "--no-cache",
     )
     spans = {
@@ -197,7 +198,7 @@ def test_vocab_file_passes_through_to_detection(tmp_path, stub) -> None:
     vocab.write_text("cubernetes\n", encoding="utf-8")  # now a known term
     out = tmp_path / "o.srt"
     _run(
-        SRT, "-o", str(out), "--yes-above", "0.5", "--vocab", str(vocab),
+        "--per-flag", SRT, "-o", str(out), "--yes-above", "0.5", "--vocab", str(vocab),
         "--no-cache",
     )
     spans = {
@@ -214,7 +215,7 @@ def test_eval_out_writes_a_six_column_table(tmp_path, stub) -> None:
     out = tmp_path / "o.srt"
     table = tmp_path / "eval.md"
     _run(
-        SRT, "-o", str(out), "--yes-above", "0.5", "--eval-out", str(table),
+        "--per-flag", SRT, "-o", str(out), "--yes-above", "0.5", "--eval-out", str(table),
         "--no-cache",
     )
     lines = table.read_text().splitlines()
@@ -231,7 +232,7 @@ def test_eval_out_writes_a_six_column_table(tmp_path, stub) -> None:
 
 def test_no_eval_table_without_the_flag(tmp_path, stub) -> None:
     out = tmp_path / "o.srt"
-    _run(SRT, "-o", str(out), "--yes-above", "0.5", "--no-cache")
+    _run("--per-flag", SRT, "-o", str(out), "--yes-above", "0.5", "--no-cache")
     assert not (tmp_path / "eval.md").exists()
 
 
@@ -248,18 +249,18 @@ def test_second_cli_run_uses_the_cache(tmp_path, monkeypatch) -> None:
     common = ("-o", str(tmp_path / "o.srt"), "--yes-above", "0.5",
               "--cache-file", str(cache))
 
-    _run(SRT, *common)
+    _run("--per-flag", SRT, *common)
     assert len(made[0].calls) == 1
 
-    _run(SRT, *common)
+    _run("--per-flag", SRT, *common)
     assert made[1].calls == []
 
 
 def test_cache_file_isolation(tmp_path, stub) -> None:
     out = tmp_path / "o.srt"
     a, b = tmp_path / "a.json", tmp_path / "b.json"
-    _run(SRT, "-o", str(out), "--yes-above", "0.5", "--cache-file", str(a))
-    _run(SRT, "-o", str(out), "--yes-above", "0.5", "--cache-file", str(b))
+    _run("--per-flag", SRT, "-o", str(out), "--yes-above", "0.5", "--cache-file", str(a))
+    _run("--per-flag", SRT, "-o", str(out), "--yes-above", "0.5", "--cache-file", str(b))
     # each run had its own fresh stub; the b-run could not have reused a's cache
     assert len(stub[0].calls) == 1
     assert len(stub[1].calls) == 1
@@ -282,11 +283,10 @@ def reader(monkeypatch):
     return made
 
 
-def test_read_through_replaces_the_per_flag_pass(tmp_path, stub, reader) -> None:
+def test_read_through_is_the_default_pass(tmp_path, stub, reader) -> None:
     out = tmp_path / "o.srt"
     result = _run(
-        SRT, "-o", str(out), "--yes-above", "0.5", "--no-cache", "--read-through",
-        "--priming-term", "Kafka",
+        SRT, "-o", str(out), "--yes-above", "0.5", "--priming-term", "Kafka",
     )
     assert result.exit_code == 0, result.output
     assert stub == []  # never built the per-flag corrector
@@ -296,16 +296,41 @@ def test_read_through_replaces_the_per_flag_pass(tmp_path, stub, reader) -> None
     assert any(e["flag"]["detector"] == "read_through" for e in sidecar)
 
 
-def test_read_through_estimate_needs_no_reader(tmp_path, reader) -> None:
-    result = _run(SRT, "-o", str(tmp_path / "o.srt"), "--read-through", "--estimate")
+def test_per_flag_restores_the_per_flag_pass(tmp_path, stub, reader) -> None:
+    out = tmp_path / "o.srt"
+    result = _run(SRT, "-o", str(out), "--yes-above", "0.5", "--no-cache", "--per-flag")
     assert result.exit_code == 0, result.output
-    assert "batches: 1" in result.output
     assert reader == []
+    assert len(stub[0].calls) == 1
+    assert "leader election using" in out.read_text()  # no Read-through find
+
+
+def test_read_through_flag_is_gone() -> None:
+    result = _run(SRT, "-o", "o.srt", "--read-through")
+    assert result.exit_code == 2
+    assert "No such option" in result.output
+
+
+def test_estimate_prices_the_read_through_by_default(tmp_path, reader) -> None:
+    result = _run(SRT, "-o", str(tmp_path / "o.srt"), "--estimate")
+    assert result.exit_code == 0, result.output
+    assert "pass: read-through" in result.output
+    assert "batches: 1" in result.output
+    assert "residue" not in result.output  # no bypass or cache in this pass
+    assert reader == []
+
+
+def test_estimate_prices_the_per_flag_pass_with_per_flag(tmp_path, stub) -> None:
+    result = _run(SRT, "-o", str(tmp_path / "o.srt"), "--estimate", "--per-flag", "--no-cache")
+    assert result.exit_code == 0, result.output
+    assert "pass: per-flag" in result.output
+    assert "residue (after bypass + cache): 4" in result.output
+    assert stub == []
 
 
 def test_priming_terms_join_the_local_vocabulary(tmp_path, stub) -> None:
     out = tmp_path / "o.srt"
-    _run(SRT, "-o", str(out), "--yes-above", "0.5", "--no-cache",
+    _run("--per-flag", SRT, "-o", str(out), "--yes-above", "0.5", "--no-cache",
          "--priming-term", "cubernetes")
     assert "look at cubernetes" in out.read_text()  # now a known term
 
