@@ -11,7 +11,7 @@ from pathlib import Path
 
 import pytest
 
-from caption_checker.corrector import CorrectorError, RequestError
+from caption_checker.corrector import CorrectorError, RequestError, Spend
 from caption_checker.detect import detect
 from caption_checker.parser import parse
 from caption_checker.readthrough import (
@@ -24,6 +24,7 @@ from caption_checker.readthrough import (
     ReadThroughConfig,
     StubReader,
     build_messages,
+    parse_keyed_reply,
     parse_reply,
     plan_chunks,
     read_through,
@@ -185,6 +186,136 @@ def test_parse_reply_requires_a_verdict_for_every_hint(cues) -> None:
     [chunk] = plan_chunks(cues, detect(cues))
     with pytest.raises(CorrectorError, match="hint"):
         parse_reply("[]", chunk)
+
+
+# --- keyed replies: hint verdicts by hint id, new finds apart ----------------
+
+
+def test_parse_keyed_reply_reads_hint_verdicts_and_new_finds(cues) -> None:
+    [chunk] = plan_chunks(cues, detect(cues))
+    reply = json.dumps(
+        {
+            "hints": {"h0": [4, 4, "cubernetes", "Kubernetes", "misheard", 0.95, "platform"]},
+            "errors": [[6, 7, "chad GPT", "ChatGPT", "misheard", 0.9, "product"]],
+        }
+    )
+    hint, found = parse_keyed_reply(reply, chunk)
+    assert (hint.hint, hint.start, hint.replacement, hint.confidence) == (
+        "h0", 4, "Kubernetes", 0.95,
+    )
+    assert (found.hint, found.start, found.end, found.replacement, found.rationale) == (
+        None, 6, 7, "ChatGPT", "product",
+    )
+
+
+def test_parse_keyed_reply_answers_a_hint_not_an_error(cues) -> None:
+    [chunk] = plan_chunks(cues, detect(cues))
+    reply = json.dumps(
+        {"hints": {"h0": [4, 4, "cubernetes", None, "misheard", 0.8, "a name"]},
+         "errors": []}
+    )
+    [v] = parse_keyed_reply(reply, chunk)
+    assert (v.hint, v.replacement) == ("h0", None)
+
+
+@pytest.mark.parametrize(
+    "reply",
+    [
+        "sorry, no",  # not JSON
+        "[]",  # not the keyed object
+        '{"hints": [], "errors": []}',  # hints not keyed by id
+        '{"hints": {}, "errors": {}}',  # errors not a list
+        '{"hints": {}, "errors": []}',  # h0 has no verdict
+        '{"hints": {"h0": "Kubernetes"}, "errors": []}',  # h0's verdict unreadable
+    ],
+)
+def test_parse_keyed_reply_fails_the_chunk_on_a_malformed_reply(cues, reply) -> None:
+    [chunk] = plan_chunks(cues, detect(cues))
+    with pytest.raises(CorrectorError):
+        parse_keyed_reply(reply, chunk)
+
+
+@pytest.mark.parametrize(
+    ("span", "replacement"),
+    [("con sensus", "consensus"), ("AIdriven", "AI-driven")],
+)
+def test_parse_keyed_reply_keeps_a_hint_correction_that_moves_word_boundaries(
+    span, replacement
+) -> None:
+    tokens = ["The", *span.split(), "layer."]
+    end = len(tokens) - 2
+    hint = Hint(
+        id="h0", start=1, end=end, span=span, candidates=[], reason="not a known word"
+    )
+    request = ChunkRequest(words=list(enumerate(tokens)), hints=[hint])
+    reply = json.dumps(
+        {"hints": {"h0": [1, end, span, replacement, "misheard", 0.9, "x"]}, "errors": []}
+    )
+    [v] = parse_keyed_reply(reply, request)
+    assert v.replacement == replacement
+
+
+def test_parse_keyed_reply_fails_the_chunk_on_a_hint_verdict_of_the_wrong_shape(
+    cues,
+) -> None:
+    # An extra field would shift every field after it -- the hint's verdict
+    # must not quietly become "not an error".
+    [chunk] = plan_chunks(cues, detect(cues))
+    reply = json.dumps(
+        {"hints": {"h0": [4, 4, "cubernetes", "Kubernetes", None, "misheard", 0.9, "x"]},
+         "errors": []}
+    )
+    with pytest.raises(CorrectorError, match="h0"):
+        parse_keyed_reply(reply, chunk)
+
+
+def test_parse_keyed_reply_drops_a_new_find_of_the_wrong_shape(cues) -> None:
+    [chunk] = plan_chunks(cues, detect(cues))
+    reply = json.dumps(
+        {"hints": {"h0": [4, 4, "cubernetes", "Kubernetes", "misheard", 0.9, "x"]},
+         "errors": [[11, 11, "Hang", "Huang", None, "misheard", 0.9, "x"]]}
+    )
+    assert [v.hint for v in parse_keyed_reply(reply, chunk)] == ["h0"]
+
+
+class _KeyedReader:
+    """A Reader whose model answers in the keyed format, read by the keyed
+    parser -- the Read-through as a keyed configuration runs it."""
+
+    spend = Spend()
+
+    def __init__(self, reply: dict) -> None:
+        self.reply = json.dumps(reply)
+
+    def read(self, request: ChunkRequest) -> list[ChunkVerdict]:
+        return parse_keyed_reply(self.reply, request)
+
+
+def test_a_keyed_reply_places_corrections_across_a_cue_boundary(cues) -> None:
+    # #26: a hint widened over a Cue boundary, and a new find across one,
+    # keep their spans.
+    flags = [f for f in detect(cues) if f.span == "cubernetes"]
+    reader = _KeyedReader(
+        {"hints": {"h0": [4, 5, "cubernetes. The", "Kubernetes. The", "misheard", 0.9, "x"]},
+         "errors": [[10, 11, "fast. Hang", "fast. Huang", "misheard", 0.95, "a name"]]}
+    )
+    hint, found = read_through(cues, flags, reader).items
+    assert hint.hint is flags[0]
+    assert hint.flag.global_indices == [4, 5]
+    assert hint.correction.replacement == "Kubernetes. The"
+    assert found.flag.global_indices == [10, 11]
+    assert (found.flag.start, found.flag.end) == (cues[1].start, cues[2].end)
+    assert found.correction.replacement == "fast. Huang"
+
+
+def test_parse_keyed_reply_ignores_a_verdict_for_an_unknown_hint(cues) -> None:
+    [chunk] = plan_chunks(cues, detect(cues))
+    reply = json.dumps(
+        {"hints": {"h0": [4, 4, "cubernetes", "Kubernetes", "misheard", 0.9, "x"],
+                   "h9": [11, 11, "Hang", "Huang", "misheard", 0.9, "x"]},
+         "errors": []}
+    )
+    assert [v.hint for v in parse_keyed_reply(reply, chunk)] == ["h0"]
 
 
 # --- the orchestrator ---------------------------------------------------------
@@ -362,6 +493,7 @@ def test_openrouter_reader_builds_and_reads_as_its_configuration_says(
         ("gemini-3.8-flash-v4", {"reasoning": {"effort": "minimal"}}),
         ("deepseek-v4-pro-v4", {"reasoning": {"enabled": False}}),
         ("qwen3.6-plus-v4", {"reasoning": {"enabled": False}}),
+        ("gpt-5.6-luna-v4", {"reasoning": {"enabled": False}}),
     ],
 )
 def test_openrouter_reader_sends_its_configurations_request_options(
@@ -393,3 +525,20 @@ def test_flash_v4_sends_the_messages_prompt_v4_was_scored_with() -> None:
     messages = CONFIGS["flash-v4"].build_messages(request)
     digest = hashlib.sha256(json.dumps(messages, ensure_ascii=False).encode()).hexdigest()
     assert digest == "54ca44927fe372376de4924ceb14445a67efd7bc2d3051642eb09c799f5f5ed5"
+
+
+@pytest.mark.parametrize("name", sorted(CONFIGS))
+def test_every_configuration_keeps_v4s_task_and_hint_format(name: str) -> None:
+    # #28: a configuration may change only what counts as an error, the reply
+    # format and brevity -- so the task, and the chunk as the model sees it,
+    # are v4's.
+    request = ChunkRequest(
+        words=[(3, "we"), (4, "run"), (5, "cubernetes.")],
+        hints=[Hint("h0", 5, 5, "cubernetes.", ["Kubernetes"], "not in vocabulary")],
+        priming_terms=["Kafka"],
+    )
+    system, user = CONFIGS[name].build_messages(request)
+    v4_system, v4_user = build_messages(request)
+    assert user == v4_user
+    task = v4_system["content"].split("Find every error")[0]
+    assert system["content"].startswith(task)

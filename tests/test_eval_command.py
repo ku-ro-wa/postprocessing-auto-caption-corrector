@@ -341,6 +341,7 @@ def test_eval_command_refuses_a_bad_read_through_configuration(
         ("gemini-3.8-flash-v4", "google/gemini-3.8-flash"),
         ("deepseek-v4-pro-v4", "deepseek/deepseek-v4-pro"),
         ("qwen3.6-plus-v4", "qwen/qwen3.6-plus"),
+        ("gpt-5.6-luna-v4", "openai/gpt-5.6-luna"),
     ],
 )
 def test_eval_command_runs_a_reasoning_model_with_prompt_v4(
@@ -355,6 +356,46 @@ def test_eval_command_runs_a_reasoning_model_with_prompt_v4(
     assert config.build_messages is build_messages
     assert config.parse_reply is parse_reply
     assert f"system: read-through ({name}: {model})" in result.output
+
+
+@pytest.mark.parametrize(
+    ("name", "model", "keyed"),
+    [
+        ("gemini-3.5-flash-lite-p2", "google/gemini-3.5-flash-lite", True),
+        ("gpt-5.6-luna-p2", "openai/gpt-5.6-luna", False),
+        ("qwen3.6-plus-p2", "qwen/qwen3.6-plus", False),
+        ("deepseek-v4-pro-p2", "deepseek/deepseek-v4-pro", True),
+        ("gemini-3.8-flash-p2", "google/gemini-3.8-flash", False),
+    ],
+)
+def test_eval_command_runs_a_frozen_challenger_configuration(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch, name: str, model: str, keyed: bool
+) -> None:
+    # #33 froze one configuration per challenger for #34's ranking: v4's task
+    # with its own error rules, and for some its own reply format -- which
+    # it then reads.
+    result, made = _eval_read_through(tmp_path, monkeypatch, "--config", name)
+    assert result.exit_code == 0, result.output
+    [(config, reader)] = made
+    assert config.model_id == model
+    assert f"system: read-through ({name}: {model})" in result.output
+    request = reader.requests[0]
+    system, _ = config.build_messages(request)
+    assert "List a change only when both of these hold" in system["content"]
+    verdict = [0, 0, request.words[0][1], "X", "misheard", 0.95, "why"]
+    if keyed:
+        assert '{"hints": {...}, "errors": [...]}' in system["content"]
+        reply = {"hints": {h.id: [h.start, h.end, h.span, None, "misheard", 0.9, "ok"]
+                           for h in request.hints}, "errors": [verdict]}
+    else:
+        assert '{"verdicts": [...]}' in system["content"]
+        reply = {"verdicts": [
+            *([h.start, h.end, h.span, None, "misheard", 0.9, h.id, "ok"]
+              for h in request.hints),
+            [*verdict[:6], None, verdict[6]],
+        ]}
+    parsed = config.parse_reply(json.dumps(reply), request)
+    assert [(v.start, v.replacement) for v in parsed if v.hint is None] == [(0, "X")]
 
 
 def test_eval_command_reports_request_errors_apart_from_failed_chunks(

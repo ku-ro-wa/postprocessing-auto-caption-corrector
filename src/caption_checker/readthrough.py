@@ -17,6 +17,7 @@ import re
 import threading
 from concurrent.futures import ThreadPoolExecutor
 from dataclasses import dataclass, field, replace
+from functools import partial
 from typing import Callable, Protocol, Sequence
 
 from caption_checker.corrector import (
@@ -200,7 +201,11 @@ def _hint(hid: str, flag: Flag) -> Hint:
 
 # --- prompt ----------------------------------------------------------------
 
-SYSTEM_PROMPT = """\
+# Prompt v4 in three parts. Every configuration shares the task and the
+# hint format (#28); a variant may change only what counts as an error, the
+# reply format, and wording that keeps replies short.
+
+_TASK = """\
 You proofread a transcript made by automatic speech recognition (ASR). ASR
 errors are words the recogniser misheard: a wrong real word that sounds like
 the right one ("stationary" for "stationery", "Jensen Hang" for "Jensen
@@ -215,6 +220,9 @@ little plain text before and after it for context only. You also get:
 - hints: spans a cheap detector flagged, with its reason and candidate
   fixes. Hints are often false alarms; judge each one on its merits.
 
+"""
+
+_ERRORS_V4 = """\
 Find every error in the numbered words. An ASR error is an acoustic
 confusion: the replacement must sound like the words it replaces when spoken
 aloud, and the transcribed words must be something a person would not
@@ -237,6 +245,9 @@ Never add words the speaker did not say (not "Jensen" -> "Jensen Huang",
 not "business advice" -> "or business advice"). When unsure, leave it
 alone: a wrong flag costs a reviewer's time.
 
+"""
+
+_REPLY_V4 = """\
 Reply with ONLY a JSON object {"verdicts": [...]}, each verdict a JSON
 array of eight fields, in this order:
   [start, end, span, replacement, cause, confidence, hint, why]
@@ -266,8 +277,96 @@ Example reply: {"verdicts": [
  [7, 8, "con sensus", "consensus", "misheard", 0.95, null, "one word split in two"]]}
 """
 
+SYSTEM_PROMPT = _TASK + _ERRORS_V4 + _REPLY_V4
+
+# --- variant parts (#33) ---
+
+#: What counts as an error, stricter: an ASR error sounds like its fix, and
+#: grammar-only edits are ruled out by name.
+_ERRORS_SOUND_CHECK = _ERRORS_V4 + """\
+Before you list a change, say the transcribed words and your replacement
+aloud: if they don't sound nearly the same, it is not an ASR error, so leave
+it. A change that only adds or drops an ending (-s, -ed, -ing), an article,
+or a short word like "and", "of" or "with" is the speaker's grammar (cause
+"grammar"), not a mishearing.
+
+"""
+
+#: What counts as an error, as two tests a change must pass, with grammar
+#: ruled out by name.
+_ERRORS_TWO_TESTS = _ERRORS_V4 + """\
+List a change only when both of these hold:
+- the words as transcribed don't make sense where they stand: a listener
+  would stop and ask what was said. Words that make sense as said are not
+  an error, even if another word would fit better;
+- your replacement sounds nearly the same as those words when spoken aloud.
+A change that only adds or drops an ending (-s, -ed, -ing), an article, or
+a short word like "a", "is", "of" or "with" is the speaker's grammar (cause
+"grammar"), however sure you are.
+
+"""
+
+#: Reply format with every hint's verdict under its id and new finds apart,
+#: read by :func:`parse_keyed_reply`.
+_REPLY_KEYED = """\
+Reply with ONLY a JSON object {"hints": {...}, "errors": [...]}, each
+verdict a JSON array of seven fields, in this order:
+  [start, end, span, replacement, cause, confidence, why]
+- start, end: first and last word index (inclusive);
+- span: those words exactly as written;
+- replacement: what the speaker said, or null when it is not an error;
+- cause: "misheard" when the recogniser wrote something other than what was
+  said; "grammar" when the words are what the speaker said but
+  ungrammatical; "style" for anything else. Only a "misheard" change is a
+  correction;
+- confidence: 0..1;
+- why: under ten words.
+"hints" has exactly one verdict for every hint, keyed by the hint's id, even
+when it is not an error (replacement null); its start/end may widen the hint
+to cover the whole error. "errors" lists ONLY errors you find beyond the
+hints -- never list words you judged correct. The replacement replaces
+exactly the words from start to end -- keep surrounding punctuation out.
+
+Example chunk: [0]We [1]run [2]it [3]on [4]cubernetes, [5]and [6]the [7]con
+[8]sensus [9]layer [10]is [11]raft. Hints: [{"hint": "h0", "start": 11,
+"end": 11, "span": "raft", "candidates": ["rift"], "reason": "sounds like
+\\"rift\\" used elsewhere"}]
+Example reply: {"hints": {
+ "h0": [11, 11, "raft", null, "misheard", 0.9, "Raft is a consensus algorithm"]},
+ "errors": [
+ [4, 4, "cubernetes", "Kubernetes", "misheard", 0.97, "container platform"],
+ [7, 8, "con sensus", "consensus", "misheard", 0.95, "one word split in two"]]}
+"""
+
+
+def _calibrated(reply: str) -> str:
+    """``reply`` with its confidence scale spelled out, so a find the model
+    isn't sure of falls under :data:`MIN_CONFIDENCE` instead of on it."""
+    line = "- confidence: 0..1;\n"
+    if line not in reply:
+        raise ValueError("reply format has no confidence field to calibrate")
+    return reply.replace(
+        line,
+        "- confidence: 0..1 -- 0.95 or more only when you are sure what the\n"
+        "  speaker said; 0.8 or less when the words could plausibly be right\n"
+        "  as transcribed;\n",
+    )
+
+
+def _prompt(errors: str = _ERRORS_V4, reply: str = _REPLY_V4) -> Callable[
+    [ChunkRequest], list[dict]
+]:
+    """A variant of prompt v4's messages: the same task and hint format, with
+    its own error rules and reply format."""
+    return partial(_messages, _TASK + errors + reply)
+
 
 def build_messages(request: ChunkRequest) -> list[dict]:
+    """Prompt v4's messages for one chunk."""
+    return _messages(SYSTEM_PROMPT, request)
+
+
+def _messages(system_prompt: str, request: ChunkRequest) -> list[dict]:
     terms = "; ".join(request.priming_terms) or "(none)"
     numbered = " ".join(f"[{gi}]{text}" for gi, text in request.words)
     hints = json.dumps([h.as_dict() for h in request.hints], ensure_ascii=False)
@@ -281,7 +380,7 @@ def build_messages(request: ChunkRequest) -> list[dict]:
         ]
     )
     return [
-        {"role": "system", "content": SYSTEM_PROMPT},
+        {"role": "system", "content": system_prompt},
         {"role": "user", "content": user},
     ]
 
@@ -302,19 +401,30 @@ def parse_reply(content: str, request: ChunkRequest) -> list[ChunkVerdict]:
     not-an-error; any other is dropped. Raises
     :class:`CorrectorError` -- a failed chunk -- on anything that isn't a
     JSON list of verdicts, or when a hint has no verdict."""
+    raw = _json(content)
+    if isinstance(raw, dict):
+        raw = raw.get("verdicts")
+    if not isinstance(raw, list):
+        raise CorrectorError("reply has no list of verdicts")
+    return _verdicts(raw, request)
+
+
+def _json(content: str) -> object:
+    """A reply's JSON, out of a code fence if the model put it in one."""
     text = content.strip()
     if text.startswith("```"):  # ```json ... ```
         text = text.strip("`").strip()
         text = text.removeprefix("json").strip()
     try:
-        raw = json.loads(text)
+        return json.loads(text)
     except ValueError as exc:
         raise CorrectorError(f"reply is not JSON: {exc}") from exc
-    if isinstance(raw, dict):
-        raw = raw.get("verdicts")
-    if not isinstance(raw, list):
-        raise CorrectorError("reply has no list of verdicts")
 
+
+def _verdicts(raw: list, request: ChunkRequest) -> list[ChunkVerdict]:
+    """:func:`parse_reply`'s rules, on a reply's items: verdict objects or
+    compact positional ones. Every reply format ends here, so every
+    configuration places and judges Corrections the same way."""
     positions = [gi for gi, _ in request.words]
     tokens = [clean(t) for _, t in request.words]
     hints = {h.id: h for h in request.hints}
@@ -377,6 +487,37 @@ def parse_reply(content: str, request: ChunkRequest) -> list[ChunkVerdict]:
 _FIELDS = (
     "start", "end", "span", "replacement", "cause", "confidence", "hint", "rationale",
 )
+
+
+def parse_keyed_reply(content: str, request: ChunkRequest) -> list[ChunkVerdict]:
+    """:func:`parse_reply` for a keyed reply, ``{"hints": {id: verdict},
+    "errors": [verdict]}``: each hint's verdict under its id, the model's own
+    finds apart, each a compact verdict without the ``hint`` field. A
+    verdict under an id that is no hint of the chunk is dropped, as is one
+    that isn't seven fields (or an object). Raises
+    :class:`CorrectorError` -- a failed chunk -- on any other shape, or when
+    a hint has no verdict."""
+    raw = _json(content)
+    if not isinstance(raw, dict):
+        raise CorrectorError("reply is not a keyed object")
+    hints, errors = raw.get("hints", {}), raw.get("errors", [])
+    if not isinstance(hints, dict) or not isinstance(errors, list):
+        raise CorrectorError("reply's hints are not keyed by id, or errors not a list")
+    known = {h.id for h in request.hints}
+    pairs = [(v, hint_id) for hint_id, v in hints.items() if hint_id in known]
+    pairs += [(v, None) for v in errors]
+    # A verdict of any other shape answers nothing: an extra or missing
+    # field would shift the fields after it.
+    items = [
+        {**(dict(zip(_KEYED_FIELDS, v)) if isinstance(v, list) else v), "hint": hint_id}
+        for v, hint_id in pairs
+        if isinstance(v, dict) or (isinstance(v, list) and len(v) == len(_KEYED_FIELDS))
+    ]
+    return _verdicts(items, request)
+
+
+#: Field order of a keyed reply's compact verdict: the hint is its key.
+_KEYED_FIELDS = ("start", "end", "span", "replacement", "cause", "confidence", "rationale")
 
 
 def _letters(text: str) -> str:
@@ -610,18 +751,19 @@ def v4(model_id: str) -> ReadThroughConfig:
 
 
 _REASONING_OFF: dict[str, object] = {"reasoning": {"enabled": False}}
+# Reasoning can't be disabled on Gemini 3.8 Flash; minimal effort is the
+# closest it allows.
+_REASONING_MINIMAL: dict[str, object] = {"reasoning": {"effort": "minimal"}}
 
 #: Registered configurations, by name. Once one has been scored, change it
 #: only by registering another under a new name. #28's shortlist runs with
 #: reasoning off; the models below reason unless told not to.
 CONFIGS: dict[str, ReadThroughConfig] = {
     "flash-v4": replace(v4(DEFAULT_MODEL), name="flash-v4"),
-    # Reasoning can't be disabled on this model; minimal effort is the
-    # closest it allows.
     "gemini-3.8-flash-v4": ReadThroughConfig(
         name="gemini-3.8-flash-v4",
         model_id="google/gemini-3.8-flash",
-        request_options={"reasoning": {"effort": "minimal"}},
+        request_options=_REASONING_MINIMAL,
     ),
     "deepseek-v4-pro-v4": ReadThroughConfig(
         name="deepseek-v4-pro-v4",
@@ -632,6 +774,103 @@ CONFIGS: dict[str, ReadThroughConfig] = {
         name="qwen3.6-plus-v4",
         model_id="qwen/qwen3.6-plus",
         request_options=_REASONING_OFF,
+    ),
+    # Reasons by default too, though a probe on a short prompt showed none
+    # (#32); on a real chunk it spent ~2k reasoning tokens (#33).
+    "gpt-5.6-luna-v4": ReadThroughConfig(
+        name="gpt-5.6-luna-v4",
+        model_id="openai/gpt-5.6-luna",
+        request_options=_REASONING_OFF,
+    ),
+    # #33's prompt passes, one name per pass (-p1..-p3), each a variant of
+    # v4 tuned on Scored and audited-dev only. Frozen for #34's ranking:
+    # every challenger's -p2, which had its best Scored precision. The other
+    # passes stay registered so their posted numbers can be reproduced.
+    "gemini-3.5-flash-lite-p1": ReadThroughConfig(
+        name="gemini-3.5-flash-lite-p1",
+        model_id="google/gemini-3.5-flash-lite",
+        build_messages=_prompt(errors=_ERRORS_SOUND_CHECK, reply=_REPLY_KEYED),
+        parse_reply=parse_keyed_reply,
+    ),
+    # Luna keeps its default reasoning: with it off, recall fell by more
+    # than half, and with it on the cost is still under the cap (#28 allows
+    # that). The effort is OpenRouter's default, not pinned here.
+    "gpt-5.6-luna-p1": ReadThroughConfig(
+        name="gpt-5.6-luna-p1",
+        model_id="openai/gpt-5.6-luna",
+        build_messages=_prompt(errors=_ERRORS_SOUND_CHECK),
+    ),
+    "qwen3.6-plus-p1": ReadThroughConfig(
+        name="qwen3.6-plus-p1",
+        model_id="qwen/qwen3.6-plus",
+        build_messages=_prompt(errors=_ERRORS_SOUND_CHECK),
+        request_options=_REASONING_OFF,
+    ),
+    "deepseek-v4-pro-p1": ReadThroughConfig(
+        name="deepseek-v4-pro-p1",
+        model_id="deepseek/deepseek-v4-pro",
+        build_messages=_prompt(errors=_ERRORS_SOUND_CHECK, reply=_REPLY_KEYED),
+        parse_reply=parse_keyed_reply,
+        request_options=_REASONING_OFF,
+    ),
+    "gemini-3.8-flash-p1": ReadThroughConfig(
+        name="gemini-3.8-flash-p1",
+        model_id="google/gemini-3.8-flash",
+        build_messages=_prompt(errors=_ERRORS_SOUND_CHECK),
+        request_options=_REASONING_MINIMAL,
+    ),
+    "gemini-3.5-flash-lite-p2": ReadThroughConfig(
+        name="gemini-3.5-flash-lite-p2",
+        model_id="google/gemini-3.5-flash-lite",
+        build_messages=_prompt(errors=_ERRORS_TWO_TESTS, reply=_REPLY_KEYED),
+        parse_reply=parse_keyed_reply,
+    ),
+    "gpt-5.6-luna-p2": ReadThroughConfig(
+        name="gpt-5.6-luna-p2",
+        model_id="openai/gpt-5.6-luna",
+        build_messages=_prompt(errors=_ERRORS_TWO_TESTS),
+    ),
+    "qwen3.6-plus-p2": ReadThroughConfig(
+        name="qwen3.6-plus-p2",
+        model_id="qwen/qwen3.6-plus",
+        build_messages=_prompt(errors=_ERRORS_TWO_TESTS),
+        request_options=_REASONING_OFF,
+    ),
+    "deepseek-v4-pro-p2": ReadThroughConfig(
+        name="deepseek-v4-pro-p2",
+        model_id="deepseek/deepseek-v4-pro",
+        build_messages=_prompt(errors=_ERRORS_TWO_TESTS, reply=_REPLY_KEYED),
+        parse_reply=parse_keyed_reply,
+        request_options=_REASONING_OFF,
+    ),
+    "gemini-3.8-flash-p2": ReadThroughConfig(
+        name="gemini-3.8-flash-p2",
+        model_id="google/gemini-3.8-flash",
+        build_messages=_prompt(errors=_ERRORS_TWO_TESTS),
+        request_options=_REASONING_MINIMAL,
+    ),
+    "gemini-3.5-flash-lite-p3": ReadThroughConfig(
+        name="gemini-3.5-flash-lite-p3",
+        model_id="google/gemini-3.5-flash-lite",
+        build_messages=_prompt(
+            errors=_ERRORS_TWO_TESTS, reply=_calibrated(_REPLY_KEYED)
+        ),
+        parse_reply=parse_keyed_reply,
+    ),
+    "deepseek-v4-pro-p3": ReadThroughConfig(
+        name="deepseek-v4-pro-p3",
+        model_id="deepseek/deepseek-v4-pro",
+        build_messages=_prompt(
+            errors=_ERRORS_TWO_TESTS, reply=_calibrated(_REPLY_KEYED)
+        ),
+        parse_reply=parse_keyed_reply,
+        request_options=_REASONING_OFF,
+    ),
+    "gemini-3.8-flash-p3": ReadThroughConfig(
+        name="gemini-3.8-flash-p3",
+        model_id="google/gemini-3.8-flash",
+        build_messages=_prompt(errors=_ERRORS_TWO_TESTS, reply=_calibrated(_REPLY_V4)),
+        request_options=_REASONING_MINIMAL,
     ),
 }
 #: The configuration eval runs when given neither a name nor a model.
