@@ -1,5 +1,7 @@
 # LLM correction stays manual and session-keyed; local detection does the automatic work
 
+_Amended by ADR 0008 (proposed): the server-key fallback becomes a metered Free tier rather than local-only._
+
 `correct` (the OpenRouter LLM pass) costs money per call; `check` (local
 detectors) doesn't. In the web UI, `check` runs automatically on every
 Transcript upload, but `correct` only ever runs from an explicit action,

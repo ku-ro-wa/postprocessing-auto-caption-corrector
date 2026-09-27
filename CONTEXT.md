@@ -245,3 +245,24 @@ The corrected SRT/VTT the web UI produces by applying every accepted Review
 Decision's text back into the original Cues. Flags left pending or rejected
 keep their original text. Distinct from the CLI `correct` command's `-o`
 output, which is written directly from its own interactive review.
+
+**Free tier**:
+Read-through runs in the web UI paid for by the server's own OpenRouter key,
+for a Session that hasn't entered one of its own. Metered by the Session's
+Allowance and the Daily budget; a run either doesn't start or finishes, never
+stopping partway. Runs on a Session's own key are never metered.
+_Avoid_: trial, free plan.
+
+**Allowance**:
+The Transcript words one Session may send through the Free tier in a rolling
+24 hours. A run is charged its Transcript's full word count, since the
+Read-through reads the whole Transcript. A run may exceed what's left by a
+small grace margin, after which the Allowance is simply spent — never owed.
+_Avoid_: quota, credits, audio hours (an eval unit, derived from Cue
+timestamps, never used in the web UI).
+
+**Daily budget**:
+The dollar cap on all Free tier spend across every Session in a rolling 24
+hours, as OpenRouter reports it. The real limit on the server's bill; when it
+is spent, every Session is asked for its own key.
+_Avoid_: global quota, spend limit.
