@@ -279,24 +279,24 @@ def _classify(
     return "real-word"
 
 
-def _unique_context(texts: list[str], tokens: list[str], start: int, end: int) -> str:
-    """The shortest window of ``tokens`` around ``[start, end)`` that occurs
+def _unique_context(raw: list[str], cleaned: list[str], start: int, end: int) -> str:
+    """The shortest window of ``cleaned`` around ``[start, end)`` that occurs
     exactly once in the file, with the span's first occurrence inside it at
     the right offset -- what the Scored corpus's ``context`` needs. It is
-    written as the words' ``texts``, not the cleaned ``tokens``: a token that
+    written as the ``raw`` words, not the ``cleaned`` ones: a token that
     cleans to nothing (a bare ".") would vanish from a joined context."""
-    span = tokens[start:end]
-    for extra in range(len(tokens)):
+    span = cleaned[start:end]
+    for extra in range(len(cleaned)):
         for left in range(extra + 1):
             lo, hi = start - left, end + (extra - left)
-            if lo < 0 or hi > len(tokens):
+            if lo < 0 or hi > len(cleaned):
                 continue
-            window = tokens[lo:hi]
+            window = cleaned[lo:hi]
             if _first(window, span) != left:
                 continue
-            if _count(tokens, window) == 1:
-                return " ".join(texts[lo:hi])
-    return " ".join(texts)
+            if _count(cleaned, window) == 1:
+                return " ".join(raw[lo:hi])
+    return " ".join(raw)
 
 
 def _first(tokens: list[str], needle: list[str]) -> int:

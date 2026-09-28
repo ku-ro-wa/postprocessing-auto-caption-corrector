@@ -4,6 +4,8 @@ status: accepted
 
 # Bring an LLM Read-through into the eval loop, judged on Held-out sets
 
+_Amended by ADR 0007: the default Read-through configuration becomes `qwen3.6-plus-p2`, with `flash-v4` as the backup._
+
 Partly supersedes ADR 0005, which kept the LLM pass outside the tuning loop
 to protect LLM spend. Measured spend made that premise obsolete (29 requests,
 73.6K tokens: $0.03; reading every word of a transcript costs pennies per hour

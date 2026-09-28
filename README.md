@@ -194,6 +194,9 @@ since #28's comparison runs with reasoning off. The default model,
 on the Dev sets (issue #23): Lite is about 3x cheaper but its Flag-level
 precision on the Scored corpus fell below the local pipeline's (0.57 vs
 0.71) and some of its Earnings-21 chunks failed on oversized replies.
+#28's comparison picked `qwen3.6-plus-p2` to replace `flash-v4` (ADR 0007);
+until #40 makes the default a configuration, `correct` and the web UI still
+run Flash.
 
 **Audited Dev set** — `audited-dev`:
 
@@ -223,11 +226,11 @@ issue #31): school-laptop surveillance, dark mode, nepo babies in pop,
 perfume, a song breakdown and a phone review, the last with an accented main
 speaker. Their errors were
 listed by an audio pass before any system ran on them, and like `audited-dev`
-they list errors only. Only the local pipeline (unchanged in detection since
-its freeze at `2de1655`) has been scored on them; no Read-through has.
-The set is kept for the Read-through configuration comparison's final
-scoring (#28), so `eval` refuses it without `--final`. Looking at a
-system's Flags on it to motivate a change moves it to the Dev set.
+they list errors only. Besides the local pipeline (unchanged in detection
+since its freeze at `2de1655`), only `flash-v4` and `qwen3.6-plus-p2` have
+been scored on them, once each, for ADR 0007's verdict. `eval` still
+refuses the set without `--final`. Looking at a system's Flags on it to
+motivate a change moves it to the Dev set.
 
 **Earnings-21 Auto-labelled corpora** — built locally, never committed:
 
@@ -248,8 +251,8 @@ dropped and counted. `earnings21-heldout` is the dataset's `eval10` list
 (11 calls) and is scored only for ADR 0006's final comparison (`eval`
 refuses it without `--final`);
 `earnings21-dev` is the first 5 other calls. `earnings21-heldout-2` is a
-fixed-seed draw of 10 of the calls left, kept for the Read-through
-configuration comparison's final scoring (#28) and likewise refused without
+fixed-seed draw of 10 of the calls left, scored once for the Read-through
+configuration comparison's verdict (ADR 0007) and likewise refused without
 `--final`; the remaining calls are never fetched.
 `--priming` hands each call's company name to the system as Priming terms.
 Headline recall covers `non-word` + `real-word`; the candidate counts are
