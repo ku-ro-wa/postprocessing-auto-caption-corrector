@@ -464,14 +464,14 @@ def test_only_the_final_comparison_sets_are_held_out() -> None:
     }
 
 
-@pytest.mark.parametrize("name", ["audited-dev", "audited-heldout-2"])
-def test_audited_corpus_locates_every_case_in_its_five_transcripts(name: str) -> None:
+@pytest.mark.parametrize("name, videos", [("audited-dev", 5), ("audited-heldout-2", 6)])
+def test_audited_corpus_locates_every_case_in_its_transcripts(name: str, videos: int) -> None:
     # Scored with no Flags at all: checks the corpus itself (every span
     # locates, every transcript is exhaustive and has errors listed) without
     # running any system over a Held-out set.
     corpus = CORPORA[name]
     cases = load_corpus(corpus.cases_path)
-    assert len(corpus.exhaustive_sources) == 5
+    assert len(corpus.exhaustive_sources) == videos
     assert {c.source for c in cases} == set(corpus.exhaustive_sources)
     assert all(c.verdict == "should-flag" and c.kind for c in cases)
     words = {s: tokenize(parse(corpus.data_dir / s)) for s in corpus.exhaustive_sources}

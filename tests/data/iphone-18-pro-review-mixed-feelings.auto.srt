@@ -1,0 +1,2184 @@
+1
+00:00:00,000 --> 00:00:04,360
+The iPhone 18 Pro is finally here. It
+
+2
+00:00:02,320 --> 00:00:06,560
+has speeds may surprise you. A smaller
+
+3
+00:00:04,360 --> 00:00:08,840
+dynamic island, faster charging, and a
+
+4
+00:00:06,560 --> 00:00:11,040
+variable aperture. So, is this variable
+
+5
+00:00:08,840 --> 00:00:13,120
+aperture actually useful? How much
+
+6
+00:00:11,040 --> 00:00:15,520
+faster is 18 Pro? And what other
+
+7
+00:00:13,120 --> 00:00:19,080
+surprises this phone has? Let's talk
+
+8
+00:00:15,520 --> 00:00:19,080
+about it in one take.
+
+9
+00:00:20,960 --> 00:00:22,980
+>> [music]
+
+10
+00:00:30,130 --> 00:00:32,150
+[music]
+
+11
+00:00:37,990 --> 00:00:40,010
+[music]
+
+12
+00:00:41,360 --> 00:00:45,520
+>> First, design. The iPhone 18 Pro haven't
+
+13
+00:00:43,720 --> 00:00:47,240
+changed much. They keep the metal and
+
+14
+00:00:45,520 --> 00:00:48,960
+glass design from last year, but the
+
+15
+00:00:47,240 --> 00:00:51,240
+color difference between two materials
+
+16
+00:00:48,960 --> 00:00:53,280
+is less now. Still, the only visible
+
+17
+00:00:51,240 --> 00:00:55,600
+issues from 17 Pro are really [music]
+
+18
+00:00:53,280 --> 00:00:58,320
+fixed. For colors, beyond the classic
+
+19
+00:00:55,600 --> 00:01:00,720
+silver and black, there's glacier blue,
+
+20
+00:00:58,320 --> 00:01:02,320
+kind of like the 13 Pro's Sierra blue,
+
+21
+00:01:00,720 --> 00:01:04,920
+but the hero color is definitely
+
+22
+00:01:02,320 --> 00:01:06,760
+burgundy. It got a dark purple undertone
+
+23
+00:01:04,920 --> 00:01:09,280
+and looks just like red wine. Not
+
+24
+00:01:06,760 --> 00:01:11,400
+recommended for minors. Around the size,
+
+25
+00:01:09,280 --> 00:01:13,920
+thickness is unchanged, but the camera
+
+26
+00:01:11,400 --> 00:01:16,560
+bump is even thicker. The 18 Pro Max is
+
+27
+00:01:13,920 --> 00:01:20,080
+now 403.9 g, heaviest [music] iPhone
+
+28
+00:01:16,560 --> 00:01:22,520
+ever. The Pro is up to 111 g, too, which
+
+29
+00:01:20,080 --> 00:01:24,400
+is pretty heavy for 6.3-in phone. But
+
+30
+00:01:22,520 --> 00:01:26,800
+the most interesting thing is the new
+
+31
+00:01:24,400 --> 00:01:28,720
+dynamic island. How did they shrink it?
+
+32
+00:01:26,800 --> 00:01:31,000
+On older iPhones, the dynamic island
+
+33
+00:01:28,720 --> 00:01:33,040
+housed a illuminator, a dot projector,
+
+34
+00:01:31,000 --> 00:01:35,240
+an infrared camera, and a front camera.
+
+35
+00:01:33,040 --> 00:01:37,240
+When you unlock, the dot projector casts
+
+36
+00:01:35,240 --> 00:01:39,000
+thousands of dots onto it. The infrared
+
+37
+00:01:37,240 --> 00:01:41,240
+camera reads those dots, [music] checks
+
+38
+00:01:39,000 --> 00:01:42,720
+it against saved data, and unlock. But
+
+39
+00:01:41,240 --> 00:01:44,880
+on the iPhone 18 Pro, the infrared
+
+40
+00:01:42,720 --> 00:01:46,840
+camera now sits under the screen. If you
+
+41
+00:01:44,880 --> 00:01:48,800
+look through a microscope, this is how
+
+42
+00:01:46,840 --> 00:01:50,840
+the screen's pixels normally line up,
+
+43
+00:01:48,800 --> 00:01:52,480
+but this area has about half as many
+
+44
+00:01:50,840 --> 00:01:54,120
+pixels, so the camera underneath [music]
+
+45
+00:01:52,480 --> 00:01:56,120
+can see through. Apple also made the
+
+46
+00:01:54,120 --> 00:01:58,440
+pixels over the camera brighter, and
+
+47
+00:01:56,120 --> 00:02:00,160
+slowly packed the pixels closer towards
+
+48
+00:01:58,440 --> 00:02:01,880
+the edges until they match the rest of
+
+49
+00:02:00,160 --> 00:02:03,600
+the screen. So, at a normal viewing
+
+50
+00:02:01,880 --> 00:02:05,400
+distance, this area blends in pretty
+
+51
+00:02:03,600 --> 00:02:07,280
+well. As for the unlock speed, it's
+
+52
+00:02:05,400 --> 00:02:08,560
+about the same as before.
+
+53
+00:02:07,280 --> 00:02:10,720
+So, what do we gain from a smaller
+
+54
+00:02:08,560 --> 00:02:14,200
+cutout? As you can see, the new Dynamic
+
+55
+00:02:10,720 --> 00:02:16,240
+Island has a whopping 130 more pixels.
+
+56
+00:02:14,200 --> 00:02:18,880
+You can squeeze in one more icon to show
+
+57
+00:02:16,240 --> 00:02:20,320
+three live activities. Most importantly,
+
+58
+00:02:18,880 --> 00:02:21,720
+when you pull the screenshot, your
+
+59
+00:02:20,320 --> 00:02:23,440
+friends can tell you changed [music] to
+
+60
+00:02:21,720 --> 00:02:25,480
+the new iPhone. Beyond the Dynamic
+
+61
+00:02:23,440 --> 00:02:26,959
+Island, the screen hasn't changed much.
+
+62
+00:02:25,480 --> 00:02:29,000
+But, the full screen brightness still
+
+63
+00:02:26,959 --> 00:02:31,520
+adjusts over 1,000 nits, the same as
+
+64
+00:02:29,000 --> 00:02:33,200
+before. So, what about the cameras? The
+
+65
+00:02:31,520 --> 00:02:35,640
+biggest camera upgrade this year is this
+
+66
+00:02:33,200 --> 00:02:37,680
+variable aperture, which can go from F4
+
+67
+00:02:35,640 --> 00:02:40,400
+to F1.48.
+
+68
+00:02:37,680 --> 00:02:42,200
+So, what are the benefits? For example,
+
+69
+00:02:40,400 --> 00:02:44,280
+there's an alpaca right behind me. If
+
+70
+00:02:42,200 --> 00:02:46,400
+the camera focus on my face, his face
+
+71
+00:02:44,280 --> 00:02:48,800
+gets blurry. If the camera focus on his
+
+72
+00:02:46,400 --> 00:02:50,840
+face, my face gets blurry. That is
+
+73
+00:02:48,800 --> 00:02:53,000
+because with a fixed camera settings,
+
+74
+00:02:50,840 --> 00:02:55,440
+only a limited range can look sharp.
+
+75
+00:02:53,000 --> 00:02:57,520
+This range is called depth of field. We
+
+76
+00:02:55,440 --> 00:02:59,600
+are too far to fall within that range.
+
+77
+00:02:57,520 --> 00:03:02,280
+So, how do you fix it?
+
+78
+00:02:59,600 --> 00:03:04,040
+Man.
+
+79
+00:03:02,280 --> 00:03:05,560
+I tried calling him over, but he won't
+
+80
+00:03:04,040 --> 00:03:08,640
+come. So, we can change the camera's
+
+81
+00:03:05,560 --> 00:03:10,720
+aperture from F1.4 to F5.6. So, the
+
+82
+00:03:08,640 --> 00:03:12,400
+blurry spots are smaller, and both our
+
+83
+00:03:10,720 --> 00:03:14,480
+faces are sharper.
+
+84
+00:03:12,400 --> 00:03:16,640
+But, there's also a downside to this. As
+
+85
+00:03:14,480 --> 00:03:18,720
+the blurry spots get smaller, we lose
+
+86
+00:03:16,640 --> 00:03:20,280
+this beautiful background blur. So, in
+
+87
+00:03:18,720 --> 00:03:22,360
+filming, if you want to shoot a big
+
+88
+00:03:20,280 --> 00:03:24,000
+scene and let audience see everything,
+
+89
+00:03:22,360 --> 00:03:25,080
+you're going to use the small aperture.
+
+90
+00:03:24,000 --> 00:03:27,720
+If you want to bring out someone's
+
+91
+00:03:25,080 --> 00:03:29,920
+feelings and create a dreamy mood, use a
+
+92
+00:03:27,720 --> 00:03:31,560
+large aperture. But, in practice, depth
+
+93
+00:03:29,920 --> 00:03:33,840
+of field changes [music] little from
+
+94
+00:03:31,560 --> 00:03:36,640
+wide open to F4. Take a look at these
+
+95
+00:03:33,840 --> 00:03:36,640
+sample shots.
+
+96
+00:03:45,320 --> 00:03:48,480
+You may have noticed in those sample
+
+97
+00:03:46,760 --> 00:03:50,720
+shots, the background lights look like
+
+98
+00:03:48,480 --> 00:03:52,600
+stars. That is because with a smaller
+
+99
+00:03:50,720 --> 00:03:54,880
+aperture, light bends more around the
+
+100
+00:03:52,600 --> 00:03:57,440
+blade edges, turning point of lights
+
+101
+00:03:54,880 --> 00:03:59,280
+into bright rays. But this year's iPhone
+
+102
+00:03:57,440 --> 00:04:01,640
+in scenes full of lights like this just
+
+103
+00:03:59,280 --> 00:04:03,760
+closed down to F1.8 to get these star
+
+104
+00:04:01,640 --> 00:04:07,800
+shapes. At F4, the stars stand [music]
+
+105
+00:04:03,760 --> 00:04:07,800
+out more. Do you guys like this look?
+
+106
+00:04:09,720 --> 00:04:12,920
+If you like this look, this $10 star
+
+107
+00:04:11,640 --> 00:04:15,240
+filter will [music] have the same
+
+108
+00:04:12,920 --> 00:04:17,959
+effect. With those trick, we change how
+
+109
+00:04:15,240 --> 00:04:20,720
+photo looks. But in videos, aperture
+
+110
+00:04:17,959 --> 00:04:22,002
+also affects how motion feels. When you
+
+111
+00:04:20,720 --> 00:04:22,280
+shoot videos in bright light,
+
+112
+00:04:22,002 --> 00:04:24,120
+>> [music]
+
+113
+00:04:22,280 --> 00:04:25,760
+>> iPhone raises its shutter speed flat and
+
+114
+00:04:24,120 --> 00:04:27,760
+that's light. But that makes moving
+
+115
+00:04:25,760 --> 00:04:29,600
+objects looks very [music] choppy. So
+
+116
+00:04:27,760 --> 00:04:31,800
+now you can get the aperture smaller and
+
+117
+00:04:29,600 --> 00:04:33,320
+bring shutter speed back to normal.
+
+118
+00:04:31,800 --> 00:04:35,720
+That will make the movement feel natural
+
+119
+00:04:33,320 --> 00:04:35,720
+again.
+
+120
+00:04:36,080 --> 00:04:39,280
+But in order to use shutter speed
+
+121
+00:04:37,720 --> 00:04:41,240
+aperture like that, you need to manually
+
+122
+00:04:39,280 --> 00:04:43,400
+control them. That's where the 18 Pro's
+
+123
+00:04:41,240 --> 00:04:45,360
+new feature comes in, Pro Controls. You
+
+124
+00:04:43,400 --> 00:04:47,400
+can now set shutter speed, aperture,
+
+125
+00:04:45,360 --> 00:04:49,960
+focus, and white balance, and use a
+
+126
+00:04:47,400 --> 00:04:51,760
+histogram to check exposure. It brings
+
+127
+00:04:49,960 --> 00:04:55,000
+in lots of features from third-party
+
+128
+00:04:51,760 --> 00:04:57,640
+apps, and it's really handy. Sadly, this
+
+129
+00:04:55,000 --> 00:04:59,520
+feature is only on 18 Pro. Also, the
+
+130
+00:04:57,640 --> 00:05:01,360
+aperture can adjust itself. When you're
+
+131
+00:04:59,520 --> 00:05:02,613
+shooting a document, it gets smaller to
+
+132
+00:05:01,360 --> 00:05:02,880
+get sharper details.
+
+133
+00:05:02,613 --> 00:05:04,240
+>> [music]
+
+134
+00:05:02,880 --> 00:05:06,720
+>> When there's a point of light in the
+
+135
+00:05:04,240 --> 00:05:07,720
+frame, it gets bigger to reduce flare.
+
+136
+00:05:06,720 --> 00:05:10,280
+Which brings us [music] to this year's
+
+137
+00:05:07,720 --> 00:05:12,000
+iPhone's major problem. After the event,
+
+138
+00:05:10,280 --> 00:05:14,080
+Apple organized some tech shots for
+
+139
+00:05:12,000 --> 00:05:16,320
+press, including a scene that looked
+
+140
+00:05:14,080 --> 00:05:18,720
+like a bar. While shooting, I was like,
+
+141
+00:05:16,320 --> 00:05:21,440
+"Why is the lens flare so bad?" So once
+
+142
+00:05:18,720 --> 00:05:24,280
+we got back, we took some quick tests.
+
+143
+00:05:21,440 --> 00:05:26,600
+Wide open at F1.8, as we increase the
+
+144
+00:05:24,280 --> 00:05:28,840
+light angle, a curved streak of flare
+
+145
+00:05:26,600 --> 00:05:31,200
+appears on iPhone 18 Pro. At the
+
+146
+00:05:28,840 --> 00:05:33,360
+smallest aperture at F4, that curved
+
+147
+00:05:31,200 --> 00:05:35,560
+flare is still there with petal-shaped
+
+148
+00:05:33,360 --> 00:05:37,800
+spots around the light. Flare is [music]
+
+149
+00:05:35,560 --> 00:05:40,080
+pretty noticeable on this year's iPhone.
+
+150
+00:05:37,800 --> 00:05:42,200
+So we also tested it against the 17 Pro
+
+151
+00:05:40,080 --> 00:05:45,320
+on location. With the aperture set to
+
+152
+00:05:42,200 --> 00:05:47,440
+F1.8, close to the 17 Pro, at At same
+
+153
+00:05:45,320 --> 00:05:49,800
+light angle, the 17 [music] Pro also
+
+154
+00:05:47,440 --> 00:05:51,960
+shows flare, but overall it looks less
+
+155
+00:05:49,800 --> 00:05:53,920
+severe. So, how does flare affect your
+
+156
+00:05:51,960 --> 00:05:55,640
+shots? It makes the image look washed
+
+157
+00:05:53,920 --> 00:05:57,000
+out, lowers contrast, and those
+
+158
+00:05:55,640 --> 00:05:59,440
+petal-shaped spots at the small
+
+159
+00:05:57,000 --> 00:06:01,720
+apertures can really spoil the shot. So,
+
+160
+00:05:59,440 --> 00:06:03,360
+how can we fix this? First, avoid
+
+161
+00:06:01,720 --> 00:06:06,040
+shooting into [music] bright lights. And
+
+162
+00:06:03,360 --> 00:06:08,240
+second, we 3D printed a lens hood. With
+
+163
+00:06:06,040 --> 00:06:10,680
+that on, the flare is reduced to some
+
+164
+00:06:08,240 --> 00:06:12,680
+degree. And we've uploaded the hood's 3D
+
+165
+00:06:10,680 --> 00:06:15,000
+model to MakerWorld.
+
+166
+00:06:12,680 --> 00:06:17,280
+The 18 Pro gets Photographer's Styles 3.
+
+167
+00:06:15,000 --> 00:06:19,000
+As new control for texture and grain,
+
+168
+00:06:17,280 --> 00:06:21,160
+you can make your photo look better.
+
+169
+00:06:19,000 --> 00:06:22,480
+This film effect adds a layer of grain,
+
+170
+00:06:21,160 --> 00:06:24,120
+plus a red glow around the bright
+
+171
+00:06:22,480 --> 00:06:26,400
+lights, giving it a pretty nice film
+
+172
+00:06:24,120 --> 00:06:28,640
+look. The most useful feature has to be
+
+173
+00:06:26,400 --> 00:06:30,640
+skin smoothing. It smooths the skin very
+
+174
+00:06:28,640 --> 00:06:32,400
+naturally, keeping its texture, so it
+
+175
+00:06:30,640 --> 00:06:34,560
+still looks pretty real. Now that
+
+176
+00:06:32,400 --> 00:06:36,760
+iPhone's all grown up, its image quality
+
+177
+00:06:34,560 --> 00:06:39,080
+is really good. But better image quality
+
+178
+00:06:36,760 --> 00:06:40,480
+doesn't always mean a better shot.
+
+179
+00:06:39,080 --> 00:06:42,240
+A lot of people actually love the retro
+
+180
+00:06:40,480 --> 00:06:45,120
+look of the old phones. So, we took the
+
+181
+00:06:42,240 --> 00:06:46,759
+same video with 18 Pro and iPhone 5.
+
+182
+00:06:45,120 --> 00:06:49,840
+Which one do you like more? Tell us
+
+183
+00:06:46,759 --> 00:06:49,840
+[music] in the comments.
+
+184
+00:07:07,064 --> 00:07:09,084
+>> [music]
+
+185
+00:07:11,649 --> 00:07:13,669
+[music]
+
+186
+00:07:24,840 --> 00:07:28,880
+>> Now, let's talk about the signal. The 18
+
+187
+00:07:26,720 --> 00:07:30,880
+Pro uses Apple's own C2 model. It
+
+188
+00:07:28,880 --> 00:07:33,320
+handles your mobile data. It's Apple's
+
+189
+00:07:30,880 --> 00:07:35,240
+first model to the Pro iPhone. So, is it
+
+190
+00:07:33,320 --> 00:07:38,160
+better than Qualcomm? We tested it
+
+191
+00:07:35,240 --> 00:07:40,440
+against the 17 Pro. With a strong 5G
+
+192
+00:07:38,160 --> 00:07:42,360
+signal averaging 10 speed test, the 18
+
+193
+00:07:40,440 --> 00:07:44,640
+Pro's download was nearly 20 meg per
+
+194
+00:07:42,360 --> 00:07:46,320
+second slower than the 17 Pro's. Uploads
+
+195
+00:07:44,640 --> 00:07:48,840
+was 30 megabits per second slower and
+
+196
+00:07:46,320 --> 00:07:50,520
+latency was 1.4 milliseconds higher. So,
+
+197
+00:07:48,840 --> 00:07:52,000
+Apple's modem still seem a bit behind
+
+198
+00:07:50,520 --> 00:07:54,440
+Qualcomm's. But, in an underground
+
+199
+00:07:52,000 --> 00:07:55,920
+garage with a weaker signal, the 18 Pro
+
+200
+00:07:54,440 --> 00:07:58,480
+came out ahead, beating last year's
+
+201
+00:07:55,920 --> 00:08:00,600
+model in both download and upload speeds
+
+202
+00:07:58,480 --> 00:08:02,760
+with latency also lower. So, Apple's own
+
+203
+00:08:00,600 --> 00:08:04,560
+modem may handle weak signals better. We
+
+204
+00:08:02,760 --> 00:08:06,320
+also tried making calls in an elevator
+
+205
+00:08:04,560 --> 00:08:08,400
+with very poor signal and both the
+
+206
+00:08:06,320 --> 00:08:10,040
+iPhone 18 Pro and 17 Pro could connect,
+
+207
+00:08:08,400 --> 00:08:11,680
+but the sound kept getting cut out in
+
+208
+00:08:10,040 --> 00:08:13,560
+both with little difference between
+
+209
+00:08:11,680 --> 00:08:15,800
+them. Finally, we put both phones in a
+
+210
+00:08:13,560 --> 00:08:17,640
+box that blocks all signal, waited until
+
+211
+00:08:15,800 --> 00:08:20,000
+they lost connection, and opened it, and
+
+212
+00:08:17,640 --> 00:08:22,480
+repeat this 10 times. The 18 Pro took
+
+213
+00:08:20,000 --> 00:08:25,120
+5.2 seconds on average to reconnect,
+
+214
+00:08:22,480 --> 00:08:27,160
+while the 17 Pro just took 1.5 seconds.
+
+215
+00:08:25,120 --> 00:08:29,040
+Overall, the 17 Pro still did a bit
+
+216
+00:08:27,160 --> 00:08:31,160
+better than the 18 Pro with Apple's own
+
+217
+00:08:29,040 --> 00:08:33,159
+modem. Sitting right next to the C2 is
+
+218
+00:08:31,160 --> 00:08:35,919
+2-nanometer A20 Pro chip. Raw
+
+219
+00:08:33,159 --> 00:08:38,159
+performance is monstrous. In Geekbench 6
+
+220
+00:08:35,919 --> 00:08:41,520
+at a 25° room temperature, single-core
+
+221
+00:08:38,159 --> 00:08:44,280
+scores broke 4,700, a 23% jump.
+
+222
+00:08:41,520 --> 00:08:47,440
+Multi-core jumped 20% and GPU gains
+
+223
+00:08:44,280 --> 00:08:49,440
+approached nearly 50%, a genuine big
+
+224
+00:08:47,440 --> 00:08:51,880
+leap. Does that translate to real-world
+
+225
+00:08:49,440 --> 00:08:53,720
+gaming? We unlocked the 1080p mode in
+
+226
+00:08:51,880 --> 00:08:57,200
+Death Stranding. The 18 Pro Max managed
+
+227
+00:08:53,720 --> 00:08:58,839
+to hit 40 FPS, a full 10 FPS higher than
+
+228
+00:08:57,200 --> 00:09:00,720
+the previous generation, shifting the
+
+229
+00:08:58,839 --> 00:09:03,080
+experience to something reasonably
+
+230
+00:09:00,720 --> 00:09:05,720
+playable. Estimated package power peaked
+
+231
+00:09:03,080 --> 00:09:07,320
+at 6.3 watts. With draw that high, can
+
+232
+00:09:05,720 --> 00:09:10,320
+the thermals actually keep up?
+
+233
+00:09:07,320 --> 00:09:13,240
+Surprisingly, yes. From start to finish,
+
+234
+00:09:10,320 --> 00:09:15,400
+the 18 Pro Max pinned its 45 FPS ceiling
+
+235
+00:09:13,240 --> 00:09:17,400
+without throttling. The 17 Pro Max
+
+236
+00:09:15,400 --> 00:09:19,680
+started dropping frames just 7 minutes
+
+237
+00:09:17,400 --> 00:09:21,880
+in as its big cores throttled back, a
+
+238
+00:09:19,680 --> 00:09:23,960
+sign of heat saturation. In earlier
+
+239
+00:09:21,880 --> 00:09:25,800
+iPhones, the processor and RAM chips
+
+240
+00:09:23,960 --> 00:09:27,960
+were stacked right on top of each other,
+
+241
+00:09:25,800 --> 00:09:29,920
+sandwiching two major heat sources. On
+
+242
+00:09:27,960 --> 00:09:31,800
+the 18 Pro series, the memory [music] is
+
+243
+00:09:29,920 --> 00:09:33,839
+laid out beside the A20 Pro, lowering
+
+244
+00:09:31,800 --> 00:09:35,960
+concentrated thermal density. On top of
+
+245
+00:09:33,839 --> 00:09:38,120
+that, the vapor chamber is three times
+
+246
+00:09:35,960 --> 00:09:39,880
+more larger than the 17 Pro. That dual
+
+247
+00:09:38,120 --> 00:09:43,360
+upgrade gives the cooling a massive
+
+248
+00:09:39,880 --> 00:09:46,760
+lift. Recording 4K 120 FPS video for 30
+
+249
+00:09:43,360 --> 00:09:49,960
+minutes, the 16 Pro Max hit 43°, the 17
+
+250
+00:09:46,760 --> 00:09:53,040
+Pro Max hit 41.3°, and the 18 Pro Max
+
+251
+00:09:49,960 --> 00:09:55,440
+stayed under 40°. Of course, even with
+
+252
+00:09:53,040 --> 00:09:57,240
+shared thermal upgrades, the larger 18
+
+253
+00:09:55,440 --> 00:09:59,600
+Pro Max still holds an average over the
+
+254
+00:09:57,240 --> 00:10:01,360
+standard 18 Pro.
+
+255
+00:09:59,600 --> 00:10:03,520
+But in daily use, it's actually very
+
+256
+00:10:01,360 --> 00:10:05,320
+hard to push these phone to their limit.
+
+257
+00:10:03,520 --> 00:10:07,320
+Compared to getting more speed, what
+
+258
+00:10:05,320 --> 00:10:10,320
+shapes our experience day-to-day is
+
+259
+00:10:07,320 --> 00:10:12,480
+battery. The 18 Pro packs a 4,000 mA
+
+260
+00:10:10,320 --> 00:10:14,640
+hour battery, a tiny bump over last
+
+261
+00:10:12,480 --> 00:10:16,760
+year. Real world endurance, however, is
+
+262
+00:10:14,640 --> 00:10:18,880
+far better than expected. In our heavy
+
+263
+00:10:16,760 --> 00:10:21,600
+drink battery stress test from 100 to
+
+264
+00:10:18,880 --> 00:10:23,880
+dead, the 18 Pro lasted 6 hours and 38
+
+265
+00:10:21,600 --> 00:10:25,880
+minutes, well over an 51 minutes longer
+
+266
+00:10:23,880 --> 00:10:27,680
+than 17 Pro. Most of the credit goes to
+
+267
+00:10:25,880 --> 00:10:30,280
+the 2 nanometer A20 Pro and the more
+
+268
+00:10:27,680 --> 00:10:33,800
+efficient LTPO plus display. The 18 Pro
+
+269
+00:10:30,280 --> 00:10:36,320
+Max sees an even bigger jump. It's 5,390
+
+270
+00:10:33,800 --> 00:10:39,120
+mA hour cell push the run times to 7
+
+271
+00:10:36,320 --> 00:10:41,160
+hours and 57 minutes, 2 hours and 6
+
+272
+00:10:39,120 --> 00:10:42,480
+minutes longer than the 17 Pro Max. We
+
+273
+00:10:41,160 --> 00:10:44,560
+can pretty much leave power banks at
+
+274
+00:10:42,480 --> 00:10:46,080
+home now. Charging speeds finally got a
+
+275
+00:10:44,560 --> 00:10:48,520
+long overdue a bump. Using Apple's
+
+276
+00:10:46,080 --> 00:10:50,480
+official 40 to 60 watt dynamic charger,
+
+277
+00:10:48,520 --> 00:10:53,400
+peak power hits 52 watts. In our [music]
+
+278
+00:10:50,480 --> 00:10:55,839
+test, both the 18 Pro and Max run from 0
+
+279
+00:10:53,400 --> 00:10:58,600
+to 50% in just 15 minutes with a full
+
+280
+00:10:55,839 --> 00:11:00,600
+charge clocking in in 69 and 78 minutes.
+
+281
+00:10:58,600 --> 00:11:02,839
+That's genuinely fast for an iPhone. But
+
+282
+00:11:00,600 --> 00:11:05,000
+there's also some bad news this year.
+
+283
+00:11:02,839 --> 00:11:07,460
+Our 1 terabyte iPhone 18 Pro had its
+
+284
+00:11:05,000 --> 00:11:09,640
+flash storage downgraded from TLC to
+
+285
+00:11:07,460 --> 00:11:12,240
+[music] QLC. And we expect the 2
+
+286
+00:11:09,640 --> 00:11:14,640
+terabyte Pro models to use QLC 2. Here's
+
+287
+00:11:12,240 --> 00:11:16,400
+how it works. Flash storage is made up
+
+288
+00:11:14,640 --> 00:11:18,600
+of huge numbers of floating gate
+
+289
+00:11:16,400 --> 00:11:20,680
+transistors. To store data, we put
+
+290
+00:11:18,600 --> 00:11:22,400
+electrons in these gates, and to read
+
+291
+00:11:20,680 --> 00:11:23,172
+it, we check how many electrons are
+
+292
+00:11:22,400 --> 00:11:23,480
+inside.
+
+293
+00:11:23,172 --> 00:11:26,240
+>> [music]
+
+294
+00:11:23,480 --> 00:11:27,880
+>> TLC stores three bits in each case using
+
+295
+00:11:26,240 --> 00:11:30,680
+eight states based on the number of
+
+296
+00:11:27,880 --> 00:11:33,360
+electrons. QLC stores four bits in each
+
+297
+00:11:30,680 --> 00:11:35,960
+gate with 16 states. This lets the same
+
+298
+00:11:33,360 --> 00:11:37,920
+gate for more data, bringing cost down.
+
+299
+00:11:35,960 --> 00:11:39,560
+But with more gates, reading and writing
+
+300
+00:11:37,920 --> 00:11:41,840
+need to be more precise, which shortens
+
+301
+00:11:39,560 --> 00:11:44,480
+the life of flash storage. But luckily,
+
+302
+00:11:41,840 --> 00:11:47,160
+even QLC is enough for us. With writing
+
+303
+00:11:44,480 --> 00:11:49,240
+100 GB a day for 10 years straight,
+
+304
+00:11:47,160 --> 00:11:50,960
+still wouldn't wear it out. If it
+
+305
+00:11:49,240 --> 00:11:53,320
+bothers you, pick the lower storage
+
+306
+00:11:50,960 --> 00:11:54,920
+model, which still use TLC. That's it
+
+307
+00:11:53,320 --> 00:11:57,040
+for the hardware. What else is new was
+
+308
+00:11:54,920 --> 00:11:58,760
+new in this year's software. On the
+
+309
+00:11:57,040 --> 00:12:01,120
+software side, last year's liquid glass
+
+310
+00:11:58,760 --> 00:12:04,000
+looked nice, but had plenty of lags and
+
+311
+00:12:01,120 --> 00:12:06,880
+bugs. So with iOS 27, Apple's main focus
+
+312
+00:12:04,000 --> 00:12:08,400
+is speed. Even AirDrop is faster. If you
+
+313
+00:12:06,880 --> 00:12:10,480
+use AirDrop a lot, you know it's been
+
+314
+00:12:08,400 --> 00:12:12,600
+getting worse. So does this new system
+
+315
+00:12:10,480 --> 00:12:15,440
+help? We tested it in our office and
+
+316
+00:12:12,600 --> 00:12:18,800
+compared it to iOS 26. Its average speed
+
+317
+00:12:15,440 --> 00:12:21,840
+went up by a whopping 2.4 MB per second.
+
+318
+00:12:18,800 --> 00:12:24,240
+On both iOS 26 and 27, AirDrop's average
+
+319
+00:12:21,840 --> 00:12:26,160
+speed stayed below 20 MB. So there's
+
+320
+00:12:24,240 --> 00:12:28,520
+still a lot of room to improve. But the
+
+321
+00:12:26,160 --> 00:12:31,240
+good news is across the system, we saw
+
+322
+00:12:28,520 --> 00:12:33,160
+far fewer stutters than 26. So if you
+
+323
+00:12:31,240 --> 00:12:35,680
+held off because you fear lag, you can
+
+324
+00:12:33,160 --> 00:12:37,839
+now go ahead and update to 27. But at
+
+325
+00:12:35,680 --> 00:12:40,480
+what cost? If you care about design,
+
+326
+00:12:37,839 --> 00:12:42,400
+you'll notice liquid glass in iOS 27 has
+
+327
+00:12:40,480 --> 00:12:44,120
+been seriously toned down. The
+
+328
+00:12:42,400 --> 00:12:45,960
+highlights that moved as you tilted your
+
+329
+00:12:44,120 --> 00:12:48,280
+phone now stay still. The light
+
+330
+00:12:45,960 --> 00:12:50,200
+scattering around the edges is gone and
+
+331
+00:12:48,280 --> 00:12:52,000
+the glass look less clear than before.
+
+332
+00:12:50,200 --> 00:12:53,640
+On dark screens, the glass used to
+
+333
+00:12:52,000 --> 00:12:55,600
+adjust transparency to match the
+
+334
+00:12:53,640 --> 00:12:57,600
+background. But in the new system, no
+
+335
+00:12:55,600 --> 00:12:59,400
+matter how you scroll, the glass stays
+
+336
+00:12:57,600 --> 00:13:01,480
+the same color. There's a slider in the
+
+337
+00:12:59,400 --> 00:13:03,480
+settings to adjust it, but you can't get
+
+338
+00:13:01,480 --> 00:13:05,120
+the feel back. Like my hair after I told
+
+339
+00:13:03,480 --> 00:13:06,480
+the barber just to trim. Beyond the
+
+340
+00:13:05,120 --> 00:13:09,080
+speed boost and the small design
+
+341
+00:13:06,480 --> 00:13:11,000
+changes, the biggest update is AI. The
+
+342
+00:13:09,080 --> 00:13:13,040
+photos app now lets you expand an image,
+
+343
+00:13:11,000 --> 00:13:14,920
+giving it wider view. I tried it 10
+
+344
+00:13:13,040 --> 00:13:16,400
+times in a row and it felt like falling
+
+345
+00:13:14,920 --> 00:13:18,480
+into a wormhole. But the most fun
+
+346
+00:13:16,400 --> 00:13:20,040
+feature is spatial reframing. It lets
+
+347
+00:13:18,480 --> 00:13:22,240
+you change the camera angle after taking
+
+348
+00:13:20,040 --> 00:13:25,000
+a photo. So if I keep turning, can I see
+
+349
+00:13:22,240 --> 00:13:25,000
+my own back?
+
+350
+00:13:25,839 --> 00:13:29,080
+You can't, but it looks like you've
+
+351
+00:13:27,360 --> 00:13:30,480
+turned into another world. If you don't
+
+352
+00:13:29,080 --> 00:13:32,520
+want to shoot anything at all, there is
+
+353
+00:13:30,480 --> 00:13:34,640
+a built-in AI image app, image
+
+354
+00:13:32,520 --> 00:13:36,240
+playground. But the image it makes,
+
+355
+00:13:34,640 --> 00:13:38,360
+let's just say they're still stuck in
+
+356
+00:13:36,240 --> 00:13:39,840
+2023. The old [music] Siri wasn't too
+
+357
+00:13:38,360 --> 00:13:41,360
+bright. When you asked it to do
+
+358
+00:13:39,840 --> 00:13:43,360
+something, it just handed you a web
+
+359
+00:13:41,360 --> 00:13:45,040
+page. The second Siri added a glow
+
+360
+00:13:43,360 --> 00:13:47,720
+around the screen, but only went from
+
+361
+00:13:45,040 --> 00:13:49,480
+5-year-old to 80-year-old. And now, Siri
+
+362
+00:13:47,720 --> 00:13:51,240
+has turned into a glass orb living
+
+363
+00:13:49,480 --> 00:13:52,520
+inside the island. You can pull it up
+
+364
+00:13:51,240 --> 00:13:54,680
+from any interface and have a
+
+365
+00:13:52,520 --> 00:13:56,800
+conversation with it using text. [music]
+
+366
+00:13:54,680 --> 00:13:58,760
+So, how capable is it? Can it replace
+
+367
+00:13:56,800 --> 00:14:00,760
+those AI apps on your phone? I brought
+
+368
+00:13:58,760 --> 00:14:03,480
+in ChatGPT and Gemini to see how they
+
+369
+00:14:00,760 --> 00:14:06,400
+respond. The car wash is only 50 m from
+
+370
+00:14:03,480 --> 00:14:08,080
+my home. Should I drive or walk? ChatGPT
+
+371
+00:14:06,400 --> 00:14:10,280
+and Gemini both spotted the logical
+
+372
+00:14:08,080 --> 00:14:12,760
+trap. Only Siri told me to walk to the
+
+373
+00:14:10,280 --> 00:14:14,320
+car wash. Next one, I just learned my
+
+374
+00:14:12,760 --> 00:14:16,280
+parents didn't invite me to their
+
+375
+00:14:14,320 --> 00:14:18,000
+wedding. I'm really upset. What should I
+
+376
+00:14:16,280 --> 00:14:20,120
+do? They were all pretty good at
+
+377
+00:14:18,000 --> 00:14:21,800
+comforting me, but I wasn't even born
+
+378
+00:14:20,120 --> 00:14:24,480
+when my parents got married. And
+
+379
+00:14:21,800 --> 00:14:26,680
+finally, a math problem. Can a 6-m pool
+
+380
+00:14:24,480 --> 00:14:29,400
+fit through a door 4 m [music] high and
+
+381
+00:14:26,680 --> 00:14:31,440
+3 m wide? ChatGPT and Gemini both got
+
+382
+00:14:29,400 --> 00:14:33,520
+the right answer, while Siri gave us
+
+383
+00:14:31,440 --> 00:14:36,480
+five. But Siri isn't just about having
+
+384
+00:14:33,520 --> 00:14:38,480
+conversations anymore. Like other AI, it
+
+385
+00:14:36,480 --> 00:14:40,320
+now has a dedicated app of its own,
+
+386
+00:14:38,480 --> 00:14:43,680
+where you can save history and access it
+
+387
+00:14:40,320 --> 00:14:45,600
+across your Mac and iPad.
+
+388
+00:14:43,680 --> 00:14:48,320
+So, if you use it just to chat, it may
+
+389
+00:14:45,600 --> 00:14:50,040
+still in 2024. But as an AI built into
+
+390
+00:14:48,320 --> 00:14:52,560
+the system, it can do things others
+
+391
+00:14:50,040 --> 00:14:54,085
+can't. For example,
+
+392
+00:14:52,560 --> 00:14:55,480
+Siri, check my latest flight itinerary.
+
+393
+00:14:54,085 --> 00:14:57,520
+[music] Text your friend who's picking
+
+394
+00:14:55,480 --> 00:14:59,000
+me up with my arrival time and terminal,
+
+395
+00:14:57,520 --> 00:15:00,800
+and my first meeting after I land to my
+
+396
+00:14:59,000 --> 00:15:04,160
+calendar, and remind me to bring my
+
+397
+00:15:00,800 --> 00:15:04,160
+passport before I head out.
+
+398
+00:15:05,520 --> 00:15:08,320
+>> I've already taken care of that for you.
+
+399
+00:15:07,280 --> 00:15:10,000
+I sent the text to Liam.
+
+400
+00:15:08,320 --> 00:15:11,760
+>> That command took a while, but it just
+
+401
+00:15:10,000 --> 00:15:13,839
+worked across five apps. It got those
+
+402
+00:15:11,760 --> 00:15:16,000
+done for me. This is where Siri really
+
+403
+00:15:13,839 --> 00:15:18,080
+shines. It knows our personal details,
+
+404
+00:15:16,000 --> 00:15:20,480
+can use apps, and truly be my personal
+
+405
+00:15:18,080 --> 00:15:22,600
+assistant. But now, it only works within
+
+406
+00:15:20,480 --> 00:15:24,960
+Apple's own apps. Apple has opened up
+
+407
+00:15:22,600 --> 00:15:27,240
+Siri to third-party apps, but whether
+
+408
+00:15:24,960 --> 00:15:29,400
+developers want to share data with Siri,
+
+409
+00:15:27,240 --> 00:15:31,400
+that's another story. At the end of last
+
+410
+00:15:29,400 --> 00:15:33,480
+year's Apple 17 video, we made a little
+
+411
+00:15:31,400 --> 00:15:34,920
+skit showing the AI system we dreamed
+
+412
+00:15:33,480 --> 00:15:37,280
+of.
+
+413
+00:15:34,920 --> 00:15:39,040
+Siri got a lot smarter this year, but
+
+414
+00:15:37,280 --> 00:15:40,800
+it's still pretty far from the AI system
+
+415
+00:15:39,040 --> 00:15:42,960
+we've been dreaming of, which brings me
+
+416
+00:15:40,800 --> 00:15:45,440
+to a bigger problem. Does AI actually
+
+417
+00:15:42,960 --> 00:15:47,360
+matter to Apple? Since the ChatGPT came
+
+418
+00:15:45,440 --> 00:15:49,440
+out, Apple's own models haven't appeared
+
+419
+00:15:47,360 --> 00:15:51,720
+on any leaderboards. It hasn't made big
+
+420
+00:15:49,440 --> 00:15:53,440
+investments on leading AI companies. Its
+
+421
+00:15:51,720 --> 00:15:56,160
+AI spending doesn't even get a separate
+
+422
+00:15:53,440 --> 00:15:57,840
+line in its reports. Meanwhile, Google,
+
+423
+00:15:56,160 --> 00:15:59,640
+Microsoft, and Amazon each spend [music]
+
+424
+00:15:57,840 --> 00:16:01,480
+nearly a hundred billion dollars.
+
+425
+00:15:59,640 --> 00:16:03,280
+Whether by choice or because it had no
+
+426
+00:16:01,480 --> 00:16:04,960
+choice, Apple has been moving very
+
+427
+00:16:03,280 --> 00:16:07,600
+slowly, but it's [music] okay to be
+
+428
+00:16:04,960 --> 00:16:09,240
+slow. For 3 years, iPhones sold in
+
+429
+00:16:07,600 --> 00:16:11,280
+mainland China had no Apple
+
+430
+00:16:09,240 --> 00:16:13,360
+Intelligence. Yet, Apple's market share
+
+431
+00:16:11,280 --> 00:16:15,720
+has grown rather than fallen. It turns
+
+432
+00:16:13,360 --> 00:16:16,840
+out few users care about built-in AI as
+
+433
+00:16:15,720 --> 00:16:19,040
+long as they can install [music] their
+
+434
+00:16:16,840 --> 00:16:20,880
+choice of AI apps. And whichever model
+
+435
+00:16:19,040 --> 00:16:23,040
+wins in the end, it still needs a screen
+
+436
+00:16:20,880 --> 00:16:24,520
+to reach the user. Apple has a billion
+
+437
+00:16:23,040 --> 00:16:26,120
+of those screens. It doesn't need to
+
+438
+00:16:24,520 --> 00:16:28,640
+build the best model to have a strong
+
+439
+00:16:26,120 --> 00:16:30,680
+place in this new era. But this year, AI
+
+440
+00:16:28,640 --> 00:16:33,160
+still hit Apple in a way everyone can
+
+441
+00:16:30,680 --> 00:16:35,480
+feel: higher prices. From the first
+
+442
+00:16:33,160 --> 00:16:37,960
+iPhone to iPhone 17, starting price
+
+443
+00:16:35,480 --> 00:16:41,400
+slowly rose up from $499 to $799,
+
+444
+00:16:37,960 --> 00:16:43,200
+raising 2.65% a year, close to the 3%
+
+445
+00:16:41,400 --> 00:16:45,080
+yearly growth in income. But this year,
+
+446
+00:16:43,200 --> 00:16:46,920
+that balance broke. Tech giants [music]
+
+447
+00:16:45,080 --> 00:16:49,240
+are rushing to build data centers,
+
+448
+00:16:46,920 --> 00:16:51,720
+driving up the cost of parts. Samsung,
+
+449
+00:16:49,240 --> 00:16:53,880
+SK Hynix, and Micron face major memory
+
+450
+00:16:51,720 --> 00:16:56,160
+shortages, even splashing expert Tim
+
+451
+00:16:53,880 --> 00:16:58,360
+Cook in his 40-year career says he's
+
+452
+00:16:56,160 --> 00:17:00,320
+never seen anything like it. To cope,
+
+453
+00:16:58,360 --> 00:17:02,320
+Apple delayed the base iPhone 18 until
+
+454
+00:17:00,320 --> 00:17:04,560
+the next spring, saving limited memory
+
+455
+00:17:02,320 --> 00:17:06,880
+for the pricier Pro and Duo models, and
+
+456
+00:17:04,560 --> 00:17:09,720
+cutting cost wherever possible, bringing
+
+457
+00:17:06,880 --> 00:17:11,400
+screens from $110 down to 70, and
+
+458
+00:17:09,720 --> 00:17:14,439
+downgrading larger storage options from
+
+459
+00:17:11,400 --> 00:17:16,600
+TLC to QLC. But even then, the 1 TB
+
+460
+00:17:14,439 --> 00:17:19,079
+iPhone 18 Pro Max cost compared with
+
+461
+00:17:16,600 --> 00:17:21,360
+last year's model nearly $300 more to
+
+462
+00:17:19,079 --> 00:17:23,720
+make. So in the US, the 18 Pro now
+
+463
+00:17:21,360 --> 00:17:27,079
+starts $100 higher and the top 2
+
+464
+00:17:23,720 --> 00:17:29,960
+terabyte model is up a full $500. And
+
+465
+00:17:27,079 --> 00:17:31,800
+this is just the start. In 2027, memory
+
+466
+00:17:29,960 --> 00:17:33,680
+and storage prices are set to rise
+
+467
+00:17:31,800 --> 00:17:35,880
+again, taking up nearly half of the
+
+468
+00:17:33,680 --> 00:17:37,680
+phone's total parts cost, making iPhones
+
+469
+00:17:35,880 --> 00:17:39,040
+even more expensive.
+
+470
+00:17:37,680 --> 00:17:41,040
+Apple may be able to watch the AI
+
+471
+00:17:39,040 --> 00:17:43,320
+revolution from the sidelines, but it
+
+472
+00:17:41,040 --> 00:17:45,040
+can't escape its impact. Every time I
+
+473
+00:17:43,320 --> 00:17:47,920
+think about this, I feel a little
+
+474
+00:17:45,040 --> 00:17:50,400
+uneasy. If even a company as big as
+
+475
+00:17:47,920 --> 00:17:52,840
+Apple can't stay out of the harm's way,
+
+476
+00:17:50,400 --> 00:17:54,280
+what about us? AI changing our lives is
+
+477
+00:17:52,840 --> 00:17:56,840
+no longer a prediction, but a
+
+478
+00:17:54,280 --> 00:17:58,120
+fast-moving reality. Coding agents have
+
+479
+00:17:56,840 --> 00:18:00,200
+changed the way we write code
+
+480
+00:17:58,120 --> 00:18:02,240
+completely. AI videos are almost
+
+481
+00:18:00,200 --> 00:18:03,760
+impossible to tell from the real ones.
+
+482
+00:18:02,240 --> 00:18:06,160
+Reinforcement learning lets robots
+
+483
+00:18:03,760 --> 00:18:08,400
+improve at record speed. Every 2 months,
+
+484
+00:18:06,160 --> 00:18:10,280
+a new model transforms an industry, and
+
+485
+00:18:08,400 --> 00:18:12,440
+skills took years to learn years today,
+
+486
+00:18:10,280 --> 00:18:14,320
+maybe just one prompt tomorrow. So while
+
+487
+00:18:12,440 --> 00:18:16,400
+making this video, I often feel a bit
+
+488
+00:18:14,320 --> 00:18:18,080
+lost. We used to review the new iPhones
+
+489
+00:18:16,400 --> 00:18:20,120
+and call Apple's launch the biggest show
+
+490
+00:18:18,080 --> 00:18:21,560
+in tech because it was the most advanced
+
+491
+00:18:20,120 --> 00:18:23,240
+technology that most [music] people
+
+492
+00:18:21,560 --> 00:18:25,080
+could actually get their hands on. Every
+
+493
+00:18:23,240 --> 00:18:26,920
+small change showed us where tech was
+
+494
+00:18:25,080 --> 00:18:29,120
+going. Today, we still review new
+
+495
+00:18:26,920 --> 00:18:31,000
+iPhones, comparing two photos up close,
+
+496
+00:18:29,120 --> 00:18:33,320
+checking how much faster the chip is,
+
+497
+00:18:31,000 --> 00:18:35,280
+just like 10 years ago. But times have
+
+498
+00:18:33,320 --> 00:18:36,880
+changed. [music] The iPhone is no longer
+
+499
+00:18:35,280 --> 00:18:39,160
+the center of tech, and the world
+
+500
+00:18:36,880 --> 00:18:41,920
+outside moves at a different speed. That
+
+501
+00:18:39,160 --> 00:18:43,480
+speed both amazes and scares us. How can
+
+502
+00:18:41,920 --> 00:18:45,640
+we keep up with this world? Will the
+
+503
+00:18:43,480 --> 00:18:48,160
+future still have place for us? In a
+
+504
+00:18:45,640 --> 00:18:50,480
+parody video a decade ago, the iPhone 18
+
+505
+00:18:48,160 --> 00:18:52,960
+was an absurdly long stick, which was a
+
+506
+00:18:50,480 --> 00:18:55,040
+joke, but also showed how we make sense
+
+507
+00:18:52,960 --> 00:18:57,120
+of the [music] world. The iPhone 5 was
+
+508
+00:18:55,040 --> 00:18:59,360
+longer than the 4, so by linear logic,
+
+509
+00:18:57,120 --> 00:19:01,600
+the 18 Pro should be this long. But now
+
+510
+00:18:59,360 --> 00:19:04,040
+the iPhone 18 is here. It's still a
+
+511
+00:19:01,600 --> 00:19:06,160
+screen we hold in our hand, but all the
+
+512
+00:19:04,040 --> 00:19:08,960
+world outside the screen has moved far
+
+513
+00:19:06,160 --> 00:19:11,360
+beyond simple linear logic, growing and
+
+514
+00:19:08,960 --> 00:19:13,720
+racing in ways [music] we can't imagine.
+
+515
+00:19:11,360 --> 00:19:15,480
+But no matter how powerful AI gets,
+
+516
+00:19:13,720 --> 00:19:17,320
+there's still one thing it can do,
+
+517
+00:19:15,480 --> 00:19:19,560
+generate a single shot longer than 30
+
+518
+00:19:17,320 --> 00:19:21,720
+seconds. That's right. Even the best
+
+519
+00:19:19,560 --> 00:19:24,120
+video models today can only generate 30
+
+520
+00:19:21,720 --> 00:19:26,880
+seconds in one shot. So, in this video,
+
+521
+00:19:24,120 --> 00:19:28,960
+we decided to try one continuous shot.
+
+522
+00:19:26,880 --> 00:19:31,440
+It was a painful process. We messed up
+
+523
+00:19:28,960 --> 00:19:33,480
+countless times, took countless retakes,
+
+524
+00:19:31,440 --> 00:19:35,520
+and there hidden cuts in between. So, it
+
+525
+00:19:33,480 --> 00:19:37,560
+is really more of a fake one take. But,
+
+526
+00:19:35,520 --> 00:19:40,040
+in the end, we managed to fit the 18 Pro
+
+527
+00:19:37,560 --> 00:19:42,000
+part into one unbroken shot. It's a
+
+528
+00:19:40,040 --> 00:19:44,240
+small act of stubbornness in the age of
+
+529
+00:19:42,000 --> 00:19:45,680
+AI. But, more importantly, we wanted to
+
+530
+00:19:44,240 --> 00:19:47,528
+put in the effort to give you something
+
+531
+00:19:45,680 --> 00:19:47,560
+different. Time was tight.
+
+532
+00:19:47,528 --> 00:19:49,360
+>> [music]
+
+533
+00:19:47,560 --> 00:19:51,680
+>> There were plenty of flaws. But, we hope
+
+534
+00:19:49,360 --> 00:19:53,720
+you enjoy it. Saying this won't change
+
+535
+00:19:51,680 --> 00:19:55,920
+anything, but sometimes I really feel
+
+536
+00:19:53,720 --> 00:19:58,280
+that keeping up with this world is so
+
+537
+00:19:55,920 --> 00:20:00,280
+tiring. Sometimes I really wish the
+
+538
+00:19:58,280 --> 00:20:02,000
+world were linear. And sometimes I
+
+539
+00:20:00,280 --> 00:20:03,903
+really miss the days when we could hold
+
+540
+00:20:02,000 --> 00:20:05,923
+the future in our hands.
+
+541
+00:20:03,903 --> 00:20:05,923
+>> [music]
+
+542
+00:20:07,120 --> 00:20:10,680
+>> Okay, guys. That's it for this video.
+
+543
+00:20:08,880 --> 00:20:12,320
+It's another year and another iPhone
+
+544
+00:20:10,680 --> 00:20:13,880
+review. If you liked it, please give us
+
+545
+00:20:12,320 --> 00:20:17,400
+a like. Thank you so much for watching
+
+546
+00:20:13,880 --> 00:20:17,400
+till the end. See you next time.
+

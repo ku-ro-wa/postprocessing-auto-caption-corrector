@@ -218,9 +218,10 @@ Read-through needs fresh Held-out data; only `earnings21-heldout`,
 uv run caption-checker eval --corpus audited-heldout-2 --final
 ```
 
-Five fresh Audited transcripts (`tests/data/audited_heldout_2_corpus.json`,
+Six fresh Audited transcripts (`tests/data/audited_heldout_2_corpus.json`,
 issue #31): school-laptop surveillance, dark mode, nepo babies in pop,
-perfume and a song breakdown, all with unaccented speakers. Their errors were
+perfume, a song breakdown and a phone review, the last with an accented main
+speaker. Their errors were
 listed by an audio pass before any system ran on them, and like `audited-dev`
 they list errors only. Only the local pipeline (unchanged in detection since
 its freeze at `2de1655`) has been scored on them; no Read-through has.

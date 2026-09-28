@@ -308,11 +308,12 @@ CORPORA["audited-dev"] = NamedCorpus(
     exhaustive_sources=_AUDITED_DEV,
 )
 
-# 5 fresh Audited transcripts (issue #31), errors only like audited-dev: a
+# 6 fresh Audited transcripts (issue #31), errors only like audited-dev: a
 # Held-out set for #28's final scoring, so no Read-through has run on them.
 _AUDITED_HELDOUT_2 = (
     "horrors-found-on-school-laptops.auto.srt",
     "how-dark-mode-killed-good-design.auto.srt",
+    "iphone-18-pro-review-mixed-feelings.auto.srt",
     "nepo-babies-taking-over-pop.auto.srt",
     "perfume-101.auto.srt",
     "thunder-by-imagine-dragons-should-be-studied.auto.srt",

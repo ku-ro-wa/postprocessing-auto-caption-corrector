@@ -1,0 +1,2616 @@
+1
+00:00:00,000 --> 00:00:02,268
+The iPhone 18 Pro is finally here
+
+2
+00:00:02,268 --> 00:00:03,837
+It has speed may surprise you
+
+3
+00:00:03,837 --> 00:00:05,538
+a smaller Dynamic Island
+
+4
+00:00:05,538 --> 00:00:06,439
+faster charging
+
+5
+00:00:06,439 --> 00:00:08,008
+and a variable aperture
+
+6
+00:00:08,008 --> 00:00:10,744
+So is this variable aperture actually useful
+
+7
+00:00:10,744 --> 00:00:12,679
+How much faster is A20 Pro
+
+8
+00:00:12,679 --> 00:00:15,081
+And what other surprises this phone has? 
+
+9
+00:00:15,081 --> 00:00:16,349
+Let's talk about it
+
+10
+00:00:16,349 --> 00:00:17,283
+in one take
+
+11
+00:00:41,341 --> 00:00:41,875
+First
+
+12
+00:00:41,875 --> 00:00:42,642
+design
+
+13
+00:00:42,642 --> 00:00:44,644
+the iPhone 18 Pro haven't changed much
+
+14
+00:00:44,644 --> 00:00:45,412
+They keep the metal and-glass design
+
+15
+00:00:45,412 --> 00:00:47,080
+from last year
+
+16
+00:00:47,080 --> 00:00:47,981
+but the color difference
+
+17
+00:00:47,981 --> 00:00:50,150
+between two materials is less now
+
+18
+00:00:50,150 --> 00:00:50,517
+Still
+
+19
+00:00:50,517 --> 00:00:51,785
+the uneven seam issues
+
+20
+00:00:51,785 --> 00:00:54,087
+from the 17 Pro aren't really fixed
+
+21
+00:00:54,087 --> 00:00:54,854
+For colors
+
+22
+00:00:54,854 --> 00:00:56,823
+beyond classic Silver and Black
+
+23
+00:00:56,823 --> 00:00:58,324
+there’s Glacier Blue
+
+24
+00:00:58,324 --> 00:01:00,727
+kind of like the 13 Pro’s Sierra Blue
+
+25
+00:01:00,727 --> 00:01:03,196
+But the hero color is definitely Burgundy
+
+26
+00:01:03,196 --> 00:01:04,964
+It’s got a dark purple undertone
+
+27
+00:01:04,964 --> 00:01:06,666
+and looks just like red wine
+
+28
+00:01:06,666 --> 00:01:08,401
+not recommended for minors
+
+29
+00:01:08,401 --> 00:01:09,302
+Around the sides
+
+30
+00:01:09,302 --> 00:01:10,904
+thickness is unchanged
+
+31
+00:01:10,904 --> 00:01:12,939
+but the camera bump is even thicker
+
+32
+00:01:12,939 --> 00:01:15,675
+The 18 Pro Max is now 249g
+
+33
+00:01:15,675 --> 00:01:17,010
+heavist iPhone Ever
+
+34
+00:01:17,010 --> 00:01:19,879
+The Pro is up to 211g too
+
+35
+00:01:19,879 --> 00:01:22,348
+which is pretty heavy for a 6.3-inch phone
+
+36
+00:01:22,348 --> 00:01:23,850
+But the most interesting thing
+
+37
+00:01:23,850 --> 00:01:25,452
+is the new Dynamic Island
+
+38
+00:01:25,452 --> 00:01:26,820
+How did they shrink it?
+
+39
+00:01:26,820 --> 00:01:27,720
+On older iPhones
+
+40
+00:01:27,720 --> 00:01:30,023
+the Dynamic Island housed a illuminator
+
+41
+00:01:30,023 --> 00:01:31,024
+a dot projector
+
+42
+00:01:31,024 --> 00:01:32,025
+an infrared camera
+
+43
+00:01:32,025 --> 00:01:32,959
+and a front camera
+
+44
+00:01:32,959 --> 00:01:33,793
+When you unlock
+
+45
+00:01:33,793 --> 00:01:36,663
+the dot projector casts thousands of dots onto it
+
+46
+00:01:36,663 --> 00:01:38,631
+The infrared camera reads those dots
+
+47
+00:01:38,631 --> 00:01:40,066
+checks it against saved data
+
+48
+00:01:40,066 --> 00:01:41,034
+and unlock
+
+49
+00:01:41,034 --> 00:01:42,268
+But on the iPhone 18 Pro
+
+50
+00:01:42,268 --> 00:01:44,571
+the infrared camera now sits under the screen
+
+51
+00:01:44,571 --> 00:01:46,306
+If we look through a microscope
+
+52
+00:01:46,306 --> 00:01:48,741
+this is how the screen’s pixels normally line up
+
+53
+00:01:48,741 --> 00:01:51,478
+but this area has about half as many pixels
+
+54
+00:01:51,478 --> 00:01:53,446
+so the camera underneath can see through
+
+55
+00:01:53,446 --> 00:01:55,849
+Apple also made the pixels over the camera brighter
+
+56
+00:01:55,849 --> 00:01:57,383
+and slowly packed the pixels
+
+57
+00:01:57,383 --> 00:01:59,085
+closer together toward the edges
+
+58
+00:01:59,085 --> 00:02:00,887
+until they match the rest of the screen
+
+59
+00:02:00,887 --> 00:02:02,455
+so at a normal viewing distance
+
+60
+00:02:02,455 --> 00:02:04,157
+this area blends in pretty well
+
+61
+00:02:04,157 --> 00:02:05,225
+As for the unlock speed
+
+62
+00:02:05,225 --> 00:02:06,860
+it’s about the same as before
+
+63
+00:02:07,327 --> 00:02:08,094
+So what do we gain
+
+64
+00:02:08,094 --> 00:02:09,162
+from the smaller cutout?
+
+65
+00:02:09,162 --> 00:02:09,963
+As you can see
+
+66
+00:02:09,963 --> 00:02:12,298
+the Dynamic Island now has a whopping...
+
+67
+00:02:12,298 --> 00:02:14,234
+130 more pixels
+
+68
+00:02:14,234 --> 00:02:15,935
+You can squeeze in one more icon
+
+69
+00:02:15,935 --> 00:02:17,937
+to show three live activities
+
+70
+00:02:17,937 --> 00:02:18,972
+Most importantly
+
+71
+00:02:18,972 --> 00:02:20,273
+when you post a screenshot
+
+72
+00:02:20,273 --> 00:02:21,074
+Your friends can tell
+
+73
+00:02:21,074 --> 00:02:22,675
+you changed to the new iPhone
+
+74
+00:02:22,675 --> 00:02:23,977
+Beyond the Dynamic Island
+
+75
+00:02:23,977 --> 00:02:25,411
+the screen hasn’t changed much
+
+76
+00:02:25,411 --> 00:02:26,880
+with full-screen brightness still
+
+77
+00:02:26,880 --> 00:02:28,281
+at just over 1000 nits
+
+78
+00:02:28,281 --> 00:02:29,749
+the same as before
+
+79
+00:02:29,749 --> 00:02:31,384
+So what about the cameras?
+
+80
+00:02:31,384 --> 00:02:32,919
+The biggest camera upgrade this year
+
+81
+00:02:32,919 --> 00:02:34,287
+is this variable aperture
+
+82
+00:02:34,287 --> 00:02:37,323
+which can go from F4 to F1.48
+
+83
+00:02:37,657 --> 00:02:39,425
+So what are the benefits
+
+84
+00:02:39,425 --> 00:02:40,193
+For example
+
+85
+00:02:40,293 --> 00:02:41,895
+there’s an alpaca right behind me
+
+86
+00:02:41,895 --> 00:02:43,696
+If the camera focuses on my face
+
+87
+00:02:43,696 --> 00:02:45,031
+his face looks blurry
+
+88
+00:02:45,031 --> 00:02:46,933
+But if the camera focuses on his face
+
+89
+00:02:46,933 --> 00:02:48,401
+my face gets blurry
+
+90
+00:02:48,401 --> 00:02:49,068
+That’s because
+
+91
+00:02:49,068 --> 00:02:50,937
+with a fixed camera settings
+
+92
+00:02:50,937 --> 00:02:52,839
+only a limited range can look sharp
+
+93
+00:02:52,839 --> 00:02:55,108
+This range is called depth of field
+
+94
+00:02:55,108 --> 00:02:57,410
+We’re too far to fall within that range
+
+95
+00:02:57,410 --> 00:02:58,478
+So, how do we fix it?
+
+96
+00:03:02,115 --> 00:03:03,449
+I tried calling him over
+
+97
+00:03:03,449 --> 00:03:04,517
+but he won’t come
+
+98
+00:03:04,517 --> 00:03:08,321
+So we can also change the camera’s aperture from f/1.4 to f/5.6
+
+99
+00:03:08,321 --> 00:03:10,256
+So the blurry spots are smaller
+
+100
+00:03:10,256 --> 00:03:12,125
+and both our faces are sharper
+
+101
+00:03:12,225 --> 00:03:14,327
+But there’s also a downside to this
+
+102
+00:03:14,327 --> 00:03:16,095
+As those blurry spots get smaller
+
+103
+00:03:16,095 --> 00:03:18,298
+we lose this beautiful background blur
+
+104
+00:03:18,298 --> 00:03:19,365
+So when filming
+
+105
+00:03:19,365 --> 00:03:21,067
+if you want to shoot a big scene 
+
+106
+00:03:21,067 --> 00:03:22,569
+and allowing see everything
+
+107
+00:03:22,569 --> 00:03:23,870
+we got to use a small aperture
+
+108
+00:03:23,870 --> 00:03:27,340
+If you want to bring out someone’s feelings and create a dreamy mood
+
+109
+00:03:27,340 --> 00:03:28,808
+use a large aperture
+
+110
+00:03:28,808 --> 00:03:29,642
+But in practice
+
+111
+00:03:29,642 --> 00:03:32,879
+depth of field changes little from wide open to F4
+
+112
+00:03:32,879 --> 00:03:34,681
+take a look at these sample shots
+
+113
+00:03:45,258 --> 00:03:46,025
+You may have noticed
+
+114
+00:03:46,025 --> 00:03:47,227
+in those sample shots
+
+115
+00:03:47,227 --> 00:03:49,262
+the background lights looked like stars
+
+116
+00:03:49,262 --> 00:03:51,364
+That is because with a smaller aperture
+
+117
+00:03:51,364 --> 00:03:53,366
+light bends more around the blade edges
+
+118
+00:03:53,533 --> 00:03:54,734
+turning point of light
+
+119
+00:03:54,834 --> 00:03:55,868
+into bright rays
+
+120
+00:03:56,035 --> 00:03:57,236
+With this year’s iPhone
+
+121
+00:03:57,236 --> 00:03:58,871
+in scenes full of lights like this
+
+122
+00:03:58,871 --> 00:04:00,873
+just close down to F1.8
+
+123
+00:04:00,873 --> 00:04:02,408
+to get these star shapes
+
+124
+00:04:02,408 --> 00:04:04,777
+At F4, the stars stand out more
+
+125
+00:04:04,777 --> 00:04:06,045
+Do you guys like this look
+
+126
+00:04:09,549 --> 00:04:10,617
+If you like this look
+
+127
+00:04:10,617 --> 00:04:13,620
+this 10 dollar star filter will have the same effect
+
+128
+00:04:13,620 --> 00:04:14,420
+With those tricks
+
+129
+00:04:14,420 --> 00:04:16,189
+we change how a photo looks
+
+130
+00:04:16,189 --> 00:04:17,223
+But in videos
+
+131
+00:04:17,223 --> 00:04:20,293
+aperture also effect how motion feels
+
+132
+00:04:20,293 --> 00:04:21,861
+When we shoot video in bright light
+
+133
+00:04:21,861 --> 00:04:23,997
+iPhone raises the shutter speed
+
+134
+00:04:23,997 --> 00:04:24,764
+to let in less light
+
+135
+00:04:24,764 --> 00:04:27,467
+but that makes moving objects look very choppy
+
+136
+00:04:27,700 --> 00:04:29,469
+So now you can get the aperture smaller
+
+137
+00:04:29,469 --> 00:04:31,237
+and bring shutter speed back to normal
+
+138
+00:04:31,638 --> 00:04:33,740
+that'll make movement feel natural again
+
+139
+00:04:35,942 --> 00:04:38,411
+But in order to use shutter speed and aperture like this
+
+140
+00:04:38,411 --> 00:04:40,246
+you'd manually control them
+
+141
+00:04:40,246 --> 00:04:42,115
+That’s where the 18 Pro’s new feature comes in:
+
+142
+00:04:42,115 --> 00:04:43,049
+Pro Controls
+
+143
+00:04:43,049 --> 00:04:44,484
+you can now set shutter speed
+
+144
+00:04:44,484 --> 00:04:45,151
+aperture
+
+145
+00:04:45,151 --> 00:04:46,886
+focus, and white balance
+
+146
+00:04:46,919 --> 00:04:49,355
+and use a histogram to check exposure
+
+147
+00:04:49,355 --> 00:04:52,292
+It brings in lots of features from third-party apps
+
+148
+00:04:52,292 --> 00:04:53,893
+and it’s really handy
+
+149
+00:04:53,993 --> 00:04:54,627
+Sadly
+
+150
+00:04:54,627 --> 00:04:56,863
+this feature is only on 18 Pro
+
+151
+00:04:56,863 --> 00:04:57,430
+Also
+
+152
+00:04:57,430 --> 00:04:59,065
+the aperture can adjust itself
+
+153
+00:04:59,132 --> 00:05:00,366
+when you're shooting at a document
+
+154
+00:05:00,366 --> 00:05:01,134
+it gets smaller
+
+155
+00:05:01,134 --> 00:05:02,602
+to get sharper details
+
+156
+00:05:02,602 --> 00:05:04,671
+when there a point of light in the frame
+
+157
+00:05:04,671 --> 00:05:05,638
+it gets bigger
+
+158
+00:05:05,638 --> 00:05:06,506
+to reduce flare
+
+159
+00:05:06,539 --> 00:05:09,242
+which brings us to this year’s iPhone's major problem 
+
+160
+00:05:09,242 --> 00:05:10,109
+After the event
+
+161
+00:05:10,109 --> 00:05:12,445
+Apple organized some test shoots for press
+
+162
+00:05:12,712 --> 00:05:14,781
+including a scene that looked like a bar
+
+163
+00:05:14,814 --> 00:05:16,215
+While shooting, I was like
+
+164
+00:05:16,215 --> 00:05:17,984
+why is the lens flare so bad?
+
+165
+00:05:18,284 --> 00:05:19,018
+So once we got back
+
+166
+00:05:19,018 --> 00:05:19,252
+So once we got back
+
+167
+00:05:19,252 --> 00:05:20,787
+We took some quick test
+
+168
+00:05:21,287 --> 00:05:23,289
+Wide open at F1.48
+
+169
+00:05:23,289 --> 00:05:24,924
+as we increase light's angle
+
+170
+00:05:24,924 --> 00:05:27,260
+a curved streak of flare appears
+
+171
+00:05:27,260 --> 00:05:28,494
+on iPhone 18 Pro
+
+172
+00:05:28,494 --> 00:05:30,530
+At the smallest aperture, F4
+
+173
+00:05:30,530 --> 00:05:32,432
+that curve flare is still there
+
+174
+00:05:32,432 --> 00:05:34,467
+with petal-shaped spots around the light
+
+175
+00:05:34,467 --> 00:05:37,170
+Flare is pretty noticeable on this year's iPhone
+
+176
+00:05:37,670 --> 00:05:40,506
+So we also test it against the 17 Pro on location
+
+177
+00:05:40,907 --> 00:05:43,076
+We set the aperture to F1.8
+
+178
+00:05:43,076 --> 00:05:44,711
+close to the 17 Pro
+
+179
+00:05:44,711 --> 00:05:45,945
+and at the same light angle
+
+180
+00:05:45,945 --> 00:05:48,481
+the 17 Pro also shows flare
+
+181
+00:05:48,481 --> 00:05:50,383
+but over all it looks less severe 
+
+182
+00:05:50,616 --> 00:05:52,418
+So how does flare affect your shots?
+
+183
+00:05:52,418 --> 00:05:54,087
+It makes the image look washed out
+
+184
+00:05:54,087 --> 00:05:55,154
+lowers contrast
+
+185
+00:05:55,154 --> 00:05:57,557
+and those petal-shaped spots at smaller apertures 
+
+186
+00:05:57,557 --> 00:05:59,158
+can really spoil the shot
+
+187
+00:05:59,158 --> 00:06:00,760
+So how can we fix it?
+
+188
+00:06:00,760 --> 00:06:01,327
+First
+
+189
+00:06:01,327 --> 00:06:03,096
+avoid shooting in bright light
+
+190
+00:06:03,096 --> 00:06:03,863
+And second
+
+191
+00:06:03,863 --> 00:06:05,698
+We 3D-printed a lens hood
+
+192
+00:06:05,698 --> 00:06:06,466
+With it on
+
+193
+00:06:06,466 --> 00:06:08,835
+the flare is reduced to some degree
+
+194
+00:06:08,835 --> 00:06:11,604
+and we’ve uploaded the 3D model to MakerWorld
+
+195
+00:06:12,472 --> 00:06:14,774
+the 18 Pro gets Photographic Styles 3
+
+196
+00:06:14,807 --> 00:06:17,276
+adds new controls for texture and grain
+
+197
+00:06:17,276 --> 00:06:18,845
+it can make your photo look better
+
+198
+00:06:18,845 --> 00:06:20,947
+This film effect adds a layer of grain
+
+199
+00:06:20,947 --> 00:06:22,715
+plus a red glow around bright lights
+
+200
+00:06:22,815 --> 00:06:24,417
+giving it a pretty nice film look
+
+201
+00:06:24,417 --> 00:06:27,320
+The most useful feature has to be skin smoothing
+
+202
+00:06:27,320 --> 00:06:29,222
+It smooths skin very naturally
+
+203
+00:06:29,222 --> 00:06:30,323
+keeping its texture
+
+204
+00:06:30,323 --> 00:06:32,024
+so it still looks pretty real
+
+205
+00:06:32,024 --> 00:06:33,593
+now that the iPhone’s all grown up
+
+206
+00:06:33,593 --> 00:06:35,561
+its image quality is really good
+
+207
+00:06:35,561 --> 00:06:38,898
+But better image quality doesn’t always mean a better shot
+
+208
+00:06:38,898 --> 00:06:41,901
+A lot of people actually love the retro look of the old phones
+
+209
+00:06:41,901 --> 00:06:44,804
+So we took the same video with 18 Pro and iPhone 5
+
+210
+00:06:45,138 --> 00:06:46,606
+Which one do you like more?
+
+211
+00:06:46,606 --> 00:06:47,874
+Tell us in the comments
+
+212
+00:07:24,844 --> 00:07:26,179
+Now let's talk about the signal
+
+213
+00:07:26,179 --> 00:07:28,681
+the 18 Pro uses Apple's own C2 modem
+
+214
+00:07:28,681 --> 00:07:30,550
+it handles your mobile data
+
+215
+00:07:30,550 --> 00:07:32,685
+it's Apple's first modem to the Pro iPhone
+
+216
+00:07:32,685 --> 00:07:34,020
+so is it better than Qualcomm
+
+217
+00:07:34,020 --> 00:07:34,353
+so is it better than Qualcomm
+
+218
+00:07:34,353 --> 00:07:37,256
+we tested it against the 17 Pro
+
+219
+00:07:37,256 --> 00:07:39,859
+with a strong 5G signal averaging 10 speed tests
+
+220
+00:07:39,992 --> 00:07:41,928
+the 18 Pro's download was nearly
+
+221
+00:07:41,928 --> 00:07:43,996
+20 Mbps slower than the 17 Pro's
+
+222
+00:07:44,130 --> 00:07:46,032
+uploads was 30 Mbps slower
+
+223
+00:07:46,032 --> 00:07:48,434
+and latency was 1.4 ms higher
+
+224
+00:07:48,534 --> 00:07:51,070
+so Apple's modem still seem a bit behind Qualcomm's
+
+225
+00:07:51,070 --> 00:07:53,439
+But in an underground garage with a weaker signal
+
+226
+00:07:53,673 --> 00:07:56,409
+the 18 Pro came out ahead beating last year's model in
+
+227
+00:07:56,409 --> 00:07:59,779
+both download and upload speeds with latency also lower
+
+228
+00:07:59,846 --> 00:08:02,381
+so Apple's own modem may handle weak signals better
+
+229
+00:08:02,615 --> 00:08:04,050
+We also tried making calls in an
+
+230
+00:08:04,050 --> 00:08:05,685
+elevator with very poor signal
+
+231
+00:08:05,685 --> 00:08:06,853
+and both the iPhone 18 Pro
+
+232
+00:08:06,853 --> 00:08:08,254
+and 17 Pro could connect
+
+233
+00:08:08,287 --> 00:08:10,423
+but the sound kept getting cut out on both
+
+234
+00:08:10,590 --> 00:08:11,991
+with little difference between them
+
+235
+00:08:12,058 --> 00:08:15,194
+Finally we put both phones in a box that blocks all signal
+
+236
+00:08:15,194 --> 00:08:16,629
+waited until they lost connection
+
+237
+00:08:16,729 --> 00:08:18,865
+then open it and repeat this ten times
+
+238
+00:08:18,998 --> 00:08:20,566
+The 18 Pro took 5.2
+
+239
+00:08:20,566 --> 00:08:22,335
+seconds on average to reconnect
+
+240
+00:08:22,368 --> 00:08:24,971
+while the 17 Pro just took 1.5 seconds
+
+241
+00:08:25,204 --> 00:08:27,473
+overall the 17 Pro still did a bit better
+
+242
+00:08:27,473 --> 00:08:29,509
+than the 18 Pro with Apple's own modem
+
+243
+00:08:29,509 --> 00:08:31,110
+sitting right next to the C2  is
+
+244
+00:08:31,110 --> 00:08:32,912
+2nm A20 Pro chip
+
+245
+00:08:33,012 --> 00:08:34,714
+raw performance is monstrous
+
+246
+00:08:34,747 --> 00:08:37,550
+in Geekbench 6 at a 25 degree room temperature
+
+247
+00:08:37,717 --> 00:08:39,552
+single core scores broke 4700
+
+248
+00:08:40,052 --> 00:08:41,554
+a 23% jump
+
+249
+00:08:41,888 --> 00:08:44,323
+multi-core jumped 20% and GPU gains
+
+250
+00:08:44,490 --> 00:08:46,325
+approached nearly 50%
+
+251
+00:08:46,325 --> 00:08:47,894
+A genuine big Leap
+
+252
+00:08:47,894 --> 00:08:49,896
+Does that translate to real world Gaming
+
+253
+00:08:49,896 --> 00:08:52,665
+We unlocked the 1080P mode in death stranding
+
+254
+00:08:52,665 --> 00:08:55,268
+the 18 Pro Max managed to hit 40 fps
+
+255
+00:08:55,268 --> 00:08:58,671
+a full 10 fps higher than the previous generation
+
+256
+00:08:58,671 --> 00:08:59,705
+shifting experience
+
+257
+00:08:59,705 --> 00:09:01,474
+to something reasonably playable
+
+258
+00:09:01,574 --> 00:09:04,377
+Estimated package power peaked at 6.3 Watts
+
+259
+00:09:04,410 --> 00:09:05,478
+Withdraw that high
+
+260
+00:09:05,478 --> 00:09:07,280
+can the thermals actually keep up
+
+261
+00:09:07,513 --> 00:09:08,948
+Surprisingly, yes
+
+262
+00:09:09,048 --> 00:09:10,182
+From start to finish
+
+263
+00:09:10,182 --> 00:09:14,220
+the 18 Pro Max pinned its 45 fps ceiling without throttling
+
+264
+00:09:14,220 --> 00:09:16,923
+The 17 Pro Max started dropping frames just
+
+265
+00:09:16,923 --> 00:09:19,425
+7 minutes in as its big core throttled back
+
+266
+00:09:19,492 --> 00:09:21,394
+a sign of heat saturation
+
+267
+00:09:21,394 --> 00:09:22,395
+In earlier iPhones
+
+268
+00:09:22,395 --> 00:09:24,196
+the processor and RAM chips were
+
+269
+00:09:24,196 --> 00:09:25,731
+stacked right on top of each other
+
+270
+00:09:25,798 --> 00:09:27,633
+sandwiching two major heat sources
+
+271
+00:09:27,733 --> 00:09:29,035
+On the 18 Pro series
+
+272
+00:09:29,035 --> 00:09:31,437
+the memory is laid out beside the A20 Pro
+
+273
+00:09:31,437 --> 00:09:33,139
+lowering concentrated thermal density
+
+274
+00:09:33,205 --> 00:09:34,140
+on top of that
+
+275
+00:09:34,140 --> 00:09:35,942
+the vapor chamber is 3 times
+
+276
+00:09:35,942 --> 00:09:37,610
+more larger than the 17 Pro
+
+277
+00:09:37,610 --> 00:09:40,212
+that dual upgrade gives the cooling a massive lift
+
+278
+00:09:40,580 --> 00:09:42,515
+recording 4K 120 fps
+
+279
+00:09:42,515 --> 00:09:43,716
+video for 30 minutes
+
+280
+00:09:43,816 --> 00:09:45,985
+the 16 Pro Max hit 43 degrees
+
+281
+00:09:46,118 --> 00:09:48,621
+the 17 Pro Max hit 41.3 degrees
+
+282
+00:09:48,788 --> 00:09:51,490
+and the 18 Pro Max stayed under 40 degrees
+
+283
+00:09:51,991 --> 00:09:54,293
+of course even with shared thermal upgrades
+
+284
+00:09:54,393 --> 00:09:56,562
+the larger 18 Pro Max still holds an
+
+285
+00:09:56,562 --> 00:09:58,397
+average over the standard 18 Pro
+
+286
+00:09:59,498 --> 00:10:00,633
+But in daily use
+
+287
+00:10:00,633 --> 00:10:03,235
+it's actually very hard to push this phone to their limit
+
+288
+00:10:03,569 --> 00:10:04,737
+compared to getting more speed
+
+289
+00:10:04,804 --> 00:10:07,373
+what shapes our experience day to day is
+
+290
+00:10:07,373 --> 00:10:08,174
+battery
+
+291
+00:10:08,174 --> 00:10:11,010
+The 18 Pro packs a 4000 mAh battery
+
+292
+00:10:11,010 --> 00:10:12,945
+a tiny bump over last year
+
+293
+00:10:12,945 --> 00:10:16,315
+real world endurance however is far better than expected
+
+294
+00:10:16,315 --> 00:10:17,717
+in our heavy drain battery stress
+
+295
+00:10:17,717 --> 00:10:19,352
+test from a hundred to dead
+
+296
+00:10:19,352 --> 00:10:22,188
+the 18 Pro lasts 6 hours and 38 minutes
+
+297
+00:10:22,188 --> 00:10:24,790
+1 hour and 51 minutes longer than 17 Pro
+
+298
+00:10:24,790 --> 00:10:26,993
+most of the credit goes to the 2nm A20 Pro
+
+299
+00:10:27,026 --> 00:10:29,629
+and the more efficient LTPO+ display
+
+300
+00:10:29,629 --> 00:10:32,131
+the 18 Pro Max sees an even bigger jump
+
+301
+00:10:32,131 --> 00:10:35,735
+its 5390 mAh cell pushed the run times to
+
+302
+00:10:35,735 --> 00:10:38,170
+7 hours and 57 minutes
+
+303
+00:10:38,170 --> 00:10:40,940
+2 hours and 6 minutes longer than the 17 Pro Max
+
+304
+00:10:40,940 --> 00:10:42,975
+We can pretty much leave power banks at home now
+
+305
+00:10:42,975 --> 00:10:45,544
+Charging speeds finally got a long overdue a bump
+
+306
+00:10:45,544 --> 00:10:48,481
+using Apple's official 40 to 60 Watts dynamic charger
+
+307
+00:10:48,481 --> 00:10:50,082
+peak power hits 52 Watts
+
+308
+00:10:50,082 --> 00:10:50,983
+in our tests
+
+309
+00:10:50,983 --> 00:10:53,185
+both the 18 Pro and Max went from
+
+310
+00:10:53,185 --> 00:10:55,321
+0 to 50%  in just 15 minutes
+
+311
+00:10:55,321 --> 00:10:56,722
+with a full charge clocking in in
+
+312
+00:10:56,722 --> 00:10:58,624
+69 and 78 minutes
+
+313
+00:10:58,624 --> 00:11:00,426
+that's genuinely fast for an iPhone
+
+314
+00:11:00,426 --> 00:11:02,695
+But there's also some bad news this year
+
+315
+00:11:02,762 --> 00:11:04,663
+Our 1TB iPhone 18 Pro
+
+316
+00:11:04,663 --> 00:11:06,465
+had its flash storage downgraded
+
+317
+00:11:06,465 --> 00:11:08,834
+from TLC to QLC
+
+318
+00:11:08,834 --> 00:11:10,669
+and we expect the 2TB Pro models
+
+319
+00:11:10,669 --> 00:11:11,937
+to use QLC too
+
+320
+00:11:11,937 --> 00:11:13,272
+Here’s how it works
+
+321
+00:11:13,272 --> 00:11:15,708
+flash storage is made up of huge numbers
+
+322
+00:11:15,708 --> 00:11:17,576
+of floating-gate transistors
+
+323
+00:11:17,576 --> 00:11:18,377
+To store data
+
+324
+00:11:18,377 --> 00:11:20,246
+we put electrons in these gates
+
+325
+00:11:20,246 --> 00:11:21,047
+and to read it
+
+326
+00:11:21,047 --> 00:11:23,449
+we check how many electrons are inside
+
+327
+00:11:23,449 --> 00:11:25,951
+TLC stores 3 bits in each gate
+
+328
+00:11:25,951 --> 00:11:28,888
+using 8 states based on the number of electrons
+
+329
+00:11:28,888 --> 00:11:31,390
+QLC stores 4 bits in each gate
+
+330
+00:11:31,390 --> 00:11:32,558
+with 16 states
+
+331
+00:11:32,558 --> 00:11:34,727
+This lets the same gate hold more data
+
+332
+00:11:34,727 --> 00:11:35,828
+bringing costs down
+
+333
+00:11:35,828 --> 00:11:36,896
+But with more gates
+
+334
+00:11:36,896 --> 00:11:39,031
+reading and writing need to be more precise
+
+335
+00:11:39,031 --> 00:11:41,100
+which shortens the life of the flash storage
+
+336
+00:11:41,100 --> 00:11:41,834
+But luckily
+
+337
+00:11:41,834 --> 00:11:43,869
+even QLC is enough for us
+
+338
+00:11:43,869 --> 00:11:45,838
+with writing 100 GB a day
+
+339
+00:11:45,838 --> 00:11:47,206
+for ten years straight
+
+340
+00:11:47,206 --> 00:11:48,541
+still wouldn’t wear it out
+
+341
+00:11:49,041 --> 00:11:49,942
+If it bothers you
+
+342
+00:11:49,942 --> 00:11:51,377
+pick the lower storage model
+
+343
+00:11:51,377 --> 00:11:52,878
+which still use TLC
+
+344
+00:11:52,878 --> 00:11:54,046
+That’s it for the hardware
+
+345
+00:11:54,046 --> 00:11:54,714
+now let’s see
+
+346
+00:11:54,714 --> 00:11:56,816
+what’s new in this year’s software
+
+347
+00:11:56,816 --> 00:11:57,783
+On the software side
+
+348
+00:11:57,783 --> 00:11:59,585
+last year’s Liquid Glass looked nice
+
+349
+00:11:59,585 --> 00:12:01,821
+but it had plenty of lag and bugs
+
+350
+00:12:01,821 --> 00:12:03,155
+So with iOS 27
+
+351
+00:12:03,155 --> 00:12:04,423
+Apple’s main focus is
+
+352
+00:12:04,423 --> 00:12:05,257
+speed
+
+353
+00:12:05,257 --> 00:12:06,625
+Even AirDrop is faster
+
+354
+00:12:06,625 --> 00:12:07,860
+If you use AirDrop a lot
+
+355
+00:12:07,860 --> 00:12:09,528
+you know it’s been getting worse
+
+356
+00:12:09,528 --> 00:12:11,097
+so does the new system help?
+
+357
+00:12:11,097 --> 00:12:12,431
+We tested it in our office
+
+358
+00:12:12,431 --> 00:12:14,400
+and compared to iOS 26
+
+359
+00:12:14,400 --> 00:12:17,069
+its average speed went up by a whopping…
+
+360
+00:12:17,069 --> 00:12:18,771
+2.4 MB/s
+
+361
+00:12:18,771 --> 00:12:21,073
+And on both iOS 26 and 27
+
+362
+00:12:21,073 --> 00:12:22,241
+AirDrop’s average speed
+
+363
+00:12:22,241 --> 00:12:23,843
+stayed below 20 MB/s
+
+364
+00:12:23,843 --> 00:12:26,011
+so there’s still lots of room to improve
+
+365
+00:12:26,011 --> 00:12:26,979
+But the good news is
+
+366
+00:12:26,979 --> 00:12:28,180
+across the system
+
+367
+00:12:28,180 --> 00:12:30,850
+we saw far fewer stutters than 26
+
+368
+00:12:30,850 --> 00:12:32,885
+so if you held off because you feared lag
+
+369
+00:12:32,885 --> 00:12:35,454
+you can now go ahead and update to 27
+
+370
+00:12:35,454 --> 00:12:36,722
+But at what cost?
+
+371
+00:12:36,722 --> 00:12:37,790
+If you care about design
+
+372
+00:12:37,790 --> 00:12:38,691
+you’ll notice
+
+373
+00:12:38,691 --> 00:12:40,326
+Liquid Glass in iOS 27
+
+374
+00:12:40,326 --> 00:12:42,294
+has been seriously toned down
+
+375
+00:12:42,294 --> 00:12:43,462
+The highlights that moved
+
+376
+00:12:43,462 --> 00:12:44,597
+as you tilted your phone
+
+377
+00:12:44,597 --> 00:12:45,464
+now stay still
+
+378
+00:12:45,464 --> 00:12:48,100
+The light scattering around the edges is gone
+
+379
+00:12:48,100 --> 00:12:50,169
+and the glass looks less clear than before
+
+380
+00:12:50,169 --> 00:12:51,070
+On dark screens
+
+381
+00:12:51,070 --> 00:12:53,239
+the glass used to adjust transparency
+
+382
+00:12:53,239 --> 00:12:54,440
+to match the background
+
+383
+00:12:54,440 --> 00:12:55,474
+But in the new system
+
+384
+00:12:55,474 --> 00:12:56,809
+no matter how you scroll
+
+385
+00:12:56,809 --> 00:12:58,611
+the glass stays the same color
+
+386
+00:12:58,611 --> 00:13:00,579
+There’s a slider in settings to adjust it
+
+387
+00:13:00,579 --> 00:13:02,248
+but you can't get the feel back
+
+388
+00:13:02,248 --> 00:13:04,016
+like my hair after I told the barber
+
+389
+00:13:04,016 --> 00:13:04,884
+Just a trim
+
+390
+00:13:04,884 --> 00:13:05,818
+Beyond the speed boosts
+
+391
+00:13:05,818 --> 00:13:07,052
+and small design changes
+
+392
+00:13:07,052 --> 00:13:09,021
+the biggest update this is AI
+
+393
+00:13:09,021 --> 00:13:11,056
+The Photos app now lets you expand an image
+
+394
+00:13:11,056 --> 00:13:12,358
+giving it a wider view
+
+395
+00:13:12,358 --> 00:13:14,026
+I tried it ten times in a row
+
+396
+00:13:14,026 --> 00:13:15,861
+and it felt like falling into a wormhole
+
+397
+00:13:15,861 --> 00:13:16,796
+But the most fun feature
+
+398
+00:13:16,796 --> 00:13:18,130
+is this spatial reframing
+
+399
+00:13:18,130 --> 00:13:19,565
+It lets you change the camera angle
+
+400
+00:13:19,565 --> 00:13:20,766
+after taking a photo
+
+401
+00:13:20,766 --> 00:13:21,901
+So if I keep turning
+
+402
+00:13:21,901 --> 00:13:23,035
+can I see my own back?
+
+403
+00:13:25,805 --> 00:13:26,472
+You can
+
+404
+00:13:26,472 --> 00:13:28,707
+but it looks like you’ve turned into another world
+
+405
+00:13:28,707 --> 00:13:30,242
+if you don’t want to shoot anything at all
+
+406
+00:13:30,242 --> 00:13:32,044
+there’s a built-in AI image app 
+
+407
+00:13:32,044 --> 00:13:33,279
+Image Playground
+
+408
+00:13:33,279 --> 00:13:34,613
+but the images it makes
+
+409
+00:13:34,613 --> 00:13:37,249
+let’s just say they’re still stuck in 2023
+
+410
+00:13:37,249 --> 00:13:38,884
+The old Siri wasn’t too bright
+
+411
+00:13:38,884 --> 00:13:40,386
+when you asked it to do something
+
+412
+00:13:40,386 --> 00:13:41,921
+it just hand you a web page
+
+413
+00:13:41,921 --> 00:13:44,290
+The second-generation added the glow around the screen
+
+414
+00:13:44,290 --> 00:13:45,724
+But only went from five-year-old
+
+415
+00:13:45,724 --> 00:13:46,859
+to eight-year-old
+
+416
+00:13:46,859 --> 00:13:47,526
+And now
+
+417
+00:13:47,526 --> 00:13:49,061
+Siri has turned into a glass orb
+
+418
+00:13:49,061 --> 00:13:50,429
+living inside the Island
+
+419
+00:13:50,429 --> 00:13:52,198
+You can pull it up from any interface
+
+420
+00:13:52,198 --> 00:13:54,633
+and have a conversation with it using text
+
+421
+00:13:54,633 --> 00:13:56,101
+So how capable is it?
+
+422
+00:13:56,101 --> 00:13:58,437
+Can it replace those AI apps on your phone?
+
+423
+00:13:58,437 --> 00:14:00,072
+I brought in ChatGPT and Gemini
+
+424
+00:14:00,072 --> 00:14:01,674
+to see how they respond
+
+425
+00:14:01,674 --> 00:14:04,310
+The car wash is only 50 meters from my home
+
+426
+00:14:04,310 --> 00:14:05,978
+Should I drive or walk?
+
+427
+00:14:05,978 --> 00:14:08,848
+GPT and Gemini both spotted the logical trap
+
+428
+00:14:08,848 --> 00:14:11,317
+only Siri told me to walk to the car wash
+
+429
+00:14:11,317 --> 00:14:12,051
+Next one
+
+430
+00:14:12,051 --> 00:14:13,285
+I just learned my parents
+
+431
+00:14:13,285 --> 00:14:15,087
+didn't invite me to their wedding
+
+432
+00:14:15,087 --> 00:14:16,021
+I'm really upset
+
+433
+00:14:16,021 --> 00:14:16,956
+What should I do?
+
+434
+00:14:16,956 --> 00:14:18,924
+They're all pretty good at comforting me
+
+435
+00:14:18,924 --> 00:14:20,192
+but I wasn't even born
+
+436
+00:14:20,192 --> 00:14:21,660
+when my parents got married
+
+437
+00:14:21,660 --> 00:14:22,394
+And finally
+
+438
+00:14:22,394 --> 00:14:23,495
+a math problem
+
+439
+00:14:23,495 --> 00:14:25,598
+Can a 6-meter pole fit through a door?
+
+440
+00:14:25,598 --> 00:14:28,000
+4 meters high and 3 meters wide?
+
+441
+00:14:28,000 --> 00:14:30,169
+ChatGPT and Gemini both got the right answer
+
+442
+00:14:30,169 --> 00:14:32,271
+while Siri gave us 5
+
+443
+00:14:32,271 --> 00:14:33,606
+But Siri isn't just about having
+
+444
+00:14:33,606 --> 00:14:35,241
+conversation head anymore
+
+445
+00:14:35,241 --> 00:14:36,242
+like other AI
+
+446
+00:14:36,242 --> 00:14:38,477
+It now has a dedicated app of its own
+
+447
+00:14:38,477 --> 00:14:39,612
+where you can save history
+
+448
+00:14:39,612 --> 00:14:41,914
+and access it across your Mac and iPad
+
+449
+00:14:43,616 --> 00:14:44,049
+So
+
+450
+00:14:44,049 --> 00:14:45,417
+ if you use it just to chat
+
+451
+00:14:45,417 --> 00:14:47,253
+it may still in 2024
+
+452
+00:14:47,253 --> 00:14:49,121
+But as an AI built into the system
+
+453
+00:14:49,121 --> 00:14:50,489
+it can do things others can’t
+
+454
+00:14:50,889 --> 00:14:51,724
+For example
+
+455
+00:14:52,524 --> 00:14:53,092
+Siri
+
+456
+00:14:53,092 --> 00:14:54,526
+Check my latest flyght itinerary
+
+457
+00:14:54,526 --> 00:14:55,961
+text a friend who's picking me
+
+458
+00:14:55,961 --> 00:14:57,529
+up with my arrival time and terminal
+
+459
+00:14:57,529 --> 00:14:58,364
+add my first meeting
+
+460
+00:14:58,364 --> 00:14:59,832
+after I land to my calendar
+
+461
+00:14:59,832 --> 00:15:00,532
+and remind me
+
+462
+00:15:00,532 --> 00:15:02,167
+to bring my passport before I head out
+
+463
+00:15:08,240 --> 00:15:09,608
+That command took a while
+
+464
+00:15:09,608 --> 00:15:11,377
+but it worked across five apps
+
+465
+00:15:11,377 --> 00:15:12,778
+and got those done for me
+
+466
+00:15:12,778 --> 00:15:14,513
+This where Siri really shines
+
+467
+00:15:14,513 --> 00:15:15,981
+It knows my personal details
+
+468
+00:15:15,981 --> 00:15:17,016
+can use apps
+
+469
+00:15:17,016 --> 00:15:19,051
+and truly be my personal assistant
+
+470
+00:15:19,051 --> 00:15:20,419
+But now it only works
+
+471
+00:15:20,419 --> 00:15:21,654
+within Apple's own apps
+
+472
+00:15:21,654 --> 00:15:22,922
+Apple has opened up Siri
+
+473
+00:15:22,922 --> 00:15:24,323
+to third-party apps
+
+474
+00:15:24,323 --> 00:15:25,758
+but whether developers
+
+475
+00:15:25,758 --> 00:15:27,126
+want to share data with Siri
+
+476
+00:15:27,126 --> 00:15:28,394
+that’s another story
+
+477
+00:15:28,394 --> 00:15:30,796
+At the end of last year’s iPhone 17 video
+
+478
+00:15:30,796 --> 00:15:31,931
+we made a little skit
+
+479
+00:15:31,931 --> 00:15:34,066
+showing the AI assistant we dreamed of
+
+480
+00:15:34,900 --> 00:15:35,634
+Siri
+
+481
+00:15:35,634 --> 00:15:37,202
+got a lot smarter this year
+
+482
+00:15:37,202 --> 00:15:39,071
+it's still pretty far from the AI system
+
+483
+00:15:39,071 --> 00:15:40,239
+ you've been dreaming of
+
+484
+00:15:40,239 --> 00:15:42,007
+which brings me to a bigger problem
+
+485
+00:15:42,007 --> 00:15:44,443
+Does AI actually matter to Apple
+
+486
+00:15:44,443 --> 00:15:45,811
+Since ChatGPT came out
+
+487
+00:15:45,811 --> 00:15:46,812
+Apple's own models haven't
+
+488
+00:15:46,812 --> 00:15:48,580
+appeared on any leaderboards
+
+489
+00:15:48,580 --> 00:15:50,082
+It hasn't made a big investment
+
+490
+00:15:50,082 --> 00:15:51,450
+ on leading AI companies
+
+491
+00:15:51,450 --> 00:15:52,985
+Its AI spending doesn't even get a
+
+492
+00:15:52,985 --> 00:15:54,954
+separate line in its reports
+
+493
+00:15:54,954 --> 00:15:55,721
+Meanwhile
+
+494
+00:15:55,721 --> 00:15:57,489
+Google,  Microsoft and Amazon
+
+495
+00:15:57,489 --> 00:15:59,692
+each spent nearly $100 billion
+
+496
+00:15:59,692 --> 00:16:02,161
+Whether by choice or because it had no choice
+
+497
+00:16:02,161 --> 00:16:03,996
+Apple has been moving very slowly
+
+498
+00:16:03,996 --> 00:16:05,864
+but it's okay to be slow
+
+499
+00:16:05,864 --> 00:16:06,665
+For three years
+
+500
+00:16:06,665 --> 00:16:08,367
+ iPhone sold in Mainland China
+
+501
+00:16:08,367 --> 00:16:10,069
+had no Apple intelligence 
+
+502
+00:16:10,069 --> 00:16:11,303
+Yet Apple's market share
+
+503
+00:16:11,303 --> 00:16:12,805
+has grown rather than fallen
+
+504
+00:16:12,805 --> 00:16:14,473
+It turns out few users care about
+
+505
+00:16:14,473 --> 00:16:16,542
+built-in AI as long as they can install
+
+506
+00:16:16,542 --> 00:16:17,910
+their choice of AI apps
+
+507
+00:16:17,910 --> 00:16:19,945
+And whichever model wins in the end
+
+508
+00:16:19,945 --> 00:16:21,780
+ it still needs a screen to reach the user
+
+509
+00:16:21,780 --> 00:16:23,916
+Apple has a billion of those screens
+
+510
+00:16:23,916 --> 00:16:25,484
+It doesn't need to build the best model
+
+511
+00:16:25,484 --> 00:16:27,386
+to have a strong place in this new era
+
+512
+00:16:27,386 --> 00:16:28,354
+But this year
+
+513
+00:16:28,354 --> 00:16:29,688
+ AI still hit Apple
+
+514
+00:16:29,688 --> 00:16:30,322
+In a way
+
+515
+00:16:30,322 --> 00:16:31,490
+ everyone can feel
+
+516
+00:16:31,490 --> 00:16:32,725
+higher prices
+
+517
+00:16:32,725 --> 00:16:34,660
+From the first iPhone to iPhone 17
+
+518
+00:16:34,660 --> 00:16:35,461
+starting price
+
+519
+00:16:35,461 --> 00:16:37,963
+slowly rose from $499 to $799
+
+520
+00:16:37,963 --> 00:16:40,165
+raising 2.65% a year
+
+521
+00:16:40,165 --> 00:16:41,433
+close to the 3%
+
+522
+00:16:41,433 --> 00:16:42,601
+yearly growth income
+
+523
+00:16:42,601 --> 00:16:44,436
+But this year that balance broke
+
+524
+00:16:44,436 --> 00:16:46,939
+Tech giants are rushing to build data centers
+
+525
+00:16:46,939 --> 00:16:48,640
+driving up the cost of parts
+
+526
+00:16:48,640 --> 00:16:50,709
+Samsung,  SKHynix and Micron
+
+527
+00:16:50,709 --> 00:16:52,511
+faced major memory shortages
+
+528
+00:16:52,511 --> 00:16:54,346
+Even supply chain expert Tim Cook
+
+529
+00:16:54,346 --> 00:16:56,081
+in his 40-year career says he's
+
+530
+00:16:56,081 --> 00:16:57,816
+never seen anything like it
+
+531
+00:16:57,816 --> 00:16:59,985
+To cope Apple delayed the base iPhone 18
+
+532
+00:16:59,985 --> 00:17:01,153
+onto the next spring
+
+533
+00:17:01,153 --> 00:17:03,355
+saving limited memory for the pricier Pro
+
+534
+00:17:03,355 --> 00:17:04,456
+and Duo models
+
+535
+00:17:04,456 --> 00:17:06,658
+and cutting costs wherever possible
+
+536
+00:17:06,658 --> 00:17:09,595
+bringing screens from $110 down to $70
+
+537
+00:17:09,595 --> 00:17:10,362
+and downgrading larger
+
+538
+00:17:10,362 --> 00:17:12,831
+storage options from TLC to QLC
+
+539
+00:17:12,831 --> 00:17:13,599
+But even then
+
+540
+00:17:13,599 --> 00:17:15,734
+the 1TB iPhone 18 Pro Max cost
+
+541
+00:17:15,734 --> 00:17:17,469
+compared with last year's model
+
+542
+00:17:17,469 --> 00:17:19,638
+nearly $300 more to make
+
+543
+00:17:19,638 --> 00:17:20,806
+So in the US
+
+544
+00:17:20,806 --> 00:17:23,108
+the 18 Pro now starts at $100 higher
+
+545
+00:17:23,108 --> 00:17:24,576
+and the top 2TB model
+
+546
+00:17:24,576 --> 00:17:26,779
+is up at a full $500
+
+547
+00:17:26,779 --> 00:17:28,547
+And this is just the start
+
+548
+00:17:28,547 --> 00:17:29,581
+In 2027
+
+549
+00:17:29,581 --> 00:17:32,284
+memory and storage prices are set to rise again
+
+550
+00:17:32,284 --> 00:17:33,852
+taking up nearly half of the phone's
+
+551
+00:17:33,852 --> 00:17:35,054
+total parts cost
+
+552
+00:17:35,054 --> 00:17:37,056
+making iPhones even more expensive 
+
+553
+00:17:37,523 --> 00:17:39,691
+Apple may be able to watch the AI revolution
+
+554
+00:17:39,691 --> 00:17:40,859
+from the sidelines
+
+555
+00:17:40,859 --> 00:17:42,327
+but it can't escape its impact
+
+556
+00:17:42,828 --> 00:17:44,196
+Every time I think about this
+
+557
+00:17:44,196 --> 00:17:45,964
+ I feel a little uneasy
+
+558
+00:17:45,964 --> 00:17:48,567
+If even a company as big as Apple
+
+559
+00:17:48,567 --> 00:17:50,436
+can't stay out of the harm's way
+
+560
+00:17:50,436 --> 00:17:51,503
+What about us?
+
+561
+00:17:51,503 --> 00:17:53,906
+AI changing our lives is no longer a prediction
+
+562
+00:17:53,906 --> 00:17:55,974
+but a fast moving reality
+
+563
+00:17:55,974 --> 00:17:57,476
+Coding agents have changed the way
+
+564
+00:17:57,476 --> 00:17:59,077
+we write code completely
+
+565
+00:17:59,077 --> 00:18:00,145
+AI videos are almost
+
+566
+00:18:00,145 --> 00:18:02,281
+impossible to tell from the real ones
+
+567
+00:18:02,281 --> 00:18:03,782
+Reinforcement learning lets robots
+
+568
+00:18:03,782 --> 00:18:05,517
+improve at record speed
+
+569
+00:18:05,517 --> 00:18:06,251
+Every two months
+
+570
+00:18:06,251 --> 00:18:08,086
+a new model transforms an industry
+
+571
+00:18:08,086 --> 00:18:10,255
+and skills took years to learn yesterday
+
+572
+00:18:10,255 --> 00:18:12,257
+may need just one prompt tomorrow 
+
+573
+00:18:12,257 --> 00:18:13,325
+So while making this video
+
+574
+00:18:13,325 --> 00:18:14,993
+I often feel a bit lost
+
+575
+00:18:14,993 --> 00:18:16,428
+We used to review the new iPhones
+
+576
+00:18:16,428 --> 00:18:17,229
+and call Apple's launch
+
+577
+00:18:17,229 --> 00:18:18,897
+the biggest show in tech
+
+578
+00:18:18,897 --> 00:18:20,032
+because it was the most advanced
+
+579
+00:18:20,032 --> 00:18:21,633
+technology that most people
+
+580
+00:18:21,633 --> 00:18:23,001
+could actually get their hands on
+
+581
+00:18:23,001 --> 00:18:24,103
+Every small change showed
+
+582
+00:18:24,103 --> 00:18:25,671
+us where tech was going
+
+583
+00:18:25,671 --> 00:18:27,506
+Today,  we still review new iPhones
+
+584
+00:18:27,506 --> 00:18:29,241
+comparing two photos up close
+
+585
+00:18:29,241 --> 00:18:31,076
+checking how much faster the chip is
+
+586
+00:18:31,076 --> 00:18:32,544
+just like 10 years ago
+
+587
+00:18:32,544 --> 00:18:33,979
+But times have changed
+
+588
+00:18:33,979 --> 00:18:36,281
+the iPhone is no longer the center of tech
+
+589
+00:18:36,281 --> 00:18:37,516
+and the world outside
+
+590
+00:18:37,516 --> 00:18:39,017
+moves at a different speed
+
+591
+00:18:39,017 --> 00:18:41,854
+That speed blows a maze and scares us
+
+592
+00:18:41,854 --> 00:18:43,255
+How can we keep up with this world?
+
+593
+00:18:43,255 --> 00:18:44,022
+Will the future
+
+594
+00:18:44,022 --> 00:18:45,457
+still have a place for us
+
+595
+00:18:45,457 --> 00:18:47,292
+In a parody video a decade ago
+
+596
+00:18:47,292 --> 00:18:50,062
+the iPhone 18 was an absurdly long stick
+
+597
+00:18:50,062 --> 00:18:51,163
+which was a joke
+
+598
+00:18:51,163 --> 00:18:52,064
+but it also showed
+
+599
+00:18:52,064 --> 00:18:53,966
+how it makes sense of the world
+
+600
+00:18:53,966 --> 00:18:56,168
+The iPhone 5 was longer than the 4
+
+601
+00:18:56,168 --> 00:18:57,135
+so by linear logic
+
+602
+00:18:57,135 --> 00:18:58,837
+the 18 Pro should be this long
+
+603
+00:18:58,837 --> 00:19:01,273
+But now the iPhone 18 is here
+
+604
+00:19:01,273 --> 00:19:03,609
+It's still a screen we hold in our hand
+
+605
+00:19:03,609 --> 00:19:05,377
+While the world outside the screen
+
+606
+00:19:05,377 --> 00:19:08,413
+has moved far beyond simple linear logic 
+
+607
+00:19:08,413 --> 00:19:09,648
+growing and racing
+
+608
+00:19:09,648 --> 00:19:11,383
+in ways we can't imagine
+
+609
+00:19:11,383 --> 00:19:13,752
+But no matter how powerful AI gets
+
+610
+00:19:13,752 --> 00:19:15,420
+there's still one thing it can't do
+
+611
+00:19:15,420 --> 00:19:16,622
+generate a single shot
+
+612
+00:19:16,622 --> 00:19:18,056
+longer than 30 seconds
+
+613
+00:19:18,056 --> 00:19:18,690
+That's right
+
+614
+00:19:18,690 --> 00:19:20,459
+even the best video models today 
+
+615
+00:19:20,459 --> 00:19:21,426
+can only generate
+
+616
+00:19:21,426 --> 00:19:23,195
+30 seconds in one shot
+
+617
+00:19:23,195 --> 00:19:24,029
+So in this video
+
+618
+00:19:24,029 --> 00:19:25,264
+we decided to try
+
+619
+00:19:25,264 --> 00:19:26,832
+one continuous shot
+
+620
+00:19:26,832 --> 00:19:28,200
+It was a painful process
+
+621
+00:19:28,200 --> 00:19:30,002
+we messed up countless times
+
+622
+00:19:30,002 --> 00:19:31,403
+did countless retakes
+
+623
+00:19:31,403 --> 00:19:33,105
+and there are hidden cuts in between
+
+624
+00:19:33,105 --> 00:19:35,274
+So it is really more of a fake one take
+
+625
+00:19:35,274 --> 00:19:36,141
+But in the end
+
+626
+00:19:36,141 --> 00:19:36,808
+we managed 
+
+627
+00:19:36,808 --> 00:19:38,010
+to fade the 18 Pro part
+
+628
+00:19:38,010 --> 00:19:39,778
+into one unbroken shot
+
+629
+00:19:39,778 --> 00:19:40,512
+It's a small act of
+
+630
+00:19:40,512 --> 00:19:42,681
+stubbornness in the age of AI
+
+631
+00:19:42,681 --> 00:19:43,815
+But more importantly
+
+632
+00:19:43,815 --> 00:19:44,983
+we wanted to put in the effort
+
+633
+00:19:44,983 --> 00:19:46,418
+ to give you something different
+
+634
+00:19:46,418 --> 00:19:47,553
+Time was tight
+
+635
+00:19:47,553 --> 00:19:48,854
+there were plenty of flaws
+
+636
+00:19:48,854 --> 00:19:50,589
+ but we hope you enjoy it
+
+637
+00:19:50,589 --> 00:19:52,491
+Saying this won't change anything
+
+638
+00:19:52,491 --> 00:19:54,159
+but sometime I really feel that
+
+639
+00:19:54,159 --> 00:19:55,661
+ keeping up with this world
+
+640
+00:19:55,661 --> 00:19:56,995
+is so tiring
+
+641
+00:19:56,995 --> 00:19:58,130
+Sometimes I really wish
+
+642
+00:19:58,130 --> 00:19:59,731
+the world were linear
+
+643
+00:19:59,731 --> 00:20:01,533
+and sometimes I really miss the days
+
+644
+00:20:01,533 --> 00:20:02,701
+when we could hold the future
+
+645
+00:20:02,701 --> 00:20:03,569
+in our hands
+
+646
+00:20:07,005 --> 00:20:07,639
+Ok guys
+
+647
+00:20:07,639 --> 00:20:08,807
+that's it for this video
+
+648
+00:20:08,807 --> 00:20:09,808
+It's another year and
+
+649
+00:20:09,808 --> 00:20:10,876
+another iPhone review
+
+650
+00:20:11,109 --> 00:20:11,810
+If you liked it
+
+651
+00:20:11,810 --> 00:20:12,711
+please give us a like
+
+652
+00:20:12,844 --> 00:20:13,579
+Thank you so much for
+
+653
+00:20:13,579 --> 00:20:14,313
+watching till the end
+
+654
+00:20:14,513 --> 00:20:15,180
+See you next time
+

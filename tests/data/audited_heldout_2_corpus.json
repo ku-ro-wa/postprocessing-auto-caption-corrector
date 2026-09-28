@@ -647,5 +647,187 @@
     "candidate": "Holbert",
     "kind": "real-word",
     "entity": true
+  },
+  {
+    "source": "iphone-18-pro-review-mixed-feelings.auto.srt",
+    "span": "18",
+    "verdict": "should-flag",
+    "candidate": "A20",
+    "context": "faster is 18 Pro",
+    "kind": "real-word",
+    "entity": true
+  },
+  {
+    "source": "iphone-18-pro-review-mixed-feelings.auto.srt",
+    "span": "only visible",
+    "verdict": "should-flag",
+    "candidate": "uneven seam",
+    "context": "the only visible issues",
+    "kind": "real-word"
+  },
+  {
+    "source": "iphone-18-pro-review-mixed-feelings.auto.srt",
+    "span": "403.9",
+    "verdict": "should-flag",
+    "candidate": "249",
+    "context": "403.9 g",
+    "kind": "real-word"
+  },
+  {
+    "source": "iphone-18-pro-review-mixed-feelings.auto.srt",
+    "span": "111",
+    "verdict": "should-flag",
+    "candidate": "211",
+    "context": "111 g",
+    "kind": "real-word"
+  },
+  {
+    "source": "iphone-18-pro-review-mixed-feelings.auto.srt",
+    "span": "pull",
+    "verdict": "should-flag",
+    "candidate": "post",
+    "context": "when you pull the",
+    "kind": "real-word"
+  },
+  {
+    "source": "iphone-18-pro-review-mixed-feelings.auto.srt",
+    "span": "adjusts",
+    "verdict": "should-flag",
+    "candidate": "at just",
+    "context": "still adjusts over",
+    "kind": "real-word"
+  },
+  {
+    "source": "iphone-18-pro-review-mixed-feelings.auto.srt",
+    "span": "Man",
+    "verdict": "should-flag",
+    "context": "fix it? Man.",
+    "kind": "real-word"
+  },
+  {
+    "source": "iphone-18-pro-review-mixed-feelings.auto.srt",
+    "span": "flat and that's",
+    "verdict": "should-flag",
+    "candidate": "to let in less",
+    "context": "flat and that's light",
+    "kind": "real-word"
+  },
+  {
+    "source": "iphone-18-pro-review-mixed-feelings.auto.srt",
+    "span": "F1.8",
+    "verdict": "should-flag",
+    "candidate": "F1.48",
+    "kind": "real-word"
+  },
+  {
+    "source": "iphone-18-pro-review-mixed-feelings.auto.srt",
+    "span": "model",
+    "verdict": "should-flag",
+    "candidate": "modem",
+    "context": "first model to the",
+    "kind": "real-word"
+  },
+  {
+    "source": "iphone-18-pro-review-mixed-feelings.auto.srt",
+    "span": "meg per second",
+    "verdict": "should-flag",
+    "candidate": "Mbps",
+    "context": "20 meg per second",
+    "kind": "format"
+  },
+  {
+    "source": "iphone-18-pro-review-mixed-feelings.auto.srt",
+    "span": "drink",
+    "verdict": "should-flag",
+    "candidate": "drain",
+    "context": "heavy drink battery",
+    "kind": "real-word"
+  },
+  {
+    "source": "iphone-18-pro-review-mixed-feelings.auto.srt",
+    "span": "2",
+    "verdict": "should-flag",
+    "candidate": "too",
+    "context": "QLC 2",
+    "kind": "real-word"
+  },
+  {
+    "source": "iphone-18-pro-review-mixed-feelings.auto.srt",
+    "span": "case",
+    "verdict": "should-flag",
+    "candidate": "gate",
+    "context": "in each case",
+    "kind": "real-word"
+  },
+  {
+    "source": "iphone-18-pro-review-mixed-feelings.auto.srt",
+    "span": "for",
+    "verdict": "should-flag",
+    "candidate": "pull",
+    "context": "gate for more",
+    "kind": "real-word"
+  },
+  {
+    "source": "iphone-18-pro-review-mixed-feelings.auto.srt",
+    "span": "can't",
+    "verdict": "should-flag",
+    "candidate": "can",
+    "context": "You can't, but",
+    "kind": "real-word"
+  },
+  {
+    "source": "iphone-18-pro-review-mixed-feelings.auto.srt",
+    "span": "80-year-old",
+    "verdict": "should-flag",
+    "candidate": "8-year-old",
+    "kind": "real-word"
+  },
+  {
+    "source": "iphone-18-pro-review-mixed-feelings.auto.srt",
+    "span": "your",
+    "verdict": "should-flag",
+    "candidate": "the",
+    "context": "Text your friend",
+    "kind": "real-word"
+  },
+  {
+    "source": "iphone-18-pro-review-mixed-feelings.auto.srt",
+    "span": "and",
+    "verdict": "should-flag",
+    "candidate": "add",
+    "context": "and my first meeting",
+    "kind": "real-word"
+  },
+  {
+    "source": "iphone-18-pro-review-mixed-feelings.auto.srt",
+    "span": "Liam",
+    "verdict": "should-flag",
+    "candidate": "Leo",
+    "kind": "real-word",
+    "entity": true
+  },
+  {
+    "source": "iphone-18-pro-review-mixed-feelings.auto.srt",
+    "span": "splashing",
+    "verdict": "should-flag",
+    "candidate": "supply chain",
+    "context": "splashing expert",
+    "kind": "real-word"
+  },
+  {
+    "source": "iphone-18-pro-review-mixed-feelings.auto.srt",
+    "span": "years today",
+    "verdict": "should-flag",
+    "candidate": "yesterday",
+    "context": "learn years today",
+    "kind": "real-word"
+  },
+  {
+    "source": "iphone-18-pro-review-mixed-feelings.auto.srt",
+    "span": "can",
+    "verdict": "should-flag",
+    "candidate": "can't",
+    "context": "one thing it can do",
+    "kind": "real-word"
   }
 ]
