@@ -313,7 +313,9 @@ class OpenRouterClient:
         )
         raise RequestError(
             f"model {self.model_id!r} is no longer on OpenRouter.{hint} "
-            "Set --model (CLI) or OPENROUTER_MODEL (web) to a current slug."
+            "Set --model (CLI) or OPENROUTER_MODEL (web) to a current slug, "
+            "or pick another registered Read-through configuration with "
+            "--config (CLI) or OPENROUTER_CONFIG (web)."
         )
 
 

@@ -339,3 +339,118 @@ def test_check_accepts_priming_terms() -> None:
     result = CliRunner().invoke(main, ["check", SRT, "--priming-term", "cubernetes"])
     assert "con sensus" in result.output  # still checked
     assert "cubernetes" not in result.output
+
+
+# --- Read-through configuration (#40, ADR 0007) ----------------------------
+
+
+@pytest.fixture
+def configs(monkeypatch):
+    """Each Read-through configuration ``correct`` built a reader from."""
+    from caption_checker.readthrough import StubReader
+
+    made = []
+
+    def factory(config):
+        made.append(config)
+        return StubReader()
+
+    monkeypatch.setattr("caption_checker.readthrough.build_reader", factory)
+    return made
+
+
+def test_read_through_defaults_to_the_qwen_configuration(tmp_path, configs) -> None:
+    from caption_checker.readthrough import (
+        _ERRORS_TWO_TESTS,
+        CONFIGS,
+        ChunkRequest,
+        _prompt,
+    )
+
+    result = _run(SRT, "-o", str(tmp_path / "o.srt"), "--yes-above", "0.5")
+    assert result.exit_code == 0, result.output
+    [config] = configs
+    assert config is CONFIGS["qwen3.6-plus-p2"]
+    assert config.model_id == "qwen/qwen3.6-plus"
+    assert config.request_options == {"reasoning": {"enabled": False}}
+    # the two-tests prompt, not v4's
+    request = ChunkRequest(words=[(0, "hello")])
+    assert config.build_messages(request) == _prompt(errors=_ERRORS_TWO_TESTS)(request)
+
+
+def test_config_picks_a_registered_read_through_configuration(tmp_path, configs) -> None:
+    from caption_checker.readthrough import CONFIGS
+
+    result = _run(SRT, "-o", str(tmp_path / "o.srt"), "--yes-above", "0.5",
+                  "--config", "flash-v4")
+    assert result.exit_code == 0, result.output
+    assert configs == [CONFIGS["flash-v4"]]
+
+
+def test_model_runs_prompt_v4_with_that_model(tmp_path, configs) -> None:
+    from caption_checker.readthrough import v4
+
+    result = _run(SRT, "-o", str(tmp_path / "o.srt"), "--yes-above", "0.5",
+                  "--model", "some/slug")
+    assert result.exit_code == 0, result.output
+    assert configs == [v4("some/slug")]
+
+
+@pytest.mark.parametrize(
+    ("args", "message"),
+    [
+        (("--config", "flash-v4", "--model", "some/slug"), "not both"),
+        (("--config", "no-such-name"), "flash-v4"),  # lists the registered names
+        (("--per-flag", "--config", "flash-v4"), "--per-flag"),
+    ],
+)
+def test_bad_configuration_flags_are_usage_errors(
+    tmp_path, configs, stub, args, message
+) -> None:
+    result = _run(SRT, "-o", str(tmp_path / "o.srt"), "--yes-above", "0.5", *args)
+    assert result.exit_code == 2, result.output
+    assert message in result.output
+    assert configs == [] and stub == []
+
+
+def test_per_flag_defaults_to_gemini_flash(tmp_path, monkeypatch) -> None:
+    from caption_checker.corrector import StubCorrector
+
+    models = []
+
+    def factory(model):
+        models.append(model)
+        return StubCorrector()
+
+    monkeypatch.setattr("caption_checker.corrector.build_corrector", factory)
+    result = _run("--per-flag", SRT, "-o", str(tmp_path / "o.srt"),
+                  "--yes-above", "0.5", "--no-cache")
+    assert result.exit_code == 0, result.output
+    assert models == ["google/gemini-2.5-flash"]
+
+
+def test_estimate_prices_the_default_configuration_s_model(tmp_path, configs) -> None:
+    from caption_checker.correct import _MODEL_PROMPT_PRICE
+
+    assert "qwen/qwen3.6-plus" in _MODEL_PROMPT_PRICE
+    result = _run(SRT, "-o", str(tmp_path / "o.srt"), "--estimate")
+    assert result.exit_code == 0, result.output
+    assert "configuration: qwen3.6-plus-p2 (qwen/qwen3.6-plus)" in result.output
+    assert "approx cost: $0." in result.output
+    assert configs == []
+
+
+def test_estimate_names_the_model_with_model(tmp_path, configs) -> None:
+    result = _run(SRT, "-o", str(tmp_path / "o.srt"), "--estimate",
+                  "--model", "google/gemini-2.5-flash")
+    assert "configuration: v4 (google/gemini-2.5-flash)" in result.output
+    assert "approx cost: $0." in result.output
+
+
+def test_estimate_counts_the_configuration_s_own_prompt(tmp_path, configs) -> None:
+    # same model, different prompts: the p2 prompt is longer than v4's
+    default = _run(SRT, "-o", str(tmp_path / "o.srt"), "--estimate")
+    v4 = _run(SRT, "-o", str(tmp_path / "o.srt"), "--estimate",
+              "--model", "qwen/qwen3.6-plus")
+    cost = lambda r: float(r.output.split("approx cost: $")[1].split()[0])  # noqa: E731
+    assert cost(default) > cost(v4)

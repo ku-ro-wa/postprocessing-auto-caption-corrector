@@ -29,6 +29,7 @@ from caption_checker.vocab import load_vocab
 
 if TYPE_CHECKING:  # keeps the free `check` path from importing the LLM stack
     from caption_checker.correct import CorrectionResult, Estimate, Reviewer
+    from caption_checker.readthrough import ReadThroughConfig
 
 
 def _priming_option(uses: str = "."):
@@ -143,10 +144,18 @@ def check(
     help="Where to write the corrected transcript. Required.",
 )
 @click.option(
+    "--config",
+    "config_name",
+    default=None,
+    help="Registered Read-through configuration (model, prompt and reply "
+    "format) to run.  [default: qwen3.6-plus-p2]",
+)
+@click.option(
     "--model",
-    default=DEFAULT_MODEL,
-    show_default=True,
-    help="OpenRouter model slug for the correction pass.",
+    default=None,
+    help="OpenRouter model slug: the Read-through runs prompt v4 with it "
+    f"instead of --config; with --per-flag, that pass's model  [default: "
+    f"{DEFAULT_MODEL}].",
 )
 @click.option(
     "--yes-above",
@@ -212,7 +221,8 @@ def check(
 def correct(
     file: Path,
     output: Path | None,
-    model: str,
+    config_name: str | None,
+    model: str | None,
     yes_above: float | None,
     cache_file: Path | None,
     no_cache: bool,
@@ -251,6 +261,18 @@ def correct(
 
     if output is None:
         raise click.UsageError("pass -o PATH: correct needs an explicit output path")
+    read_through = not per_flag
+    read_config: ReadThroughConfig | None = None  # per-flag has none
+    if read_through:
+        read_config = _read_through_config(config_name, model)
+        model = read_config.model_id
+    elif config_name is not None:
+        raise click.UsageError(
+            "--config picks a Read-through configuration; --per-flag has none "
+            "(use --model to pick its model)"
+        )
+    else:
+        model = model or DEFAULT_MODEL
 
     config = _detect_config(oov_zipf)
     cues = parse(file)
@@ -269,7 +291,6 @@ def correct(
     else:
         reviewer = InteractiveReviewer()
 
-    read_through = not per_flag
     try:
         live = not estimate
         result = run_correction(
@@ -284,11 +305,14 @@ def correct(
             estimate_only=estimate,
             read_through=read_through,
             reader=(
-                readthrough.build_reader(readthrough.v4(model))
-                if live and read_through
+                readthrough.build_reader(read_config)
+                if live and read_config
                 else None
             ),
             priming_terms=priming_terms,
+            read_messages=(
+                read_config.build_messages if read_config else readthrough.build_messages
+            ),
         )
     except MissingAPIKeyError as exc:
         raise click.ClickException(str(exc)) from exc
@@ -296,7 +320,8 @@ def correct(
         raise click.ClickException(str(exc)) from exc
 
     if result.estimate is not None:
-        _print_estimate(result.estimate, model, read_through=read_through)
+        _print_estimate(
+            result.estimate, model, read_config)
         return
 
     out_format = file.suffix.lower().lstrip(".")
@@ -325,12 +350,18 @@ def serve(host: str, port: int, data_dir: Path | None) -> None:
     # the web stack (FastAPI/uvicorn/Jinja2) -- same rationale as `correct`'s
     # own lazy imports above.
     import uvicorn
+    from dotenv import load_dotenv
 
+    from caption_checker.readthrough import ConfigError
     from caption_checker.web.app import create_app
     from caption_checker.web.storage import Storage, default_data_dir
 
+    load_dotenv()  # .env's OPENROUTER_* settings, as .env.example documents
     storage = Storage(data_dir or default_data_dir())
-    app = create_app(storage)
+    try:
+        app = create_app(storage)
+    except ConfigError as exc:
+        raise click.ClickException(str(exc)) from exc
     uvicorn.run(app, host=host, port=port)
 
 
@@ -365,7 +396,7 @@ def serve(host: str, port: int, data_dir: Path | None) -> None:
     "config_name",
     default=None,
     help="Registered Read-through configuration (model, prompt and reply "
-    "format) to run.  [default: flash-v4]",
+    "format) to run.  [default: qwen3.6-plus-p2]",
 )
 @click.option(
     "--model",
@@ -390,7 +421,6 @@ def eval_(
     """Score a system under test on a named corpus and print recall (overall
     and by kind), case precision, Flag-level precision and cold-flag rate as
     separate numbers. Unlike the pytest Regression gate this has no floors."""
-    from caption_checker import readthrough
     from caption_checker.corrector import MissingAPIKeyError
 
     corpus = CORPORA[corpus_name]
@@ -400,20 +430,7 @@ def eval_(
             "comparison (ADR 0006); pass --final if that is what this run is. "
             "Looking at it to motivate a change moves it to the Dev set."
         )
-    if config_name is not None and model is not None:
-        raise click.UsageError(
-            "pass --config or --model, not both: a configuration names its own model"
-        )
-    if config_name is not None and config_name not in readthrough.CONFIGS:
-        raise click.UsageError(
-            f"no Read-through configuration named {config_name!r}; "
-            f"registered: {', '.join(readthrough.CONFIGS)}"
-        )
-    config = (
-        readthrough.v4(model)
-        if model is not None
-        else readthrough.CONFIGS[config_name or readthrough.DEFAULT_CONFIG]
-    )
+    config = _read_through_config(config_name, model)
     try:
         system = SYSTEMS[system_name](config)
         report = run_eval(corpus, system, priming=priming)
@@ -531,6 +548,23 @@ def _detect_config(oov_zipf: float | None) -> DetectConfig:
     return config
 
 
+def _read_through_config(
+    config_name: str | None, model: str | None
+) -> "ReadThroughConfig":
+    """``--config`` / ``--model`` as a Read-through configuration, the same
+    way on ``correct`` and ``eval``."""
+    from caption_checker import readthrough
+
+    if config_name is not None and model is not None:
+        raise click.UsageError(
+            "pass --config or --model, not both: a configuration names its own model"
+        )
+    try:
+        return readthrough.select_config(config_name, model)
+    except readthrough.ConfigError as exc:
+        raise click.UsageError(str(exc)) from exc
+
+
 def _refuse_non_interactive(cues, vocab, config) -> None:
     """Non-TTY and no ``--yes-above``: fail naming a flag rather than hang or
     silently change nothing. Runs detection only so the message is concrete."""
@@ -545,7 +579,12 @@ def _refuse_non_interactive(cues, vocab, config) -> None:
     )
 
 
-def _print_estimate(est: "Estimate", model: str, *, read_through: bool) -> None:
+def _print_estimate(
+    est: "Estimate", model: str, read_config: "ReadThroughConfig | None"
+) -> None:
+    """``read_config`` is the Read-through's configuration, or None for the
+    per-flag pass."""
+    read_through = read_config is not None
     cost = (
         f"${est.approx_cost_usd:.6f}"
         if est.approx_cost_usd is not None
@@ -554,7 +593,9 @@ def _print_estimate(est: "Estimate", model: str, *, read_through: bool) -> None:
     )
     lines = [
         f"pass: {'read-through' if read_through else 'per-flag'}",
-        f"model: {model}",
+        f"configuration: {read_config.name} ({model})"
+        if read_config is not None
+        else f"model: {model}",
         f"flags: {est.flag_count}",
     ]
     if not read_through:  # the Read-through has no bypass or cache

@@ -19,20 +19,22 @@ from dataclasses import dataclass, replace
 from datetime import datetime, timezone
 from functools import lru_cache
 from pathlib import Path
-from typing import Sequence
+from typing import Mapping, Sequence
 from uuid import uuid4
 
 from caption_checker.apply import apply_corrections, cues_spanned
 from caption_checker.corrector import Correction, CorrectorError, MissingAPIKeyError
 from caption_checker.detect import detect
-from caption_checker.models import DEFAULT_MODEL, DetectConfig, Flag
+from caption_checker.models import DetectConfig, Flag
 from caption_checker.parser import serialize, tokenize
 from caption_checker.readthrough import (
     DETECTOR_READ_THROUGH,
+    ConfigError,
     OpenRouterReader,
     Reader,
+    ReadThroughConfig,
     read_through,
-    v4,
+    select_config,
 )
 from caption_checker.vocab import Vocab, load_vocab
 from caption_checker.web.models import ReviewDecision, TranscriptRecord
@@ -124,17 +126,36 @@ def _without_echo(flag: Flag, correction: Correction | None) -> Correction | Non
     return correction
 
 
+def config_from_env(environ: Mapping[str, str] = os.environ) -> ReadThroughConfig:
+    """The Read-through configuration the server runs: ``OPENROUTER_CONFIG``
+    names a registered one, ``OPENROUTER_MODEL`` means prompt v4 with that
+    model, neither means ``DEFAULT_CONFIG``. Both set, or an unknown name,
+    raises :class:`ConfigError` rather than falling back."""
+    name = environ.get("OPENROUTER_CONFIG") or None
+    model = environ.get("OPENROUTER_MODEL") or None
+    if name is not None and model is not None:
+        raise ConfigError(
+            "set OPENROUTER_CONFIG or OPENROUTER_MODEL, not both: a "
+            "configuration names its own model"
+        )
+    try:
+        return select_config(name, model)
+    except ConfigError as exc:
+        raise ConfigError(f"OPENROUTER_CONFIG: {exc}") from exc
+
+
 def run_correction(
     storage: Storage,
     record: TranscriptRecord,
     *,
     api_key: str,
-    model: str | None = None,
+    config: ReadThroughConfig | None = None,
     reader: Reader | None = None,
     priming_terms: Sequence[str] = (),
 ) -> TranscriptRecord:
     """Run the Read-through over ``record``, its Flags as hints and
-    ``priming_terms`` given to the model.
+    ``priming_terms`` given to the model. ``reader`` (tests) or else
+    ``config`` (default: :func:`config_from_env`) says what reads it.
 
     Each hint's verdict becomes that Flag's Correction (a verdict that widens
     a hint replaces the Flag's span in place); each error the Read-through
@@ -153,10 +174,11 @@ def run_correction(
     if record.corrected:
         return record
 
-    model = model if model is not None else os.environ.get("OPENROUTER_MODEL", DEFAULT_MODEL)
     cues = storage.load_cues(record.session_id, record.id)
     try:
-        active_reader = reader or OpenRouterReader(v4(model), api_key=api_key)
+        active_reader = reader or OpenRouterReader(
+            config or config_from_env(), api_key=api_key
+        )
         result = read_through(cues, record.flags, active_reader, priming_terms=priming_terms)
         if result.chunk_count and result.failed_chunks == result.chunk_count:
             raise CorrectorError(

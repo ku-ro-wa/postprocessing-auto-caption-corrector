@@ -484,3 +484,47 @@ class TestDelete:
         client.post(f"/transcripts/{transcript_id}/delete")
 
         assert storage.original_path(session_id, transcript_id) is None
+
+
+class TestReadThroughConfiguration:
+    """#40: the configuration comes from env vars, resolved at startup."""
+
+    def test_a_bad_configuration_fails_at_startup(
+        self, tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+    ) -> None:
+        from caption_checker.readthrough import ConfigError
+
+        monkeypatch.setenv("OPENROUTER_CONFIG", "no-such-name")
+        with pytest.raises(ConfigError, match="no-such-name"):
+            create_app(_storage_for(tmp_path))
+
+    def test_correct_runs_the_env_configuration(
+        self, tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+    ) -> None:
+        from caption_checker.readthrough import CONFIGS
+        from caption_checker.web import service
+
+        built = []
+
+        def reader(config, *, api_key):
+            built.append(config)
+            return StubReader()
+
+        monkeypatch.setattr(service, "OpenRouterReader", reader)
+        monkeypatch.setenv("OPENROUTER_CONFIG", "flash-v4")
+        monkeypatch.delenv("OPENROUTER_MODEL", raising=False)
+        monkeypatch.setenv("OPENROUTER_API_KEY", "test-key")
+        client = _make_client(tmp_path)
+        transcript_id = _upload(client)
+        client.post(f"/transcripts/{transcript_id}/correct", follow_redirects=False)
+        assert built == [CONFIGS["flash-v4"]]
+
+    def test_both_env_vars_set_fails_at_startup(
+        self, tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+    ) -> None:
+        from caption_checker.readthrough import ConfigError
+
+        monkeypatch.setenv("OPENROUTER_CONFIG", "flash-v4")
+        monkeypatch.setenv("OPENROUTER_MODEL", "some/slug")
+        with pytest.raises(ConfigError, match="not both"):
+            create_app(_storage_for(tmp_path))

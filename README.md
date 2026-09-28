@@ -51,9 +51,11 @@ uv run caption-checker correct lecture.srt -o out.srt --priming-term "Jensen Hua
 # see the price of the pass that would run, before committing (no API call)
 uv run caption-checker correct lecture.srt -o /dev/null --estimate
 
-# pick a model; cap spend
-uv run caption-checker correct lecture.srt -o out.srt \
-    --model anthropic/claude-3.5-haiku --max-calls 4
+# the tested backup configuration instead of the default; cap spend
+uv run caption-checker correct lecture.srt -o out.srt --config flash-v4 --max-calls 4
+
+# prompt v4 with any other model
+uv run caption-checker correct lecture.srt -o out.srt --model anthropic/claude-3.5-haiku
 
 # the older per-flag pass instead (skip the cross-run decision cache too)
 uv run caption-checker correct lecture.srt -o out.srt --per-flag --no-cache
@@ -66,6 +68,15 @@ and drops any verdict whose span crosses a cue boundary (a correction is
 spliced into one cue). `--per-flag` sends only the flagged spans that the
 internal-match bypass and the decision cache (`--cache-file`, `--no-cache`)
 don't resolve -- cheaper, but it can't find what the detectors missed.
+
+By default the Read-through runs the `qwen3.6-plus-p2` configuration
+(`qwen/qwen3.6-plus` with its own prompt, reasoning off), which won #28's
+comparison (ADR 0007). `--config NAME` picks another registered
+configuration (`CONFIGS` in `caption_checker/readthrough.py`); `flash-v4`,
+the previous default, is the tested backup. `--model SLUG` instead runs
+prompt v4 with that model; `--config` and `--model` can't be combined.
+`--per-flag` has no configurations: it still defaults to
+`google/gemini-2.5-flash`, and `--model` picks its model.
 
 Interactive keys: `y` accept, `n` skip, `e` edit then accept, `a` accept all
 remaining at or above this confidence, `q` stop and write what's accepted so
@@ -126,7 +137,11 @@ Flags it judged not an error are shown as dismissed and left unchanged. If
 some chunks of the transcript failed, the page says how many, and the Flags
 in them stay unjudged (only a run where every chunk failed can be retried). It uses your own OpenRouter key entered in the
 browser, falling back to the server's `OPENROUTER_API_KEY` only for
-local/dev use. Uploads and review state are
+local/dev use. The server runs the default Read-through configuration
+(`qwen3.6-plus-p2`); set `OPENROUTER_CONFIG=NAME` (e.g. `flash-v4`) to run
+another registered one, or `OPENROUTER_MODEL=SLUG` for prompt v4 with that
+model -- in the environment or `.env`, not both. An unknown name, or both
+set, stops `serve` at startup. Uploads and review state are
 private to your browser session and persist across server restarts. See
 `docs/adr/0003-web-ui-upload-session-persisted.md` and
 `docs/adr/0004-llm-correction-manual-session-keyed.md` for the reasoning
@@ -185,18 +200,18 @@ any failed chunks. Chunks lost to a failed request (no credit, network,
 retired slug) are counted apart, with one such error shown, so they aren't
 mistaken for a model failing the reply format. `--config` runs a registered
 Read-through configuration (model, prompt and reply format; `CONFIGS` in
-`caption_checker/readthrough.py`), by default `flash-v4`; `--model SLUG`
+`caption_checker/readthrough.py`), by default `qwen3.6-plus-p2`, the
+same one `correct` runs; `--model SLUG`
 instead runs today's prompt (v4) with that model. Models that reason by
 default have a registered v4 configuration that turns reasoning off (or to
 minimal effort where it can't be off), e.g. `--config deepseek-v4-pro-v4`,
-since #28's comparison runs with reasoning off. The default model,
-`google/gemini-2.5-flash`, was picked over `google/gemini-2.5-flash-lite`
-on the Dev sets (issue #23): Lite is about 3x cheaper but its Flag-level
-precision on the Scored corpus fell below the local pipeline's (0.57 vs
-0.71) and some of its Earnings-21 chunks failed on oversized replies.
-#28's comparison picked `qwen3.6-plus-p2` to replace `flash-v4` (ADR 0007);
-until #40 makes the default a configuration, `correct` and the web UI still
-run Flash.
+since #28's comparison runs with reasoning off. The previous default,
+`google/gemini-2.5-flash` (now `flash-v4`), was picked over
+`google/gemini-2.5-flash-lite` on the Dev sets (issue #23): Lite is about 3x
+cheaper but its Flag-level precision on the Scored corpus fell below the
+local pipeline's (0.57 vs 0.71) and some of its Earnings-21 chunks failed on
+oversized replies. #28's comparison picked `qwen3.6-plus-p2` to replace
+`flash-v4` (ADR 0007).
 
 **Audited Dev set** — `audited-dev`:
 

@@ -89,7 +89,12 @@ def _priming_terms(raw: str) -> list[str]:
 def create_app(storage: Storage, *, reader: Reader | None = None) -> FastAPI:
     """``reader`` lets tests inject a ``StubReader`` (or any other
     ``Reader``) at the same seam the CLI's Read-through tests use — no route
-    in this app talks to OpenRouter directly."""
+    in this app talks to OpenRouter directly.
+
+    Without one, the Read-through configuration comes from the environment
+    (``service.config_from_env``), resolved here so a bad one stops startup
+    instead of failing the first correct."""
+    config = None if reader is not None else service.config_from_env()
     app = FastAPI(title="caption-checker")
     app.add_middleware(_SessionCookieMiddleware, storage=storage)
     templates = Jinja2Templates(directory=str(TEMPLATES_DIR))
@@ -171,6 +176,7 @@ def create_app(storage: Storage, *, reader: Reader | None = None) -> FastAPI:
                     storage,
                     record,
                     api_key=resolved_key,
+                    config=config,
                     reader=reader,
                     priming_terms=_priming_terms(priming_terms),
                 )

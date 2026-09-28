@@ -21,7 +21,7 @@ import json
 import sys
 from dataclasses import dataclass, field
 from pathlib import Path
-from typing import Protocol, Sequence, TextIO
+from typing import Callable, Protocol, Sequence, TextIO
 
 from caption_checker.apply import apply_corrections, cues_spanned
 from caption_checker.cache import CachedCorrection, DecisionCache
@@ -47,6 +47,7 @@ from caption_checker.parser import tokenize
 from caption_checker.phonetics import codes, similar
 from caption_checker.readthrough import (
     CHUNK_WORDS,
+    ChunkRequest,
     Reader,
     build_messages,
     plan_chunks,
@@ -90,6 +91,7 @@ _MODEL_PROMPT_PRICE: dict[str, float] = {
     "google/gemini-flash-1.5": 7.5e-8,
     "anthropic/claude-3.5-haiku": 8.0e-7,
     "openai/gpt-4o-mini": 1.5e-7,
+    "qwen/qwen3.6-plus": 3.25e-7,  # OpenRouter's listed price, 2026-09-29
 }
 
 
@@ -389,6 +391,7 @@ def run_correction(
     reader: Reader | None = None,
     priming_terms: Sequence[str] = (),
     read_chunk_words: int = CHUNK_WORDS,
+    read_messages: Callable[[ChunkRequest], list[dict]] = build_messages,
 ) -> CorrectionResult:
     config = config or DetectConfig()
     cache = cache or DecisionCache(None, enabled=False)
@@ -407,6 +410,7 @@ def run_correction(
             chunk_words=read_chunk_words,
             max_calls=max_calls,
             estimate_only=estimate_only,
+            messages=read_messages,
         )
 
     flagged = _build_flagged(flags, cues, words)
@@ -554,16 +558,18 @@ def _run_read_through(
     chunk_words: int,
     max_calls: int | None,
     estimate_only: bool,
+    messages: Callable[[ChunkRequest], list[dict]],
 ) -> CorrectionResult:
     """The Read-through-on middle of :func:`run_correction`: every Flag is a
     hint, and each verdict -- on a hint or on an error it found itself --
-    becomes a pending correction."""
+    becomes a pending correction. ``messages`` builds each chunk's request
+    as the configuration would, for the estimate's token count."""
     chunks = plan_chunks(
         cues, flags, priming_terms=priming_terms, chunk_words=chunk_words
     )
     if estimate_only:
         tokens = sum(
-            len(m["content"]) // 4 for c in chunks for m in build_messages(c)
+            len(m["content"]) // 4 for c in chunks for m in messages(c)
         )
         price = _MODEL_PROMPT_PRICE.get(model_id)
         return CorrectionResult(

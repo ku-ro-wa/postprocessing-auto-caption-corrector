@@ -327,13 +327,14 @@ def test_eval_command_runs_a_registered_read_through_configuration(
     assert config.parse_reply(reply, request) == parse_reply(reply, request)
 
 
-def test_flash_v4_is_the_default_read_through_configuration(
+def test_qwen_p2_is_the_default_read_through_configuration(
     tmp_path: Path, monkeypatch: pytest.MonkeyPatch
 ) -> None:
+    # ADR 0007: what eval scores with no flags is what correct ships
     result, made = _eval_read_through(tmp_path, monkeypatch)
     assert result.exit_code == 0, result.output
-    assert [config for config, _ in made] == [CONFIGS["flash-v4"]]
-    assert "system: read-through (flash-v4: google/gemini-2.5-flash)" in result.output
+    assert [config for config, _ in made] == [CONFIGS["qwen3.6-plus-p2"]]
+    assert "system: read-through (qwen3.6-plus-p2: qwen/qwen3.6-plus)" in result.output
 
 
 @pytest.mark.parametrize(

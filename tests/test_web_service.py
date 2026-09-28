@@ -411,3 +411,63 @@ class TestExportTranscript:
         from caption_checker.parser import serialize
 
         assert exported == serialize(original, format=record.format)
+
+
+class TestReadThroughConfigFromEnv:
+    """Which Read-through configuration the web UI runs (#40): env vars only,
+    and never a silent fallback."""
+
+    def test_neither_set_runs_the_default_configuration(self) -> None:
+        from caption_checker.readthrough import CONFIGS, DEFAULT_CONFIG
+
+        assert service.config_from_env({}) is CONFIGS[DEFAULT_CONFIG]
+        assert service.config_from_env({}).name == "qwen3.6-plus-p2"
+
+    def test_empty_values_count_as_unset(self) -> None:
+        from caption_checker.readthrough import CONFIGS, DEFAULT_CONFIG
+
+        env = {"OPENROUTER_MODEL": "", "OPENROUTER_CONFIG": ""}
+        assert service.config_from_env(env) is CONFIGS[DEFAULT_CONFIG]
+
+    def test_openrouter_model_runs_prompt_v4_with_that_model(self) -> None:
+        from caption_checker.readthrough import v4
+
+        env = {"OPENROUTER_MODEL": "some/slug"}
+        assert service.config_from_env(env) == v4("some/slug")
+
+    def test_openrouter_config_runs_that_configuration(self) -> None:
+        from caption_checker.readthrough import CONFIGS
+
+        env = {"OPENROUTER_CONFIG": "flash-v4"}
+        assert service.config_from_env(env) is CONFIGS["flash-v4"]
+
+    def test_both_set_is_an_error(self) -> None:
+        from caption_checker.readthrough import ConfigError
+
+        env = {"OPENROUTER_CONFIG": "flash-v4", "OPENROUTER_MODEL": "some/slug"}
+        with pytest.raises(ConfigError, match="OPENROUTER_CONFIG.*OPENROUTER_MODEL"):
+            service.config_from_env(env)
+
+    def test_an_unknown_name_is_an_error_listing_the_registered_ones(self) -> None:
+        from caption_checker.readthrough import ConfigError
+
+        with pytest.raises(ConfigError, match="no-such-name.*flash-v4"):
+            service.config_from_env({"OPENROUTER_CONFIG": "no-such-name"})
+
+    def test_run_correction_reads_with_the_given_configuration(
+        self, storage: Storage, session_id: str, monkeypatch: pytest.MonkeyPatch
+    ) -> None:
+        from caption_checker.readthrough import CONFIGS
+
+        built = []
+
+        def reader(config, *, api_key):
+            built.append((config, api_key))
+            return StubReader()
+
+        monkeypatch.setattr(service, "OpenRouterReader", reader)
+        record = _upload_sample(storage, session_id)
+        service.run_correction(
+            storage, record, api_key="test-key", config=CONFIGS["flash-v4"]
+        )
+        assert built == [(CONFIGS["flash-v4"], "test-key")]

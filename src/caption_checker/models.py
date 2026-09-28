@@ -63,8 +63,10 @@ def flag_to_dict(flag: Flag) -> dict:
     }
 
 
-# Default OpenRouter model for the ``correct`` pass: a Gemini Flash-class slug,
-# pinned here and overridable with ``correct --model SLUG``. OpenRouter retires
+# Default OpenRouter model for ``correct --per-flag`` (overridable with
+# ``--model SLUG``), and the model of the ``flash-v4`` Read-through
+# configuration. The Read-through's own default is a configuration,
+# ``readthrough.DEFAULT_CONFIG`` (ADR 0007). OpenRouter retires
 # dated Gemini slugs periodically (2.0-flash-001 is gone as of 2026-09) --
 # check https://openrouter.ai/api/v1/models if this one 404s too.
 DEFAULT_MODEL = "google/gemini-2.5-flash"

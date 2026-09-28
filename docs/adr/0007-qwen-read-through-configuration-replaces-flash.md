@@ -105,4 +105,4 @@ ADR 0006.
 `correct` and the web UI resolve the default through the configuration
 registry, with `qwen3.6-plus-p2` as the default and `flash-v4` as the tested
 backup. `--model` on `correct` gets the same meaning it has on `eval` (prompt
-v4 with that model). Until then, the default model ID is unchanged.
+v4 with that model). Done in #40.

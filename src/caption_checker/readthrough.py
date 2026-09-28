@@ -873,8 +873,37 @@ CONFIGS: dict[str, ReadThroughConfig] = {
         request_options=_REASONING_MINIMAL,
     ),
 }
-#: The configuration eval runs when given neither a name nor a model.
-DEFAULT_CONFIG = "flash-v4"
+#: The configuration ``correct``, the web UI and ``eval`` run when given
+#: neither a name nor a model: #28's winner (ADR 0007). ``flash-v4`` is the
+#: tested backup.
+DEFAULT_CONFIG = "qwen3.6-plus-p2"
+
+
+class ConfigError(ValueError):
+    """A Read-through configuration was asked for in a way that names none:
+    an unregistered name, or a name and a model together."""
+
+
+def select_config(
+    name: str | None = None, model: str | None = None
+) -> ReadThroughConfig:
+    """The configuration a run's flags (or env vars) pick: ``name`` a
+    registered one, ``model`` prompt v4 with that model, neither
+    :data:`DEFAULT_CONFIG`."""
+    if name is not None and model is not None:
+        raise ConfigError(
+            "pick a configuration or a model, not both: a configuration "
+            "names its own model"
+        )
+    if model is not None:
+        return v4(model)
+    name = name or DEFAULT_CONFIG
+    if name not in CONFIGS:
+        raise ConfigError(
+            f"no Read-through configuration named {name!r}; "
+            f"registered: {', '.join(CONFIGS)}"
+        )
+    return CONFIGS[name]
 
 
 # --- readers -------------------------------------------------------------------
