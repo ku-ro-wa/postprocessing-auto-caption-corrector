@@ -257,6 +257,22 @@ def test_every_case_locates_in_the_generated_cues() -> None:
         assert _locate(ScoredCase(**case), words)
 
 
+def test_a_case_next_to_a_punctuation_only_token_still_locates() -> None:
+    # Google sometimes emits a bare "." as a token; it cleans to nothing, so
+    # a context built from cleaned tokens loses it and no longer matches.
+    hyp = _hyp(
+        "listen 1 0.0 0.2", "at 1 0.2 0.4", "all 1 0.4 0.6 .", ". 1 0.6 0.8",
+        "-.com 1 0.8 1.0", "era 1 1.0 1.2", "play 1 1.2 1.4", "of 1 1.4 1.6",
+        "it 1 1.6 1.8",
+    )
+    ref = _ref_words("listen at ir.ifeng.com A replay of it")
+    call = build_call("call.srt", parse_nlp(hyp), parse_nlp(ref, TAGS))
+    assert [c["span"] for c in call.cases] == ["all. . -.com era play"]
+    words = tokenize(call.cues)
+    for case in call.cases:
+        assert _locate(ScoredCase(**case), words)
+
+
 # --- building the corpora --------------------------------------------------
 
 CALL_IDS = ("100", "200", "300", "400", "500", "600", "700", "800", "900")

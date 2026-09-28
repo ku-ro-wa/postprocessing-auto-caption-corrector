@@ -93,6 +93,24 @@ def test_run_eval_scores_exhaustive_sources_that_have_no_cases(tmp_path: Path) -
     assert report.flag_precision == 0.5
 
 
+def test_run_eval_checks_every_case_locates_before_running_the_system(
+    tmp_path: Path,
+) -> None:
+    corpus = _corpus(tmp_path)
+    cases = json.loads(corpus.cases_path.read_text())
+    cases.append({"source": "fixture.srt", "span": "absent", "verdict": "should-flag"})
+    corpus.cases_path.write_text(json.dumps(cases), encoding="utf-8")
+    ran: list[int] = []
+
+    def system(cues: list[Cue], priming_terms: list[str]) -> list[Flag]:
+        ran.append(1)
+        return []
+
+    with pytest.raises(CorpusError, match="absent"):
+        run_eval(corpus, system)
+    assert ran == []  # a broken corpus costs no Read-through calls
+
+
 def test_eval_command_prints_every_number_for_the_scored_corpus() -> None:
     result = CliRunner().invoke(main, ["eval"])
     assert result.exit_code == 0, result.output

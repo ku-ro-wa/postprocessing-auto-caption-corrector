@@ -279,10 +279,12 @@ def _classify(
     return "real-word"
 
 
-def _unique_context(tokens: list[str], start: int, end: int) -> str:
+def _unique_context(texts: list[str], tokens: list[str], start: int, end: int) -> str:
     """The shortest window of ``tokens`` around ``[start, end)`` that occurs
     exactly once in the file, with the span's first occurrence inside it at
-    the right offset -- what the Scored corpus's ``context`` needs."""
+    the right offset -- what the Scored corpus's ``context`` needs. It is
+    written as the words' ``texts``, not the cleaned ``tokens``: a token that
+    cleans to nothing (a bare ".") would vanish from a joined context."""
     span = tokens[start:end]
     for extra in range(len(tokens)):
         for left in range(extra + 1):
@@ -293,8 +295,8 @@ def _unique_context(tokens: list[str], start: int, end: int) -> str:
             if _first(window, span) != left:
                 continue
             if _count(tokens, window) == 1:
-                return " ".join(window)
-    return " ".join(tokens)
+                return " ".join(texts[lo:hi])
+    return " ".join(texts)
 
 
 def _first(tokens: list[str], needle: list[str]) -> int:
@@ -351,7 +353,7 @@ def build_call(
             case["candidate"] = " ".join(
                 ref[i].word for i in range(min(region.ref), max(region.ref) + 1)
             )
-        case["context"] = _unique_context(cleaned, lo, hi)
+        case["context"] = _unique_context([t.text for t in hyp], cleaned, lo, hi)
         case["kind"] = kind
         case["entity"] = bool(entity_types & NAMED_ENTITIES)
         cases.append(case)

@@ -428,14 +428,17 @@ def run_eval(
     cases = load_corpus(corpus.cases_path)
     exhaustive = (*corpus.exhaustive_sources, *manifest)
     sources = dict.fromkeys([*(c.source for c in cases), *exhaustive])
+    cues_by_source = {source: parse(corpus.data_dir / source) for source in sources}
+    words_by_source = {source: tokenize(cues) for source, cues in cues_by_source.items()}
+    # Every case must locate before the system runs: a corpus bug found only
+    # at scoring time would waste a paid Read-through run.
+    for case in cases:
+        _locate(case, words_by_source[case.source])
     flags_by_source: dict[str, list[Flag]] = {}
-    words_by_source: dict[str, list[Word]] = {}
     audio_seconds = 0.0
-    for source in sources:
-        cues = parse(corpus.data_dir / source)
+    for source, cues in cues_by_source.items():
         terms = manifest.get(source, {}).get("priming_terms", []) if priming else []
         flags_by_source[source] = system(cues, list(terms))
-        words_by_source[source] = tokenize(cues)
         audio_seconds += max((c.end.total_seconds() for c in cues), default=0.0)
     report = score(
         cases,
