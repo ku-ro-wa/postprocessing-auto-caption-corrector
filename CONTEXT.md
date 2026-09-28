@@ -246,6 +246,15 @@ Decision's text back into the original Cues. Flags left pending or rejected
 keep their original text. Distinct from the CLI `correct` command's `-o`
 output, which is written directly from its own interactive review.
 
+**Source video**:
+The published YouTube video a Transcript's captions were made for, optionally
+linked to it by the reviewer so a Flag's span can be played back during
+review. Only referenced: its title and channel are looked up once when it is
+linked, and offered as Priming terms, but the video itself is never fetched
+or stored. A Transcript has at most one, and it can be changed or removed at
+any time.
+_Avoid_: media, recording, link.
+
 **Free tier**:
 Read-through runs in the web UI paid for by the server's own OpenRouter key,
 for a Session that hasn't entered one of its own. Metered by the Session's
