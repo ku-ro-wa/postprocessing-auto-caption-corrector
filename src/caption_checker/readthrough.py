@@ -119,6 +119,8 @@ class ReadThroughResult:
     #: unreadable reply on any attempt, and the last such error recorded.
     request_failed_chunks: int = 0
     last_request_error: str | None = None
+    #: Chunks whose first attempt failed but whose retry was read.
+    recovered_chunks: int = 0
 
 
 class Reader(Protocol):
@@ -589,24 +591,30 @@ def read_through(
     hint_flags = {min(f.global_indices): f for f in flags}
     calls = 0
     request_failed = 0
+    recovered = 0
     last_request_error: str | None = None
     lock = threading.Lock()
 
     def ask(chunk: ChunkRequest) -> list[ChunkVerdict] | None:
-        nonlocal calls, request_failed, last_request_error
+        nonlocal calls, request_failed, recovered, last_request_error
         request_error: str | None = None
         bad_reply = False
-        for _attempt in (1, 2):
+        for attempt in (1, 2):
             with lock:
                 if max_calls is not None and calls >= max_calls:
                     break
                 calls += 1
             try:
-                return reader.read(chunk)
+                verdicts = reader.read(chunk)
             except RequestError as exc:
                 request_error = str(exc)
             except CorrectorError:
                 bad_reply = True
+            else:
+                if attempt == 2:
+                    with lock:
+                        recovered += 1
+                return verdicts
         # One unreadable reply puts the chunk on the model's format.
         if request_error is not None and not bad_reply:
             with lock:
@@ -660,6 +668,7 @@ def read_through(
         failed_chunks=failed,
         request_failed_chunks=request_failed,
         last_request_error=last_request_error,
+        recovered_chunks=recovered,
     )
 
 

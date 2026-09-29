@@ -363,13 +363,15 @@ class ReadThroughSystem:
     replacement -- come out. A not-an-error verdict is a dismissal, not a
     Flag; a chunk that failed twice contributes nothing and is counted in
     ``failed_chunks`` -- and in ``request_failed_chunks`` too when it was
-    lost to request errors, with no unreadable reply. Spend accumulates across every transcript
-    run."""
+    lost to request errors, with no unreadable reply. A chunk saved by its
+    retry is counted in ``recovered_chunks``. Spend accumulates across every
+    transcript run."""
 
     def __init__(self, reader: Reader) -> None:
         self.reader = reader
         self.failed_chunks = 0
         self.request_failed_chunks = 0
+        self.recovered_chunks = 0
         self.last_request_error: str | None = None
 
     @property
@@ -385,6 +387,7 @@ class ReadThroughSystem:
         )
         self.failed_chunks += result.failed_chunks
         self.request_failed_chunks += result.request_failed_chunks
+        self.recovered_chunks += result.recovered_chunks
         self.last_request_error = result.last_request_error or self.last_request_error
         return [
             item.flag

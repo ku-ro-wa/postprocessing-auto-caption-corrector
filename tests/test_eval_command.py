@@ -432,7 +432,8 @@ def test_eval_command_reports_request_errors_apart_from_failed_chunks(
     # one chunk per transcript, both lost to the request, not the reply
     assert (
         "read-through: 2 failed chunks (2 on request errors, last: "
-        "HTTP 402 Payment Required: no credit)" in result.output
+        "HTTP 402 Payment Required: no credit); 0 recovered on retry"
+        in result.output
     )
 
 
@@ -441,7 +442,10 @@ def test_eval_command_reports_failed_chunks_without_request_errors(
 ) -> None:
     result, _ = _eval_read_through(tmp_path, monkeypatch)
     assert result.exit_code == 0, result.output
-    assert "read-through: 0 failed chunks (0 on request errors)\n" in result.output
+    assert (
+        "read-through: 0 failed chunks (0 on request errors); "
+        "0 recovered on retry\n" in result.output
+    )
 
 
 def test_read_through_system_scores_only_claimed_errors(tmp_path: Path) -> None:

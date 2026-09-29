@@ -536,7 +536,10 @@ def _render_spend(system: ReadThroughSystem, audio_seconds: float) -> str:
     requests = f"{system.request_failed_chunks} on request errors"
     if system.last_request_error is not None:
         requests += f", last: {system.last_request_error}"
-    return f"{cost}\nread-through: {system.failed_chunks} failed chunks ({requests})"
+    return (
+        f"{cost}\nread-through: {system.failed_chunks} failed chunks ({requests}); "
+        f"{system.recovered_chunks} recovered on retry"
+    )
 
 
 def _detect_config(oov_zipf: float | None) -> DetectConfig:

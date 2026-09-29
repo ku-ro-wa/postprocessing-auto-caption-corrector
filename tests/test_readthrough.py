@@ -424,6 +424,26 @@ def test_a_chunk_is_retried_once_then_its_hints_fail(cues) -> None:
     assert item.flag.span == "cubernetes" and item.correction is None
 
 
+def test_a_chunk_read_on_its_retry_is_recovered_not_failed(cues) -> None:
+    class BadFirstReply(StubReader):
+        def read(self, request: ChunkRequest) -> list[ChunkVerdict]:
+            if self.calls == 0:
+                self.calls += 1
+                raise CorrectorError("reply is not JSON")
+            return super().read(request)
+
+    result = read_through(cues, detect(cues), BadFirstReply())
+    assert result.failed_chunks == 0
+    assert result.recovered_chunks == 1
+    [item] = result.items
+    assert item.correction is not None
+
+
+def test_a_chunk_that_fails_twice_is_not_recovered(cues) -> None:
+    result = read_through(cues, detect(cues), StubReader(garbage=True))
+    assert result.recovered_chunks == 0
+
+
 def test_a_chunk_whose_requests_fail_is_counted_as_a_request_failure(cues) -> None:
     # A request error (no credit, network) says nothing about the model's
     # reply format, so eval must be able to tell the two apart.
