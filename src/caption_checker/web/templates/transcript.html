@@ -88,7 +88,7 @@
 
 <script>
 // Flags and All Cues are two views of one page, so switching keeps the
-// player and every Review Decision. A highlighted span in a Cue shows the
+// player and every Review Decision. The tab bar stays pinned with the player. A highlighted span in a Cue shows the
 // Flags view before its #flag-N link scrolls to the card.
 (function () {
   const tabs = document.querySelectorAll('[role="tab"]');
@@ -104,6 +104,15 @@
   tabs.forEach(function (t) {
     t.addEventListener("click", function () { show(t); });
   });
+
+  // The tabs pin just under the player, so they need its height (it varies
+  // with the viewport); without a Source video they pin to the top.
+  const player = document.getElementById("source-player");
+  if (player && window.ResizeObserver) {
+    new ResizeObserver(function () {
+      document.documentElement.style.setProperty("--player-height", player.offsetHeight + "px");
+    }).observe(player);
+  }
   document.addEventListener("click", function (event) {
     if (event.target.closest("a.cue-flag")) show(document.getElementById("tab-flags"));
   });

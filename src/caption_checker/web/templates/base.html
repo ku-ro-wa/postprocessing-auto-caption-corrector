@@ -34,9 +34,10 @@
   .source-player.failed .source-player-frame { display: none; }
   .source-player-status:empty { display: none; }
   a.play-span { font-variant-numeric: tabular-nums; }
-  .tabs { display: flex; gap: 0.25rem; border-bottom: 1px solid #ccc5; margin: 1rem 0 0.75rem; }
+  .tabs { position: sticky; top: var(--player-height, 0px); z-index: 9; background: Canvas; display: flex; gap: 0.25rem; border-bottom: 1px solid #ccc5; margin: 1rem 0 0.75rem; }
   .tab { cursor: pointer; font: inherit; font-weight: 600; background: none; color: inherit; border: 1px solid transparent; border-bottom: none; border-radius: 6px 6px 0 0; padding: 0.4rem 0.9rem; margin-bottom: -1px; }
   .tab[aria-selected=true] { border-color: #ccc5; background: Canvas; }
+  .flag-card, .cue-row { scroll-margin-top: calc(var(--player-height, 0px) + 3rem); }
   .cue-row { padding: 0.4rem 0; border-bottom: 1px solid #ccc3; }
   .cue-text { white-space: pre-line; }
   /* The same yellow as a Flag card's <mark>; the underline shows the Flag's status. */
