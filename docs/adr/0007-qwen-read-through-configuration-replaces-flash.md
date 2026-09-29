@@ -81,9 +81,9 @@ both sets. Beyond real-word recall:
   vs 19 of 21) but more on `audited-heldout-2` (27 vs 25 of 29).
 - **Entity recall:** Qwen was higher on both sets: 206 vs 197 of 536, and 22
   vs 18 of 33.
-- **Failed chunks:** the final rule doesn't gate on them. Qwen lost 2 chunks
-  on `heldout-2` to reply-format failures, against Flash's 1; none was a
-  request error.
+- **Failed chunks:** the final rule doesn't gate on them. A chunk fails only
+  when its retry fails too. Qwen lost 2 chunks on `heldout-2` to reply-format
+  failures, against Flash's 1; none was a request error.
 
 An earlier Flash run on `heldout-2`, at `abc3ee9`, crashed at scoring. One
 case's context had lost a bare "." token, so it no longer matched; no
