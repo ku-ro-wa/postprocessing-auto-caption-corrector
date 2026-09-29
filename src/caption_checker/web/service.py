@@ -38,7 +38,12 @@ from caption_checker.readthrough import (
 )
 from caption_checker.vocab import Vocab, load_vocab
 from caption_checker.web.models import ReviewDecision, TranscriptRecord
-from caption_checker.web.source_video import InvalidVideoLinkError, parse_video_id
+from caption_checker.web.source_video import (
+    InvalidVideoLinkError,
+    MetadataLookup,
+    lookup_metadata,
+    parse_video_id,
+)
 from caption_checker.web.storage import Storage
 
 # Per the spec's "fixed defaults" decision: matches the CLI's defaults
@@ -69,9 +74,11 @@ def upload_transcript(
     content: bytes,
     *,
     video_link: str = "",
+    video_lookup: MetadataLookup = lookup_metadata,
 ) -> TranscriptRecord:
     """Validate, persist, and automatically scan an uploaded file, linking
-    its Source video when ``video_link`` is given.
+    its Source video when ``video_link`` is given (its metadata from
+    ``video_lookup``).
 
     Raises ``InvalidTranscriptError`` when the upload isn't a parseable
     SRT/VTT, or ``InvalidVideoLinkError`` when ``video_link`` isn't a
@@ -109,22 +116,48 @@ def upload_transcript(
         flags=flags,
         corrections=[None] * len(flags),
         decisions=[ReviewDecision() for _ in flags],
-        video_id=video_id,
     )
+    if video_id is not None:
+        _link_video(record, video_id, video_lookup)
     storage.save_transcript(record)
     return record
 
 
-def set_source_video(storage: Storage, record: TranscriptRecord, video_link: str) -> None:
-    """Link or change the Transcript's Source video. Raises
-    ``InvalidVideoLinkError`` without saving when the link doesn't parse."""
-    record.video_id = parse_video_id(video_link)
+def _link_video(record: TranscriptRecord, video_id: str, lookup: MetadataLookup) -> None:
+    """Set the Source video and whatever ``lookup`` finds about it; a failed
+    lookup leaves no metadata, never stale metadata from a previous video."""
+    metadata = lookup(video_id)
+    record.video_id = video_id
+    record.video_title = metadata.title if metadata else None
+    record.video_channel = metadata.channel if metadata else None
+
+
+def set_source_video(
+    storage: Storage,
+    record: TranscriptRecord,
+    video_link: str,
+    *,
+    video_lookup: MetadataLookup = lookup_metadata,
+) -> None:
+    """Link or change the Transcript's Source video, looking its metadata up
+    again. Raises ``InvalidVideoLinkError`` without saving (or looking
+    anything up) when the link doesn't parse."""
+    _link_video(record, parse_video_id(video_link), video_lookup)
     storage.save_transcript(record)
 
 
 def clear_source_video(storage: Storage, record: TranscriptRecord) -> None:
     record.video_id = None
+    record.video_title = None
+    record.video_channel = None
     storage.save_transcript(record)
+
+
+def suggested_priming_terms(record: TranscriptRecord) -> str:
+    """What the review page prefills the Priming terms field with: the
+    Source video's ``<title>, <channel>``, for the reviewer to trim into
+    terms. Empty when there's no metadata."""
+    return ", ".join(t for t in (record.video_title, record.video_channel) if t)
 
 
 def _same_text(a: str, b: str) -> bool:

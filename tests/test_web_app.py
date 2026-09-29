@@ -7,6 +7,8 @@ from fastapi.testclient import TestClient
 
 from caption_checker.readthrough import Reader, StubReader
 from caption_checker.web.app import create_app
+from caption_checker.web.models import TranscriptRecord
+from caption_checker.web.source_video import MetadataLookup, VideoMetadata
 from caption_checker.web.storage import Storage
 
 DATA_DIR = Path(__file__).parent / "data"
@@ -18,8 +20,16 @@ def _storage_for(tmp_path: Path) -> Storage:
     return Storage(tmp_path / "data")
 
 
-def _make_client(tmp_path: Path, reader: Reader | None = None) -> TestClient:
-    app = create_app(_storage_for(tmp_path), reader=reader)
+def _no_metadata(video_id: str) -> VideoMetadata | None:
+    return None
+
+
+def _make_client(
+    tmp_path: Path,
+    reader: Reader | None = None,
+    video_lookup: MetadataLookup = _no_metadata,
+) -> TestClient:
+    app = create_app(_storage_for(tmp_path), reader=reader, video_lookup=video_lookup)
     return TestClient(app)
 
 
@@ -542,10 +552,14 @@ VIDEO_ID = "dQw4w9WgXcQ"
 PLAYER_SCRIPT = "https://www.youtube.com/iframe_api"
 
 
-def _video_id(tmp_path: Path, client: TestClient, transcript_id: str) -> str | None:
+def _record(tmp_path: Path, client: TestClient, transcript_id: str) -> TranscriptRecord:
     record = _storage_for(tmp_path).load_transcript(client.cookies["cc_session"], transcript_id)
     assert record is not None
-    return record.video_id
+    return record
+
+
+def _video_id(tmp_path: Path, client: TestClient, transcript_id: str) -> str | None:
+    return _record(tmp_path, client, transcript_id).video_id
 
 
 class TestSourceVideo:
@@ -665,3 +679,120 @@ class TestSourceVideo:
             f"/transcripts/{transcript_id}/flags/0/decision", data={"action": "reject"}
         )
         assert 'class="play-span"' in response.text
+
+
+class _Lookup:
+    """A stub oEmbed lookup: ``found`` maps video IDs to their metadata,
+    anything else fails. Records each ID it was asked for."""
+
+    def __init__(self, found: dict[str, VideoMetadata]) -> None:
+        self.found = found
+        self.calls: list[str] = []
+
+    def __call__(self, video_id: str) -> VideoMetadata | None:
+        self.calls.append(video_id)
+        return self.found.get(video_id)
+
+
+OTHER_ID = "abcdefghijk"
+RAFT = VideoMetadata(title="Raft in 10 minutes", channel="Distributed Dan")
+KAFKA = VideoMetadata(title="Kafka internals", channel="Stream & Co")
+
+
+class TestSourceVideoMetadata:
+    """#38: the Source video's title and channel, offered as Priming terms."""
+
+    def test_upload_with_a_link_stores_title_and_channel(self, tmp_path: Path) -> None:
+        lookup = _Lookup({VIDEO_ID: RAFT})
+        client = _make_client(tmp_path, video_lookup=lookup)
+        transcript_id = _upload(client, data={"video_link": VIDEO_ID})
+
+        record = _record(tmp_path, client, transcript_id)
+        assert (record.video_title, record.video_channel) == (RAFT.title, RAFT.channel)
+        assert lookup.calls == [VIDEO_ID]
+
+    def test_upload_without_a_link_looks_nothing_up(self, tmp_path: Path) -> None:
+        lookup = _Lookup({})
+        client = _make_client(tmp_path, video_lookup=lookup)
+        _upload(client)
+        assert lookup.calls == []
+
+    def test_a_bad_link_looks_nothing_up(self, tmp_path: Path) -> None:
+        lookup = _Lookup({})
+        client = _make_client(tmp_path, video_lookup=lookup)
+        transcript_id = _upload(client)
+        client.post(f"/transcripts/{transcript_id}/video", data={"video_link": "not a link"})
+        assert lookup.calls == []
+
+    def test_a_failed_lookup_saves_the_link_without_metadata(self, tmp_path: Path) -> None:
+        client = _make_client(tmp_path, video_lookup=_Lookup({}))
+        transcript_id = _upload(client, data={"video_link": VIDEO_ID})
+
+        record = _record(tmp_path, client, transcript_id)
+        assert record.video_id == VIDEO_ID
+        assert (record.video_title, record.video_channel) == (None, None)
+
+    def test_changing_the_video_looks_it_up_again(self, tmp_path: Path) -> None:
+        lookup = _Lookup({VIDEO_ID: RAFT, OTHER_ID: KAFKA})
+        client = _make_client(tmp_path, video_lookup=lookup)
+        transcript_id = _upload(client, data={"video_link": VIDEO_ID})
+
+        client.post(f"/transcripts/{transcript_id}/video", data={"video_link": OTHER_ID})
+
+        record = _record(tmp_path, client, transcript_id)
+        assert (record.video_title, record.video_channel) == (KAFKA.title, KAFKA.channel)
+        assert lookup.calls == [VIDEO_ID, OTHER_ID]
+
+    def test_changing_to_a_video_whose_lookup_fails_drops_the_old_metadata(
+        self, tmp_path: Path
+    ) -> None:
+        client = _make_client(tmp_path, video_lookup=_Lookup({VIDEO_ID: RAFT}))
+        transcript_id = _upload(client, data={"video_link": VIDEO_ID})
+
+        client.post(f"/transcripts/{transcript_id}/video", data={"video_link": OTHER_ID})
+
+        record = _record(tmp_path, client, transcript_id)
+        assert record.video_id == OTHER_ID
+        assert (record.video_title, record.video_channel) == (None, None)
+
+    def test_removing_the_video_clears_title_and_channel(self, tmp_path: Path) -> None:
+        client = _make_client(tmp_path, video_lookup=_Lookup({VIDEO_ID: RAFT}))
+        transcript_id = _upload(client, data={"video_link": VIDEO_ID})
+
+        client.post(f"/transcripts/{transcript_id}/video/delete")
+
+        record = _record(tmp_path, client, transcript_id)
+        assert (record.video_title, record.video_channel) == (None, None)
+
+    def test_priming_terms_are_prefilled_with_title_and_channel(self, tmp_path: Path) -> None:
+        client = _make_client(tmp_path, video_lookup=_Lookup({OTHER_ID: KAFKA}))
+        transcript_id = _upload(client, data={"video_link": OTHER_ID})
+
+        page = client.get(f"/transcripts/{transcript_id}").text
+        assert 'value="Kafka internals, Stream &amp; Co"' in page
+
+    def test_priming_terms_prefill_with_only_a_title(self, tmp_path: Path) -> None:
+        lookup = _Lookup({VIDEO_ID: VideoMetadata(title="Raft in 10 minutes", channel=None)})
+        client = _make_client(tmp_path, video_lookup=lookup)
+        transcript_id = _upload(client, data={"video_link": VIDEO_ID})
+
+        page = client.get(f"/transcripts/{transcript_id}").text
+        assert 'value="Raft in 10 minutes"' in page
+
+    @pytest.mark.parametrize("video_link", [None, VIDEO_ID], ids=["no-video", "no-metadata"])
+    def test_no_prefill_without_metadata(self, tmp_path: Path, video_link: str | None) -> None:
+        client = _make_client(tmp_path)
+        data = {"video_link": video_link} if video_link else None
+        transcript_id = _upload(client, data=data)
+
+        page = client.get(f"/transcripts/{transcript_id}").text
+        assert 'name="priming_terms" value=' not in page
+
+    def test_the_prefill_is_not_sent_unless_submitted(self, tmp_path: Path) -> None:
+        stub = StubReader()
+        client = _make_client(tmp_path, reader=stub, video_lookup=_Lookup({VIDEO_ID: RAFT}))
+        transcript_id = _upload(client, data={"video_link": VIDEO_ID})
+
+        client.post(f"/transcripts/{transcript_id}/correct", data={"api_key": "sk-or-test"})
+
+        assert stub.requests[0].priming_terms == []

@@ -1,9 +1,17 @@
 from __future__ import annotations
 
+import json
+from email.message import Message
+from http.client import IncompleteRead
+from urllib.error import HTTPError, URLError
+
 import pytest
 
 from caption_checker.web.source_video import (
+    OEMBED_TIMEOUT_SECONDS,
     InvalidVideoLinkError,
+    VideoMetadata,
+    lookup_metadata,
     parse_video_id,
     span_watch_url,
     watch_url,
@@ -85,3 +93,59 @@ def test_span_watch_url_starts_one_second_early_floored_and_clamped(
     start: float, expected_t: int
 ) -> None:
     assert span_watch_url(VIDEO_ID, start) == watch_url(VIDEO_ID, at=expected_t)
+
+
+class TestLookupMetadata:
+    """#38: the Source video's title and channel, from YouTube oEmbed."""
+
+    def test_success_reads_title_and_author_name(self) -> None:
+        calls: list[tuple[str, float]] = []
+
+        def fetch(url: str, timeout: float) -> bytes:
+            calls.append((url, timeout))
+            return json.dumps(
+                {"title": "Raft in 10 minutes", "author_name": "Distributed Dan", "type": "video"}
+            ).encode()
+
+        assert lookup_metadata(VIDEO_ID, fetch=fetch) == VideoMetadata(
+            title="Raft in 10 minutes", channel="Distributed Dan"
+        )
+        assert calls == [
+            (
+                "https://www.youtube.com/oembed?url=https%3A%2F%2Fwww.youtube.com%2F"
+                f"watch%3Fv%3D{VIDEO_ID}&format=json",
+                OEMBED_TIMEOUT_SECONDS,
+            )
+        ]
+
+    @pytest.mark.parametrize(
+        "error",
+        [
+            HTTPError("https://www.youtube.com/oembed", 401, "Unauthorized", Message(), None),
+            HTTPError("https://www.youtube.com/oembed", 404, "Not Found", Message(), None),
+            URLError("nodename nor servname provided"),
+            TimeoutError("timed out"),
+            OSError("connection reset"),
+            IncompleteRead(b""),
+        ],
+        ids=["401", "404", "network", "timeout", "reset", "incomplete"],
+    )
+    def test_a_failed_request_means_no_metadata(self, error: Exception) -> None:
+        def fetch(url: str, timeout: float) -> bytes:
+            raise error
+
+        assert lookup_metadata(VIDEO_ID, fetch=fetch) is None
+
+    @pytest.mark.parametrize(
+        "body",
+        [b"<html>not json</html>", b"[]", b"{}", json.dumps({"title": 3}).encode()],
+        ids=["html", "list", "empty", "wrong-type"],
+    )
+    def test_an_unusable_reply_means_no_metadata(self, body: bytes) -> None:
+        assert lookup_metadata(VIDEO_ID, fetch=lambda url, timeout: body) is None
+
+    def test_a_missing_channel_keeps_the_title(self) -> None:
+        body = json.dumps({"title": "Raft in 10 minutes"}).encode()
+        assert lookup_metadata(VIDEO_ID, fetch=lambda url, timeout: body) == VideoMetadata(
+            title="Raft in 10 minutes", channel=None
+        )

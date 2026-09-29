@@ -87,10 +87,16 @@ def _priming_terms(raw: str) -> list[str]:
     return [t.strip() for t in re.split(r"[,\n]", raw) if t.strip()]
 
 
-def create_app(storage: Storage, *, reader: Reader | None = None) -> FastAPI:
+def create_app(
+    storage: Storage,
+    *,
+    reader: Reader | None = None,
+    video_lookup: source_video.MetadataLookup = source_video.lookup_metadata,
+) -> FastAPI:
     """``reader`` lets tests inject a ``StubReader`` (or any other
     ``Reader``) at the same seam the CLI's Read-through tests use — no route
-    in this app talks to OpenRouter directly.
+    in this app talks to OpenRouter directly. ``video_lookup`` likewise
+    stands in for the Source video's YouTube oEmbed lookup.
 
     Without one, the Read-through configuration comes from the environment
     (``service.config_from_env``), resolved here so a bad one stops startup
@@ -122,7 +128,12 @@ def create_app(storage: Storage, *, reader: Reader | None = None) -> FastAPI:
         content = await file.read()
         try:
             record = service.upload_transcript(
-                storage, session_id, file.filename or "upload", content, video_link=video_link
+                storage,
+                session_id,
+                file.filename or "upload",
+                content,
+                video_link=video_link,
+                video_lookup=video_lookup,
             )
         except (service.InvalidTranscriptError, service.InvalidVideoLinkError) as exc:
             transcripts = storage.list_transcripts(session_id)
@@ -147,6 +158,7 @@ def create_app(storage: Storage, *, reader: Reader | None = None) -> FastAPI:
                 "summary": service.correction_summary(record),
                 "has_session_key": bool(storage.get_session_api_key(record.session_id)),
                 "has_server_key": bool(os.environ.get("OPENROUTER_API_KEY")),
+                "suggested_priming_terms": service.suggested_priming_terms(record),
                 **extra,
             },
             status_code=status_code,
@@ -162,7 +174,7 @@ def create_app(storage: Storage, *, reader: Reader | None = None) -> FastAPI:
     ) -> Response:
         record = load_or_404(request.state.session_id, transcript_id)
         try:
-            service.set_source_video(storage, record, video_link)
+            service.set_source_video(storage, record, video_link, video_lookup=video_lookup)
         except service.InvalidVideoLinkError as exc:
             return review_page(
                 request, record, status_code=400, video_error=str(exc), video_link=video_link
