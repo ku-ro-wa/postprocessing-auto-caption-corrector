@@ -33,3 +33,27 @@ unchanged, except the whitespace a cut leaves at the start of a later Cue:
 
 Reviewers see the text of every Cue the span touches, and a Flag's
 `cue_index` stays the first Cue's.
+
+## Amendment (2026-09-30): overlapping edits, and one splice for Export and the Cue view
+
+The review page's All Cues view (#39) shows each Cue as Export would write
+it. So the two can't drift apart, both run through the same splice (`splice`
+in `apply.py`, with `apply_corrections` on top of it). The view also passes
+the Flags that aren't accepted, so their spans can be marked without being
+rewritten.
+
+Overlapping edits are resolved per Cue as follows:
+
+- accepted edits are taken in order of their start, and one that overlaps an
+  edit already taken is skipped. Until now, overlapping edits were spliced
+  right to left over each other, which garbled the text;
+- marks are placed only after every accepted edit, and a mark that overlaps
+  an accepted edit or an earlier mark is dropped. A mark can therefore never
+  change what is written.
+
+Detection merges overlapping Flags, and the Read-through drops finds that
+overlap a hint, so no overlap reaches this code today. Reviewer-raised Flags
+(ADR 0009) may be the first to create one.
+
+A Cue emptied by a cross-Cue cut is still removed from Export. The view keeps
+it, labelled with the Cue its text merged into.
