@@ -17,6 +17,8 @@ from http.client import HTTPException
 from typing import Callable
 from urllib.parse import parse_qs, urlencode, urlsplit
 
+from caption_checker.net import open_url
+
 # How much of the video around a Flag's span a timestamp click plays:
 # from ``start - PLAY_LEAD_SECONDS`` (clamped at 0) to ``end + PLAY_TAIL_SECONDS``.
 PLAY_LEAD_SECONDS = 1.0
@@ -101,19 +103,12 @@ Fetch = Callable[[str, float], bytes]
 MetadataLookup = Callable[[str], "VideoMetadata | None"]
 
 
-def _urlopen_fetch(url: str, timeout: float) -> bytes:
-    import ssl
-    from urllib.request import urlopen
-
-    import certifi
-
-    # Same trust-store workaround as ``OpenRouterCorrector.chat``.
-    context = ssl.create_default_context(cafile=certifi.where())
-    with urlopen(url, timeout=timeout, context=context) as response:
+def _fetch(url: str, timeout: float) -> bytes:
+    with open_url(url, timeout=timeout) as response:
         return response.read()
 
 
-def lookup_metadata(video_id: str, *, fetch: Fetch = _urlopen_fetch) -> VideoMetadata | None:
+def lookup_metadata(video_id: str, *, fetch: Fetch = _fetch) -> VideoMetadata | None:
     """The video's title and channel from one oEmbed request, or ``None``
     when the request fails (timeout, network error, 401/404 for a private,
     deleted or embed-disabled video) or the reply has neither. Never raises

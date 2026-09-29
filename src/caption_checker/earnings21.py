@@ -26,6 +26,7 @@ from typing import Callable
 from wordfreq import zipf_frequency
 
 from caption_checker.models import Cue, DetectConfig
+from caption_checker.net import open_url
 from caption_checker.normalize import clean, is_wordlike
 from caption_checker.parser import parse, serialize, tokenize
 
@@ -378,13 +379,7 @@ Fetch = Callable[[str], bytes]
 
 def fetch_remote(path: str) -> bytes:
     """Download one file of the dataset's ``earnings21/`` directory."""
-    import ssl
-    from urllib.request import urlopen
-
-    import certifi
-
-    context = ssl.create_default_context(cafile=certifi.where())
-    with urlopen(REMOTE_BASE + path, context=context, timeout=60) as resp:
+    with open_url(REMOTE_BASE + path, timeout=60) as resp:
         return resp.read()
 
 

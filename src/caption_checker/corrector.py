@@ -21,12 +21,10 @@ import os
 import re
 import threading
 from dataclasses import dataclass, field
-from typing import TYPE_CHECKING, Protocol
+from typing import Protocol
 
 from caption_checker.models import DEFAULT_MODEL
-
-if TYPE_CHECKING:
-    import ssl
+from caption_checker.net import open_url
 
 __all__ = [
     "DEFAULT_MODEL",
@@ -210,22 +208,13 @@ class OpenRouterClient:
     ) -> str:
         """Send one chat turn and return the reply text. ``options`` are
         extra request fields (e.g. ``response_format``)."""
-        import ssl
         from http.client import HTTPException
         from urllib.error import HTTPError, URLError
-        from urllib.request import Request, urlopen
+        from urllib.request import Request
 
-        import certifi
-
-        # Some Python installs (notably python.org's macOS builds) ship
-        # without a wired-up system trust store, so the stdlib's default
-        # SSL context can't verify OpenRouter's certificate. Point it at
-        # certifi's bundle explicitly rather than relying on the
-        # environment being set up right.
-        context = ssl.create_default_context(cafile=certifi.where())
         with self._lock:
             if not self._model_checked:
-                self._check_model_available(context)
+                self._check_model_available()
                 self._model_checked = True
 
         body = json.dumps(
@@ -246,7 +235,7 @@ class OpenRouterClient:
             },
         )
         try:
-            with urlopen(request, timeout=timeout, context=context) as response:
+            with open_url(request, timeout=timeout) as response:
                 payload = json.loads(response.read().decode("utf-8"))
         except HTTPError as exc:
             # exc's own str() is just the generic reason phrase (e.g. "Not
@@ -282,7 +271,7 @@ class OpenRouterClient:
             raise CorrectorError("OpenRouter reply has no text")
         return content
 
-    def _check_model_available(self, context: ssl.SSLContext) -> None:
+    def _check_model_available(self) -> None:
         """Catalogue drift guard: OpenRouter periodically retires dated model
         slugs (e.g. ``google/gemini-2.0-flash-001`` disappeared in 2026-09),
         which otherwise only surfaces as a bare 404 from the completions
@@ -293,10 +282,9 @@ class OpenRouterClient:
         take over rather than blocking the whole run on it.
         """
         from urllib.error import URLError
-        from urllib.request import urlopen
 
         try:
-            with urlopen(OPENROUTER_MODELS_URL, timeout=15, context=context) as response:
+            with open_url(OPENROUTER_MODELS_URL, timeout=15) as response:
                 payload = json.loads(response.read().decode("utf-8"))
             available = {m["id"] for m in payload["data"]}
         except (URLError, TimeoutError, ValueError, KeyError, TypeError):
