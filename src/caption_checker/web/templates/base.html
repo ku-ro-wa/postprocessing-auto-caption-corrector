@@ -26,6 +26,14 @@
   .flag-actions input[type=text] { flex: 1; }
   form.inline { display: inline; }
   .btn { cursor: pointer; }
+  .source-player { position: sticky; top: 0; z-index: 10; background: Canvas; padding: 0.5rem 0; margin-bottom: 1rem; border-bottom: 1px solid #ccc5; }
+  .source-video-controls form { display: flex; gap: 0.5rem; margin-bottom: 0.5rem; }
+  .source-video-controls input[type=text] { flex: 1; }
+  /* Capped by viewport height too, so the pinned player never hides most of the Flags. */
+  .source-player-frame { width: min(100%, 32rem, calc(28vh * 16 / 9)); aspect-ratio: 16 / 9; }
+  .source-player.failed .source-player-frame { display: none; }
+  .source-player-status:empty { display: none; }
+  a.play-span { font-variant-numeric: tabular-nums; }
   .status-pill { font-size: 0.75em; padding: 0.1rem 0.5rem; border-radius: 1rem; border: 1px solid currentColor; text-transform: uppercase; }
 </style>
 </head>

@@ -9,8 +9,12 @@
   {% endif %}
   <form action="/transcripts" method="post" enctype="multipart/form-data">
     <input type="file" name="file" accept=".srt,.vtt" required>
+    <label>Source video, as a YouTube link (optional):
+      <input type="text" name="video_link" value="{{ video_link or '' }}" placeholder="https://youtu.be/...">
+    </label>
     <button class="btn" type="submit">Upload &amp; scan</button>
   </form>
+  <p class="muted">With a Source video, you can play each Flag's span on the review page. You can add, change or remove it there later.</p>
   <p class="muted">Uploads are scanned automatically by the local detectors. Nothing is sent to an LLM until you ask for it on a transcript's review page.</p>
 </section>
 

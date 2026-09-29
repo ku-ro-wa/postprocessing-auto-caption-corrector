@@ -35,7 +35,8 @@ class TranscriptRecord:
     plus any the Read-through found), any Corrections (from an explicit
     ``correct`` run), and the reviewer's Review Decisions — one per Flag,
     aligned by list index. ``corrected_at`` marks a completed run;
-    ``failed_chunks`` of its ``chunk_count`` chunks came back unjudged."""
+    ``failed_chunks`` of its ``chunk_count`` chunks came back unjudged.
+    ``video_id`` is the Source video's YouTube ID, when one is linked."""
 
     id: str
     session_id: str
@@ -49,6 +50,7 @@ class TranscriptRecord:
     corrected_at: str | None = None
     chunk_count: int = 0
     failed_chunks: int = 0
+    video_id: str | None = None
 
     @property
     def reviewed_count(self) -> int:
@@ -137,6 +139,7 @@ def record_to_dict(record: TranscriptRecord) -> dict:
         "corrected_at": record.corrected_at,
         "chunk_count": record.chunk_count,
         "failed_chunks": record.failed_chunks,
+        "video_id": record.video_id,
     }
 
 
@@ -157,4 +160,5 @@ def record_from_dict(data: dict) -> TranscriptRecord:
         corrected_at=data.get("corrected_at"),
         chunk_count=data.get("chunk_count", 0),
         failed_chunks=data.get("failed_chunks", 0),
+        video_id=data.get("video_id"),
     )

@@ -21,6 +21,7 @@ from starlette.middleware.base import BaseHTTPMiddleware, RequestResponseEndpoin
 from caption_checker.corrector import CorrectorError, MissingAPIKeyError
 from caption_checker.readthrough import Reader
 from caption_checker.web import service
+from caption_checker.web import source_video
 from caption_checker.web.models import TranscriptRecord
 from caption_checker.web.storage import Storage
 
@@ -100,6 +101,7 @@ def create_app(storage: Storage, *, reader: Reader | None = None) -> FastAPI:
     templates = Jinja2Templates(directory=str(TEMPLATES_DIR))
     templates.env.filters["ts"] = lambda td: _fmt_ts(td.total_seconds())
     templates.env.filters["highlight"] = _highlight
+    templates.env.globals["source_video"] = source_video
 
     def load_or_404(session_id: str, transcript_id: str) -> TranscriptRecord:
         record = storage.load_transcript(session_id, transcript_id)
@@ -113,28 +115,29 @@ def create_app(storage: Storage, *, reader: Reader | None = None) -> FastAPI:
         return templates.TemplateResponse(request, "index.html", {"transcripts": transcripts})
 
     @app.post("/transcripts")
-    async def upload(request: Request, file: UploadFile) -> Response:
+    async def upload(
+        request: Request, file: UploadFile, video_link: str = Form("")
+    ) -> Response:
         session_id = request.state.session_id
         content = await file.read()
         try:
             record = service.upload_transcript(
-                storage, session_id, file.filename or "upload", content
+                storage, session_id, file.filename or "upload", content, video_link=video_link
             )
-        except service.InvalidTranscriptError as exc:
+        except (service.InvalidTranscriptError, service.InvalidVideoLinkError) as exc:
             transcripts = storage.list_transcripts(session_id)
             return templates.TemplateResponse(
                 request,
                 "index.html",
-                {"transcripts": transcripts, "upload_error": str(exc)},
+                {"transcripts": transcripts, "upload_error": str(exc), "video_link": video_link},
                 status_code=400,
             )
 
         return RedirectResponse(f"/transcripts/{record.id}", status_code=303)
 
-    @app.get("/transcripts/{transcript_id}", response_class=HTMLResponse)
-    def show(request: Request, transcript_id: str) -> Response:
-        session_id = request.state.session_id
-        record = load_or_404(session_id, transcript_id)
+    def review_page(
+        request: Request, record: TranscriptRecord, *, status_code: int = 200, **extra: object
+    ) -> Response:
         return templates.TemplateResponse(
             request,
             "transcript.html",
@@ -142,10 +145,35 @@ def create_app(storage: Storage, *, reader: Reader | None = None) -> FastAPI:
                 "transcript": record,
                 "rows": service.transcript_rows(storage, record),
                 "summary": service.correction_summary(record),
-                "has_session_key": bool(storage.get_session_api_key(session_id)),
+                "has_session_key": bool(storage.get_session_api_key(record.session_id)),
                 "has_server_key": bool(os.environ.get("OPENROUTER_API_KEY")),
+                **extra,
             },
+            status_code=status_code,
         )
+
+    @app.get("/transcripts/{transcript_id}", response_class=HTMLResponse)
+    def show(request: Request, transcript_id: str) -> Response:
+        return review_page(request, load_or_404(request.state.session_id, transcript_id))
+
+    @app.post("/transcripts/{transcript_id}/video")
+    def link_source_video(
+        request: Request, transcript_id: str, video_link: str = Form("")
+    ) -> Response:
+        record = load_or_404(request.state.session_id, transcript_id)
+        try:
+            service.set_source_video(storage, record, video_link)
+        except service.InvalidVideoLinkError as exc:
+            return review_page(
+                request, record, status_code=400, video_error=str(exc), video_link=video_link
+            )
+        return RedirectResponse(f"/transcripts/{transcript_id}", status_code=303)
+
+    @app.post("/transcripts/{transcript_id}/video/delete")
+    def remove_source_video(request: Request, transcript_id: str) -> Response:
+        record = load_or_404(request.state.session_id, transcript_id)
+        service.clear_source_video(storage, record)
+        return RedirectResponse(f"/transcripts/{transcript_id}", status_code=303)
 
     @app.post("/transcripts/{transcript_id}/correct")
     def correct(

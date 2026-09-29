@@ -14,6 +14,37 @@
   {% endif %}
 </p>
 
+<section class="source-video-controls">
+  <h3>Source video</h3>
+  {% if video_error %}
+    <div class="error">{{ video_error }}</div>
+  {% endif %}
+  {% set current_url = source_video.watch_url(transcript.video_id) if transcript.video_id else "" %}
+  {% if transcript.video_id %}
+    <p class="muted">This Transcript's Source video is <a href="{{ current_url }}" target="_blank" rel="noopener">{{ current_url }}</a>. Click a Flag's ▶ timestamp to hear its span. If it's the wrong video, change or remove it here.</p>
+  {% else %}
+    <p class="muted">Add the YouTube video these captions were made for, to play each Flag's span while you review.</p>
+  {% endif %}
+  <form action="/transcripts/{{ transcript.id }}/video" method="post">
+    <input type="text" name="video_link" required
+           value="{{ video_link if video_error else current_url }}"
+           placeholder="https://www.youtube.com/watch?v=...">
+    <button class="btn" type="submit">{{ "Change Source video" if transcript.video_id else "Add Source video" }}</button>
+  </form>
+  {% if transcript.video_id %}
+    <form action="/transcripts/{{ transcript.id }}/video/delete" method="post">
+      <button class="btn" type="submit">Remove Source video</button>
+    </form>
+  {% endif %}
+</section>
+
+{% if transcript.video_id %}
+<div class="source-player" id="source-player" data-video-id="{{ transcript.video_id }}">
+  <div class="source-player-frame"><div id="source-player-frame"></div></div>
+  <p class="muted source-player-status" id="source-player-status" role="status"></p>
+</div>
+{% endif %}
+
 <section>
   <h3>LLM Read-through</h3>
   {% if transcript.correct_error %}
@@ -51,5 +82,93 @@
     {% include "partials/flag_row.html" %}
   {% endfor %}
 </section>
+
+{% if transcript.video_id %}
+<script>
+// Clicking a Flag's timestamp plays its span in the Source video's player,
+// padded by PLAY_LEAD/PLAY_TAIL seconds, then pauses. Until the player is
+// ready — or for good once it reports an error or its script won't load —
+// the timestamp's own href (a youtube.com watch link) is followed instead.
+(function () {
+  const PLAY_LEAD = {{ source_video.PLAY_LEAD_SECONDS }};
+  const PLAY_TAIL = {{ source_video.PLAY_TAIL_SECONDS }};
+  const ERRORS = {
+    2: "YouTube rejected this video ID.",
+    5: "The video can't be played in this browser.",
+    100: "This video is private or has been deleted.",
+    101: "The video's owner doesn't allow it to be played outside YouTube.",
+    150: "The video's owner doesn't allow it to be played outside YouTube.",
+  };
+  const box = document.getElementById("source-player");
+  const status = document.getElementById("source-player-status");
+  let player = null;
+  let ready = false;
+  let failed = false;
+  let watcher = null;
+
+  function stopWatching() {
+    clearInterval(watcher);
+    watcher = null;
+  }
+
+  function fail(reason) {
+    failed = true;
+    stopWatching();
+    box.classList.add("failed");
+    status.textContent = reason + " Timestamps now open the video on YouTube in a new tab.";
+  }
+
+  window.sourcePlayerScriptFailed = function () {
+    fail("The YouTube player couldn't be loaded.");
+  };
+
+  window.onYouTubeIframeAPIReady = function () {
+    player = new YT.Player("source-player-frame", {
+      host: "https://www.youtube-nocookie.com",
+      videoId: box.dataset.videoId,
+      width: "100%",
+      height: "100%",
+      playerVars: { playsinline: 1, rel: 0 },
+      events: {
+        onReady: function () { ready = true; },
+        onStateChange: function (event) {
+          if (event.data === YT.PlayerState.ENDED) stopWatching();
+        },
+        onError: function (event) {
+          fail(ERRORS[event.data] || "The player reported error " + event.data + ".");
+        },
+      },
+    });
+  };
+
+  document.addEventListener("click", function (event) {
+    const link = event.target.closest("a.play-span");
+    if (!link || !ready || failed) return;
+    if (event.button !== 0 || event.ctrlKey || event.metaKey || event.shiftKey) return;
+    event.preventDefault();
+
+    const from = Math.max(0, parseFloat(link.dataset.start) - PLAY_LEAD);
+    const until = parseFloat(link.dataset.end) + PLAY_TAIL;
+    player.seekTo(from, true);
+    player.playVideo();
+
+    // Pause once playback passes `until` — but only after the seek has
+    // landed, so a replay from past `until` doesn't stop at once.
+    stopWatching();
+    let landed = false;
+    watcher = setInterval(function () {
+      const now = player.getCurrentTime();
+      if (now < until) {
+        landed = true;
+      } else if (landed) {
+        player.pauseVideo();
+        stopWatching();
+      }
+    }, 100);
+  });
+})();
+</script>
+<script src="https://www.youtube.com/iframe_api" onerror="sourcePlayerScriptFailed()"></script>
+{% endif %}
 
 {% endblock %}

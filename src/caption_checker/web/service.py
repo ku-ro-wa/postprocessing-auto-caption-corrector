@@ -38,6 +38,7 @@ from caption_checker.readthrough import (
 )
 from caption_checker.vocab import Vocab, load_vocab
 from caption_checker.web.models import ReviewDecision, TranscriptRecord
+from caption_checker.web.source_video import InvalidVideoLinkError, parse_video_id
 from caption_checker.web.storage import Storage
 
 # Per the spec's "fixed defaults" decision: matches the CLI's defaults
@@ -62,13 +63,21 @@ def _now_iso() -> str:
 
 
 def upload_transcript(
-    storage: Storage, session_id: str, filename: str, content: bytes
+    storage: Storage,
+    session_id: str,
+    filename: str,
+    content: bytes,
+    *,
+    video_link: str = "",
 ) -> TranscriptRecord:
-    """Validate, persist, and automatically scan an uploaded file.
+    """Validate, persist, and automatically scan an uploaded file, linking
+    its Source video when ``video_link`` is given.
 
-    Raises ``InvalidTranscriptError`` before any Transcript record is
-    created when the upload isn't a parseable SRT/VTT.
+    Raises ``InvalidTranscriptError`` when the upload isn't a parseable
+    SRT/VTT, or ``InvalidVideoLinkError`` when ``video_link`` isn't a
+    YouTube link — either before any Transcript record is created.
     """
+    video_id = parse_video_id(video_link) if video_link.strip() else None
     suffix = Path(filename).suffix.lower().lstrip(".")
     if suffix not in SUPPORTED_FORMATS:
         raise InvalidTranscriptError(
@@ -100,9 +109,22 @@ def upload_transcript(
         flags=flags,
         corrections=[None] * len(flags),
         decisions=[ReviewDecision() for _ in flags],
+        video_id=video_id,
     )
     storage.save_transcript(record)
     return record
+
+
+def set_source_video(storage: Storage, record: TranscriptRecord, video_link: str) -> None:
+    """Link or change the Transcript's Source video. Raises
+    ``InvalidVideoLinkError`` without saving when the link doesn't parse."""
+    record.video_id = parse_video_id(video_link)
+    storage.save_transcript(record)
+
+
+def clear_source_video(storage: Storage, record: TranscriptRecord) -> None:
+    record.video_id = None
+    storage.save_transcript(record)
 
 
 def _same_text(a: str, b: str) -> bool:

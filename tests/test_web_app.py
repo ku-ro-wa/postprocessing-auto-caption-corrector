@@ -23,10 +23,18 @@ def _make_client(tmp_path: Path, reader: Reader | None = None) -> TestClient:
     return TestClient(app)
 
 
-def _upload(client: TestClient, filename: str = "sample_lecture.srt", path: Path = SAMPLE) -> str:
+def _upload(
+    client: TestClient,
+    filename: str = "sample_lecture.srt",
+    path: Path = SAMPLE,
+    data: dict[str, str] | None = None,
+) -> str:
     with path.open("rb") as f:
         response = client.post(
-            "/transcripts", files={"file": (filename, f, "text/plain")}, follow_redirects=False
+            "/transcripts",
+            files={"file": (filename, f, "text/plain")},
+            data=data,
+            follow_redirects=False,
         )
     assert response.status_code == 303
     return response.headers["location"].rsplit("/", 1)[-1]
@@ -528,3 +536,132 @@ class TestReadThroughConfiguration:
         monkeypatch.setenv("OPENROUTER_MODEL", "some/slug")
         with pytest.raises(ConfigError, match="not both"):
             create_app(_storage_for(tmp_path))
+
+
+VIDEO_ID = "dQw4w9WgXcQ"
+PLAYER_SCRIPT = "https://www.youtube.com/iframe_api"
+
+
+def _video_id(tmp_path: Path, client: TestClient, transcript_id: str) -> str | None:
+    record = _storage_for(tmp_path).load_transcript(client.cookies["cc_session"], transcript_id)
+    assert record is not None
+    return record.video_id
+
+
+class TestSourceVideo:
+    """#37: an optional YouTube link per Transcript, played on the review page."""
+
+    def test_upload_without_a_link_has_no_source_video(self, tmp_path: Path) -> None:
+        client = _make_client(tmp_path)
+        transcript_id = _upload(client)
+        assert _video_id(tmp_path, client, transcript_id) is None
+
+    def test_upload_form_offers_a_link_field(self, tmp_path: Path) -> None:
+        client = _make_client(tmp_path)
+        assert 'name="video_link"' in client.get("/").text
+
+    def test_upload_with_a_link_stores_only_the_video_id(self, tmp_path: Path) -> None:
+        client = _make_client(tmp_path)
+        transcript_id = _upload(
+            client, data={"video_link": f"https://youtu.be/{VIDEO_ID}?t=42"}
+        )
+        assert _video_id(tmp_path, client, transcript_id) == VIDEO_ID
+
+    def test_upload_with_a_bad_link_shows_error_and_saves_nothing(
+        self, tmp_path: Path
+    ) -> None:
+        client = _make_client(tmp_path)
+        with SAMPLE.open("rb") as f:
+            response = client.post(
+                "/transcripts",
+                files={"file": ("sample_lecture.srt", f, "text/plain")},
+                data={"video_link": "https://vimeo.com/12345"},
+            )
+        assert response.status_code == 400
+        assert "youtube" in response.text.lower()
+        assert "sample_lecture.srt" not in client.get("/").text
+
+    def test_set_change_and_remove_on_the_review_page(self, tmp_path: Path) -> None:
+        client = _make_client(tmp_path)
+        transcript_id = _upload(client)
+
+        response = client.post(
+            f"/transcripts/{transcript_id}/video",
+            data={"video_link": f"https://www.youtube.com/watch?v={VIDEO_ID}"},
+            follow_redirects=False,
+        )
+        assert response.status_code == 303
+        assert _video_id(tmp_path, client, transcript_id) == VIDEO_ID
+
+        client.post(f"/transcripts/{transcript_id}/video", data={"video_link": "abcdefghijk"})
+        assert _video_id(tmp_path, client, transcript_id) == "abcdefghijk"
+
+        response = client.post(
+            f"/transcripts/{transcript_id}/video/delete", follow_redirects=False
+        )
+        assert response.status_code == 303
+        assert _video_id(tmp_path, client, transcript_id) is None
+
+    def test_a_bad_link_on_the_review_page_shows_error_and_keeps_the_old_one(
+        self, tmp_path: Path
+    ) -> None:
+        client = _make_client(tmp_path)
+        transcript_id = _upload(client, data={"video_link": VIDEO_ID})
+
+        response = client.post(
+            f"/transcripts/{transcript_id}/video", data={"video_link": "not a link"}
+        )
+        assert response.status_code == 400
+        assert "not a link" in response.text
+        assert _video_id(tmp_path, client, transcript_id) == VIDEO_ID
+
+    def test_other_session_cannot_set_the_link(self, tmp_path: Path) -> None:
+        owner = _make_client(tmp_path)
+        transcript_id = _upload(owner)
+
+        stranger = _make_client(tmp_path)
+        response = stranger.post(
+            f"/transcripts/{transcript_id}/video", data={"video_link": VIDEO_ID}
+        )
+        assert response.status_code == 404
+
+    def test_no_source_video_means_no_player_and_plain_timestamps(
+        self, tmp_path: Path
+    ) -> None:
+        client = _make_client(tmp_path)
+        transcript_id = _upload(client)
+
+        page = client.get(f"/transcripts/{transcript_id}").text
+        assert PLAYER_SCRIPT not in page
+        assert 'id="source-player"' not in page
+        assert 'class="play-span"' not in page
+        # The control to add one is still there.
+        assert f'action="/transcripts/{transcript_id}/video"' in page
+
+    def test_source_video_adds_the_player_and_playable_timestamps(
+        self, tmp_path: Path
+    ) -> None:
+        client = _make_client(tmp_path)
+        transcript_id = _upload(client, data={"video_link": VIDEO_ID})
+
+        page = client.get(f"/transcripts/{transcript_id}").text
+        assert PLAYER_SCRIPT in page
+        assert 'id="source-player"' in page
+        assert f'data-video-id="{VIDEO_ID}"' in page
+        assert "https://www.youtube-nocookie.com" in page
+        # Each timestamp is a fallback watch link carrying its span's bounds.
+        assert 'class="play-span"' in page
+        assert f"https://www.youtube.com/watch?v={VIDEO_ID}&amp;t=" in page
+        assert "data-start=" in page and "data-end=" in page
+        # The change/remove controls sit on the page.
+        assert f'value="https://www.youtube.com/watch?v={VIDEO_ID}"' in page
+        assert f'action="/transcripts/{transcript_id}/video/delete"' in page
+
+    def test_decision_partial_keeps_the_playable_timestamp(self, tmp_path: Path) -> None:
+        client = _make_client(tmp_path)
+        transcript_id = _upload(client, data={"video_link": VIDEO_ID})
+
+        response = client.post(
+            f"/transcripts/{transcript_id}/flags/0/decision", data={"action": "reject"}
+        )
+        assert 'class="play-span"' in response.text
