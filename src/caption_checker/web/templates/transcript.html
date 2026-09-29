@@ -21,7 +21,7 @@
   {% endif %}
   {% set current_url = source_video.watch_url(transcript.video_id) if transcript.video_id else "" %}
   {% if transcript.video_id %}
-    <p class="muted">This Transcript's Source video is <a href="{{ current_url }}" target="_blank" rel="noopener">{{ current_url }}</a>. Click a Flag's ▶ timestamp to hear its span. If it's the wrong video, change or remove it here.</p>
+    <p class="muted">This Transcript's Source video is <a href="{{ current_url }}" target="_blank" rel="noopener">{{ current_url }}</a>. Click a Flag's or Cue's ▶ timestamp to hear it. If it's the wrong video, change or remove it here.</p>
   {% else %}
     <p class="muted">Add the YouTube video these captions were made for, to play each Flag's span while you review.</p>
   {% endif %}
@@ -77,18 +77,53 @@
 </section>
 
 <section>
-  <h3>Flags</h3>
-  {% if not rows %}
-    <p class="muted">No likely caption errors found by the local scan.</p>
-  {% endif %}
-  {% for row in rows %}
-    {% include "partials/flag_row.html" %}
-  {% endfor %}
+  <div class="tabs" role="tablist">
+    <button class="tab" type="button" role="tab" id="tab-flags" aria-controls="flags-view" aria-selected="true">Flags</button>
+    <button class="tab" type="button" role="tab" id="tab-cues" aria-controls="cues-view" aria-selected="false">All Cues</button>
+  </div>
+  <div id="flags-view" role="tabpanel" aria-labelledby="tab-flags">
+    {% if not rows %}
+      <p class="muted">No likely caption errors found by the local scan.</p>
+    {% endif %}
+    {% for row in rows %}
+      {% include "partials/flag_row.html" %}
+    {% endfor %}
+  </div>
+  <div id="cues-view" role="tabpanel" aria-labelledby="tab-cues" hidden>
+    <p class="muted">Each Cue is one timed caption line from your file, shown here as Export would write it. Click a highlighted span to see its Flag.</p>
+    {% for cue in cues %}
+      {% include "partials/cue_row.html" %}
+    {% endfor %}
+  </div>
 </section>
+
+<script>
+// Flags and All Cues are two views of one page, so switching keeps the
+// player and every Review Decision. A highlighted span in a Cue shows the
+// Flags view before its #flag-N link scrolls to the card.
+(function () {
+  const tabs = document.querySelectorAll('[role="tab"]');
+
+  function show(tab) {
+    tabs.forEach(function (t) {
+      const selected = t === tab;
+      t.setAttribute("aria-selected", String(selected));
+      document.getElementById(t.getAttribute("aria-controls")).hidden = !selected;
+    });
+  }
+
+  tabs.forEach(function (t) {
+    t.addEventListener("click", function () { show(t); });
+  });
+  document.addEventListener("click", function (event) {
+    if (event.target.closest("a.cue-flag")) show(document.getElementById("tab-flags"));
+  });
+})();
+</script>
 
 {% if transcript.video_id %}
 <script>
-// Clicking a Flag's timestamp plays its span in the Source video's player,
+// Clicking a Flag's or Cue's timestamp plays its span in the Source video's player,
 // padded by PLAY_LEAD/PLAY_TAIL seconds, then pauses. Until the player is
 // ready — or for good once it reports an error or its script won't load —
 // the timestamp's own href (a youtube.com watch link) is followed instead.

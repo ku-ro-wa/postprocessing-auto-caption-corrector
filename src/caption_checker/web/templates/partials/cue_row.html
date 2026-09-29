@@ -1,0 +1,19 @@
+<div class="cue-row" id="cue-{{ cue.index }}"{% if oob %} hx-swap-oob="true"{% endif %}>
+  <div class="flag-meta">
+    {% with start=cue.start, end=cue.end, play_title="Play this Cue" %}{% include "partials/play_span.html" %}{% endwith %}
+    cue {{ cue.index }}
+  </div>
+  {% if cue.merged_into is not none %}
+    <div class="cue-text muted">merged into Cue {{ cue.merged_into }} by an accepted fix</div>
+  {% else %}
+    <div class="cue-text">
+      {%- for piece in cue.pieces -%}
+        {%- if piece.flag_id is none -%}
+          {{ piece.text }}
+        {%- else -%}
+          <a class="cue-flag {{ piece.status }}" href="#flag-{{ piece.flag_id }}" title="{{ piece.status }} Flag: show its card">{{ piece.text }}</a>
+        {%- endif -%}
+      {%- endfor -%}
+    </div>
+  {% endif %}
+</div>

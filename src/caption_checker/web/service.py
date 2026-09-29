@@ -16,13 +16,13 @@ from __future__ import annotations
 
 import os
 from dataclasses import dataclass, replace
-from datetime import datetime, timezone
+from datetime import datetime, timedelta, timezone
 from functools import lru_cache
 from pathlib import Path
 from typing import Mapping, Sequence
 from uuid import uuid4
 
-from caption_checker.apply import apply_corrections, cues_spanned
+from caption_checker.apply import apply_corrections, cues_spanned, splice
 from caption_checker.corrector import Correction, CorrectorError, MissingAPIKeyError
 from caption_checker.detect import detect
 from caption_checker.models import DetectConfig, Flag
@@ -318,12 +318,16 @@ def export_transcript(storage: Storage, record: TranscriptRecord) -> str:
     serialize to the Transcript's original format. Flags left pending or
     rejected keep their original text."""
     cues = storage.load_cues(record.session_id, record.id)
-    accepted = [
+    return serialize(apply_corrections(cues, _accepted(record)), format=record.format)
+
+
+def _accepted(record: TranscriptRecord) -> list[tuple[Flag, str]]:
+    """What Export writes: each accepted Flag with its Review Decision's text."""
+    return [
         (flag, decision.text)
         for flag, decision in zip(record.flags, record.decisions)
         if decision.status == "accepted" and decision.text is not None
     ]
-    return serialize(apply_corrections(cues, accepted), format=record.format)
 
 
 @dataclass
@@ -337,10 +341,25 @@ class FlagRow:
     flag: Flag
     correction: Correction | None
     decision: ReviewDecision
-    dismissed: bool
     default_text: str
     #: "cue 7", or "cues 7–8" for a span across a Cue boundary.
     cue_label: str
+
+    @property
+    def status(self) -> str:
+        return _status(self.correction, self.decision)
+
+    @property
+    def dismissed(self) -> bool:
+        return self.status == "dismissed"
+
+
+def _status(correction: Correction | None, decision: ReviewDecision) -> str:
+    """How the review page shows a Flag: its Review Decision's status, or
+    "dismissed" for a not-an-error verdict (which has no Accept)."""
+    if correction is not None and correction.replacement is None:
+        return "dismissed"
+    return decision.status
 
 
 def transcript_rows(storage: Storage, record: TranscriptRecord) -> list[FlagRow]:
@@ -358,7 +377,6 @@ def transcript_rows(storage: Storage, record: TranscriptRecord) -> list[FlagRow]
                 flag=flag,
                 correction=correction,
                 decision=record.decisions[flag_id],
-                dismissed=correction is not None and correction.replacement is None,
                 default_text=_default_replacement(flag, correction),
                 cue_label=(
                     f"cues {spanned[0].index}–{spanned[-1].index}"
@@ -369,6 +387,76 @@ def transcript_rows(storage: Storage, record: TranscriptRecord) -> list[FlagRow]
         )
     rows.sort(key=lambda r: (r.flag.cue_index, min(r.flag.global_indices)))
     return rows
+
+
+@dataclass
+class CuePiece:
+    """A stretch of a Cue's text as it would export: a Flag's span (its
+    accepted text, if accepted) with that Flag's id and status, or the text
+    between spans (``flag_id`` ``None``)."""
+
+    text: str
+    flag_id: int | None = None
+    status: str | None = None
+
+
+@dataclass
+class CueRow:
+    """One Cue shaped for the All Cues view, its text as Export would write
+    it. ``merged_into`` is the Cue an accepted cross-Cue span moved all this
+    Cue's text into -- Export removes such a Cue; the view keeps it."""
+
+    index: int
+    start: timedelta
+    end: timedelta
+    pieces: list[CuePiece]
+    merged_into: int | None
+
+    @property
+    def text(self) -> str:
+        return "".join(p.text for p in self.pieces)
+
+    @property
+    def spans(self) -> list[CuePiece]:
+        return [p for p in self.pieces if p.flag_id is not None]
+
+
+def cue_rows(
+    storage: Storage, record: TranscriptRecord, cue_indices: Sequence[int] | None = None
+) -> list[CueRow]:
+    """Every Cue in order -- or those in ``cue_indices`` -- through the
+    same splice as Export (``splice``), each Flag's span marked."""
+    cues = storage.load_cues(record.session_id, record.id)
+    accepted = _accepted(record)
+    accepted_ids = {id(flag) for flag, _ in accepted}
+    marked = [f for f in record.flags if id(f) not in accepted_ids]
+    flag_ids = {id(flag): i for i, flag in enumerate(record.flags)}
+
+    def piece(text: str, flag: Flag | None) -> CuePiece:
+        if flag is None:
+            return CuePiece(text)
+        i = flag_ids[id(flag)]
+        correction = record.corrections[i] if record.corrections else None
+        return CuePiece(text, i, _status(correction, record.decisions[i]))
+
+    return [
+        CueRow(
+            index=s.cue.index,
+            start=s.cue.start,
+            end=s.cue.end,
+            pieces=[piece(text, flag) for text, flag in s.pieces],
+            merged_into=s.merged_into,
+        )
+        for s in splice(cues, accepted, marked)
+        if cue_indices is None or s.cue.index in cue_indices
+    ]
+
+
+def cues_affected(storage: Storage, record: TranscriptRecord, flag_id: int) -> list[int]:
+    """The indices of the Cues a Review Decision on ``flag_id`` can change."""
+    cues = storage.load_cues(record.session_id, record.id)
+    words_by_gi = {w.global_index: w for w in tokenize(cues)}
+    return [c.index for c in cues_spanned(record.flags[flag_id], cues, words_by_gi)]
 
 
 @dataclass

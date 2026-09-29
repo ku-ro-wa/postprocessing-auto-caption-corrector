@@ -842,3 +842,111 @@ class TestSourceVideoMetadata:
 
         page = client.get(f"/transcripts/{transcript_id}").text
         assert 'name="priming_terms" value="Kafka"' in page
+
+
+def _cue_row(page: str, index: int) -> str:
+    """The HTML of Cue ``index``'s row in the All Cues view."""
+    start = page.index(f'id="cue-{index}"')
+    end = page.find('class="cue-row"', start)
+    return page[start : end if end != -1 else None]
+
+
+class TestAllCuesView:
+    def test_flags_is_the_default_view_and_all_cues_a_second_tab(self, tmp_path: Path) -> None:
+        client = _make_client(tmp_path)
+        transcript_id = _upload(client)
+
+        page = client.get(f"/transcripts/{transcript_id}").text
+
+        assert 'id="flags-view" role="tabpanel"' in page
+        assert 'id="cues-view" role="tabpanel" aria-labelledby="tab-cues" hidden' in page
+        assert 'aria-selected="true">Flags</button>' in page
+        assert 'aria-selected="false">All Cues</button>' in page
+        assert "Each Cue is one timed caption line from your file" in page
+
+    def test_every_cue_is_listed_in_order(self, tmp_path: Path) -> None:
+        client = _make_client(tmp_path)
+        transcript_id = _upload(client)
+
+        page = client.get(f"/transcripts/{transcript_id}").text
+
+        positions = [page.index(f'id="cue-{i}"') for i in (1, 2, 3)]
+        assert positions == sorted(positions)
+        assert "Welcome back to the lecture on distributed systems." in _cue_row(page, 1)
+
+    def test_flagged_spans_link_to_their_flag_card_with_their_status(
+        self, tmp_path: Path
+    ) -> None:
+        client = _make_client(tmp_path)
+        transcript_id = _upload(client)
+        record = _record(tmp_path, client, transcript_id)
+        flag_id = next(i for i, f in enumerate(record.flags) if f.span == "con sensus")
+
+        page = client.get(f"/transcripts/{transcript_id}").text
+
+        assert (
+            f'<a class="cue-flag pending" href="#flag-{flag_id}"' in _cue_row(page, 2)
+        )
+
+    def test_a_decision_refreshes_the_cues_it_touches(self, tmp_path: Path) -> None:
+        client = _make_client(tmp_path)
+        transcript_id = _upload(client)
+        record = _record(tmp_path, client, transcript_id)
+        flag_id = next(i for i, f in enumerate(record.flags) if f.span == "con sensus")
+
+        response = client.post(
+            f"/transcripts/{transcript_id}/flags/{flag_id}/decision",
+            data={"action": "accept", "text": "consensus"},
+        ).text
+
+        assert f'id="flag-{flag_id}"' in response
+        assert '<div class="cue-row" id="cue-2" hx-swap-oob="true">' in response
+        assert f'<a class="cue-flag accepted" href="#flag-{flag_id}"' in response
+        assert 'about <a class="cue-flag accepted"' in response
+        assert ">consensus</a> algorithms." in response
+        assert 'id="cue-1"' not in response
+
+    def test_cue_timestamps_play_the_cue_with_a_source_video(self, tmp_path: Path) -> None:
+        client = _make_client(tmp_path)
+        transcript_id = _upload(client, data={"video_link": VIDEO_ID})
+
+        row = _cue_row(client.get(f"/transcripts/{transcript_id}").text, 2)
+
+        assert 'class="play-span"' in row
+        assert 'data-start="3.5" data-end="7.2"' in row
+        # the fallback link starts a second early, as a Flag's does
+        assert f"https://www.youtube.com/watch?v={VIDEO_ID}&amp;t=2s" in row
+
+    def test_cue_timestamps_are_plain_text_without_a_source_video(
+        self, tmp_path: Path
+    ) -> None:
+        client = _make_client(tmp_path)
+        transcript_id = _upload(client)
+
+        row = _cue_row(client.get(f"/transcripts/{transcript_id}").text, 2)
+
+        assert "[00:00:03.500 → 00:00:07.200]" in row
+        assert "play-span" not in row
+
+    def test_a_cue_emptied_by_a_cross_cue_fix_shows_where_it_went(
+        self, tmp_path: Path
+    ) -> None:
+        path = tmp_path / "cross.srt"
+        path.write_text(
+            "1\n00:00:00,000 --> 00:00:02,000\nwe reached con\n\n"
+            "2\n00:00:02,000 --> 00:00:04,000\nsensus\n\n"
+            "3\n00:00:04,000 --> 00:00:06,000\nquickly.\n",
+            encoding="utf-8",
+        )
+        client = _make_client(tmp_path, reader=StubReader(extra={"con sensus": "consensus"}))
+        transcript_id = _upload(client, "cross.srt", path)
+        client.post(f"/transcripts/{transcript_id}/correct", data={"api_key": "sk-or-test"})
+        client.post(
+            f"/transcripts/{transcript_id}/flags/0/decision",
+            data={"action": "accept", "text": ""},
+        )
+
+        page = client.get(f"/transcripts/{transcript_id}").text
+
+        assert "merged into Cue 1 by an accepted fix" in _cue_row(page, 2)
+        assert "consensus" in _cue_row(page, 1)

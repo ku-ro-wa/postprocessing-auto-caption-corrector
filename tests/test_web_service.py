@@ -413,6 +413,95 @@ class TestExportTranscript:
         assert exported == serialize(original, format=record.format)
 
 
+def _exported_texts(tmp_path: Path, exported: str) -> dict[tuple, str]:
+    """Export's Cue texts by timing -- SRT renumbers once a Cue is removed."""
+    from caption_checker.parser import parse
+
+    path = tmp_path / "exported.srt"
+    path.write_text(exported, encoding="utf-8")
+    return {(c.start, c.end): c.text for c in parse(path)}
+
+
+CROSS_SRT = (
+    "1\n00:00:00,000 --> 00:00:02,000\nwe reached con\n\n"
+    "2\n00:00:02,000 --> 00:00:04,000\nsensus\n\n"
+    "3\n00:00:04,000 --> 00:00:06,000\nquickly.\n"
+)
+
+
+class TestCueRows:
+    """The All Cues view: every Cue as Export would write it."""
+
+    def test_every_cue_in_order_flagged_or_not(self, storage: Storage, session_id: str) -> None:
+        record = _upload_sample(storage, session_id)
+        cues = storage.load_cues(session_id, record.id)
+
+        rows = service.cue_rows(storage, record)
+
+        assert [r.index for r in rows] == [c.index for c in cues]
+        assert [(r.start, r.end) for r in rows] == [(c.start, c.end) for c in cues]
+        assert [r.text for r in rows] == [c.text for c in cues]
+        assert any(not r.spans for r in rows)
+
+    def test_an_accepted_cue_reads_as_export_writes_it(
+        self, storage: Storage, session_id: str, tmp_path: Path
+    ) -> None:
+        record = _upload_sample(storage, session_id)
+        flag_id = next(i for i, f in enumerate(record.flags) if f.span == "cubernetes")
+        service.set_decision(record, flag_id, action="accept", text="Kubernetes")
+
+        rows = service.cue_rows(storage, record)
+        exported = _exported_texts(tmp_path, service.export_transcript(storage, record))
+
+        row = next(r for r in rows if r.index == record.flags[flag_id].cue_index)
+        assert "Kubernetes" in row.text
+        assert {(r.start, r.end): r.text for r in rows} == exported
+
+    def test_flagged_spans_carry_their_flag_and_its_status(
+        self, storage: Storage, session_id: str
+    ) -> None:
+        record = _upload_sample(storage, session_id)
+        flag_id = next(i for i, f in enumerate(record.flags) if f.span == "cubernetes")
+        service.set_decision(record, flag_id, action="accept", text="Kubernetes")
+
+        spans = [s for r in service.cue_rows(storage, record) for s in r.spans]
+
+        accepted = next(s for s in spans if s.flag_id == flag_id)
+        assert (accepted.text, accepted.status) == ("Kubernetes", "accepted")
+        assert {s.flag_id for s in spans} == set(range(len(record.flags)))
+        assert all(s.status == "pending" for s in spans if s.flag_id != flag_id)
+
+    def test_a_dismissed_flag_shows_as_dismissed(
+        self, storage: Storage, session_id: str
+    ) -> None:
+        record = _upload_sample(storage, session_id)
+        stub = StubReader(null_spans={"con sensus"})
+        service.run_correction(storage, record, api_key="k", reader=stub)
+
+        spans = [s for r in service.cue_rows(storage, record) for s in r.spans]
+
+        assert next(s for s in spans if s.text == "con sensus").status == "dismissed"
+
+    def test_a_cue_emptied_by_an_accepted_cross_cue_fix_is_merged_not_dropped(
+        self, storage: Storage, session_id: str, tmp_path: Path
+    ) -> None:
+        record = service.upload_transcript(storage, session_id, "cross.srt", CROSS_SRT.encode())
+        reader = StubReader(extra={"con sensus": "consensus"})
+        service.run_correction(storage, record, api_key="k", reader=reader)
+        flag_id = next(i for i, f in enumerate(record.flags) if f.span == "con sensus")
+        service.set_decision(record, flag_id, action="accept", text=None)
+
+        rows = service.cue_rows(storage, record)
+
+        assert [(r.index, r.text, r.merged_into) for r in rows] == [
+            (1, "we reached consensus", None),
+            (2, "", 1),
+            (3, "quickly.", None),
+        ]
+        exported = _exported_texts(tmp_path, service.export_transcript(storage, record))
+        assert {(r.start, r.end): r.text for r in rows if r.merged_into is None} == exported
+
+
 class TestReadThroughConfigFromEnv:
     """Which Read-through configuration the web UI runs (#40): env vars only,
     and never a silent fallback."""

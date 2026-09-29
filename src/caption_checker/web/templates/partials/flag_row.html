@@ -1,16 +1,7 @@
-{% set status = "dismissed" if row.dismissed else row.decision.status %}
+{% set status = row.status %}
 <div class="flag-card {{ status }}" id="flag-{{ row.id }}">
   <div class="flag-meta">
-    {% set span_time = "[" ~ (row.flag.start|ts) ~ " → " ~ (row.flag.end|ts) ~ "]" %}
-    {% if transcript.video_id %}
-      {% set start = row.flag.start.total_seconds() %}
-      <a class="play-span" href="{{ source_video.span_watch_url(transcript.video_id, start) }}"
-         target="_blank" rel="noopener"
-         data-start="{{ start }}" data-end="{{ row.flag.end.total_seconds() }}"
-         title="Play this span">▶ {{ span_time }}</a>
-    {% else %}
-      {{ span_time }}
-    {% endif %}
+    {% with start=row.flag.start, end=row.flag.end, play_title="Play this span" %}{% include "partials/play_span.html" %}{% endwith %}
     {{ row.cue_label }}
     &middot; {{ row.flag.detector }} &middot; confidence {{ "%.2f"|format(row.flag.confidence) }}
     <span class="status-pill">{{ status }}</span>

@@ -7,7 +7,7 @@ from pathlib import Path
 
 import pytest
 
-from caption_checker.apply import apply_corrections
+from caption_checker.apply import apply_corrections, splice
 from caption_checker.detect import detect
 from caption_checker.detectors.base import index_cues, make_flag
 from caption_checker.models import DetectConfig, Flag
@@ -228,3 +228,56 @@ def test_punctuation_alone_in_the_last_cue_is_not_cut(tmp_path: Path) -> None:
     flag = _flag_over(cues, 1, 2)  # [foo, …]
     assert flag.span == "foo"
     assert [c.text for c in apply_corrections(cues, [(flag, "bar")])] == ["say bar", "… now"]
+
+
+# splice: the same edits apply_corrections makes, kept per Cue with each
+# Flag's span still findable -- for a view of the Cues as they'd export.
+
+
+def test_splice_text_is_what_apply_corrections_writes(cross_cues) -> None:
+    pairs = [
+        (_span_flag(cross_cues, "the cough ka"), "the Kafka"),
+        (_span_flag(cross_cues, "reached"), "reach"),
+    ]
+    spliced = splice(cross_cues, pairs)
+    written = {c.index: c.text for c in apply_corrections(cross_cues, pairs)}
+    assert [s.cue.index for s in spliced] == [1, 2, 3, 4]  # every Cue, emptied or not
+    assert {s.cue.index: s.text for s in spliced if s.merged_into is None} == written
+
+
+def test_splice_marks_an_accepted_span_by_its_new_text(cross_cues) -> None:
+    flag = _span_flag(cross_cues, "reached")
+    [first, *_] = splice(cross_cues, [(flag, "reach")])
+    assert first.pieces == [("we ", None), ("reach", flag), (" con", None)]
+
+
+def test_splice_marks_a_span_it_does_not_rewrite(cross_cues) -> None:
+    flag = _span_flag(cross_cues, "cubernetes.")
+    spliced = splice(cross_cues, [], marked=[flag])
+    assert spliced[3].pieces == [("ka broker ran on ", None), ("cubernetes", flag), (".", None)]
+
+
+def test_splice_marks_an_unrewritten_span_in_every_cue_it_crosses(cross_cues) -> None:
+    flag = _span_flag(cross_cues, "con sensus.")
+    spliced = splice(cross_cues, [], marked=[flag])
+    assert spliced[0].pieces == [("we reached ", None), ("con", flag)]
+    assert spliced[1].pieces == [("sensus", flag), (". Then the", None)]
+
+
+def test_splice_says_which_cue_an_emptied_cue_merged_into(cross_cues) -> None:
+    flag = _span_flag(cross_cues, "the cough ka")
+    spliced = splice(cross_cues, [(flag, "the Kafka")])
+    assert [s.merged_into for s in spliced] == [None, None, 2, None]
+    assert spliced[2].pieces == []
+    assert spliced[1].pieces == [("sensus. Then ", None), ("the Kafka", flag)]
+
+
+def test_a_mark_overlapping_an_accepted_span_never_changes_the_text(tmp_path: Path) -> None:
+    cues = _cues_from(tmp_path, "we reached con sensus")
+    accepted = [(_flag_over(cues, 2, 3), "consensus")]
+    marked = [_flag_over(cues, 1, 2)]  # starts first, overlaps the accepted span
+
+    [spliced] = splice(cues, accepted, marked)
+
+    assert spliced.text == apply_corrections(cues, accepted)[0].text == "we reached consensus"
+    assert [flag for _, flag in spliced.pieces] == [None, accepted[0][0]]

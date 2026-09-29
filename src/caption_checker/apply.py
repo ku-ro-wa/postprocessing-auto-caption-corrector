@@ -1,4 +1,6 @@
-"""Write accepted corrections into cue text by character-offset splice.
+"""Write accepted corrections into cue text by character-offset splice --
+for Export (``apply_corrections``), and for a view of the Cues as Export
+would write them, each Flag's span marked (``splice``).
 
 Per ADR-0001: replace exactly the substring the flag covers -- the first
 Word's character offset within its cue, out to the end of the last Word, with
@@ -15,7 +17,8 @@ renumbers). Timings never change.
 
 from __future__ import annotations
 
-from dataclasses import replace
+from dataclasses import dataclass, replace
+from typing import Sequence
 
 from caption_checker.models import Cue, Flag, Word
 from caption_checker.normalize import _SPAN_EDGE
@@ -25,39 +28,107 @@ from caption_checker.parser import tokenize
 def apply_corrections(
     cues: list[Cue], accepted: list[tuple[Flag, str]]
 ) -> list[Cue]:
-    """Return a new cue list with every ``(flag, replacement)`` spliced in.
+    """Return a new cue list with every ``(flag, replacement)`` spliced in."""
+    return [
+        replace(s.cue, text=s.text)
+        for s in splice(cues, accepted)
+        if s.merged_into is None
+    ]
 
-    Corrections in the same cue are applied right-to-left so earlier character
-    offsets stay valid as the text shrinks or grows.
+
+# One splice in a Cue: start, end, the text written there (``None`` for a
+# marked span, left as it is) and the Flag it belongs to.
+_Edit = tuple[int, int, "str | None", Flag]
+
+
+@dataclass
+class SplicedCue:
+    """One Cue after :func:`splice`: its text in ``pieces``, each piece tagged
+    with the Flag whose span it is (``None`` between spans). ``merged_into``
+    is the index of the Cue an accepted cross-Cue span was written into when
+    that left this Cue with no text -- a Cue Export removes."""
+
+    cue: Cue
+    pieces: list[tuple[str, Flag | None]]
+    merged_into: int | None = None
+
+    @property
+    def text(self) -> str:
+        return "".join(text for text, _ in self.pieces)
+
+
+def splice(
+    cues: list[Cue],
+    accepted: list[tuple[Flag, str]],
+    marked: Sequence[Flag] = (),
+) -> list[SplicedCue]:
+    """Every Cue, in order, with each ``(flag, replacement)`` spliced in and
+    each ``marked`` Flag's span left as it is -- both tagged in the pieces.
+
+    An accepted edit that overlaps one earlier in its Cue is skipped rather
+    than splicing over text it already replaced; a mark that overlaps any
+    edit, or an earlier mark, is skipped too.
     """
     words_by_gi = {w.global_index: w for w in tokenize(cues)}
     cues_by_index = {c.index: c for c in cues}
 
-    edits_by_cue: dict[int, list[tuple[int, int, str]]] = {}
-    cut: set[int] = set()  # Cues that lost leading Words to an earlier Cue
+    accepted_by_cue: dict[int, list[_Edit]] = {}
+    marked_by_cue: dict[int, list[_Edit]] = {}
+    cut_into: dict[int, int] = {}  # Cue that lost leading Words -> the Cue they went to
     for flag, replacement in accepted:
         for cue_index, start, end, text in _span_edits(
             flag, replacement, words_by_gi, cues_by_index
         ):
-            edits_by_cue.setdefault(cue_index, []).append((start, end, text))
+            accepted_by_cue.setdefault(cue_index, []).append((start, end, text, flag))
             if cue_index != flag.cue_index:
-                cut.add(cue_index)
+                cut_into[cue_index] = flag.cue_index
+    for flag in marked:
+        for cue_index, start, end, _ in _span_edits(flag, "", words_by_gi, cues_by_index):
+            marked_by_cue.setdefault(cue_index, []).append((start, end, None, flag))
 
-    out: list[Cue] = []
+    out = []
     for cue in cues:
-        edits = edits_by_cue.get(cue.index)
-        if not edits:
-            out.append(cue)
-            continue
-        text = cue.text
-        for start, end, replacement in sorted(edits, reverse=True):
-            text = text[:start] + replacement + text[end:]
-        if cue.index in cut:
-            text = text.lstrip()
-            if not text:
-                continue
-        out.append(replace(cue, text=text))
+        # Accepted edits are chosen first, so a mark never changes what's written.
+        edits = _non_overlapping(accepted_by_cue.get(cue.index, []), [])
+        edits += _non_overlapping(marked_by_cue.get(cue.index, []), edits)
+        pieces: list[tuple[str, Flag | None]] = []
+        at = 0
+        for start, end, written, flag in sorted(edits, key=lambda e: e[0]):
+            kept = cue.text[start:end]
+            if written is None:  # marked: any whitespace a cut takes stays outside
+                start += len(kept) - len(kept.lstrip())
+                kept = kept.lstrip()
+            pieces.append((cue.text[at:start], None))
+            pieces.append((kept if written is None else written, flag))
+            at = end
+        pieces.append((cue.text[at:], None))
+        pieces = [p for p in pieces if p[0]]
+
+        merged_into = None
+        if cue.index in cut_into:
+            pieces = _lstrip(pieces)
+            if not pieces:
+                merged_into = cut_into[cue.index]
+        out.append(SplicedCue(cue, pieces, merged_into))
     return out
+
+
+def _non_overlapping(edits: list[_Edit], taken: list[_Edit]) -> list[_Edit]:
+    """``edits`` in order of start, less any that overlap one in ``taken`` or
+    one kept before it."""
+    kept: list[_Edit] = []
+    for edit in sorted(edits, key=lambda e: e[0]):
+        if all(edit[1] <= t[0] or edit[0] >= t[1] for t in [*taken, *kept]):
+            kept.append(edit)
+    return kept
+
+
+def _lstrip(pieces: list[tuple[str, Flag | None]]) -> list[tuple[str, Flag | None]]:
+    while pieces and not pieces[0][0].strip():
+        pieces = pieces[1:]
+    if pieces:
+        pieces = [(pieces[0][0].lstrip(), pieces[0][1]), *pieces[1:]]
+    return pieces
 
 
 def _span_edits(

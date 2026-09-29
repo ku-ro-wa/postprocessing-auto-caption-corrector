@@ -155,6 +155,7 @@ def create_app(
             {
                 "transcript": record,
                 "rows": service.transcript_rows(storage, record),
+                "cues": service.cue_rows(storage, record),
                 "summary": service.correction_summary(record),
                 "has_session_key": bool(storage.get_session_api_key(record.session_id)),
                 "has_server_key": bool(os.environ.get("OPENROUTER_API_KEY")),
@@ -247,8 +248,15 @@ def create_app(
 
         storage.save_transcript(record)
         row = next(r for r in service.transcript_rows(storage, record) if r.id == flag_id)
+        # The All Cues view's rows for the Cues this decision changes ride
+        # along as out-of-band swaps.
+        cues = service.cue_rows(
+            storage, record, cue_indices=service.cues_affected(storage, record, flag_id)
+        )
         return templates.TemplateResponse(
-            request, "partials/flag_row.html", {"transcript": record, "row": row}
+            request,
+            "partials/decision.html",
+            {"transcript": record, "row": row, "cues": cues, "oob": True},
         )
 
     @app.get("/transcripts/{transcript_id}/export")
