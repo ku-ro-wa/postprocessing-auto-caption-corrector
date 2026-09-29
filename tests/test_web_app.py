@@ -1057,3 +1057,83 @@ class TestEditCueRoute:
         transcript_id = _upload(client)
 
         assert self._edit(client, transcript_id, 99, "text").status_code == 404
+
+
+class TestGlossaryHints:
+    """First-time reviewers meet glossary terms; the page explains them (#43)."""
+
+    def test_flags_tab_explains_what_a_flag_is(self, tmp_path: Path) -> None:
+        client = _make_client(tmp_path)
+        transcript_id = _upload(client)
+
+        page = client.get(f"/transcripts/{transcript_id}").text
+
+        assert "A Flag is a span of the captions that may be a mistake" in page
+
+    def test_page_explains_status_and_detector_on_every_flag_card(self, tmp_path: Path) -> None:
+        client = _make_client(tmp_path)
+        transcript_id = _upload(client)
+
+        page = client.get(f"/transcripts/{transcript_id}").text
+
+        assert 'class="status-pill" title="Your Review Decision' in page
+        assert "Dismissed: the LLM judged it not an error" in page
+        assert 'title="What raised this Flag' in page
+
+    def test_rerendered_flag_card_keeps_its_tooltips(self, tmp_path: Path) -> None:
+        client = _make_client(tmp_path)
+        transcript_id = _upload(client)
+
+        card = client.post(
+            f"/transcripts/{transcript_id}/flags/0/decision",
+            data={"action": "reject"},
+        ).text
+
+        assert 'class="status-pill" title="Your Review Decision' in card
+        assert 'title="What raised this Flag' in card
+
+    def test_llm_verdict_line_is_explained_on_page_and_card(self, tmp_path: Path) -> None:
+        stub = StubReader(replacement_for={"cubernetes": "Kubernetes"})
+        client = _make_client(tmp_path, reader=stub)
+        transcript_id = _upload(client)
+        page = client.post(
+            f"/transcripts/{transcript_id}/correct",
+            data={"api_key": "sk-or-test"},
+            follow_redirects=True,
+        ).text
+        card = client.post(
+            f"/transcripts/{transcript_id}/flags/0/decision",
+            data={"action": "reject"},
+        ).text
+
+        for body in (page, card):
+            assert "Confirmed: the model agrees it is an error and proposes the replacement" in body
+
+    def test_added_by_you_badge_is_explained(self, tmp_path: Path) -> None:
+        client = _make_client(tmp_path)
+        transcript_id = _upload(client)
+        body = client.post(
+            f"/transcripts/{transcript_id}/cues/1/edit",
+            data={"text": "Welcome back to the lectures on distributed systems."},
+        ).text
+
+        assert 'title="You raised this Flag by editing a Cue' in body
+
+    def test_added_by_you_tooltip_is_on_the_page_and_the_rerendered_card(
+        self, tmp_path: Path
+    ) -> None:
+        client = _make_client(tmp_path)
+        transcript_id = _upload(client)
+        n = len(_record(tmp_path, client, transcript_id).flags)
+        client.post(
+            f"/transcripts/{transcript_id}/cues/1/edit",
+            data={"text": "Welcome back to the lectures on distributed systems."},
+        )
+
+        page = client.get(f"/transcripts/{transcript_id}").text
+        card = client.post(
+            f"/transcripts/{transcript_id}/flags/{n}/decision", data={"action": "reject"}
+        ).text
+
+        for body in (page, card):
+            assert 'title="You raised this Flag by editing a Cue' in body

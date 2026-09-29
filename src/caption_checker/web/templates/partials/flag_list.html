@@ -1,4 +1,7 @@
 <div id="flags-list"{% if oob %} hx-swap-oob="true"{% endif %}>
+  {% if rows %}
+  <p class="muted">A Flag is a span of the captions that may be a mistake. Accept or reject each one; Export applies only what you accept.</p>
+  {% endif %}
   {% if not rows %}
     <p class="muted">No likely caption errors found by the local scan.</p>
   {% endif %}

@@ -4,18 +4,18 @@
     {% with start=row.flag.start, end=row.flag.end, play_title="Play this span" %}{% include "partials/play_span.html" %}{% endwith %}
     {{ row.cue_label }}
     {% if row.by_reviewer %}
-    &middot; <span class="badge">Added by you</span>
+    &middot; <span title="You raised this Flag by editing a Cue. It starts out accepted with your text; reject it to undo the fix."><span class="badge">Added by you</span></span>
     {% else %}
-    &middot; {{ row.flag.detector }} &middot; confidence {{ "%.2f"|format(row.flag.confidence) }}
+    &middot; <span title="What raised this Flag (a Detector, one of the local checks), and how sure it was that the span is an error, from 0 to 1.">{{ row.flag.detector }} &middot; confidence {{ "%.2f"|format(row.flag.confidence) }}</span>
     {% endif %}
-    <span class="status-pill">{{ status }}</span>
+    <span class="status-pill" title="Your Review Decision on this Flag. Accepted: the replacement goes into the exported file. Rejected: the original text stays. Dismissed: the LLM judged it not an error, so there is nothing to accept. Pending: you haven't decided yet.">{{ status }}</span>
   </div>
   <div class="flag-context">
     {{ (row.flag.context or row.flag.span)|highlight(row.flag.span) }}
   </div>
 
   {% if row.correction %}
-    <div class="flag-meta">
+    <div class="flag-meta" title="The LLM's verdict on this Flag. Confirmed: the model agrees it is an error and proposes the replacement. Dismissed: the model judged it not an error.">
       LLM: {{ "confirmed" if row.correction.replacement is not none else "dismissed" }}
       {% if row.correction.replacement is not none %}
         → "{{ row.correction.replacement }}" (confidence {{ "%.2f"|format(row.correction.confidence) }})
