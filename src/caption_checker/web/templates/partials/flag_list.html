@@ -1,0 +1,8 @@
+<div id="flags-list"{% if oob %} hx-swap-oob="true"{% endif %}>
+  {% if not rows %}
+    <p class="muted">No likely caption errors found by the local scan.</p>
+  {% endif %}
+  {% for row in rows %}
+    {% include "partials/flag_row.html" %}
+  {% endfor %}
+</div>

@@ -5,6 +5,7 @@ from pathlib import Path
 import pytest
 
 from caption_checker.corrector import Correction, CorrectorError
+from caption_checker.models import DETECTOR_REVIEWER
 from caption_checker.readthrough import ChunkRequest, ChunkVerdict, StubReader
 from caption_checker.web import service
 from caption_checker.web.storage import Storage
@@ -500,6 +501,305 @@ class TestCueRows:
         ]
         exported = _exported_texts(tmp_path, service.export_transcript(storage, record))
         assert {(r.start, r.end): r.text for r in rows if r.merged_into is None} == exported
+
+
+def _texts(storage: Storage, record) -> dict[int, str]:
+    return {r.index: r.text for r in service.cue_rows(storage, record)}
+
+
+def _reviewer_flags(record) -> list:
+    return [f for f in record.flags if f.detector == DETECTOR_REVIEWER]
+
+
+class TestEditCue:
+    """A reviewer's edit of a Cue becomes reviewer-raised Flags (ADR 0009)."""
+
+    def test_editing_a_word_in_an_unflagged_cue_raises_one_accepted_flag(
+        self, storage: Storage, session_id: str
+    ) -> None:
+        record = _upload_sample(storage, session_id)
+        n = len(record.flags)
+        original = service.export_transcript(storage, record)
+
+        result = service.edit_cue(
+            storage, record, 1, "Welcome back to the lectures on distributed systems."
+        )
+
+        assert result.unsaved == [] and len(result.flag_ids) == 1
+        assert len(record.flags) == len(record.corrections) == len(record.decisions) == n + 1
+        (flag,) = _reviewer_flags(record)
+        assert (flag.span, flag.cue_index) == ("lecture", 1)
+        assert record.corrections[-1] is None
+        assert (record.decisions[-1].status, record.decisions[-1].text) == ("accepted", "lectures")
+        assert service.export_transcript(storage, record) == original.replace("lecture ", "lectures ")
+
+    def test_the_edit_starts_from_the_cue_as_it_would_export(
+        self, storage: Storage, session_id: str
+    ) -> None:
+        record = _upload_sample(storage, session_id)
+        flag_id = next(i for i, f in enumerate(record.flags) if f.span == "cubernetes")
+        service.set_decision(record, flag_id, action="accept", text="Kubernetes")
+        cue = _texts(storage, record)[7]
+
+        result = service.edit_cue(storage, record, 7, cue.replace("Next", "Then"))
+
+        assert len(result.flag_ids) == 1
+        assert _texts(storage, record)[7] == "Then week we'll look at Kubernetes and container orchestration."
+        assert record.decisions[flag_id].text == "Kubernetes"
+
+    def test_an_edit_inside_an_accepted_flag_updates_its_decision(
+        self, storage: Storage, session_id: str
+    ) -> None:
+        record = _upload_sample(storage, session_id)
+        flag_id = next(i for i, f in enumerate(record.flags) if f.span == "con sensus")
+        service.set_decision(record, flag_id, action="accept", text="consensus")
+        n = len(record.flags)
+
+        result = service.edit_cue(
+            storage, record, 2, "Today we're going to talk about concensus algorithms."
+        )
+
+        assert result.flag_ids == [flag_id]
+        assert len(record.flags) == n
+        assert record.decisions[flag_id].text == "concensus"
+        assert "concensus algorithms." in service.export_transcript(storage, record)
+
+    def test_an_edit_inside_a_pending_or_rejected_flag_accepts_it(
+        self, storage: Storage, session_id: str
+    ) -> None:
+        record = _upload_sample(storage, session_id)
+        flag_id = next(i for i, f in enumerate(record.flags) if f.span == "con sensus")
+        service.set_decision(record, flag_id, action="reject", text=None)
+
+        service.edit_cue(storage, record, 2, "Today we're going to talk about con census algorithms.")
+
+        assert (record.decisions[flag_id].status, record.decisions[flag_id].text) == (
+            "accepted",
+            "con census",
+        )
+        assert _reviewer_flags(record) == []
+
+    def test_an_edit_that_partly_overlaps_a_flag_merges_and_supersedes_it(
+        self, storage: Storage, session_id: str, tmp_path: Path
+    ) -> None:
+        record = _upload_sample(storage, session_id)
+        flag_id = next(i for i, f in enumerate(record.flags) if f.span == "con sensus")
+        service.set_decision(record, flag_id, action="accept", text="consensus")
+
+        # "consensus algorithms." -> "census algorithm.": the change starts inside the Flag.
+        result = service.edit_cue(
+            storage, record, 2, "Today we're going to talk about census algorithm."
+        )
+
+        (merged,) = _reviewer_flags(record)
+        assert result.flag_ids == [record.flags.index(merged)]
+        assert record.decisions[flag_id].status == "rejected"
+        assert merged.span == "con sensus algorithms"
+        assert record.decisions[-1].text == "census algorithm"
+        exported = _exported_texts(tmp_path, service.export_transcript(storage, record))
+        assert "Today we're going to talk about census algorithm." in exported.values()
+        assert _texts(storage, record)[2] == "Today we're going to talk about census algorithm."
+
+    def test_an_insertion_widens_to_a_neighbouring_word(
+        self, storage: Storage, session_id: str
+    ) -> None:
+        record = _upload_sample(storage, session_id)
+
+        service.edit_cue(storage, record, 1, "Welcome back to the big lecture on distributed systems.")
+
+        (flag,) = _reviewer_flags(record)
+        assert flag.span == "the"
+        assert record.decisions[-1].text == "the big"
+        assert _texts(storage, record)[1] == "Welcome back to the big lecture on distributed systems."
+
+    def test_a_deletion_covers_the_deleted_word_and_a_neighbour(
+        self, storage: Storage, session_id: str
+    ) -> None:
+        record = _upload_sample(storage, session_id)
+
+        service.edit_cue(storage, record, 1, "Welcome back to lecture on distributed systems.")
+
+        (flag,) = _reviewer_flags(record)
+        assert flag.span == "to the"
+        assert record.decisions[-1].text == "to"
+        assert _texts(storage, record)[1] == "Welcome back to lecture on distributed systems."
+
+    def test_a_punctuation_only_change_between_words_widens(
+        self, storage: Storage, session_id: str, tmp_path: Path
+    ) -> None:
+        record = _upload_sample(storage, session_id)
+
+        result = service.edit_cue(
+            storage,
+            record,
+            3,
+            "Specifically we'll cover the Raft protocol and how it differs from Paxos.",
+        )
+
+        (flag,) = _reviewer_flags(record)
+        assert result.unsaved == []
+        assert flag.span == "Specifically, we'll"
+        assert record.decisions[-1].text == "Specifically we'll"
+        exported = _exported_texts(tmp_path, service.export_transcript(storage, record))
+        assert "Specifically we'll cover the Raft protocol and how it differs from Paxos." in exported.values()
+
+    def test_a_punctuation_change_at_a_cues_edge_is_reported_not_saved(
+        self, storage: Storage, session_id: str
+    ) -> None:
+        record = _upload_sample(storage, session_id)
+        n = len(record.flags)
+
+        result = service.edit_cue(
+            storage, record, 1, "Welcome back to the lecture on distributed systems"
+        )
+
+        assert result.flag_ids == [] and len(result.unsaved) == 1
+        assert "“systems.” → “systems”" in result.unsaved[0]
+        assert len(record.flags) == n
+
+    def test_the_savable_part_of_an_edit_is_saved_beside_the_unsaved_part(
+        self, storage: Storage, session_id: str
+    ) -> None:
+        record = _upload_sample(storage, session_id)
+
+        result = service.edit_cue(
+            storage, record, 1, "Welcome back to the lectures on distributed systems"
+        )
+
+        assert len(result.flag_ids) == 1 and len(result.unsaved) == 1
+        assert _texts(storage, record)[1] == "Welcome back to the lectures on distributed systems."
+
+    def test_rejecting_a_reviewer_flag_restores_the_original_text(
+        self, storage: Storage, session_id: str
+    ) -> None:
+        record = _upload_sample(storage, session_id)
+        original = service.export_transcript(storage, record)
+        service.edit_cue(storage, record, 1, "Welcome back to the lectures on distributed systems.")
+
+        service.set_decision(record, len(record.flags) - 1, action="reject", text=None)
+
+        assert _texts(storage, record)[1] == "Welcome back to the lecture on distributed systems."
+        assert service.export_transcript(storage, record) == original
+        assert len(_reviewer_flags(record)) == 1  # rejected, never deleted
+
+    def test_a_reviewer_flag_card_says_it_was_added_by_the_reviewer(
+        self, storage: Storage, session_id: str
+    ) -> None:
+        record = _upload_sample(storage, session_id)
+        service.edit_cue(storage, record, 1, "Welcome back to the lectures on distributed systems.")
+
+        rows = service.transcript_rows(storage, record)
+
+        assert [r.by_reviewer for r in rows].count(True) == 1
+        assert record.added_count == 1
+
+    def test_a_cue_emptied_by_a_cross_cue_fix_cant_be_edited(
+        self, storage: Storage, session_id: str
+    ) -> None:
+        record = service.upload_transcript(storage, session_id, "cross.srt", CROSS_SRT.encode())
+        service.run_correction(
+            storage, record, api_key="k", reader=StubReader(extra={"con sensus": "consensus"})
+        )
+        flag_id = next(i for i, f in enumerate(record.flags) if f.span == "con sensus")
+        service.set_decision(record, flag_id, action="accept", text=None)
+
+        with pytest.raises(service.CueEditError):
+            service.edit_cue(storage, record, 2, "sensus")
+
+    def test_an_edit_that_overlaps_a_cross_cue_fix_is_not_saved(
+        self, storage: Storage, session_id: str
+    ) -> None:
+        record = service.upload_transcript(storage, session_id, "cross.srt", CROSS_SRT.encode())
+        service.run_correction(
+            storage, record, api_key="k", reader=StubReader(extra={"con sensus": "consensus"})
+        )
+        flag_id = next(i for i, f in enumerate(record.flags) if f.span == "con sensus")
+        service.set_decision(record, flag_id, action="accept", text="consensus")
+
+        result = service.edit_cue(storage, record, 1, "we reaches census")
+
+        assert result.flag_ids == [] and result.unsaved
+        assert _reviewer_flags(record) == []
+
+    def test_a_cue_cant_be_left_empty(self, storage: Storage, session_id: str) -> None:
+        record = _upload_sample(storage, session_id)
+
+        with pytest.raises(service.CueEditError):
+            service.edit_cue(storage, record, 1, "  ")
+
+    def test_an_unknown_cue_is_an_index_error(self, storage: Storage, session_id: str) -> None:
+        record = _upload_sample(storage, session_id)
+
+        with pytest.raises(IndexError):
+            service.edit_cue(storage, record, 99, "text")
+
+    def test_no_change_records_nothing(self, storage: Storage, session_id: str) -> None:
+        record = _upload_sample(storage, session_id)
+
+        result = service.edit_cue(storage, record, 1, _texts(storage, record)[1])
+
+        assert result.flag_ids == [] and result.unsaved == []
+
+
+class TestReadThroughAfterReviewerEdit:
+    def _edited(self, storage: Storage, session_id: str):
+        record = _upload_sample(storage, session_id)
+        service.edit_cue(storage, record, 1, "Welcome back to the lectures on distributed systems.")
+        return record
+
+    def test_the_reviewer_flag_and_its_decision_are_left_alone(
+        self, storage: Storage, session_id: str
+    ) -> None:
+        record = self._edited(storage, session_id)
+        reviewer = _reviewer_flags(record)[0]
+
+        service.run_correction(storage, record, api_key="k", reader=StubReader())
+
+        assert _reviewer_flags(record) == [reviewer]
+        i = record.flags.index(reviewer)
+        assert record.corrections[i] is None
+        assert (record.decisions[i].status, record.decisions[i].text) == ("accepted", "lectures")
+
+    def test_it_is_not_sent_as_a_hint(self, storage: Storage, session_id: str) -> None:
+        record = self._edited(storage, session_id)
+        stub = StubReader()
+
+        service.run_correction(storage, record, api_key="k", reader=stub)
+
+        hinted = {h.span for r in stub.requests for h in r.hints}
+        assert "lecture" not in hinted and "cubernetes" in hinted
+
+    def test_a_find_overlapping_it_is_dropped_and_the_found_count_excludes_it(
+        self, storage: Storage, session_id: str
+    ) -> None:
+        record = self._edited(storage, session_id)
+        stub = StubReader(extra={"lecture": "class", "leader election": "leader elections"})
+
+        service.run_correction(storage, record, api_key="k", reader=stub)
+
+        assert not any(f.span == "lecture" and f.detector != DETECTOR_REVIEWER for f in record.flags)
+        assert any(f.span == "leader election" for f in record.flags)
+        summary = service.correction_summary(record)
+        assert summary is not None and summary.found == 1
+
+
+class TestWidenedHintMeetsReviewerFlag:
+    def test_a_hint_widened_onto_it_keeps_its_own_span_unjudged(
+        self, storage: Storage, session_id: str
+    ) -> None:
+        record = _upload_sample(storage, session_id)
+        service.edit_cue(
+            storage, record, 2, "Today we're going to talk abouts con sensus algorithms."
+        )
+        hint_id = next(i for i, f in enumerate(record.flags) if f.span == "con sensus")
+
+        service.run_correction(
+            storage, record, api_key="k", reader=StubReader(widen={"con sensus": "about con sensus"})
+        )
+
+        assert record.flags[hint_id].span == "con sensus"
+        assert record.corrections[hint_id] is None
+        assert len(_reviewer_flags(record)) == 1
 
 
 class TestReadThroughConfigFromEnv:

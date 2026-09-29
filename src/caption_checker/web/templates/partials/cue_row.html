@@ -15,5 +15,27 @@
         {%- endif -%}
       {%- endfor -%}
     </div>
+    <details class="cue-edit"{% if edit_open %} open{% endif %}>
+      <summary>Fix this Cue's text</summary>
+      <form
+        hx-post="/transcripts/{{ transcript.id }}/cues/{{ cue.index }}/edit"
+        hx-target="#cue-{{ cue.index }}"
+        hx-swap="outerHTML"
+      >
+        <textarea name="text" rows="{{ [2, cue.text.count('\n') + 2]|max }}" aria-label="Text of cue {{ cue.index }}">{{ edit_text if edit_text is defined else cue.text }}</textarea>
+        <button class="btn" type="submit">Save</button>
+      </form>
+    </details>
   {% endif %}
+  {% if edit_result %}
+    {% if edit_result.saved %}
+      <div class="notice">Saved as {{ edit_result.flag_ids|length }} fix{{ "" if edit_result.flag_ids|length == 1 else "es" }} you added or changed. Reject one on the Flags tab to undo it.</div>
+    {% elif not edit_result.unsaved %}
+      <div class="notice">No changes to save.</div>
+    {% endif %}
+    {% for message in edit_result.unsaved %}
+      <div class="error">{{ message }}</div>
+    {% endfor %}
+  {% endif %}
+  {% if edit_error %}<div class="error">{{ edit_error }}</div>{% endif %}
 </div>

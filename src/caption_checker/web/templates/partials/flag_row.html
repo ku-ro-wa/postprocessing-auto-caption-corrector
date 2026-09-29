@@ -3,7 +3,11 @@
   <div class="flag-meta">
     {% with start=row.flag.start, end=row.flag.end, play_title="Play this span" %}{% include "partials/play_span.html" %}{% endwith %}
     {{ row.cue_label }}
+    {% if row.by_reviewer %}
+    &middot; <span class="badge">Added by you</span>
+    {% else %}
     &middot; {{ row.flag.detector }} &middot; confidence {{ "%.2f"|format(row.flag.confidence) }}
+    {% endif %}
     <span class="status-pill">{{ status }}</span>
   </div>
   <div class="flag-context">

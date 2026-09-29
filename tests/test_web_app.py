@@ -950,3 +950,110 @@ class TestAllCuesView:
 
         assert "merged into Cue 1 by an accepted fix" in _cue_row(page, 2)
         assert "consensus" in _cue_row(page, 1)
+
+
+class TestEditCueRoute:
+    def _edit(self, client: TestClient, transcript_id: str, cue: int, text: str):
+        return client.post(
+            f"/transcripts/{transcript_id}/cues/{cue}/edit", data={"text": text}
+        )
+
+    def test_each_cue_has_an_edit_box_starting_from_its_exported_text(
+        self, tmp_path: Path
+    ) -> None:
+        client = _make_client(tmp_path)
+        transcript_id = _upload(client)
+
+        row = _cue_row(client.get(f"/transcripts/{transcript_id}").text, 1)
+
+        assert f'hx-post="/transcripts/{transcript_id}/cues/1/edit"' in row
+        assert ">Welcome back to the lecture on distributed systems.</textarea>" in row
+
+    def test_saving_shows_the_new_span_and_adds_a_flag_card_in_order(
+        self, tmp_path: Path
+    ) -> None:
+        client = _make_client(tmp_path)
+        transcript_id = _upload(client)
+        n = len(_record(tmp_path, client, transcript_id).flags)
+
+        response = self._edit(
+            client, transcript_id, 1, "Welcome back to the lectures on distributed systems."
+        )
+
+        assert response.status_code == 200
+        record = _record(tmp_path, client, transcript_id)
+        assert len(record.flags) == n + 1
+        flag_id = n
+        body = response.text
+        assert f'<a class="cue-flag accepted" href="#flag-{flag_id}"' in _cue_row(body, 1)
+        assert 'id="flags-list" hx-swap-oob="true"' in body
+        assert "Added by you" in body
+        assert "1 added by you" in body
+        # the new card sits in transcript order: before the Flags of later Cues
+        assert body.index(f'id="flag-{flag_id}"') < body.index('id="flag-0"')
+
+    def test_the_page_shows_the_added_by_you_badge_and_count(self, tmp_path: Path) -> None:
+        client = _make_client(tmp_path)
+        transcript_id = _upload(client)
+        self._edit(client, transcript_id, 1, "Welcome back to the lectures on distributed systems.")
+
+        page = client.get(f"/transcripts/{transcript_id}").text
+
+        assert 'class="badge">Added by you' in page
+        assert "1 added by you" in page
+
+    def test_export_writes_the_edit_and_rejecting_undoes_it(self, tmp_path: Path) -> None:
+        client = _make_client(tmp_path)
+        transcript_id = _upload(client)
+        before = client.get(f"/transcripts/{transcript_id}/export").text
+        n = len(_record(tmp_path, client, transcript_id).flags)
+        self._edit(client, transcript_id, 1, "Welcome back to the lectures on distributed systems.")
+
+        assert client.get(f"/transcripts/{transcript_id}/export").text == before.replace(
+            "lecture ", "lectures "
+        )
+        response = client.post(
+            f"/transcripts/{transcript_id}/flags/{n}/decision", data={"action": "reject"}
+        )
+
+        assert "Welcome back to the lecture on distributed systems." in response.text
+        assert client.get(f"/transcripts/{transcript_id}/export").text == before
+
+    def test_an_unsaved_change_is_reported_and_keeps_the_text_in_the_box(
+        self, tmp_path: Path
+    ) -> None:
+        client = _make_client(tmp_path)
+        transcript_id = _upload(client)
+        n = len(_record(tmp_path, client, transcript_id).flags)
+
+        body = self._edit(
+            client, transcript_id, 1, "Welcome back to the lecture on distributed systems"
+        ).text
+
+        assert "Not saved" in body and "punctuation" in body
+        assert ">Welcome back to the lecture on distributed systems</textarea>" in body
+        assert len(_record(tmp_path, client, transcript_id).flags) == n
+
+    def test_an_unchanged_text_says_there_is_nothing_to_save(self, tmp_path: Path) -> None:
+        client = _make_client(tmp_path)
+        transcript_id = _upload(client)
+
+        body = self._edit(
+            client, transcript_id, 1, "Welcome back to the lecture on distributed systems."
+        ).text
+
+        assert "No changes to save." in body
+
+    def test_an_empty_cue_is_refused_with_the_text_kept(self, tmp_path: Path) -> None:
+        client = _make_client(tmp_path)
+        transcript_id = _upload(client)
+
+        body = self._edit(client, transcript_id, 1, "   ").text
+
+        assert "A Cue can&#39;t be left empty." in body or "A Cue can't be left empty." in body
+
+    def test_unknown_cue_is_404(self, tmp_path: Path) -> None:
+        client = _make_client(tmp_path)
+        transcript_id = _upload(client)
+
+        assert self._edit(client, transcript_id, 99, "text").status_code == 404

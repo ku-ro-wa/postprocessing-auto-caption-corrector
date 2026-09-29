@@ -25,7 +25,8 @@ from uuid import uuid4
 from caption_checker.apply import apply_corrections, cues_spanned, splice
 from caption_checker.corrector import Correction, CorrectorError, MissingAPIKeyError
 from caption_checker.detect import detect
-from caption_checker.models import DetectConfig, Flag
+from caption_checker.detectors.base import make_flag
+from caption_checker.models import DETECTOR_REVIEWER, DetectConfig, Flag
 from caption_checker.parser import serialize, tokenize
 from caption_checker.readthrough import (
     DETECTOR_READ_THROUGH,
@@ -37,6 +38,7 @@ from caption_checker.readthrough import (
     select_config,
 )
 from caption_checker.vocab import Vocab, load_vocab
+from caption_checker.web import cue_edit
 from caption_checker.web.models import ReviewDecision, TranscriptRecord
 from caption_checker.web.source_video import (
     InvalidVideoLinkError,
@@ -218,6 +220,8 @@ def run_correction(
     Each hint's verdict becomes that Flag's Correction (a verdict that widens
     a hint replaces the Flag's span in place); each error the Read-through
     found by itself is appended as a new Flag with a pending Review Decision.
+    Flags the reviewer raised are not hints, so the model never judges or
+    widens them, and a Flag it finds or widens onto one is dropped (ADR 0009).
     A chunk that fails leaves its Flags unjudged and is counted in
     ``failed_chunks``.
 
@@ -237,7 +241,8 @@ def run_correction(
         active_reader = reader or OpenRouterReader(
             config or config_from_env(), api_key=api_key
         )
-        result = read_through(cues, record.flags, active_reader, priming_terms=priming_terms)
+        hints = [f for f in record.flags if f.detector != DETECTOR_REVIEWER]
+        result = read_through(cues, hints, active_reader, priming_terms=priming_terms)
         if result.chunk_count and result.failed_chunks == result.chunk_count:
             raise CorrectorError(
                 f"The Read-through failed on all {result.chunk_count} chunk(s); "
@@ -250,7 +255,19 @@ def run_correction(
 
     index_of = {id(flag): i for i, flag in enumerate(record.flags)}
     corrections: list[Correction | None] = [None] * len(record.flags)
+    reviewer_words = {
+        gi
+        for f in record.flags
+        if f.detector == DETECTOR_REVIEWER
+        for gi in f.global_indices
+    }
     for item in result.items:
+        if reviewer_words.intersection(item.flag.global_indices):
+            if item.hint is None:
+                continue
+            # Widened onto it: the verdict was for the wider span, so the hint
+            # keeps its own span and is left unjudged.
+            item = replace(item, flag=item.hint, correction=None)
         correction = _without_echo(item.flag, item.correction)
         if item.hint is None:
             record.flags.append(item.flag)
@@ -344,6 +361,10 @@ class FlagRow:
     default_text: str
     #: "cue 7", or "cues 7–8" for a span across a Cue boundary.
     cue_label: str
+
+    @property
+    def by_reviewer(self) -> bool:
+        return self.flag.detector == DETECTOR_REVIEWER
 
     @property
     def status(self) -> str:
@@ -475,3 +496,122 @@ def correction_summary(record: TranscriptRecord) -> CorrectionSummary | None:
     total = sum(1 for c in record.corrections if c is not None)
     found = sum(1 for f in record.flags if f.detector == DETECTOR_READ_THROUGH)
     return CorrectionSummary(confirmed=confirmed, dismissed=dismissed, total=total, found=found)
+
+
+class CueEditError(ValueError):
+    """Raised when a Cue's edit can't be recorded at all."""
+
+
+@dataclass
+class CueEditResult:
+    """What :func:`edit_cue` did: the Flags it recorded or updated (ids), and
+    each change it could not save."""
+
+    flag_ids: list[int]
+    unsaved: list[str]
+
+    @property
+    def saved(self) -> bool:
+        return bool(self.flag_ids)
+
+
+def edit_cue(
+    storage: Storage, record: TranscriptRecord, cue_index: int, new_text: str
+) -> CueEditResult:
+    """Record the reviewer's edit of Cue ``cue_index`` (ADR 0009).
+
+    ``new_text`` is diffed at Word level against the Cue as Export would
+    write it, and each changed stretch is written into ``record`` as a
+    Flag's accepted Review Decision: an existing Flag's when the change sits
+    inside its span, otherwise a new Flag raised by the reviewer (which
+    supersedes -- rejects -- any Flag it partly overlaps). Nothing is changed
+    unless the whole edit is recorded consistently: Export must then write
+    ``new_text``'s Words in this Cue and every other Cue as before.
+    """
+    cues = storage.load_cues(record.session_id, record.id)
+    accepted = _accepted(record)
+    accepted_ids = {id(flag) for flag, _ in accepted}
+    marked = [f for f in record.flags if id(f) not in accepted_ids]
+    before = splice(cues, accepted, marked)
+    spliced = next((s for s in before if s.cue.index == cue_index), None)
+    if spliced is None:
+        raise IndexError(f"No cue {cue_index} on transcript {record.id}")
+    if spliced.merged_into is not None:
+        raise CueEditError(
+            f"Cue {cue_index} was merged into Cue {spliced.merged_into} by an accepted fix; "
+            "edit that Cue, or reject the fix."
+        )
+    new_text = new_text.replace("\r\n", "\n").replace("\r", "\n")
+    if not new_text.split():
+        raise CueEditError("A Cue can't be left empty.")
+
+    flag_ids = {id(flag): i for i, flag in enumerate(record.flags)}
+    corrections = list(record.corrections) + [None] * (len(record.flags) - len(record.corrections))
+    words_by_gi = {w.global_index: w for w in tokenize(cues)}
+
+    def live(flag: Flag) -> bool:
+        i = flag_ids[id(flag)]
+        return _status(corrections[i], record.decisions[i]) != "dismissed"
+
+    def crosses_cues(flag: Flag) -> bool:
+        return words_by_gi[flag.global_indices[-1]].cue_index != flag.cue_index
+
+    plan = cue_edit.plan_edit(spliced, new_text, live=live, crosses_cues=crosses_cues)
+
+    flags = list(record.flags)
+    decisions = [replace(d) for d in record.decisions]
+    touched: list[int] = []
+    cues_by_index = {c.index: c for c in cues}
+    cue_words = [w for w in words_by_gi.values() if w.cue_index == cue_index]
+    unsaved = list(plan.unsaved)
+    saved_regions = []
+    for region in plan.regions:
+        if region.inside is not None:
+            i = flag_ids[id(region.inside)]
+            decisions[i] = ReviewDecision(status="accepted", text=region.replacement)
+            if region.inside.detector == DETECTOR_REVIEWER:
+                flags[i] = replace(region.inside, candidates=[region.replacement])
+            touched.append(i)
+            saved_regions.append(region)
+            continue
+        start, end = region.origin
+        span_words = sorted(
+            (w for w in cue_words if w.char_offset < end and w.char_offset + len(w.text) > start),
+            key=lambda w: w.global_index,
+        )
+        if not span_words:
+            unsaved.append(f"Not saved: {region.replacement!r}: it covers no Word of the Cue.")
+            continue
+        for old in region.flags:
+            decisions[flag_ids[id(old)]] = ReviewDecision(status="rejected", text=None)
+        flag = make_flag(
+            span_words,
+            cues_by_index,
+            detector=DETECTOR_REVIEWER,
+            reason="Reviewer edit",
+            confidence=1.0,
+            candidates=[region.replacement],
+        )
+        flag.context = spliced.cue.text.replace("\n", " ")
+        flags.append(flag)
+        corrections.append(None)
+        decisions.append(ReviewDecision(status="accepted", text=region.replacement))
+        touched.append(len(flags) - 1)
+        saved_regions.append(region)
+
+    if not touched:
+        return CueEditResult([], unsaved)
+
+    tentative = replace(record, flags=flags, corrections=corrections, decisions=decisions)
+    after = {s.cue.index: s.text for s in splice(cues, _accepted(tentative))}
+    expected = cue_edit.apply_regions(spliced.text, saved_regions)
+    unchanged_elsewhere = all(
+        after[s.cue.index] == s.text for s in before if s.cue.index != cue_index
+    )
+    if after[cue_index].split() != expected.split() or not unchanged_elsewhere:
+        raise CueEditError(
+            "That edit couldn't be recorded without changing other text, so nothing was saved."
+        )
+
+    record.flags, record.corrections, record.decisions = flags, corrections, decisions
+    return CueEditResult(touched, unsaved)

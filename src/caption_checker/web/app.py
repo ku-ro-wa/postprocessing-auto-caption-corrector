@@ -259,6 +259,42 @@ def create_app(
             {"transcript": record, "row": row, "cues": cues, "oob": True},
         )
 
+    @app.post("/transcripts/{transcript_id}/cues/{cue_index}/edit", response_class=HTMLResponse)
+    def edit_cue(
+        request: Request, transcript_id: str, cue_index: int, text: str = Form("")
+    ) -> Response:
+        record = load_or_404(request.state.session_id, transcript_id)
+
+        extra: dict[str, object] = {}
+        try:
+            result = service.edit_cue(storage, record, cue_index, text)
+        except IndexError as exc:
+            raise HTTPException(status_code=404, detail=str(exc)) from exc
+        except service.CueEditError as exc:
+            # Nothing was recorded: the reviewer's text stays in the box.
+            extra = {"edit_error": str(exc), "edit_text": text, "edit_open": True}
+        else:
+            storage.save_transcript(record)
+            extra = {"edit_result": result, "edit_open": bool(result.unsaved)}
+            if result.unsaved:
+                extra["edit_text"] = text
+
+        # The edited Cue swaps in place; the Flags list and counts, where a
+        # new Flag belongs in transcript order, ride along out of band.
+        cue = service.cue_rows(storage, record, cue_indices=[cue_index])[0]
+        return templates.TemplateResponse(
+            request,
+            "partials/cue_edit.html",
+            {
+                "transcript": record,
+                "cue": cue,
+                "rows": service.transcript_rows(storage, record),
+                "summary": service.correction_summary(record),
+                "oob": True,
+                **extra,
+            },
+        )
+
     @app.get("/transcripts/{transcript_id}/export")
     def export(request: Request, transcript_id: str) -> Response:
         record = load_or_404(request.state.session_id, transcript_id)

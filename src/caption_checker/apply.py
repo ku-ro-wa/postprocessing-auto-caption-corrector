@@ -17,7 +17,7 @@ renumbers). Timings never change.
 
 from __future__ import annotations
 
-from dataclasses import dataclass, replace
+from dataclasses import dataclass, field, replace
 from typing import Sequence
 
 from caption_checker.models import Cue, Flag, Word
@@ -51,6 +51,9 @@ class SplicedCue:
     cue: Cue
     pieces: list[tuple[str, Flag | None]]
     merged_into: int | None = None
+    #: Where each piece's text sits in ``cue.text`` (parallel to ``pieces``):
+    #: the range a span replaced, or the range an untouched piece was.
+    origins: list[tuple[int, int]] = field(default_factory=list)
 
     @property
     def text(self) -> str:
@@ -92,6 +95,7 @@ def splice(
         edits = _non_overlapping(accepted_by_cue.get(cue.index, []), [])
         edits += _non_overlapping(marked_by_cue.get(cue.index, []), edits)
         pieces: list[tuple[str, Flag | None]] = []
+        origins: list[tuple[int, int]] = []
         at = 0
         for start, end, written, flag in sorted(edits, key=lambda e: e[0]):
             kept = cue.text[start:end]
@@ -99,17 +103,22 @@ def splice(
                 start += len(kept) - len(kept.lstrip())
                 kept = kept.lstrip()
             pieces.append((cue.text[at:start], None))
+            origins.append((at, start))
             pieces.append((kept if written is None else written, flag))
+            origins.append((start, end))
             at = end
         pieces.append((cue.text[at:], None))
-        pieces = [p for p in pieces if p[0]]
+        origins.append((at, len(cue.text)))
+        kept_pieces = [(p, o) for p, o in zip(pieces, origins) if p[0]]
+        pieces = [p for p, _ in kept_pieces]
+        origins = [o for _, o in kept_pieces]
 
         merged_into = None
         if cue.index in cut_into:
-            pieces = _lstrip(pieces)
+            pieces, origins = _lstrip(pieces, origins)
             if not pieces:
                 merged_into = cut_into[cue.index]
-        out.append(SplicedCue(cue, pieces, merged_into))
+        out.append(SplicedCue(cue, pieces, merged_into, origins))
     return out
 
 
@@ -123,12 +132,20 @@ def _non_overlapping(edits: list[_Edit], taken: list[_Edit]) -> list[_Edit]:
     return kept
 
 
-def _lstrip(pieces: list[tuple[str, Flag | None]]) -> list[tuple[str, Flag | None]]:
+def _lstrip(
+    pieces: list[tuple[str, Flag | None]], origins: list[tuple[int, int]]
+) -> tuple[list[tuple[str, Flag | None]], list[tuple[int, int]]]:
     while pieces and not pieces[0][0].strip():
-        pieces = pieces[1:]
+        pieces, origins = pieces[1:], origins[1:]
     if pieces:
-        pieces = [(pieces[0][0].lstrip(), pieces[0][1]), *pieces[1:]]
-    return pieces
+        text, flag = pieces[0]
+        stripped = text.lstrip()
+        first = origins[0]
+        if flag is None:  # an untouched piece keeps its offsets in step
+            first = (first[0] + len(text) - len(stripped), first[1])
+        pieces = [(stripped, flag), *pieces[1:]]
+        origins = [first, *origins[1:]]
+    return pieces, origins
 
 
 def _span_edits(

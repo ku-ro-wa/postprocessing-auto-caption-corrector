@@ -77,6 +77,9 @@ DETECTOR_OOV = "oov"
 DETECTOR_PHONETIC_VOCAB = "phonetic_vocab"
 DETECTOR_PHONETIC_INTERNAL = "phonetic_internal"
 DETECTOR_SPLIT_WORD = "split_word"
+#: Not a Detector: the origin of a Flag the reviewer raised by editing a Cue
+#: in the web UI (ADR 0009). Never counted as something the system detected.
+DETECTOR_REVIEWER = "reviewer"
 
 
 _DEFAULT_STOPWORDS = frozenset(

@@ -14,7 +14,7 @@ from datetime import timedelta
 from typing import Literal
 
 from caption_checker.corrector import Correction
-from caption_checker.models import Flag, flag_to_dict
+from caption_checker.models import DETECTOR_REVIEWER, Flag, flag_to_dict
 
 DecisionStatus = Literal["pending", "accepted", "rejected"]
 
@@ -62,6 +62,11 @@ class TranscriptRecord:
     @property
     def reviewed_count(self) -> int:
         return sum(1 for d in self.decisions if d.status != "pending")
+
+    @property
+    def added_count(self) -> int:
+        """How many Flags the reviewer raised by editing a Cue."""
+        return sum(1 for f in self.flags if f.detector == DETECTOR_REVIEWER)
 
     @property
     def has_corrections(self) -> bool:

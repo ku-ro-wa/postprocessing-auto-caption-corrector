@@ -1,0 +1,10 @@
+<p class="muted" id="flag-counts"{% if oob %} hx-swap-oob="true"{% endif %}>
+  {{ transcript.flags|length }} flag{{ "" if transcript.flags|length == 1 else "s" }}
+  &middot; {{ transcript.reviewed_count }} reviewed
+  {% if transcript.added_count %}
+    &middot; {{ transcript.added_count }} added by you
+  {% endif %}
+  {% if summary %}
+    &middot; LLM confirmed {{ summary.confirmed }}, dismissed {{ summary.dismissed }}, found {{ summary.found }} new
+  {% endif %}
+</p>

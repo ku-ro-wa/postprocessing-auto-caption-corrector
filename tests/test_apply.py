@@ -281,3 +281,19 @@ def test_a_mark_overlapping_an_accepted_span_never_changes_the_text(tmp_path: Pa
 
     assert spliced.text == apply_corrections(cues, accepted)[0].text == "we reached consensus"
     assert [flag for _, flag in spliced.pieces] == [None, accepted[0][0]]
+
+
+def test_splice_says_where_each_piece_sits_in_the_cues_own_text(cross_cues) -> None:
+    flag = _span_flag(cross_cues, "reached")
+    [first, *_] = splice(cross_cues, [(flag, "reach")])
+    assert first.origins == [(0, 3), (3, 10), (10, 14)]
+    assert first.cue.text[3:10] == "reached"
+
+
+def test_splice_origins_follow_the_whitespace_tidied_from_a_cut_cue(cross_cues) -> None:
+    flag = _span_flag(cross_cues, "the cough ka")
+    spliced = splice(cross_cues, [(flag, "the Kafka")])
+    text = spliced[1].cue.text
+    (start, _), *_ = spliced[1].origins
+    assert text[start:].startswith("sensus")
+    assert len(spliced[1].origins) == len(spliced[1].pieces)

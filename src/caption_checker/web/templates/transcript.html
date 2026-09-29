@@ -6,13 +6,7 @@
 {% block content %}
 
 <h2>{{ transcript.filename }}</h2>
-<p class="muted">
-  {{ transcript.flags|length }} flag{{ "" if transcript.flags|length == 1 else "s" }}
-  &middot; {{ transcript.reviewed_count }} reviewed
-  {% if summary %}
-    &middot; LLM confirmed {{ summary.confirmed }}, dismissed {{ summary.dismissed }}, found {{ summary.found }} new
-  {% endif %}
-</p>
+{% include "partials/counts.html" %}
 
 <section class="source-video-controls">
   <h3>Source video</h3>
@@ -82,12 +76,7 @@
     <button class="tab" type="button" role="tab" id="tab-cues" aria-controls="cues-view" aria-selected="false">All Cues</button>
   </div>
   <div id="flags-view" role="tabpanel" aria-labelledby="tab-flags">
-    {% if not rows %}
-      <p class="muted">No likely caption errors found by the local scan.</p>
-    {% endif %}
-    {% for row in rows %}
-      {% include "partials/flag_row.html" %}
-    {% endfor %}
+    {% include "partials/flag_list.html" %}
   </div>
   <div id="cues-view" role="tabpanel" aria-labelledby="tab-cues" hidden>
     <p class="muted">Each Cue is one timed caption line from your file, shown here as Export would write it. Click a highlighted span to see its Flag.</p>
