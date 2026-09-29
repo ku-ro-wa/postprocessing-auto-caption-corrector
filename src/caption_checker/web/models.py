@@ -38,7 +38,9 @@ class TranscriptRecord:
     ``failed_chunks`` of its ``chunk_count`` chunks came back unjudged.
     ``video_id`` is the Source video's YouTube ID, when one is linked, and
     ``video_title``/``video_channel`` what YouTube said about it when it was
-    linked (``None`` when the lookup failed)."""
+    linked (``None`` when the lookup failed). ``priming_terms`` is the
+    Priming terms field as the reviewer last submitted it, kept so a failed
+    run doesn't lose it."""
 
     id: str
     session_id: str
@@ -55,6 +57,7 @@ class TranscriptRecord:
     video_id: str | None = None
     video_title: str | None = None
     video_channel: str | None = None
+    priming_terms: str = ""
 
     @property
     def reviewed_count(self) -> int:
@@ -146,6 +149,7 @@ def record_to_dict(record: TranscriptRecord) -> dict:
         "video_id": record.video_id,
         "video_title": record.video_title,
         "video_channel": record.video_channel,
+        "priming_terms": record.priming_terms,
     }
 
 
@@ -169,4 +173,5 @@ def record_from_dict(data: dict) -> TranscriptRecord:
         video_id=data.get("video_id"),
         video_title=data.get("video_title"),
         video_channel=data.get("video_channel"),
+        priming_terms=data.get("priming_terms", ""),
     )

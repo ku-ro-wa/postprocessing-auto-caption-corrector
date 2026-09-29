@@ -154,9 +154,12 @@ def clear_source_video(storage: Storage, record: TranscriptRecord) -> None:
 
 
 def suggested_priming_terms(record: TranscriptRecord) -> str:
-    """What the review page prefills the Priming terms field with: the
+    """What the review page prefills an empty Priming terms field with: the
     Source video's ``<title>, <channel>``, for the reviewer to trim into
-    terms. Empty when there's no metadata."""
+    terms. Empty when there's no metadata, or when the reviewer has already
+    submitted terms of their own."""
+    if record.priming_terms:
+        return ""
     return ", ".join(t for t in (record.video_title, record.video_channel) if t)
 
 

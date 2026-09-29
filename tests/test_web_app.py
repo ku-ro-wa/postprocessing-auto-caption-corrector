@@ -796,3 +796,49 @@ class TestSourceVideoMetadata:
         client.post(f"/transcripts/{transcript_id}/correct", data={"api_key": "sk-or-test"})
 
         assert stub.requests[0].priming_terms == []
+
+    @pytest.mark.parametrize(
+        "reader", [None, StubReader(garbage=True)], ids=["no-key", "all-chunks-failed"]
+    )
+    def test_a_failed_run_keeps_the_submitted_terms_not_the_suggestion(
+        self, tmp_path: Path, monkeypatch: pytest.MonkeyPatch, reader: Reader | None
+    ) -> None:
+        monkeypatch.delenv("OPENROUTER_API_KEY", raising=False)
+        client = _make_client(
+            tmp_path, reader=reader or StubReader(), video_lookup=_Lookup({VIDEO_ID: RAFT})
+        )
+        transcript_id = _upload(client, data={"video_link": VIDEO_ID})
+
+        page = client.post(
+            f"/transcripts/{transcript_id}/correct",
+            data={"api_key": "" if reader is None else "sk-or-test", "priming_terms": "Raft"},
+        ).text
+
+        assert 'class="error"' in page
+        assert 'name="priming_terms" value="Raft"' in page
+        assert RAFT.title not in page.split('name="priming_terms"')[1].split(">")[0]
+
+    def test_a_failed_run_with_no_terms_offers_the_suggestion_again(
+        self, tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+    ) -> None:
+        monkeypatch.delenv("OPENROUTER_API_KEY", raising=False)
+        client = _make_client(tmp_path, video_lookup=_Lookup({VIDEO_ID: RAFT}))
+        transcript_id = _upload(client, data={"video_link": VIDEO_ID})
+
+        page = client.post(
+            f"/transcripts/{transcript_id}/correct", data={"priming_terms": "  "}
+        ).text
+
+        assert 'value="Raft in 10 minutes, Distributed Dan"' in page
+
+    def test_submitted_terms_are_kept_without_a_source_video(
+        self, tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+    ) -> None:
+        monkeypatch.delenv("OPENROUTER_API_KEY", raising=False)
+        client = _make_client(tmp_path)
+        transcript_id = _upload(client)
+
+        client.post(f"/transcripts/{transcript_id}/correct", data={"priming_terms": "Kafka"})
+
+        page = client.get(f"/transcripts/{transcript_id}").text
+        assert 'name="priming_terms" value="Kafka"' in page

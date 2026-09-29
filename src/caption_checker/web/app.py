@@ -196,6 +196,8 @@ def create_app(
     ) -> Response:
         session_id = request.state.session_id
         record = load_or_404(session_id, transcript_id)
+        # Saved with the run's outcome below, so a failed run shows them again.
+        record.priming_terms = priming_terms.strip()
 
         api_key = api_key.strip()
         if api_key:

@@ -66,7 +66,7 @@
       <p class="muted">Using the OpenRouter key saved for this session. Enter a different one to replace it: <input type="password" name="api_key" placeholder="sk-or-..."></p>
     {% endif %}
     <label>Priming terms (names and terms in this recording, comma-separated):
-      <input type="text" name="priming_terms"{% if suggested_priming_terms %} value="{{ suggested_priming_terms }}"{% endif %} placeholder="Kafka, Raft, Jensen Huang">
+      <input type="text" name="priming_terms"{% if transcript.priming_terms or suggested_priming_terms %} value="{{ transcript.priming_terms or suggested_priming_terms }}"{% endif %} placeholder="Kafka, Raft, Jensen Huang">
     </label>
     {% if suggested_priming_terms %}
       <p class="muted">Filled in from the Source video's title and channel. Trim it down to the names and terms before running.</p>
