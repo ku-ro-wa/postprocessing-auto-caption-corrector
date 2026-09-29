@@ -1069,6 +1069,7 @@ class TestGlossaryHints:
         page = client.get(f"/transcripts/{transcript_id}").text
 
         assert "A Flag is a span of the captions that may be a mistake" in page
+        assert "edit the Cue on the All Cues tab" in page
 
     def test_page_explains_status_and_detector_on_every_flag_card(self, tmp_path: Path) -> None:
         client = _make_client(tmp_path)
