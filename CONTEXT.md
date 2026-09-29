@@ -40,10 +40,12 @@ independent and ordered cheapest-first; their flags are merged afterwards.
 
 **Flag**:
 A claim that a span is a likely ASR error, with the reason it was raised,
-zero or more candidates, and a confidence. Raised by a Detector, or by the
-Read-through for an error no Detector raised; every Flag records which.
+zero or more candidates, and a confidence. Raised by a Detector, by the
+Read-through for an error no Detector raised, or by the reviewer for an error
+they heard that nothing raised; every Flag records which (ADR 0009).
 Flags from different detectors that cover overlapping spans are merged into
-one.
+one. A reviewer-raised Flag never crosses a Cue boundary and is never counted
+as something the system detected.
 _Avoid_: hit, match, warning.
 
 **Candidate**:
@@ -222,7 +224,8 @@ _Avoid_: test set (too easily confused with `tests/`).
 A caption file (SRT/VTT), parsed into Cues, uploaded through the web review
 UI (`caption-checker serve`) and belonging to the Session that uploaded it.
 Everything else on this page (Flags, Corrections) attaches to one. Its Flags
-are the local scan's, plus any the Read-through found when `correct` ran.
+are the local scan's, plus any the Read-through found when `correct` ran, plus
+any the reviewer raised by editing a Cue.
 _Avoid_: upload, file, document.
 
 **Session**:
@@ -234,7 +237,8 @@ _Avoid_: user, account.
 **Review Decision**:
 A reviewer's disposition on one Flag in the web UI: pending, accepted, or
 rejected, with optional edited replacement text overriding the Flag's
-Correction. Export reads these to decide what changes make it into the
+Correction. A reviewer-raised Flag starts out accepted with the reviewer's
+text; rejecting it is how the reviewer undoes the fix. Export reads these to decide what changes make it into the
 corrected file. Distinct from the CLI `correct` command's own interactive
 accept/skip/edit flow, which never persists a decision between runs.
 _Avoid_: verdict (that's the LLM's Correction; a Review Decision is the
