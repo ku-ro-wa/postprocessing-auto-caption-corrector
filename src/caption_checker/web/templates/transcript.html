@@ -50,13 +50,33 @@
       <div class="error">{{ transcript.failed_chunks }} of {{ transcript.chunk_count }} chunks failed: the Flags in them were left unjudged.</div>
     {% endif %}
   {% else %}
+  {% if refusal %}
+    <div class="error" role="alert">
+      {% if refusal == "allowance" %}
+        Your Free tier Allowance is used up: this Transcript is {{ word_count|thousands }} words and you have {{ words_left|thousands }} left today.
+      {% else %}
+        Today's Free tier Daily budget is used up, for everyone.
+      {% endif %}
+      Enter your own OpenRouter key below to run it now.
+      {% if limits and limits.donate_url %}
+        <a href="{{ limits.donate_url }}" target="_blank" rel="noopener">Donate</a> to keep the Free tier running.
+      {% endif %}
+    </div>
+  {% endif %}
   <p class="muted">The model reads the whole transcript, judges every Flag below and adds errors the local scan missed.</p>
   <form action="/transcripts/{{ transcript.id }}/correct" method="post" id="correct-form">
     <label>Your OpenRouter API key: <input type="password" name="api_key" id="api-key" autocomplete="off" placeholder="sk-or-..."></label>
     <button class="btn" type="button" id="forget-key">Forget my key</button>
     <p class="muted">
       Your key stays in this browser and is sent only with each run; it is never stored on the server.
-      {% if has_server_key %}Leave it blank to use the server's configured OPENROUTER_API_KEY (local/dev fallback).{% endif %}
+      {% if words_left is not none %}
+        Leave it blank to use the Free tier: <strong>{{ words_left|thousands }} of {{ limits.allowance_words|thousands }} words left today</strong>.
+      {% elif has_server_key %}
+        Leave it blank to use the server's own key.
+      {% else %}
+        This server has no Free tier, so a run needs your own key.
+      {% endif %}
+      This Transcript is {{ word_count|thousands }} words.
     </p>
     <label>Priming terms (names and terms in this recording, comma-separated):
       <input type="text" name="priming_terms"{% if transcript.priming_terms or suggested_priming_terms %} value="{{ transcript.priming_terms or suggested_priming_terms }}"{% endif %} placeholder="Kafka, Raft, Jensen Huang">

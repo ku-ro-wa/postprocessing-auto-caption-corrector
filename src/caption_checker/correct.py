@@ -568,24 +568,14 @@ def _run_read_through(
         cues, flags, priming_terms=priming_terms, chunk_words=chunk_words
     )
     if estimate_only:
-        tokens = sum(
-            len(m["content"]) // 4 for c in chunks for m in messages(c)
-        )
-        price = _MODEL_PROMPT_PRICE.get(model_id)
         return CorrectionResult(
             cues=cues,
             outcomes=[],
             corrector_calls=0,
             chunk_count=len(chunks),
             residue_count=len(flags),
-            estimate=Estimate(
-                flag_count=len(flags),
-                residue_count=len(flags),
-                chunk_count=len(chunks),
-                approx_tokens=tokens,
-                approx_cost_usd=(
-                    round(tokens * price, 6) if price is not None else None
-                ),
+            estimate=read_through_estimate(
+                chunks, len(flags), model_id=model_id, messages=messages
             ),
         )
     if max_calls is not None and len(chunks) > max_calls:
@@ -714,6 +704,34 @@ def _correction_dict(
 
 
 # --- estimate -----------------------------------------------------------
+
+
+def prompt_price(model_id: str) -> float | None:
+    """The static prompt price (USD per token) estimates use, or None for a
+    model without one."""
+    return _MODEL_PROMPT_PRICE.get(model_id)
+
+
+def read_through_estimate(
+    chunks: Sequence[ChunkRequest],
+    flag_count: int,
+    *,
+    model_id: str,
+    messages: Callable[[ChunkRequest], list[dict]],
+) -> Estimate:
+    """A Read-through's approximate prompt tokens and cost over ``chunks``,
+    each built by ``messages`` as the configuration would: what
+    ``correct --estimate`` prints, and what the web UI's Free tier checks
+    before a run."""
+    tokens = sum(len(m["content"]) // 4 for c in chunks for m in messages(c))
+    price = prompt_price(model_id)
+    return Estimate(
+        flag_count=flag_count,
+        residue_count=flag_count,
+        chunk_count=len(chunks),
+        approx_tokens=tokens,
+        approx_cost_usd=round(tokens * price, 6) if price is not None else None,
+    )
 
 
 def _estimate(

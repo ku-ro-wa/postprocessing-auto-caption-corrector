@@ -19,9 +19,10 @@ from markupsafe import Markup, escape
 from starlette.middleware.base import BaseHTTPMiddleware, RequestResponseEndpoint
 
 from caption_checker.corrector import CorrectorError, MissingAPIKeyError
-from caption_checker.readthrough import Reader
+from caption_checker.readthrough import Reader, select_config
 from caption_checker.web import service
 from caption_checker.web import source_video
+from caption_checker.web.free_tier import FreeTier, LimitReached, Limits
 from caption_checker.web.models import TranscriptRecord
 from caption_checker.web.storage import Storage
 
@@ -92,6 +93,7 @@ def create_app(
     *,
     reader: Reader | None = None,
     video_lookup: source_video.MetadataLookup = source_video.lookup_metadata,
+    limits: Limits | None = Limits(),
 ) -> FastAPI:
     """``reader`` lets tests inject a ``StubReader`` (or any other
     ``Reader``) at the same seam the CLI's Read-through tests use — no route
@@ -100,13 +102,25 @@ def create_app(
 
     Without one, the Read-through configuration comes from the environment
     (``service.config_from_env``), resolved here so a bad one stops startup
-    instead of failing the first correct."""
+    instead of failing the first correct.
+
+    ``limits`` meters a Correct sent without the visitor's own key, which
+    runs on the server's key, as the Free tier (ADR 0008): on unless
+    explicitly turned off with None, for local use. Its ledger lives at
+    ``storage.root``. A Free tier run needs a priced model, also checked
+    here when the server has a key to run one on."""
     config = None if reader is not None else service.config_from_env()
+    free_tier = FreeTier(storage.root, limits) if limits is not None else None
+    # What a Free tier run is estimated (and, without a ``reader``, run) with.
+    free_tier_config = config or select_config()
+    if free_tier is not None and os.environ.get("OPENROUTER_API_KEY"):
+        service.check_free_tier_config(free_tier_config)
     app = FastAPI(title="caption-checker")
     app.add_middleware(_SessionCookieMiddleware, storage=storage)
     templates = Jinja2Templates(directory=str(TEMPLATES_DIR))
     templates.env.filters["ts"] = lambda td: _fmt_ts(td.total_seconds())
     templates.env.filters["highlight"] = _highlight
+    templates.env.filters["thousands"] = lambda n: f"{n:,}"
     templates.env.globals["source_video"] = source_video
 
     def load_or_404(session_id: str, transcript_id: str) -> TranscriptRecord:
@@ -149,6 +163,12 @@ def create_app(
     def review_page(
         request: Request, record: TranscriptRecord, *, status_code: int = 200, **extra: object
     ) -> Response:
+        has_server_key = bool(os.environ.get("OPENROUTER_API_KEY"))
+        words_left = (
+            free_tier.words_left(record.session_id)
+            if free_tier is not None and has_server_key
+            else None
+        )
         return templates.TemplateResponse(
             request,
             "transcript.html",
@@ -157,7 +177,10 @@ def create_app(
                 "rows": service.transcript_rows(storage, record),
                 "cues": service.cue_rows(storage, record),
                 "summary": service.correction_summary(record),
-                "has_server_key": bool(os.environ.get("OPENROUTER_API_KEY")),
+                "has_server_key": has_server_key,
+                "word_count": service.transcript_word_count(storage, record),
+                "words_left": words_left,
+                "limits": limits,
                 "suggested_priming_terms": service.suggested_priming_terms(record),
                 **extra,
             },
@@ -199,26 +222,43 @@ def create_app(
         # Saved with the run's outcome below, so a failed run shows them again.
         record.priming_terms = priming_terms.strip()
 
-        # The visitor's own key is used for this run and never stored. Without
-        # one the run falls to the server's key; a run on the visitor's key
-        # that fails never retries on the server's (ADR 0010).
-        resolved_key = api_key.strip() or os.environ.get("OPENROUTER_API_KEY")
-        if not resolved_key:
+        # The visitor's own key is used for this run and never stored, nor
+        # metered. Without one the run falls to the server's key -- the Free
+        # tier, unless the limits are off -- and a run on the visitor's key
+        # that fails never retries on the server's (ADR 0008, ADR 0010).
+        own_key = api_key.strip()
+        server_key = os.environ.get("OPENROUTER_API_KEY")
+        terms = _priming_terms(priming_terms)
+        run_key = own_key or server_key
+        if not run_key:
             record.correct_error = (
-                "No OpenRouter API key available. Enter one below, or set "
-                "OPENROUTER_API_KEY in the server's .env to use it for local testing."
+                "No OpenRouter API key available. This server has no Free "
+                "tier, so enter your own key below."
             )
             storage.save_transcript(record)
         else:
             try:
-                service.run_correction(
-                    storage,
-                    record,
-                    api_key=resolved_key,
-                    config=config,
-                    reader=reader,
-                    priming_terms=_priming_terms(priming_terms),
-                )
+                if own_key or free_tier is None:
+                    service.run_correction(
+                        storage,
+                        record,
+                        api_key=run_key,
+                        config=config,
+                        reader=reader,
+                        priming_terms=terms,
+                    )
+                else:
+                    service.run_on_free_tier(
+                        storage,
+                        record,
+                        free_tier,
+                        api_key=run_key,
+                        config=free_tier_config,
+                        reader=reader,
+                        priming_terms=terms,
+                    )
+            except LimitReached as exc:
+                return review_page(request, record, status_code=429, refusal=exc.limit)
             except (MissingAPIKeyError, CorrectorError):
                 pass  # record.correct_error already set by run_correction
 

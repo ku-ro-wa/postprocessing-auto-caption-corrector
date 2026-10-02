@@ -138,14 +138,27 @@ some chunks of the transcript failed, the page says how many, and the Flags
 in them stay unjudged (only a run where every chunk failed can be
 retried). It uses your own OpenRouter key, which your browser keeps and
 sends with each run -- the server never stores it -- or, left blank, the
-server's `OPENROUTER_API_KEY`. The server runs the default Read-through
+server's `OPENROUTER_API_KEY` as a metered Free tier: each browser Session
+gets an Allowance of Transcript words per rolling 24 hours (10,000), under a
+Daily budget across everyone (USD 0.25), and the page shows the words left
+and how many this Transcript is. Both are checked before a run, which then
+always finishes; the spend ledger is `spend-ledger.jsonl` at the data root.
+The limits are on by default, so for local use turn them off with
+`serve --no-limits`. `--allowance-words`, `--daily-budget` and `--donate-url`
+(a link offered when a limit refuses a run) set the rest, as flags or as
+`CAPTION_CHECKER_NO_LIMITS`, `CAPTION_CHECKER_ALLOWANCE_WORDS`,
+`CAPTION_CHECKER_DAILY_BUDGET_USD` and `CAPTION_CHECKER_DONATE_URL` in the
+environment (not `.env`). With the limits on and a server key set, the
+Read-through's model needs a known price for the pre-run estimate, or `serve`
+stops at startup. The server runs the default Read-through
 configuration (`qwen3.6-plus-p2`); set `OPENROUTER_CONFIG=NAME` (e.g. `flash-v4`) to run
 another registered one, or `OPENROUTER_MODEL=SLUG` for prompt v4 with that
 model -- in the environment or `.env`, not both. An unknown name, or both
 set, stops `serve` at startup. Uploads and review state are
 private to your browser session and persist across server restarts. See
 `docs/adr/0003-web-ui-upload-session-persisted.md` and
-`docs/adr/0004-llm-correction-manual-session-keyed.md` and
+`docs/adr/0004-llm-correction-manual-session-keyed.md`,
+`docs/adr/0008-metered-free-tier-on-the-server-key.md` and
 `docs/adr/0010-public-deployment.md` for the reasoning behind these choices.
 
 ## Evaluation

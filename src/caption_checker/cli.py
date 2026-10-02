@@ -344,8 +344,46 @@ def correct(
     help="Where Session/Transcript state persists "
     "(default: $CAPTION_CHECKER_DATA_DIR or ~/.local/share/caption-checker/web).",
 )
-def serve(host: str, port: int, data_dir: Path | None) -> None:
-    """Start the locally-hosted web review UI."""
+@click.option(
+    "--no-limits",
+    is_flag=True,
+    envvar="CAPTION_CHECKER_NO_LIMITS",
+    help="Don't meter runs on the server's OPENROUTER_API_KEY as a Free tier "
+    "(ADR 0008). For local use only: a public server pays for every run.",
+)
+@click.option(
+    "--allowance-words",
+    type=click.IntRange(min=0),
+    default=None,
+    envvar="CAPTION_CHECKER_ALLOWANCE_WORDS",
+    help="Free tier Allowance: Transcript words per Session per rolling "
+    "24 hours (default 10,000).",
+)
+@click.option(
+    "--daily-budget",
+    type=click.FloatRange(min=0),
+    default=None,
+    envvar="CAPTION_CHECKER_DAILY_BUDGET_USD",
+    help="Free tier Daily budget: USD across every Session per rolling "
+    "24 hours (default 0.25).",
+)
+@click.option(
+    "--donate-url",
+    default=None,
+    envvar="CAPTION_CHECKER_DONATE_URL",
+    help="Link offered when a Free tier limit refuses a run.",
+)
+def serve(
+    host: str,
+    port: int,
+    data_dir: Path | None,
+    no_limits: bool,
+    allowance_words: int | None,
+    daily_budget: float | None,
+    donate_url: str | None,
+) -> None:
+    """Start the web review UI. Runs on the server's own key are metered
+    as a Free tier unless --no-limits is given."""
     # Imported here, not at module scope, so `check`/`correct` never pull in
     # the web stack (FastAPI/uvicorn/Jinja2) -- same rationale as `correct`'s
     # own lazy imports above.
@@ -354,12 +392,23 @@ def serve(host: str, port: int, data_dir: Path | None) -> None:
 
     from caption_checker.readthrough import ConfigError
     from caption_checker.web.app import create_app
+    from caption_checker.web.free_tier import Limits
     from caption_checker.web.storage import Storage, default_data_dir
 
     load_dotenv()  # .env's OPENROUTER_* settings, as .env.example documents
     storage = Storage(data_dir or default_data_dir())
+    limits = None
+    if not no_limits:
+        default = Limits()
+        limits = Limits(
+            allowance_words=(
+                default.allowance_words if allowance_words is None else allowance_words
+            ),
+            daily_budget_usd=default.daily_budget_usd if daily_budget is None else daily_budget,
+            donate_url=donate_url or None,
+        )
     try:
-        app = create_app(storage)
+        app = create_app(storage, limits=limits)
     except ConfigError as exc:
         raise click.ClickException(str(exc)) from exc
     uvicorn.run(app, host=host, port=port)

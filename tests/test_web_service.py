@@ -1,13 +1,21 @@
 from __future__ import annotations
 
+import json
 from pathlib import Path
 
 import pytest
 
 from caption_checker.corrector import Correction, CorrectorError
 from caption_checker.models import DETECTOR_REVIEWER
-from caption_checker.readthrough import ChunkRequest, ChunkVerdict, StubReader
+from caption_checker.readthrough import (
+    CONFIGS,
+    DEFAULT_CONFIG,
+    ChunkRequest,
+    ChunkVerdict,
+    StubReader,
+)
 from caption_checker.web import service
+from caption_checker.web.free_tier import LEDGER_FILENAME, FreeTier, LimitReached, Limits
 from caption_checker.web.storage import Storage
 
 DATA_DIR = Path(__file__).parent / "data"
@@ -274,6 +282,110 @@ class TestRunCorrection:
 
         assert result.corrections[flag_id] is not None
         assert result.corrections[flag_id].replacement is None
+
+
+class _Costing(StubReader):
+    """A ``StubReader`` that reports ``cost`` per request, as OpenRouter's
+    usage would (None: a reply without a cost figure)."""
+
+    def __init__(self, cost: float | None, **kwargs) -> None:
+        super().__init__(**kwargs)
+        self.cost = cost
+
+    def read(self, request: ChunkRequest) -> list[ChunkVerdict]:
+        self.spend.add({} if self.cost is None else {"cost": self.cost})
+        return super().read(request)
+
+
+class TestRunOnFreeTier:
+    """#36: a run paid by the server key is checked against the Free tier
+    before it starts and charged once it ends."""
+
+    @pytest.fixture
+    def tier(self, storage: Storage) -> FreeTier:
+        return FreeTier(storage.root, Limits(allowance_words=10_000, daily_budget_usd=1.0))
+
+    def _run(self, storage: Storage, record, tier: FreeTier, reader) -> None:
+        service.run_on_free_tier(
+            storage, record, tier, api_key="server", config=CONFIGS[DEFAULT_CONFIG], reader=reader
+        )
+
+    def test_a_run_charges_its_words_and_reported_cost(
+        self, storage: Storage, session_id: str, tier: FreeTier
+    ) -> None:
+        record = _upload_sample(storage, session_id)
+        words = service.transcript_word_count(storage, record)
+        reader = _Costing(0.004)
+
+        self._run(storage, record, tier, reader)
+
+        assert record.corrected
+        assert tier.words_left(session_id) == 10_000 - words
+        [entry] = _ledger(storage)
+        assert entry["words"] == words
+        assert entry["cost_usd"] == pytest.approx(0.004 * reader.calls)
+
+    def test_a_reply_without_a_cost_charges_the_estimate(
+        self, storage: Storage, session_id: str, tier: FreeTier
+    ) -> None:
+        record = _upload_sample(storage, session_id)
+        estimate = service.free_tier_estimate_usd(storage, record, CONFIGS[DEFAULT_CONFIG])
+        assert estimate > 0
+
+        self._run(storage, record, tier, _Costing(None))
+
+        assert _ledger(storage)[0]["cost_usd"] == pytest.approx(estimate)
+
+    def test_a_failed_run_charges_its_spend_but_no_words(
+        self, storage: Storage, session_id: str, tier: FreeTier
+    ) -> None:
+        record = _upload_sample(storage, session_id)
+        reader = _Costing(0.003, garbage=True)
+
+        with pytest.raises(CorrectorError):
+            self._run(storage, record, tier, reader)
+
+        assert tier.words_left(session_id) == 10_000
+        [entry] = _ledger(storage)
+        assert entry["words"] == 0
+        assert entry["cost_usd"] == pytest.approx(0.003 * reader.calls)
+
+    def test_a_partly_failed_run_charges_its_words(
+        self, storage: Storage, session_id: str, tier: FreeTier
+    ) -> None:
+        content = _long_transcript(30, marker_at=25)
+        record = service.upload_transcript(storage, session_id, "long.srt", content)
+
+        self._run(storage, record, tier, _FailingOn("zzqx"))
+
+        assert record.failed_chunks
+        assert _ledger(storage)[0]["words"] == service.transcript_word_count(storage, record)
+
+    def test_a_refused_run_never_reaches_the_reader(
+        self, storage: Storage, session_id: str
+    ) -> None:
+        tier = FreeTier(storage.root, Limits(allowance_words=10))
+        record = _upload_sample(storage, session_id)
+
+        with pytest.raises(LimitReached):
+            self._run(storage, record, tier, _AssertNotCalledReader())
+
+        assert not record.corrected
+        assert not (storage.root / LEDGER_FILENAME).exists()
+
+    def test_an_already_corrected_transcript_is_not_charged_again(
+        self, storage: Storage, session_id: str, tier: FreeTier
+    ) -> None:
+        record = _upload_sample(storage, session_id)
+        self._run(storage, record, tier, StubReader())
+        self._run(storage, record, tier, _AssertNotCalledReader())
+
+        assert len(_ledger(storage)) == 1
+
+
+def _ledger(storage: Storage) -> list[dict]:
+    lines = (storage.root / LEDGER_FILENAME).read_text().splitlines()
+    return [json.loads(line) for line in lines]
 
 
 class TestSetDecision:

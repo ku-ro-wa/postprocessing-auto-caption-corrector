@@ -23,6 +23,7 @@ from typing import Mapping, Sequence
 from uuid import uuid4
 
 from caption_checker.apply import apply_corrections, cues_spanned, splice
+from caption_checker.correct import prompt_price, read_through_estimate
 from caption_checker.corrector import Correction, CorrectorError, MissingAPIKeyError
 from caption_checker.detect import detect
 from caption_checker.detectors.base import make_flag
@@ -34,11 +35,13 @@ from caption_checker.readthrough import (
     OpenRouterReader,
     Reader,
     ReadThroughConfig,
+    plan_chunks,
     read_through,
     select_config,
 )
 from caption_checker.vocab import Vocab, load_vocab
 from caption_checker.web import cue_edit
+from caption_checker.web.free_tier import FreeTier
 from caption_checker.web.models import ReviewDecision, TranscriptRecord
 from caption_checker.web.source_video import (
     InvalidVideoLinkError,
@@ -204,6 +207,11 @@ def config_from_env(environ: Mapping[str, str] = os.environ) -> ReadThroughConfi
         raise ConfigError(f"OPENROUTER_CONFIG: {exc}") from exc
 
 
+def _hints(record: TranscriptRecord) -> list[Flag]:
+    """The Flags the Read-through takes as hints: all but the reviewer's."""
+    return [f for f in record.flags if f.detector != DETECTOR_REVIEWER]
+
+
 def run_correction(
     storage: Storage,
     record: TranscriptRecord,
@@ -241,8 +249,7 @@ def run_correction(
         active_reader = reader or OpenRouterReader(
             config or config_from_env(), api_key=api_key
         )
-        hints = [f for f in record.flags if f.detector != DETECTOR_REVIEWER]
-        result = read_through(cues, hints, active_reader, priming_terms=priming_terms)
+        result = read_through(cues, _hints(record), active_reader, priming_terms=priming_terms)
         if result.chunk_count and result.failed_chunks == result.chunk_count:
             raise CorrectorError(
                 f"The Read-through failed on all {result.chunk_count} chunk(s); "
@@ -288,6 +295,81 @@ def run_correction(
     record.chunk_count = result.chunk_count
     record.failed_chunks = result.failed_chunks
     storage.save_transcript(record)
+    return record
+
+
+def transcript_word_count(storage: Storage, record: TranscriptRecord) -> int:
+    """The Transcript's Words: what a Free tier run charges the Allowance,
+    since the Read-through reads every one."""
+    return len(tokenize(storage.load_cues(record.session_id, record.id)))
+
+
+def free_tier_estimate_usd(
+    storage: Storage,
+    record: TranscriptRecord,
+    config: ReadThroughConfig,
+    priming_terms: Sequence[str] = (),
+) -> float:
+    """The pre-run cost estimate ``correct --estimate`` would print for a
+    run of ``config`` over ``record``."""
+    check_free_tier_config(config)
+    cues = storage.load_cues(record.session_id, record.id)
+    hints = _hints(record)
+    chunks = plan_chunks(cues, hints, priming_terms=priming_terms)
+    estimate = read_through_estimate(
+        chunks, len(hints), model_id=config.model_id, messages=config.build_messages
+    )
+    assert estimate.approx_cost_usd is not None
+    return estimate.approx_cost_usd
+
+
+def check_free_tier_config(config: ReadThroughConfig) -> None:
+    """Raise :class:`ConfigError` when ``config``'s model has no known price:
+    the Free tier checks the Daily budget against a pre-run estimate, so it
+    can't run a model it can't price."""
+    if prompt_price(config.model_id) is None:
+        raise ConfigError(
+            f"the Free tier needs a cost estimate, and {config.model_id!r} has "
+            "no known price: run a configuration whose model has one, or turn "
+            "the limits off (serve --no-limits) for local use"
+        )
+
+
+def run_on_free_tier(
+    storage: Storage,
+    record: TranscriptRecord,
+    free_tier: FreeTier,
+    *,
+    api_key: str,
+    config: ReadThroughConfig,
+    reader: Reader | None = None,
+    priming_terms: Sequence[str] = (),
+) -> TranscriptRecord:
+    """:func:`run_correction` paid by the server's key (ADR 0008): checked
+    against the Session's Allowance and the Daily budget before it starts --
+    raising :class:`LimitReached` without calling the model -- then charged
+    what OpenRouter reported (the estimate, if any reply carried no cost) and,
+    if it produced a result, the Transcript's words. A started run always
+    finishes."""
+    if record.corrected:
+        return record
+    estimate = free_tier_estimate_usd(storage, record, config, priming_terms)
+    reservation = free_tier.reserve(
+        record.session_id, transcript_word_count(storage, record), estimate_usd=estimate
+    )
+    active_reader: Reader | None = None
+    produced = False
+    try:
+        active_reader = reader or OpenRouterReader(config, api_key=api_key)
+        run_correction(
+            storage, record, api_key=api_key, reader=active_reader, priming_terms=priming_terms
+        )
+        produced = True
+    finally:
+        cost = active_reader.spend.cost_usd if active_reader is not None else 0.0
+        free_tier.settle(
+            reservation, produced=produced, cost_usd=estimate if cost is None else cost
+        )
     return record
 
 

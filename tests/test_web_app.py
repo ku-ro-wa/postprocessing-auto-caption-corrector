@@ -7,6 +7,7 @@ from fastapi.testclient import TestClient
 
 from caption_checker.readthrough import Reader, StubReader
 from caption_checker.web.app import create_app
+from caption_checker.web.free_tier import LEDGER_FILENAME, Limits
 from caption_checker.web.models import TranscriptRecord
 from caption_checker.web.source_video import MetadataLookup, VideoMetadata
 from caption_checker.web.storage import Storage
@@ -28,8 +29,11 @@ def _make_client(
     tmp_path: Path,
     reader: Reader | None = None,
     video_lookup: MetadataLookup = _no_metadata,
+    **kwargs: object,
 ) -> TestClient:
-    app = create_app(_storage_for(tmp_path), reader=reader, video_lookup=video_lookup)
+    app = create_app(
+        _storage_for(tmp_path), reader=reader, video_lookup=video_lookup, **kwargs
+    )
     return TestClient(app)
 
 
@@ -389,8 +393,8 @@ class TestVisitorKey:
             return StubReader(garbage=True)
 
         monkeypatch.setattr(service, "OpenRouterReader", reader)
-        monkeypatch.delenv("OPENROUTER_CONFIG", raising=False)
-        monkeypatch.setenv("OPENROUTER_MODEL", "some/slug")
+        monkeypatch.setenv("OPENROUTER_CONFIG", "flash-v4")
+        monkeypatch.delenv("OPENROUTER_MODEL", raising=False)
         return used
 
     def test_a_correct_with_a_key_leaves_no_key_on_disk(
@@ -633,6 +637,141 @@ class TestReadThroughConfiguration:
         monkeypatch.setenv("OPENROUTER_MODEL", "some/slug")
         with pytest.raises(ConfigError, match="not both"):
             create_app(_storage_for(tmp_path))
+
+
+class TestFreeTier:
+    """#36 / ADR 0008: a Correct with no key of the visitor's own runs on the
+    server's key, metered by the Session's Allowance and the Daily budget."""
+
+    @pytest.fixture(autouse=True)
+    def server_key(self, monkeypatch: pytest.MonkeyPatch) -> None:
+        monkeypatch.setenv("OPENROUTER_API_KEY", "server-key")
+        monkeypatch.delenv("OPENROUTER_CONFIG", raising=False)
+        monkeypatch.delenv("OPENROUTER_MODEL", raising=False)
+
+    def _words(self, tmp_path: Path, client: TestClient, transcript_id: str) -> int:
+        from caption_checker.web import service
+
+        record = _record(tmp_path, client, transcript_id)
+        return service.transcript_word_count(_storage_for(tmp_path), record)
+
+    def _ledger(self, tmp_path: Path) -> list[str]:
+        path = tmp_path / "data" / LEDGER_FILENAME
+        return path.read_text().splitlines() if path.exists() else []
+
+    def test_limits_are_on_by_default(self, tmp_path: Path) -> None:
+        client = _make_client(tmp_path, reader=StubReader())
+        transcript_id = _upload(client)
+        words = self._words(tmp_path, client, transcript_id)
+
+        client.post(f"/transcripts/{transcript_id}/correct", data={})
+
+        assert _record(tmp_path, client, transcript_id).corrected
+        assert len(self._ledger(tmp_path)) == 1
+        # The count shows where the next Correct would be sent.
+        page = client.get(f"/transcripts/{_upload(client)}").text
+        assert f"{10_000 - words:,} of 10,000 words left today" in page
+
+    def test_the_page_shows_words_left_and_this_transcripts_words(
+        self, tmp_path: Path
+    ) -> None:
+        client = _make_client(tmp_path, limits=Limits(allowance_words=5_000))
+        transcript_id = _upload(client)
+        words = self._words(tmp_path, client, transcript_id)
+
+        page = client.get(f"/transcripts/{transcript_id}").text
+
+        assert "5,000 of 5,000 words left today" in page
+        assert f"This Transcript is {words:,} words" in page
+        assert "local/dev fallback" not in page
+
+    def test_a_run_over_the_allowance_is_refused(self, tmp_path: Path) -> None:
+        client = _make_client(
+            tmp_path, reader=_NeverRead(), limits=Limits(allowance_words=10)
+        )
+        transcript_id = _upload(client)
+
+        response = client.post(f"/transcripts/{transcript_id}/correct", data={})
+
+        assert response.status_code == 429
+        assert "Free tier Allowance is used up" in response.text
+        assert "Enter your own OpenRouter key" in response.text
+        assert "Donate" not in response.text
+        assert not _record(tmp_path, client, transcript_id).corrected
+        assert self._ledger(tmp_path) == []
+
+    def test_a_run_over_the_daily_budget_is_refused(self, tmp_path: Path) -> None:
+        client = _make_client(
+            tmp_path,
+            reader=_NeverRead(),
+            limits=Limits(daily_budget_usd=0.0, donate_url="https://example.org/give"),
+        )
+        transcript_id = _upload(client)
+
+        response = client.post(f"/transcripts/{transcript_id}/correct", data={})
+
+        assert response.status_code == 429
+        assert "Daily budget is used up" in response.text
+        assert 'href="https://example.org/give"' in response.text
+
+    def test_a_run_on_the_visitors_own_key_is_never_metered(
+        self, tmp_path: Path
+    ) -> None:
+        client = _make_client(
+            tmp_path,
+            reader=StubReader(),
+            limits=Limits(allowance_words=10, daily_budget_usd=0.0),
+        )
+        transcript_id = _upload(client)
+
+        response = client.post(
+            f"/transcripts/{transcript_id}/correct", data={"api_key": "sk-or-mine"}
+        )
+
+        assert response.status_code == 200
+        assert _record(tmp_path, client, transcript_id).corrected
+        assert self._ledger(tmp_path) == []
+
+    def test_limits_off_means_no_ledger_and_no_refusal(self, tmp_path: Path) -> None:
+        client = _make_client(tmp_path, reader=StubReader(), limits=None)
+        transcript_id = _upload(client)
+
+        page = client.get(f"/transcripts/{transcript_id}").text
+        client.post(f"/transcripts/{transcript_id}/correct", data={})
+
+        assert "words left today" not in page
+        assert _record(tmp_path, client, transcript_id).corrected
+        assert self._ledger(tmp_path) == []
+
+    def test_an_unpriced_model_fails_at_startup_with_limits_on(
+        self, tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+    ) -> None:
+        from caption_checker.readthrough import ConfigError
+
+        monkeypatch.setenv("OPENROUTER_MODEL", "some/slug")
+        with pytest.raises(ConfigError, match="no known price"):
+            create_app(_storage_for(tmp_path))
+        create_app(_storage_for(tmp_path), limits=None)
+        # No server key, no Free tier to price.
+        monkeypatch.delenv("OPENROUTER_API_KEY")
+        create_app(_storage_for(tmp_path))
+
+    def test_with_no_server_key_the_page_asks_for_the_visitors_own(
+        self, tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+    ) -> None:
+        monkeypatch.delenv("OPENROUTER_API_KEY")
+        client = _make_client(tmp_path)
+        transcript_id = _upload(client)
+
+        page = client.get(f"/transcripts/{transcript_id}").text
+
+        assert "words left today" not in page
+        assert "no Free tier" in page
+
+
+class _NeverRead(StubReader):
+    def read(self, request):  # type: ignore[override]
+        raise AssertionError("a refused run must not reach the model")
 
 
 VIDEO_ID = "dQw4w9WgXcQ"
@@ -1225,3 +1364,68 @@ class TestGlossaryHints:
 
         for body in (page, card):
             assert 'title="You raised this Flag by editing a Cue' in body
+
+
+class TestServeLimits:
+    """#36: `serve` meters the server key by default; local use turns the
+    limits off explicitly."""
+
+    @pytest.fixture
+    def limits_used(self, monkeypatch: pytest.MonkeyPatch) -> list[Limits | None]:
+        import uvicorn
+
+        from caption_checker.web import app as web_app
+
+        used: list[Limits | None] = []
+
+        def fake_create_app(storage: Storage, *, limits: Limits | None) -> object:
+            used.append(limits)
+            return object()
+
+        monkeypatch.setattr(web_app, "create_app", fake_create_app)
+        monkeypatch.setattr(uvicorn, "run", lambda app, **kwargs: None)
+        for name in ("NO_LIMITS", "ALLOWANCE_WORDS", "DAILY_BUDGET_USD", "DONATE_URL"):
+            monkeypatch.delenv(f"CAPTION_CHECKER_{name}", raising=False)
+        return used
+
+    def _serve(self, tmp_path: Path, *args: str, env: dict[str, str] | None = None) -> None:
+        from click.testing import CliRunner
+
+        from caption_checker.cli import main
+
+        result = CliRunner().invoke(
+            main, ["serve", "--data-dir", str(tmp_path), *args], env=env
+        )
+        assert result.exit_code == 0, result.output
+
+    def test_limits_are_on_with_launch_figures_by_default(
+        self, tmp_path: Path, limits_used: list[Limits | None]
+    ) -> None:
+        self._serve(tmp_path)
+        assert limits_used == [Limits(allowance_words=10_000, daily_budget_usd=0.25)]
+
+    def test_no_limits_turns_them_off(
+        self, tmp_path: Path, limits_used: list[Limits | None]
+    ) -> None:
+        self._serve(tmp_path, "--no-limits")
+        assert limits_used == [None]
+
+    def test_figures_and_donate_link_are_configurable(
+        self, tmp_path: Path, limits_used: list[Limits | None]
+    ) -> None:
+        self._serve(
+            tmp_path,
+            "--allowance-words",
+            "5000",
+            env={
+                "CAPTION_CHECKER_DAILY_BUDGET_USD": "1.5",
+                "CAPTION_CHECKER_DONATE_URL": "https://example.org/give",
+            },
+        )
+        assert limits_used == [
+            Limits(
+                allowance_words=5_000,
+                daily_budget_usd=1.5,
+                donate_url="https://example.org/give",
+            )
+        ]
