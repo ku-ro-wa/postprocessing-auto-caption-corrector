@@ -164,6 +164,28 @@ change it), or until you delete it. See
 `docs/adr/0008-metered-free-tier-on-the-server-key.md` and
 `docs/adr/0010-public-deployment.md` for the reasoning behind these choices.
 
+## Deploying
+
+The public deployment is one Fly.io machine with a volume (ADR 0010). From a
+checkout, with `flyctl` installed:
+
+```bash
+fly launch --no-deploy --copy-config   # pick the app name; keeps fly.toml
+fly volumes create data --size 1 --count 1
+fly secrets set OPENROUTER_API_KEY=sk-or-...   # a dedicated key with a hard monthly credit limit
+fly deploy --ha=false
+```
+
+The Dockerfile installs from `uv.lock` and runs `caption-checker serve` on
+`0.0.0.0:8080` with the data dir on the volume at `/data` and the Session
+cookie marked Secure. `GET /healthz` returns 200 without creating a Session;
+point an uptime monitor at it.
+
+**Never scale past one machine** (`fly scale count` stays 1). Storage is plain
+directories and the spend ledger is guarded by an in-process lock, so a
+second instance would corrupt both. The 2 MB upload cap is enforced after
+the body arrives, so consider a request-size limit at the proxy as well.
+
 ## Evaluation
 
 Tuning detector thresholds (in `oov`, `phonetic_vocab`, `phonetic_internal`,

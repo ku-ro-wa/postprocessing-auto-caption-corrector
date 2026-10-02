@@ -60,6 +60,15 @@ def _upload(
     return response.headers["location"].rsplit("/", 1)[-1]
 
 
+class TestHealthCheck:
+    def test_healthz_is_200_and_creates_no_session(self, tmp_path: Path) -> None:
+        client = _make_client(tmp_path)
+        response = client.get("/healthz")
+        assert response.status_code == 200
+        assert "set-cookie" not in response.headers
+        assert not [d for d in (tmp_path / "data").glob("**/*") if d.is_dir()]
+
+
 class TestSessionCookie:
     def test_index_sets_session_cookie(self, tmp_path: Path) -> None:
         client = _make_client(tmp_path)

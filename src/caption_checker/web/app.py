@@ -76,6 +76,9 @@ def _highlight(context: str, span: str) -> Markup:
     return Markup(escaped_ctx)
 
 
+HEALTH_PATH = "/healthz"
+
+
 class _SessionCookieMiddleware(BaseHTTPMiddleware):
     """Ensures every request has a Session: reads ``cc_session`` off the
     incoming cookie, creating a new anonymous Session when it's missing or
@@ -91,6 +94,9 @@ class _SessionCookieMiddleware(BaseHTTPMiddleware):
     async def dispatch(
         self, request: Request, call_next: RequestResponseEndpoint
     ) -> Response:
+        if request.url.path == HEALTH_PATH:
+            # A monitor polls this; it must not mint a Session per check.
+            return await call_next(request)
         session_id = request.cookies.get(COOKIE_NAME)
         is_new = not (session_id and self.storage.session_exists(session_id))
         if is_new:
@@ -183,6 +189,11 @@ def create_app(
 
     app = FastAPI(title="caption-checker", lifespan=lifespan)
     app.add_middleware(_SessionCookieMiddleware, storage=storage, secure=secure_cookie)
+
+    @app.get(HEALTH_PATH, include_in_schema=False)
+    def healthz() -> dict[str, str]:
+        return {"status": "ok"}
+
     templates = Jinja2Templates(directory=str(TEMPLATES_DIR))
     templates.env.filters["ts"] = lambda td: _fmt_ts(td.total_seconds())
     templates.env.filters["highlight"] = _highlight
