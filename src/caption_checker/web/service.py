@@ -415,9 +415,12 @@ def export_transcript(storage: Storage, record: TranscriptRecord) -> str:
     """Splice every accepted Review Decision's text into the Flag's span
     (``apply_corrections``, ADR 0001 -- a span across Cues included) and
     serialize to the Transcript's original format. Flags left pending or
-    rejected keep their original text."""
+    rejected keep their original text. An Export is activity that keeps the
+    Transcript (ADR 0010), so it touches ``record``."""
     cues = storage.load_cues(record.session_id, record.id)
-    return serialize(apply_corrections(cues, _accepted(record)), format=record.format)
+    content = serialize(apply_corrections(cues, _accepted(record)), format=record.format)
+    storage.touch(record)
+    return content
 
 
 def _accepted(record: TranscriptRecord) -> list[tuple[Flag, str]]:

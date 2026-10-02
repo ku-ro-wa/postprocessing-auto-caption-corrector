@@ -8,9 +8,12 @@ below rather than being repeated per route.
 
 from __future__ import annotations
 
+import asyncio
+import logging
 import math
 import os
 import re
+from contextlib import asynccontextmanager
 from datetime import timedelta
 from pathlib import Path
 
@@ -18,13 +21,14 @@ from fastapi import FastAPI, Form, HTTPException, Request, UploadFile
 from fastapi.responses import HTMLResponse, RedirectResponse, Response
 from fastapi.templating import Jinja2Templates
 from markupsafe import Markup, escape
+from starlette.concurrency import run_in_threadpool
 from starlette.middleware.base import BaseHTTPMiddleware, RequestResponseEndpoint
 
 from caption_checker.corrector import CorrectorError, MissingAPIKeyError
 from caption_checker.readthrough import Reader, select_config
 from caption_checker.web import service
 from caption_checker.web import source_video
-from caption_checker.web.free_tier import FreeTier, LimitReached, Limits
+from caption_checker.web.free_tier import WINDOW, FreeTier, LimitReached, Limits
 from caption_checker.web.models import TranscriptRecord
 from caption_checker.web.storage import Storage
 
@@ -32,6 +36,12 @@ COOKIE_NAME = "cc_session"
 COOKIE_MAX_AGE = 60 * 60 * 24 * 180  # 180 days
 
 TEMPLATES_DIR = Path(__file__).parent / "templates"
+
+#: How long a Transcript is kept after its last activity (ADR 0010).
+RETENTION = timedelta(hours=24)
+SWEEP_INTERVAL = timedelta(hours=1)
+
+logger = logging.getLogger(__name__)
 
 
 def _fmt_ts(seconds: float) -> str:
@@ -106,6 +116,7 @@ def create_app(
     reader: Reader | None = None,
     video_lookup: source_video.MetadataLookup = source_video.lookup_metadata,
     limits: Limits | None = Limits(),
+    retention: timedelta = RETENTION,
 ) -> FastAPI:
     """``reader`` lets tests inject a ``StubReader`` (or any other
     ``Reader``) at the same seam the CLI's Read-through tests use — no route
@@ -120,14 +131,45 @@ def create_app(
     runs on the server's key, as the Free tier (ADR 0008): on unless
     explicitly turned off with None, for local use. Its ledger lives at
     ``storage.root``. A Free tier run needs a priced model, also checked
-    here when the server has a key to run one on."""
+    here when the server has a key to run one on.
+
+    While the app runs, Transcripts idle for ``retention`` are swept at
+    startup and every ``SWEEP_INTERVAL`` after (ADR 0010). An emptied
+    Session is kept for at least the Allowance's window, so its visitor
+    can't get a fresh Allowance by waiting out a deletion."""
     config = None if reader is not None else service.config_from_env()
     free_tier = FreeTier(storage.root, limits) if limits is not None else None
     # What a Free tier run is estimated (and, without a ``reader``, run) with.
     free_tier_config = config or select_config()
     if free_tier is not None and os.environ.get("OPENROUTER_API_KEY"):
         service.check_free_tier_config(free_tier_config)
-    app = FastAPI(title="caption-checker")
+
+    def sweep() -> None:
+        swept = storage.sweep(retention, keep_empty_sessions_for=max(retention, WINDOW))
+        if swept:
+            logger.info("Deleted %d expired transcript(s)", swept)
+
+    async def sweep_logging_failure() -> None:
+        try:
+            await run_in_threadpool(sweep)
+        except Exception:
+            logger.exception("Transcript sweep failed")
+
+    async def sweep_periodically() -> None:
+        while True:
+            await asyncio.sleep(SWEEP_INTERVAL.total_seconds())
+            await sweep_logging_failure()
+
+    @asynccontextmanager
+    async def lifespan(app: FastAPI):
+        await sweep_logging_failure()
+        task = asyncio.create_task(sweep_periodically())
+        try:
+            yield
+        finally:
+            task.cancel()
+
+    app = FastAPI(title="caption-checker", lifespan=lifespan)
     app.add_middleware(_SessionCookieMiddleware, storage=storage)
     templates = Jinja2Templates(directory=str(TEMPLATES_DIR))
     templates.env.filters["ts"] = lambda td: _fmt_ts(td.total_seconds())
@@ -135,6 +177,7 @@ def create_app(
     templates.env.filters["thousands"] = lambda n: f"{n:,}"
     templates.env.filters["duration"] = _duration
     templates.env.globals["source_video"] = source_video
+    templates.env.globals["retention"] = retention
 
     def load_or_404(session_id: str, transcript_id: str) -> TranscriptRecord:
         record = storage.load_transcript(session_id, transcript_id)

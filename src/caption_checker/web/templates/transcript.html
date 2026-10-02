@@ -2,6 +2,9 @@
 {% block title %}{{ transcript.filename }} · caption-checker{% endblock %}
 {% block header_extra %}
   <a href="/transcripts/{{ transcript.id }}/export">Export corrected {{ transcript.format }}</a>
+  <form class="inline" action="/transcripts/{{ transcript.id }}/delete" method="post" onsubmit='return confirm({{ ("Delete " ~ transcript.filename ~ " and its review state?")|tojson }});'>
+    <button class="btn" type="submit">Delete this transcript</button>
+  </form>
 {% endblock %}
 {% block content %}
 

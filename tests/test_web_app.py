@@ -1,7 +1,8 @@
 from __future__ import annotations
 
-from datetime import timedelta
+from datetime import datetime, timedelta, timezone
 from pathlib import Path
+from typing import Any
 
 import pytest
 from fastapi.testclient import TestClient
@@ -30,7 +31,7 @@ def _make_client(
     tmp_path: Path,
     reader: Reader | None = None,
     video_lookup: MetadataLookup = _no_metadata,
-    **kwargs: object,
+    **kwargs: Any,
 ) -> TestClient:
     app = create_app(
         _storage_for(tmp_path), reader=reader, video_lookup=video_lookup, **kwargs
@@ -594,6 +595,117 @@ class TestDelete:
         client.post(f"/transcripts/{transcript_id}/delete")
 
         assert storage.original_path(session_id, transcript_id) is None
+
+
+class _Clock:
+    def __init__(self) -> None:
+        self.now = datetime(2026, 10, 1, 9, 0, tzinfo=timezone.utc)
+
+    def __call__(self) -> datetime:
+        return self.now
+
+
+class TestRetention:
+    """#46: a Transcript is deleted 24 hours after its last activity."""
+
+    def _client(self, tmp_path: Path, clock: _Clock) -> tuple[TestClient, Storage]:
+        storage = Storage(tmp_path / "data", clock=clock)
+        return TestClient(create_app(storage, video_lookup=_no_metadata)), storage
+
+    @pytest.mark.parametrize(
+        ("method", "path", "data"),
+        [
+            ("post", "/flags/0/decision", {"action": "reject"}),
+            ("post", "/cues/1/edit", {"text": "Edited by the reviewer"}),
+            ("get", "/export", None),
+            ("post", "/correct", {"api_key": "sk-visitor"}),
+        ],
+    )
+    def test_activity_resets_the_clock(
+        self, tmp_path: Path, method: str, path: str, data: dict[str, str] | None
+    ) -> None:
+        clock = _Clock()
+        storage = Storage(tmp_path / "data", clock=clock)
+        app = create_app(storage, reader=StubReader(), video_lookup=_no_metadata)
+        client = TestClient(app)
+        transcript_id = _upload(client)
+        session_id = client.cookies["cc_session"]
+
+        clock.now += timedelta(hours=20)
+        kwargs = {"data": data} if data is not None else {}
+        assert getattr(client, method)(f"/transcripts/{transcript_id}{path}", **kwargs).is_success
+        clock.now += timedelta(hours=10)
+        storage.sweep(timedelta(hours=24), keep_empty_sessions_for=timedelta(hours=24))
+
+        assert storage.load_transcript(session_id, transcript_id) is not None
+
+    def test_viewing_is_not_activity(self, tmp_path: Path) -> None:
+        clock = _Clock()
+        client, storage = self._client(tmp_path, clock)
+        transcript_id = _upload(client)
+
+        clock.now += timedelta(hours=20)
+        client.get(f"/transcripts/{transcript_id}")
+        clock.now += timedelta(hours=4)
+        storage.sweep(timedelta(hours=24), keep_empty_sessions_for=timedelta(hours=24))
+
+        assert client.get(f"/transcripts/{transcript_id}").status_code == 404
+
+    def test_expired_transcripts_are_swept_at_startup(self, tmp_path: Path) -> None:
+        clock = _Clock()
+        client, _ = self._client(tmp_path, clock)
+        transcript_id = _upload(client)
+
+        clock.now += timedelta(hours=24)
+        storage = Storage(tmp_path / "data", clock=clock)
+        app = create_app(storage, video_lookup=_no_metadata)
+        with TestClient(app, cookies=dict(client.cookies)) as restarted:
+            assert restarted.get(f"/transcripts/{transcript_id}").status_code == 404
+
+    def test_the_retention_period_is_configurable(self, tmp_path: Path) -> None:
+        clock = _Clock()
+        client, _ = self._client(tmp_path, clock)
+        transcript_id = _upload(client)
+
+        clock.now += timedelta(hours=2)
+        storage = Storage(tmp_path / "data", clock=clock)
+        app = create_app(storage, video_lookup=_no_metadata, retention=timedelta(hours=1))
+        with TestClient(app, cookies=dict(client.cookies)) as restarted:
+            assert restarted.get(f"/transcripts/{transcript_id}").status_code == 404
+
+    def test_a_fresh_transcript_survives_startup(self, tmp_path: Path) -> None:
+        clock = _Clock()
+        client, _ = self._client(tmp_path, clock)
+        transcript_id = _upload(client)
+
+        clock.now += timedelta(hours=23)
+        storage = Storage(tmp_path / "data", clock=clock)
+        app = create_app(storage, video_lookup=_no_metadata)
+        with TestClient(app, cookies=dict(client.cookies)) as restarted:
+            assert restarted.get(f"/transcripts/{transcript_id}").status_code == 200
+
+    def test_upload_page_says_how_long_a_file_is_kept(self, tmp_path: Path) -> None:
+        page = _make_client(tmp_path).get("/").text
+        assert "transcript is kept for 24 h after you last use it, or until you delete it" in page
+        assert "sends its text to OpenRouter" in page
+
+    def test_review_page_offers_delete_beside_export(self, tmp_path: Path) -> None:
+        client = _make_client(tmp_path)
+        transcript_id = _upload(client)
+
+        page = client.get(f"/transcripts/{transcript_id}").text
+
+        header = page[page.index("Export corrected") :]
+        assert f'action="/transcripts/{transcript_id}/delete"' in header
+        assert 'confirm("Delete sample_lecture.srt and its review state?")' in header
+
+    def test_delete_prompt_survives_a_quote_in_the_filename(self, tmp_path: Path) -> None:
+        client = _make_client(tmp_path)
+        transcript_id = _upload(client, filename="it's.srt")
+
+        page = client.get(f"/transcripts/{transcript_id}").text
+
+        assert "confirm(\"Delete it\\u0027s.srt and its review state?\")" in page
 
 
 class TestReadThroughConfiguration:
@@ -1402,13 +1514,18 @@ class TestServeLimits:
 
         used: list[Limits | None] = []
 
-        def fake_create_app(storage: Storage, *, limits: Limits | None) -> object:
+        def fake_create_app(
+            storage: Storage, *, limits: Limits | None, retention: timedelta
+        ) -> object:
             used.append(limits)
+            self.retention = retention
             return object()
 
         monkeypatch.setattr(web_app, "create_app", fake_create_app)
         monkeypatch.setattr(uvicorn, "run", lambda app, **kwargs: None)
-        for name in ("NO_LIMITS", "ALLOWANCE_WORDS", "DAILY_BUDGET_USD", "DONATE_URL"):
+        for name in (
+            "NO_LIMITS", "ALLOWANCE_WORDS", "DAILY_BUDGET_USD", "DONATE_URL", "RETENTION_HOURS"
+        ):
             monkeypatch.delenv(f"CAPTION_CHECKER_{name}", raising=False)
         return used
 
@@ -1453,6 +1570,18 @@ class TestServeLimits:
                 donate_url="https://example.org/give",
             )
         ]
+
+    def test_transcripts_are_kept_24_hours_by_default(
+        self, tmp_path: Path, limits_used: list[Limits | None]
+    ) -> None:
+        self._serve(tmp_path)
+        assert self.retention == timedelta(hours=24)
+
+    def test_the_retention_period_is_configurable(
+        self, tmp_path: Path, limits_used: list[Limits | None]
+    ) -> None:
+        self._serve(tmp_path, env={"CAPTION_CHECKER_RETENTION_HOURS": "1.5"})
+        assert self.retention == timedelta(hours=1.5)
 
 
 @pytest.mark.parametrize(

@@ -3,6 +3,7 @@ from __future__ import annotations
 import json
 import sys
 from dataclasses import replace
+from datetime import timedelta
 from pathlib import Path
 from typing import TYPE_CHECKING
 
@@ -373,6 +374,14 @@ def correct(
     envvar="CAPTION_CHECKER_DONATE_URL",
     help="Link offered when a Free tier limit refuses a run.",
 )
+@click.option(
+    "--retention-hours",
+    type=click.FloatRange(min=0, min_open=True),
+    default=24.0,
+    show_default=True,
+    envvar="CAPTION_CHECKER_RETENTION_HOURS",
+    help="Delete a Transcript this many hours after its last activity (ADR 0010).",
+)
 def serve(
     host: str,
     port: int,
@@ -381,9 +390,11 @@ def serve(
     allowance_words: int | None,
     daily_budget: float | None,
     donate_url: str | None,
+    retention_hours: float,
 ) -> None:
     """Start the web review UI. Runs on the server's own key are metered
-    as a Free tier unless --no-limits is given."""
+    as a Free tier unless --no-limits is given, and Transcripts are deleted
+    a day (--retention-hours) after their last activity."""
     # Imported here, not at module scope, so `check`/`correct` never pull in
     # the web stack (FastAPI/uvicorn/Jinja2) -- same rationale as `correct`'s
     # own lazy imports above.
@@ -408,7 +419,7 @@ def serve(
             donate_url=donate_url or None,
         )
     try:
-        app = create_app(storage, limits=limits)
+        app = create_app(storage, limits=limits, retention=timedelta(hours=retention_hours))
     except ConfigError as exc:
         raise click.ClickException(str(exc)) from exc
     uvicorn.run(app, host=host, port=port)

@@ -11,14 +11,23 @@ Correct (ADR 0010), and a ``session.json`` an older version left with a key
 in it is never read. A Transcript's Cues are never duplicated into
 ``state.json`` — they're re-parsed from ``original.<ext>`` on load, per the
 spec's "or a pointer to the stored original file, re-parsed on load."
+
+Nothing here lasts (ADR 0010): :meth:`Storage.sweep` deletes each Transcript
+a retention period after its ``last_activity``, which every save stamps, and
+then any Session left empty. It only walks ``sessions/``, so the Free tier's
+spend ledger beside it is never touched.
 """
 
 from __future__ import annotations
 
 import json
+import logging
 import os
 import secrets
+import shutil
+from datetime import datetime, timedelta, timezone
 from pathlib import Path
+from typing import Callable
 
 from caption_checker.parser import parse
 from caption_checker.web.models import (
@@ -30,6 +39,8 @@ from caption_checker.web.models import (
 
 SESSION_ID_BYTES = 16
 
+logger = logging.getLogger(__name__)
+
 
 def default_data_dir() -> Path:
     override = os.environ.get("CAPTION_CHECKER_DATA_DIR")
@@ -38,9 +49,14 @@ def default_data_dir() -> Path:
     return Path.home() / ".local" / "share" / "caption-checker" / "web"
 
 
+def _utcnow() -> datetime:
+    return datetime.now(timezone.utc)
+
+
 class Storage:
-    def __init__(self, root: Path) -> None:
+    def __init__(self, root: Path, *, clock: Callable[[], datetime] = _utcnow) -> None:
         self.root = Path(root)
+        self.clock = clock
 
     # -- Sessions ----------------------------------------------------
 
@@ -82,9 +98,24 @@ class Storage:
         return parse(original)
 
     def save_transcript(self, record: TranscriptRecord) -> None:
+        """Persist ``record``, stamping it with activity now: every change a
+        reviewer makes is saved, so a save resets the retention clock."""
+        record.last_activity = self.clock().isoformat()
         transcript_dir = self._transcript_dir(record.session_id, record.id)
-        transcript_dir.mkdir(parents=True, exist_ok=True)
+        if self.original_path(record.session_id, record.id) is None:
+            # Deleted (or swept) while a request held it: leave it deleted
+            # rather than bring back a record with no original to parse.
+            return
         self._write_json(transcript_dir / "state.json", record_to_dict(record))
+
+    def touch(self, record: TranscriptRecord) -> None:
+        """Stamp ``record``'s Transcript with activity now, rewriting only its
+        stored ``last_activity`` -- so a request that only reads, like
+        Export, can't write back a record another request has changed."""
+        stored = self.load_transcript(record.session_id, record.id)
+        if stored is not None:
+            self.save_transcript(stored)
+            record.last_activity = stored.last_activity
 
     def load_transcript(self, session_id: str, transcript_id: str) -> TranscriptRecord | None:
         data = self._read_json(self._transcript_dir(session_id, transcript_id) / "state.json")
@@ -117,16 +148,70 @@ class Storage:
 
     def delete_transcript(self, session_id: str, transcript_id: str) -> None:
         transcript_dir = self._transcript_dir(session_id, transcript_id)
-        if not transcript_dir.is_dir():
-            return
-        for child in transcript_dir.iterdir():
-            child.unlink()
-        transcript_dir.rmdir()
+        shutil.rmtree(transcript_dir, ignore_errors=True)
 
     def discard_staged(self, session_id: str, transcript_id: str) -> None:
         """Remove a partially-created Transcript directory after a failed
         upload parse, so no record is left behind for an invalid file."""
         self.delete_transcript(session_id, transcript_id)
+
+    # -- Retention -----------------------------------------------------
+
+    def sweep(self, retention: timedelta, *, keep_empty_sessions_for: timedelta) -> int:
+        """Delete every Transcript whose last activity is ``retention`` or
+        more ago, and return how many went. A Transcript directory with no
+        record yet (an upload being staged, or one a crash abandoned) goes
+        once its directory is that old; one whose record can't be read is
+        logged and left.
+
+        Then remove each Session left without Transcripts that has been idle
+        -- nothing added or deleted -- for ``keep_empty_sessions_for``. Its
+        visitor gets a new Session, and with it a new Allowance, so the caller
+        keeps an empty Session at least as long as a run's charge counts
+        against its Allowance."""
+        now = self.clock()
+        sessions_dir = self.root / "sessions"
+        if not sessions_dir.is_dir():
+            return 0
+        swept = 0
+        for session_dir in sessions_dir.iterdir():
+            transcripts_dir = session_dir / "transcripts"
+            for transcript_dir in transcripts_dir.iterdir() if transcripts_dir.is_dir() else ():
+                try:
+                    expired = now - self._last_activity(transcript_dir) >= retention
+                except (OSError, ValueError, KeyError, TypeError):
+                    logger.exception("Can't read %s; leaving it", transcript_dir)
+                    continue
+                if expired:
+                    shutil.rmtree(transcript_dir, ignore_errors=True)
+                    swept += 1
+            self._remove_if_idle(session_dir, now - keep_empty_sessions_for)
+        return swept
+
+    def _remove_if_idle(self, session_dir: Path, idle_since: datetime) -> None:
+        """Remove ``session_dir`` if it holds no Transcripts and nothing in it
+        has changed since ``idle_since``. ``rmdir`` only removes an empty
+        directory, so an upload staged meanwhile keeps the Session."""
+        transcripts_dir = session_dir / "transcripts"
+        try:
+            dirs = [d for d in (session_dir, transcripts_dir) if d.is_dir()]
+            if max(self._mtime(d) for d in dirs) > idle_since:
+                return
+            if transcripts_dir.is_dir():
+                transcripts_dir.rmdir()
+            session_dir.rmdir()
+        except OSError:
+            pass  # not empty, or a request is using it
+
+    def _last_activity(self, transcript_dir: Path) -> datetime:
+        data = self._read_json(transcript_dir / "state.json")
+        if data is None:
+            return self._mtime(transcript_dir)
+        return datetime.fromisoformat(record_from_dict(data).last_activity)
+
+    @staticmethod
+    def _mtime(path: Path) -> datetime:
+        return datetime.fromtimestamp(path.stat().st_mtime, timezone.utc)
 
     # -- helpers ---------------------------------------------------------
 

@@ -40,7 +40,9 @@ class TranscriptRecord:
     ``video_title``/``video_channel`` what YouTube said about it when it was
     linked (``None`` when the lookup failed). ``priming_terms`` is the
     Priming terms field as the reviewer last submitted it, kept so a failed
-    run doesn't lose it."""
+    run doesn't lose it. ``last_activity`` is when the record was last saved
+    (or exported): the Transcript is deleted a retention period after it
+    (ADR 0010)."""
 
     id: str
     session_id: str
@@ -58,6 +60,7 @@ class TranscriptRecord:
     video_title: str | None = None
     video_channel: str | None = None
     priming_terms: str = ""
+    last_activity: str = ""
 
     @property
     def reviewed_count(self) -> int:
@@ -155,6 +158,7 @@ def record_to_dict(record: TranscriptRecord) -> dict:
         "video_title": record.video_title,
         "video_channel": record.video_channel,
         "priming_terms": record.priming_terms,
+        "last_activity": record.last_activity,
     }
 
 
@@ -179,4 +183,5 @@ def record_from_dict(data: dict) -> TranscriptRecord:
         video_title=data.get("video_title"),
         video_channel=data.get("video_channel"),
         priming_terms=data.get("priming_terms", ""),
+        last_activity=data.get("last_activity") or data["created_at"],
     )

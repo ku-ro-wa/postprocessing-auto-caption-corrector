@@ -155,7 +155,10 @@ configuration (`qwen3.6-plus-p2`); set `OPENROUTER_CONFIG=NAME` (e.g. `flash-v4`
 another registered one, or `OPENROUTER_MODEL=SLUG` for prompt v4 with that
 model -- in the environment or `.env`, not both. An unknown name, or both
 set, stops `serve` at startup. Uploads and review state are
-private to your browser session and persist across server restarts. See
+private to your browser session and persist across server restarts, but
+only until 24 hours after you last upload, run, review, edit or export a
+transcript (`--retention-hours` or `CAPTION_CHECKER_RETENTION_HOURS` to
+change it), or until you delete it. See
 `docs/adr/0003-web-ui-upload-session-persisted.md` and
 `docs/adr/0004-llm-correction-manual-session-keyed.md`,
 `docs/adr/0008-metered-free-tier-on-the-server-key.md` and
