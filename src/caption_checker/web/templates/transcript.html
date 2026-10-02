@@ -53,9 +53,17 @@
   {% if refusal %}
     <div class="error" role="alert">
       {% if refusal == "allowance" %}
-        Your Free tier Allowance is used up: this Transcript is {{ word_count|thousands }} words and you have {{ words_left|thousands }} left today.
+        Your Free tier Allowance is used up: this Transcript is {{ word_count|thousands }} words and you have {{ words_left|thousands }} left.
+        {% if refusal_wait %}
+          You'll have enough in {{ refusal_wait|duration }}, as your earlier runs age out of your rolling 24 hours.
+        {% elif word_count > limits.allowance_words * 1.2 %}
+          This Transcript is longer than the Free tier allows in 24 hours.
+        {% endif %}
       {% else %}
-        Today's Free tier Daily budget is used up, for everyone.
+        The Free tier's Daily budget, shared by everyone, is used up.
+        {% if refusal_wait %}
+          Enough of it should free up in about {{ refusal_wait|duration }}.
+        {% endif %}
       {% endif %}
       Enter your own OpenRouter key below to run it now.
       {% if limits and limits.donate_url %}
@@ -70,7 +78,7 @@
     <p class="muted">
       Your key stays in this browser and is sent only with each run; it is never stored on the server.
       {% if words_left is not none %}
-        Leave it blank to use the Free tier: <strong>{{ words_left|thousands }} of {{ limits.allowance_words|thousands }} words left today</strong>.
+        Leave it blank to use the Free tier: <strong>{{ words_left|thousands }} of {{ limits.allowance_words|thousands }} words left in your rolling 24 hours</strong>{% if next_return %}; {{ next_return[1]|thousands }} come back in {{ next_return[0]|duration }}{% endif %}.
       {% elif has_server_key %}
         Leave it blank to use the server's own key.
       {% else %}

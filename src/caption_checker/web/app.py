@@ -8,8 +8,10 @@ below rather than being repeated per route.
 
 from __future__ import annotations
 
+import math
 import os
 import re
+from datetime import timedelta
 from pathlib import Path
 
 from fastapi import FastAPI, Form, HTTPException, Request, UploadFile
@@ -38,6 +40,16 @@ def _fmt_ts(seconds: float) -> str:
     m, rem = divmod(rem, 60_000)
     s, ms = divmod(rem, 1000)
     return f"{h:02d}:{m:02d}:{s:02d}.{ms:03d}"
+
+
+def _duration(span: timedelta) -> str:
+    """A wait as the page states it, rounded up to the minute so it's never
+    early: "5 h 12 min", "19 h", "40 min"."""
+    minutes = max(1, math.ceil(span.total_seconds() / 60))
+    h, m = divmod(minutes, 60)
+    if not h:
+        return f"{m} min"
+    return f"{h} h {m} min" if m else f"{h} h"
 
 
 def _highlight(context: str, span: str) -> Markup:
@@ -121,6 +133,7 @@ def create_app(
     templates.env.filters["ts"] = lambda td: _fmt_ts(td.total_seconds())
     templates.env.filters["highlight"] = _highlight
     templates.env.filters["thousands"] = lambda n: f"{n:,}"
+    templates.env.filters["duration"] = _duration
     templates.env.globals["source_video"] = source_video
 
     def load_or_404(session_id: str, transcript_id: str) -> TranscriptRecord:
@@ -164,11 +177,10 @@ def create_app(
         request: Request, record: TranscriptRecord, *, status_code: int = 200, **extra: object
     ) -> Response:
         has_server_key = bool(os.environ.get("OPENROUTER_API_KEY"))
-        words_left = (
-            free_tier.words_left(record.session_id)
-            if free_tier is not None and has_server_key
-            else None
-        )
+        words_left = next_return = None
+        if free_tier is not None and has_server_key:
+            words_left = free_tier.words_left(record.session_id)
+            next_return = free_tier.next_return(record.session_id)
         return templates.TemplateResponse(
             request,
             "transcript.html",
@@ -180,6 +192,7 @@ def create_app(
                 "has_server_key": has_server_key,
                 "word_count": service.transcript_word_count(storage, record),
                 "words_left": words_left,
+                "next_return": next_return,
                 "limits": limits,
                 "suggested_priming_terms": service.suggested_priming_terms(record),
                 **extra,
@@ -258,7 +271,9 @@ def create_app(
                         priming_terms=terms,
                     )
             except LimitReached as exc:
-                return review_page(request, record, status_code=429, refusal=exc.limit)
+                return review_page(
+                    request, record, status_code=429, refusal=exc.limit, refusal_wait=exc.wait
+                )
             except (MissingAPIKeyError, CorrectorError):
                 pass  # record.correct_error already set by run_correction
 

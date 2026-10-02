@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+from datetime import timedelta
 from pathlib import Path
 
 import pytest
@@ -655,6 +656,10 @@ class TestFreeTier:
         record = _record(tmp_path, client, transcript_id)
         return service.transcript_word_count(_storage_for(tmp_path), record)
 
+    def _sample_words(self, tmp_path: Path) -> int:
+        client = _make_client(tmp_path / "count", limits=None)
+        return self._words(tmp_path / "count", client, _upload(client))
+
     def _ledger(self, tmp_path: Path) -> list[str]:
         path = tmp_path / "data" / LEDGER_FILENAME
         return path.read_text().splitlines() if path.exists() else []
@@ -670,7 +675,8 @@ class TestFreeTier:
         assert len(self._ledger(tmp_path)) == 1
         # The count shows where the next Correct would be sent.
         page = client.get(f"/transcripts/{_upload(client)}").text
-        assert f"{10_000 - words:,} of 10,000 words left today" in page
+        assert f"{10_000 - words:,} of 10,000 words left in your rolling 24 hours" in page
+        assert f"{words:,} come back in 24 h" in page
 
     def test_the_page_shows_words_left_and_this_transcripts_words(
         self, tmp_path: Path
@@ -681,7 +687,7 @@ class TestFreeTier:
 
         page = client.get(f"/transcripts/{transcript_id}").text
 
-        assert "5,000 of 5,000 words left today" in page
+        assert "5,000 of 5,000 words left in your rolling 24 hours" in page
         assert f"This Transcript is {words:,} words" in page
         assert "local/dev fallback" not in page
 
@@ -695,10 +701,27 @@ class TestFreeTier:
 
         assert response.status_code == 429
         assert "Free tier Allowance is used up" in response.text
+        assert "longer than the Free tier allows" in response.text
         assert "Enter your own OpenRouter key" in response.text
         assert "Donate" not in response.text
         assert not _record(tmp_path, client, transcript_id).corrected
         assert self._ledger(tmp_path) == []
+
+    def test_an_allowance_refusal_says_when_this_transcript_fits(
+        self, tmp_path: Path
+    ) -> None:
+        # An Allowance of exactly one sample: the first run spends it, and the
+        # second fits once that run ages out of the window.
+        words = self._sample_words(tmp_path)
+        client = _make_client(
+            tmp_path, reader=StubReader(), limits=Limits(allowance_words=words)
+        )
+        client.post(f"/transcripts/{_upload(client)}/correct", data={})
+
+        response = client.post(f"/transcripts/{_upload(client)}/correct", data={})
+
+        assert response.status_code == 429
+        assert "You'll have enough in 24 h" in response.text
 
     def test_a_run_over_the_daily_budget_is_refused(self, tmp_path: Path) -> None:
         client = _make_client(
@@ -711,7 +734,8 @@ class TestFreeTier:
         response = client.post(f"/transcripts/{transcript_id}/correct", data={})
 
         assert response.status_code == 429
-        assert "Daily budget is used up" in response.text
+        assert "Daily budget" in response.text
+        assert "is used up" in response.text
         assert 'href="https://example.org/give"' in response.text
 
     def test_a_run_on_the_visitors_own_key_is_never_metered(
@@ -739,7 +763,7 @@ class TestFreeTier:
         page = client.get(f"/transcripts/{transcript_id}").text
         client.post(f"/transcripts/{transcript_id}/correct", data={})
 
-        assert "words left today" not in page
+        assert "words left in your rolling 24 hours" not in page
         assert _record(tmp_path, client, transcript_id).corrected
         assert self._ledger(tmp_path) == []
 
@@ -765,7 +789,7 @@ class TestFreeTier:
 
         page = client.get(f"/transcripts/{transcript_id}").text
 
-        assert "words left today" not in page
+        assert "words left in your rolling 24 hours" not in page
         assert "no Free tier" in page
 
 
@@ -1429,3 +1453,19 @@ class TestServeLimits:
                 donate_url="https://example.org/give",
             )
         ]
+
+
+@pytest.mark.parametrize(
+    ("span", "shown"),
+    [
+        (timedelta(hours=5, minutes=12), "5 h 12 min"),
+        (timedelta(hours=19), "19 h"),
+        (timedelta(minutes=40), "40 min"),
+        (timedelta(hours=2, seconds=1), "2 h 1 min"),  # rounded up, never early
+        (timedelta(seconds=5), "1 min"),
+    ],
+)
+def test_waits_are_shown_rounded_up_to_the_minute(span: timedelta, shown: str) -> None:
+    from caption_checker.web.app import _duration
+
+    assert _duration(span) == shown

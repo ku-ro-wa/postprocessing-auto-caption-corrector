@@ -42,11 +42,14 @@ class Limits:
 
 
 class LimitReached(Exception):
-    """A Free tier run was refused before it started: ``limit`` says which."""
+    """A Free tier run was refused before it started: ``limit`` says which,
+    and ``wait`` how long until enough of it comes back for this run -- None
+    when the run would never fit, or only runs still in flight hold it."""
 
-    def __init__(self, limit: Limit) -> None:
+    def __init__(self, limit: Limit, wait: timedelta | None = None) -> None:
         super().__init__(f"Free tier {limit.replace('_', ' ')} used up")
         self.limit = limit
+        self.wait = wait
 
 
 @dataclass(frozen=True)
@@ -101,6 +104,16 @@ class FreeTier:
         with self._lock:
             return self._words_left(session_id)
 
+    def next_return(self, session_id: str) -> tuple[timedelta, int] | None:
+        """How long until the Session's oldest charged run in the window ages
+        out, and the words it gives back; None when nothing is charged."""
+        with self._lock:
+            charged = [e for e in self._session_recent(session_id) if e.words]
+            if not charged:
+                return None
+            oldest = min(charged, key=lambda e: e.at)
+            return self._until_aged_out(oldest), oldest.words
+
     # -- a run -----------------------------------------------------------
 
     def reserve(self, session_id: str, words: int, *, estimate_usd: float) -> Reservation:
@@ -108,10 +121,10 @@ class FreeTier:
         both limits and hold them for it, or raise :class:`LimitReached`."""
         with self._lock:
             left = self._words_left(session_id)
-            if words > left + GRACE * self.limits.allowance_words:
-                raise LimitReached("allowance")
-            if self._spent_usd() + estimate_usd > self.limits.daily_budget_usd:
-                raise LimitReached("daily_budget")
+            if not self._allowance_fits(words, left):
+                raise LimitReached("allowance", self._allowance_wait(session_id, words))
+            if not self._budget_fits(estimate_usd, self._spent_usd()):
+                raise LimitReached("daily_budget", self._budget_wait(estimate_usd))
             reservation = Reservation(session_id, min(words, left), estimate_usd, words)
             self._pending.append(reservation)
             return reservation
@@ -140,15 +153,47 @@ class FreeTier:
         since = self._clock() - WINDOW
         return [e for e in self._entries if e.at > since]
 
+    def _session_recent(self, session_id: str) -> list[_Entry]:
+        return [e for e in self._recent() if e.session_id == session_id]
+
+    def _until_aged_out(self, entry: _Entry) -> timedelta:
+        return entry.at + WINDOW - self._clock()
+
+    def _words_used(self, session_id: str) -> int:
+        used = sum(e.words for e in self._session_recent(session_id))
+        return used + sum(r.words for r in self._pending if r.session_id == session_id)
+
     def _words_left(self, session_id: str) -> int:
-        used = sum(e.words for e in self._recent() if e.session_id == session_id)
-        used += sum(r.words for r in self._pending if r.session_id == session_id)
-        return max(0, self.limits.allowance_words - used)
+        return max(0, self.limits.allowance_words - self._words_used(session_id))
 
     def _spent_usd(self) -> float:
         return sum(e.cost_usd for e in self._recent()) + sum(
             r.estimate_usd for r in self._pending
         )
+
+    def _allowance_fits(self, words: int, left: int) -> bool:
+        return words <= left + GRACE * self.limits.allowance_words
+
+    def _budget_fits(self, estimate_usd: float, spent_usd: float) -> bool:
+        return spent_usd + estimate_usd <= self.limits.daily_budget_usd
+
+    def _allowance_wait(self, session_id: str, words: int) -> timedelta | None:
+        """Age the Session's runs out oldest first until ``words`` fits."""
+        used = self._words_used(session_id)
+        for entry in sorted(self._session_recent(session_id), key=lambda e: e.at):
+            used -= entry.words
+            if self._allowance_fits(words, max(0, self.limits.allowance_words - used)):
+                return self._until_aged_out(entry)
+        return None
+
+    def _budget_wait(self, estimate_usd: float) -> timedelta | None:
+        """Age every run out oldest first until ``estimate_usd`` fits."""
+        spent = self._spent_usd()
+        for entry in sorted(self._recent(), key=lambda e: e.at):
+            spent -= entry.cost_usd
+            if self._budget_fits(estimate_usd, spent):
+                return self._until_aged_out(entry)
+        return None
 
     def _load(self) -> list[_Entry]:
         if not self.path.is_file():

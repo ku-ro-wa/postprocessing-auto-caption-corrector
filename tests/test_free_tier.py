@@ -180,6 +180,71 @@ class TestConcurrentRuns:
         tier.reserve("s1", 8_000, estimate_usd=0.2)
 
 
+class TestWhenWordsComeBack:
+    """The rolling window, made visible: how long until a Session's words
+    come back, and until a refused run would fit."""
+
+    def test_a_fresh_session_has_nothing_coming_back(
+        self, tmp_path: Path, clock: _Clock
+    ) -> None:
+        assert _tier(tmp_path, clock).next_return("s1") is None
+
+    def test_the_oldest_runs_words_come_back_24_hours_after_it(
+        self, tmp_path: Path, clock: _Clock
+    ) -> None:
+        tier = _tier(tmp_path, clock)
+        _run(tier, "s1", 4_000)
+        clock.now += timedelta(hours=1)
+        _run(tier, "s1", 2_000)
+        clock.now += timedelta(hours=4)
+        assert tier.next_return("s1") == (timedelta(hours=19), 4_000)
+
+    def test_a_run_that_charged_no_words_returns_none(
+        self, tmp_path: Path, clock: _Clock
+    ) -> None:
+        tier = _tier(tmp_path, clock)
+        _run(tier, "s1", 4_000, produced=False)
+        assert tier.next_return("s1") is None
+
+    @pytest.mark.parametrize(
+        ("words", "wait"),
+        [
+            (3_000, timedelta(hours=21)),  # needs 1,000 back: the first run's
+            (7_000, timedelta(hours=21)),  # needs 5,000: still the first run's 6,000
+            (9_000, timedelta(hours=23)),  # needs 7,000: both runs
+            (12_001, None),  # past Allowance + grace: never fits
+        ],
+    )
+    def test_a_refused_run_says_how_long_until_it_fits(
+        self, tmp_path: Path, clock: _Clock, words: int, wait: timedelta | None
+    ) -> None:
+        tier = _tier(tmp_path, clock)
+        _run(tier, "s1", 6_000)
+        clock.now += timedelta(hours=2)
+        _run(tier, "s1", 4_000)
+        clock.now += timedelta(hours=1)
+        with pytest.raises(LimitReached) as exc:
+            tier.reserve("s1", words, estimate_usd=0.01)
+        assert exc.value.wait == wait
+
+    @pytest.mark.parametrize(
+        ("estimate", "wait"),
+        [(0.05, timedelta(hours=21)), (0.12, timedelta(hours=23)), (0.3, None)],
+    )
+    def test_a_budget_refusal_says_how_long_until_it_fits(
+        self, tmp_path: Path, clock: _Clock, estimate: float, wait: timedelta | None
+    ) -> None:
+        tier = _tier(tmp_path, clock, budget=0.25)
+        _run(tier, "s1", 100, cost=0.10)
+        clock.now += timedelta(hours=2)
+        _run(tier, "s2", 100, cost=0.15)
+        clock.now += timedelta(hours=1)
+        with pytest.raises(LimitReached) as exc:
+            tier.reserve("s3", 100, estimate_usd=estimate)
+        assert exc.value.limit == "daily_budget"
+        assert exc.value.wait == wait
+
+
 class TestLedger:
     def test_one_entry_per_run_with_time_session_words_and_cost(
         self, tmp_path: Path, clock: _Clock
