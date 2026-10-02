@@ -35,7 +35,7 @@
   input[type=file] { font: inherit; font-size: 0.9rem; max-width: 100%; }
   input[type=file]::file-selector-button { margin-right: 0.75rem; }
   .upload-drop { border: 2px dashed var(--border); border-radius: 10px; padding: 1.25rem; text-align: center; background: #8880; transition: border-color 0.12s, background 0.12s; }
-  .upload-drop:hover, .upload-drop:focus-within { border-color: var(--accent); background: #3563e90d; }
+  .upload-drop:hover, .upload-drop:focus-within { border-color: var(--accent); background: color-mix(in srgb, var(--accent) 5%, transparent); }
   .upload-drop input[type=file]::file-selector-button { background: var(--accent); border-color: var(--accent); color: var(--accent-text); padding: 0.55rem 1.2rem; }
   .upload-drop input[type=file]::file-selector-button:hover { background: var(--accent-hover); border-color: var(--accent-hover); }
   .upload-form { display: grid; gap: 0.9rem; }
@@ -48,7 +48,7 @@
   .steps li { counter-increment: step; border: 1px solid var(--border); border-radius: 8px; padding: 0.75rem 1rem; }
   .steps li::before { content: counter(step); display: inline-grid; place-items: center; width: 1.6rem; height: 1.6rem; margin-right: 0.5rem; border-radius: 50%; background: var(--accent); color: var(--accent-text); font-weight: 700; font-size: 0.85rem; }
   .steps strong { font-weight: 700; }
-  footer { margin-top: 3rem; padding-top: 1rem; border-top: 1px solid #ccc5; }
+  footer { margin-top: 3rem; padding-top: 1rem; border-top: 1px solid var(--border); }
   .source-player { position: sticky; top: 0; z-index: 10; background: Canvas; padding: 0.5rem 0; margin-bottom: 1rem; border-bottom: 1px solid #ccc5; }
   .source-video-controls form { display: flex; gap: 0.5rem; margin-bottom: 0.5rem; }
   .source-video-controls input[type=text] { flex: 1; }
@@ -83,7 +83,7 @@
 </header>
 {% block content %}{% endblock %}
 <footer class="muted">
-  {{ app_name }} · {% if feedback_email %}<a href="mailto:{{ feedback_email }}?subject={{ (app_name ~ ' feedback')|urlencode }}">Send feedback</a>{% endif %}
+  {{ app_name }}{% if feedback_email %} · <a href="mailto:{{ feedback_email }}?subject={{ (app_name ~ ' feedback')|urlencode }}">Send feedback</a>{% endif %}
 </footer>
 </body>
 </html>

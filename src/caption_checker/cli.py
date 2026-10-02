@@ -398,7 +398,7 @@ def correct(
 )
 @click.option(
     "--app-name",
-    default="Misheard",
+    default="Misheard",  # web.app.DEFAULT_APP_NAME; not imported, to keep FastAPI lazy
     show_default=True,
     envvar="CAPTION_CHECKER_APP_NAME",
     help="The name shown on every page.",
@@ -459,7 +459,7 @@ def serve(
                 MAX_UPLOAD_BYTES if max_upload_mb is None else int(max_upload_mb * 1024 * 1024)
             ),
             app_name=app_name,
-            feedback_email=feedback_email or None,
+            feedback_email=feedback_email,
         )
     except ConfigError as exc:
         raise click.ClickException(str(exc)) from exc
