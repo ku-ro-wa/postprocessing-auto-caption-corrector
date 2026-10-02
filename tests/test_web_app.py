@@ -1845,6 +1845,44 @@ class TestUsageTally:
         client.get(f"/transcripts/{transcript_id}/export")
         assert self._lines(tmp_path) == ["upload", "correct", "export"]
 
+    def test_only_a_successful_correct_is_counted(self, tmp_path: Path) -> None:
+        client = _make_client(tmp_path, reader=StubReader(garbage=True))
+        transcript_id = _upload(client)
+        client.post(f"/transcripts/{transcript_id}/correct", data={"api_key": "sk-or-test"})
+        assert self._lines(tmp_path) == ["upload"]
+
+    def test_a_limit_refused_correct_is_not_counted(
+        self, tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+    ) -> None:
+        monkeypatch.setenv("OPENROUTER_API_KEY", "server-key")
+        client = _make_client(
+            tmp_path, reader=StubReader(), limits=Limits(allowance_words=1)
+        )
+        transcript_id = _upload(client)
+        response = client.post(f"/transcripts/{transcript_id}/correct", data={})
+        assert response.status_code == 429
+        assert self._lines(tmp_path) == ["upload"]
+
+    def test_downloading_the_same_export_again_is_not_counted_again(
+        self, tmp_path: Path
+    ) -> None:
+        client = _make_client(tmp_path)
+        transcript_id = _upload(client)
+        client.get(f"/transcripts/{transcript_id}/export")
+        client.get(f"/transcripts/{transcript_id}/export")
+        assert self._lines(tmp_path) == ["upload", "export"]
+
+    def test_exporting_again_after_a_change_is_counted(self, tmp_path: Path) -> None:
+        client = _make_client(tmp_path)
+        transcript_id = _upload(client)
+        client.get(f"/transcripts/{transcript_id}/export")
+        client.post(
+            f"/transcripts/{transcript_id}/flags/0/decision",
+            data={"action": "accept", "text": "zzz replacement"},
+        )
+        client.get(f"/transcripts/{transcript_id}/export")
+        assert self._lines(tmp_path) == ["upload", "export", "export"]
+
     def test_a_refused_upload_and_a_keyless_correct_are_not_counted(
         self, tmp_path: Path, monkeypatch: pytest.MonkeyPatch
     ) -> None:

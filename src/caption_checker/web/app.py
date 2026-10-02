@@ -220,6 +220,9 @@ def create_app(
     # can't start (and charge for) another. One server process (ADR 0010).
     running: set[tuple[str, str]] = set()
     running_lock = threading.Lock()
+    # Exports already tallied, by Transcript and file content. Memory only: a
+    # restart forgets them and at worst counts one download twice.
+    exported: set[tuple[str, int]] = set()
 
     def load_or_404(session_id: str, transcript_id: str) -> TranscriptRecord:
         record = storage.load_transcript(session_id, transcript_id)
@@ -369,7 +372,6 @@ def create_app(
             )
             storage.save_transcript(record)
         else:
-            usage.record("correct")
             try:
                 if own_key or free_tier is None:
                     service.run_correction(
@@ -396,6 +398,8 @@ def create_app(
                 )
             except (MissingAPIKeyError, CorrectorError):
                 pass  # record.correct_error already set by run_correction
+            else:
+                usage.record("correct")  # only a run that finished
 
         return RedirectResponse(f"/transcripts/{transcript_id}", status_code=303)
 
@@ -470,7 +474,12 @@ def create_app(
     def export(request: Request, transcript_id: str) -> Response:
         record = load_or_404(request.state.session_id, transcript_id)
         content = service.export_transcript(storage, record)
-        usage.record("export")
+        # A repeat download of the same file isn't another Export; one after
+        # a change to the Transcript is.
+        counted = (transcript_id, hash(content))
+        if counted not in exported:
+            exported.add(counted)
+            usage.record("export")
         stem = Path(record.filename).stem
         filename = f"{stem}.corrected.{record.format}"
         return Response(
