@@ -8,16 +8,10 @@ from caption_checker.web.free_tier import LEDGER_FILENAME
 from caption_checker.web.models import TranscriptRecord, record_from_dict, record_to_dict
 from caption_checker.web.storage import Storage
 
+from fake_clock import FakeClock
+
 DAY = timedelta(hours=24)
 START = datetime(2026, 10, 1, 9, 0, tzinfo=timezone.utc)
-
-
-class _Clock:
-    def __init__(self, now: datetime = START) -> None:
-        self.now = now
-
-    def __call__(self) -> datetime:
-        return self.now
 
 
 def _save_new(storage: Storage, session_id: str) -> TranscriptRecord:
@@ -40,7 +34,7 @@ def _backdate(path: Path, age: timedelta) -> None:
 
 class TestLastActivity:
     def test_saving_a_transcript_stamps_its_last_activity(self, tmp_path: Path) -> None:
-        clock = _Clock()
+        clock = FakeClock(START)
         storage = Storage(tmp_path, clock=clock)
         record = _save_new(storage, storage.create_session())
 
@@ -63,7 +57,7 @@ class TestLastActivity:
 
 class TestSweep:
     def test_an_expired_transcript_is_gone_after_a_sweep(self, tmp_path: Path) -> None:
-        clock = _Clock()
+        clock = FakeClock(START)
         storage = Storage(tmp_path, clock=clock)
         record = _save_new(storage, storage.create_session())
 
@@ -74,7 +68,7 @@ class TestSweep:
         assert storage.original_path(record.session_id, record.id) is None
 
     def test_a_fresh_transcript_survives(self, tmp_path: Path) -> None:
-        clock = _Clock()
+        clock = FakeClock(START)
         storage = Storage(tmp_path, clock=clock)
         record = _save_new(storage, storage.create_session())
 
@@ -84,7 +78,7 @@ class TestSweep:
         assert storage.load_transcript(record.session_id, record.id) is not None
 
     def test_activity_resets_the_clock(self, tmp_path: Path) -> None:
-        clock = _Clock()
+        clock = FakeClock(START)
         storage = Storage(tmp_path, clock=clock)
         record = _save_new(storage, storage.create_session())
 
@@ -96,7 +90,7 @@ class TestSweep:
         assert storage.load_transcript(record.session_id, record.id) is not None
 
     def test_the_retention_period_is_the_callers(self, tmp_path: Path) -> None:
-        clock = _Clock()
+        clock = FakeClock(START)
         storage = Storage(tmp_path, clock=clock)
         record = _save_new(storage, storage.create_session())
 
@@ -106,7 +100,7 @@ class TestSweep:
         assert storage.load_transcript(record.session_id, record.id) is None
 
     def test_only_expired_transcripts_go(self, tmp_path: Path) -> None:
-        clock = _Clock()
+        clock = FakeClock(START)
         storage = Storage(tmp_path, clock=clock)
         session_id = storage.create_session()
         old = _save_new(storage, session_id)
@@ -121,7 +115,7 @@ class TestSweep:
         assert storage.session_exists(session_id)
 
     def test_the_spend_ledger_is_never_touched(self, tmp_path: Path) -> None:
-        clock = _Clock()
+        clock = FakeClock(START)
         storage = Storage(tmp_path, clock=clock)
         _save_new(storage, storage.create_session())
         ledger = tmp_path / LEDGER_FILENAME
@@ -134,7 +128,7 @@ class TestSweep:
 
     def test_a_session_left_empty_is_removed_once_idle(self, tmp_path: Path) -> None:
         # Real time: an empty Session's idleness comes from its directories.
-        clock = _Clock(datetime.now(timezone.utc) - DAY)
+        clock = FakeClock(datetime.now(timezone.utc) - DAY)
         storage = Storage(tmp_path, clock=clock)
         session_id = storage.create_session()
         _save_new(storage, session_id)
@@ -209,7 +203,7 @@ class TestRacesWithDeletion:
     def test_touch_stamps_activity_without_rewriting_the_record(
         self, tmp_path: Path
     ) -> None:
-        clock = _Clock()
+        clock = FakeClock(START)
         storage = Storage(tmp_path, clock=clock)
         record = _save_new(storage, storage.create_session())
         stale = storage.load_transcript(record.session_id, record.id)
@@ -239,7 +233,7 @@ class TestRacesWithDeletion:
 
 class TestSweepRobustness:
     def test_an_unreadable_record_does_not_stop_the_sweep(self, tmp_path: Path) -> None:
-        clock = _Clock()
+        clock = FakeClock(START)
         storage = Storage(tmp_path, clock=clock)
         session_id = storage.create_session()
         broken = _save_new(storage, session_id)

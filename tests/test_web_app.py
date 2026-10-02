@@ -14,9 +14,12 @@ from caption_checker.web.models import TranscriptRecord
 from caption_checker.web.source_video import MetadataLookup, VideoMetadata
 from caption_checker.web.storage import Storage
 
+from fake_clock import FakeClock
+
 DATA_DIR = Path(__file__).parent / "data"
 SAMPLE = DATA_DIR / "sample_lecture.srt"
 SAMPLE_VTT = DATA_DIR / "sample_lecture.vtt"
+START = datetime(2026, 10, 1, 9, 0, tzinfo=timezone.utc)
 
 
 def _storage_for(tmp_path: Path) -> Storage:
@@ -597,18 +600,10 @@ class TestDelete:
         assert storage.original_path(session_id, transcript_id) is None
 
 
-class _Clock:
-    def __init__(self) -> None:
-        self.now = datetime(2026, 10, 1, 9, 0, tzinfo=timezone.utc)
-
-    def __call__(self) -> datetime:
-        return self.now
-
-
 class TestRetention:
     """#46: a Transcript is deleted 24 hours after its last activity."""
 
-    def _client(self, tmp_path: Path, clock: _Clock) -> tuple[TestClient, Storage]:
+    def _client(self, tmp_path: Path, clock: FakeClock) -> tuple[TestClient, Storage]:
         storage = Storage(tmp_path / "data", clock=clock)
         return TestClient(create_app(storage, video_lookup=_no_metadata)), storage
 
@@ -624,7 +619,7 @@ class TestRetention:
     def test_activity_resets_the_clock(
         self, tmp_path: Path, method: str, path: str, data: dict[str, str] | None
     ) -> None:
-        clock = _Clock()
+        clock = FakeClock(START)
         storage = Storage(tmp_path / "data", clock=clock)
         app = create_app(storage, reader=StubReader(), video_lookup=_no_metadata)
         client = TestClient(app)
@@ -640,7 +635,7 @@ class TestRetention:
         assert storage.load_transcript(session_id, transcript_id) is not None
 
     def test_viewing_is_not_activity(self, tmp_path: Path) -> None:
-        clock = _Clock()
+        clock = FakeClock(START)
         client, storage = self._client(tmp_path, clock)
         transcript_id = _upload(client)
 
@@ -652,7 +647,7 @@ class TestRetention:
         assert client.get(f"/transcripts/{transcript_id}").status_code == 404
 
     def test_expired_transcripts_are_swept_at_startup(self, tmp_path: Path) -> None:
-        clock = _Clock()
+        clock = FakeClock(START)
         client, _ = self._client(tmp_path, clock)
         transcript_id = _upload(client)
 
@@ -663,7 +658,7 @@ class TestRetention:
             assert restarted.get(f"/transcripts/{transcript_id}").status_code == 404
 
     def test_the_retention_period_is_configurable(self, tmp_path: Path) -> None:
-        clock = _Clock()
+        clock = FakeClock(START)
         client, _ = self._client(tmp_path, clock)
         transcript_id = _upload(client)
 
@@ -674,7 +669,7 @@ class TestRetention:
             assert restarted.get(f"/transcripts/{transcript_id}").status_code == 404
 
     def test_a_fresh_transcript_survives_startup(self, tmp_path: Path) -> None:
-        clock = _Clock()
+        clock = FakeClock(START)
         client, _ = self._client(tmp_path, clock)
         transcript_id = _upload(client)
 
