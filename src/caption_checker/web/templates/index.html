@@ -1,18 +1,34 @@
 {% extends "base.html" %}
-{% block title %}caption-checker · transcripts{% endblock %}
+{% block title %}{{ app_name }} · Find and fix the words your auto-captions got wrong{% endblock %}
 {% block content %}
+
+<section class="hero">
+  <h1>{{ app_name }}</h1>
+  <p class="tagline">Find and fix the words your auto-captions got wrong.</p>
+  <p>For YouTubers who fix their own auto-captions: it flags the names, jargon and mishearings and proposes the correction, so you review a short list instead of re-reading the whole video.</p>
+  <p class="muted">Works with any SRT or VTT file.</p>
+</section>
+
+<section>
+  <h2>How it works</h2>
+  <ol class="steps">
+    <li><strong>Upload</strong> your SRT or VTT file. It is scanned at once for words that look misheard.</li>
+    <li><strong>Correct</strong> asks an LLM to read the transcript and judge each Flag, and to find the ones the scan missed.</li>
+    <li><strong>Review and export:</strong> accept or reject each Flag, then export the corrected file.</li>
+  </ol>
+</section>
 
 <section>
   <h2>Upload a transcript</h2>
   {% if upload_error %}
     <div class="error">{{ upload_error }}</div>
   {% endif %}
-  <form action="/transcripts" method="post" enctype="multipart/form-data">
-    <input type="file" name="file" accept=".srt,.vtt" required>
+  <form class="upload-form" action="/transcripts" method="post" enctype="multipart/form-data">
+    <div class="upload-drop"><input type="file" name="file" accept=".srt,.vtt" required aria-label="Transcript file (SRT or VTT)"></div>
     <label>Source video, as a YouTube link (optional):
       <input type="text" name="video_link" value="{{ video_link or '' }}" placeholder="https://youtu.be/...">
     </label>
-    <button class="btn" type="submit">Upload &amp; scan</button>
+    <div><button class="btn btn-primary" type="submit">Upload &amp; scan</button></div>
   </form>
   <p class="muted">English captions only: the detectors and the known-good word lists are English.</p>
   <p class="muted">With a Source video, you can play each Flag's span on the review page. You can add, change or remove it there later.</p>

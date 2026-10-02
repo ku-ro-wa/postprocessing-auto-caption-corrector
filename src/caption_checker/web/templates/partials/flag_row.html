@@ -32,7 +32,7 @@
     hx-swap="outerHTML"
   >
     <input type="text" name="text" value="{{ row.decision.text if row.decision.status == 'accepted' else row.default_text }}">
-    <button class="btn" type="submit" name="action" value="accept">Accept</button>
+    <button class="btn btn-primary" type="submit" name="action" value="accept">Accept</button>
     <button class="btn" type="submit" name="action" value="reject">Reject</button>
   </form>
   {% endif %}

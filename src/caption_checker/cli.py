@@ -396,6 +396,19 @@ def correct(
     envvar="CAPTION_CHECKER_MAX_UPLOAD_MB",
     help="Refuse uploads larger than this many MB (default 2; ADR 0010).",
 )
+@click.option(
+    "--app-name",
+    default="Misheard",
+    show_default=True,
+    envvar="CAPTION_CHECKER_APP_NAME",
+    help="The name shown on every page.",
+)
+@click.option(
+    "--feedback-email",
+    default=None,
+    envvar="CAPTION_CHECKER_FEEDBACK_EMAIL",
+    help="Address the feedback link mails; no link is shown without one.",
+)
 def serve(
     host: str,
     port: int,
@@ -407,6 +420,8 @@ def serve(
     retention_hours: float,
     secure_cookie: bool,
     max_upload_mb: float | None,
+    app_name: str,
+    feedback_email: str | None,
 ) -> None:
     """Start the web review UI. Runs on the server's own key are metered
     as a Free tier unless --no-limits is given, and Transcripts are deleted
@@ -443,10 +458,34 @@ def serve(
             max_upload_bytes=(
                 MAX_UPLOAD_BYTES if max_upload_mb is None else int(max_upload_mb * 1024 * 1024)
             ),
+            app_name=app_name,
+            feedback_email=feedback_email or None,
         )
     except ConfigError as exc:
         raise click.ClickException(str(exc)) from exc
     uvicorn.run(app, host=host, port=port)
+
+
+@main.command()
+@click.option(
+    "--data-dir",
+    type=click.Path(file_okay=False, path_type=Path),
+    default=None,
+    help="The server's data directory (default: as `serve`).",
+)
+def usage(data_dir: Path | None) -> None:
+    """Print the web UI's daily counts of uploads, Correct runs and Exports
+    (UTC days), from the tally the server keeps (ADR 0010)."""
+    from caption_checker.web.storage import default_data_dir
+    from caption_checker.web.usage import EVENTS, UsageLog
+
+    days = UsageLog(data_dir or default_data_dir()).daily_counts()
+    if not days:
+        click.echo("No usage recorded yet.")
+        return
+    click.echo(f"{'date':<12}" + "".join(f"{event:>9}" for event in EVENTS))
+    for day, counts in days.items():
+        click.echo(f"{day.isoformat():<12}" + "".join(f"{counts.get(e, 0):>9}" for e in EVENTS))
 
 
 @main.command("eval")

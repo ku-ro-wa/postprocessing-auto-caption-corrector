@@ -32,6 +32,10 @@ from caption_checker.web import source_video
 from caption_checker.web.free_tier import WINDOW, FreeTier, LimitReached, Limits
 from caption_checker.web.models import TranscriptRecord
 from caption_checker.web.storage import Storage
+from caption_checker.web.usage import UsageLog
+
+#: The product's public name (ADR 0010); a setting, not a constant of the pages.
+DEFAULT_APP_NAME = "Misheard"
 
 COOKIE_NAME = "cc_session"
 COOKIE_MAX_AGE = 60 * 60 * 24 * 180  # 180 days
@@ -131,6 +135,8 @@ def create_app(
     retention: timedelta = RETENTION,
     secure_cookie: bool = False,
     max_upload_bytes: int = MAX_UPLOAD_BYTES,
+    app_name: str = DEFAULT_APP_NAME,
+    feedback_email: str | None = None,
 ) -> FastAPI:
     """``reader`` lets tests inject a ``StubReader`` (or any other
     ``Reader``) at the same seam the CLI's Read-through tests use — no route
@@ -150,6 +156,10 @@ def create_app(
     ``secure_cookie`` marks the Session cookie ``Secure`` (for a server
     reached over HTTPS; plain-HTTP local use leaves it off), and uploads
     over ``max_upload_bytes`` are refused before parsing (ADR 0010).
+
+    ``app_name`` heads every page; the footer links ``feedback_email`` as a
+    mailto, and has no feedback link while it is None. Each upload, Correct
+    run and Export is tallied to ``usage.log`` at ``storage.root`` (ADR 0010).
 
     While the app runs, Transcripts idle for ``retention`` are swept at
     startup and every ``SWEEP_INTERVAL`` after (ADR 0010). An emptied
@@ -187,7 +197,9 @@ def create_app(
         finally:
             task.cancel()
 
-    app = FastAPI(title="caption-checker", lifespan=lifespan)
+    usage = UsageLog(storage.root)
+
+    app = FastAPI(title=app_name, lifespan=lifespan)
     app.add_middleware(_SessionCookieMiddleware, storage=storage, secure=secure_cookie)
 
     @app.api_route(HEALTH_PATH, methods=["GET", "HEAD"], include_in_schema=False)
@@ -201,6 +213,8 @@ def create_app(
     templates.env.filters["duration"] = _duration
     templates.env.globals["source_video"] = source_video
     templates.env.globals["retention"] = retention
+    templates.env.globals["app_name"] = app_name
+    templates.env.globals["feedback_email"] = feedback_email or None
 
     # Transcripts with a Correct running, so a refresh or a second click
     # can't start (and charge for) another. One server process (ADR 0010).
@@ -254,6 +268,7 @@ def create_app(
                 status_code=400,
             )
 
+        usage.record("upload")
         return RedirectResponse(f"/transcripts/{record.id}", status_code=303)
 
     def review_page(
@@ -354,6 +369,7 @@ def create_app(
             )
             storage.save_transcript(record)
         else:
+            usage.record("correct")
             try:
                 if own_key or free_tier is None:
                     service.run_correction(
@@ -454,6 +470,7 @@ def create_app(
     def export(request: Request, transcript_id: str) -> Response:
         record = load_or_404(request.state.session_id, transcript_id)
         content = service.export_transcript(storage, record)
+        usage.record("export")
         stem = Path(record.filename).stem
         filename = f"{stem}.corrected.{record.format}"
         return Response(

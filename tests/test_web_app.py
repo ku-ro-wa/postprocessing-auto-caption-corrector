@@ -1696,8 +1696,12 @@ class TestServeLimits:
             retention: timedelta,
             secure_cookie: bool,
             max_upload_bytes: int,
+            app_name: str,
+            feedback_email: str | None,
         ) -> object:
             used.append(limits)
+            self.app_name = app_name
+            self.feedback_email = feedback_email
             self.retention = retention
             self.secure_cookie = secure_cookie
             self.max_upload_bytes = max_upload_bytes
@@ -1707,7 +1711,7 @@ class TestServeLimits:
         monkeypatch.setattr(uvicorn, "run", lambda app, **kwargs: None)
         for name in (
             "NO_LIMITS", "ALLOWANCE_WORDS", "DAILY_BUDGET_USD", "DONATE_URL", "RETENTION_HOURS",
-            "SECURE_COOKIE", "MAX_UPLOAD_MB",
+            "SECURE_COOKIE", "MAX_UPLOAD_MB", "APP_NAME", "FEEDBACK_EMAIL",
         ):
             monkeypatch.delenv(f"CAPTION_CHECKER_{name}", raising=False)
         return used
@@ -1779,6 +1783,124 @@ class TestServeLimits:
         self._serve(tmp_path, "--secure-cookie", "--max-upload-mb", "0.5")
         assert self.secure_cookie is True
         assert self.max_upload_bytes == 512 * 1024
+
+
+    def test_app_name_and_feedback_address_are_settings(
+        self, tmp_path: Path, limits_used: list[Limits | None]
+    ) -> None:
+        self._serve(tmp_path)
+        assert (self.app_name, self.feedback_email) == ("Misheard", None)
+
+        self._serve(tmp_path, "--app-name", "Recaption", "--feedback-email", "hi@example.com")
+        assert (self.app_name, self.feedback_email) == ("Recaption", "hi@example.com")
+
+        self._serve(
+            tmp_path,
+            env={"CAPTION_CHECKER_APP_NAME": "Envy", "CAPTION_CHECKER_FEEDBACK_EMAIL": "e@x.org"},
+        )
+        assert (self.app_name, self.feedback_email) == ("Envy", "e@x.org")
+
+
+class TestLandingPage:
+    def test_leads_with_name_tagline_and_pitch_above_the_upload_form(
+        self, tmp_path: Path
+    ) -> None:
+        html = _make_client(tmp_path).get("/").text
+        for text in (
+            "Misheard",
+            "Find and fix the words your auto-captions got wrong.",
+            "Works with any SRT or VTT file",
+        ):
+            assert text in html
+            assert html.index(text) < html.index('name="file"')
+
+    def test_explains_the_three_steps(self, tmp_path: Path) -> None:
+        html = _make_client(tmp_path).get("/").text
+        assert "How it works" in html
+        assert html.index("Upload") < html.index("Correct") < html.index("export")
+
+    def test_app_name_is_a_setting(self, tmp_path: Path) -> None:
+        client = _make_client(tmp_path, app_name="Recaption")
+        html = client.get("/").text
+        assert "Recaption" in html and "Misheard" not in html
+        assert "Recaption" in client.get(f"/transcripts/{_upload(client)}").text
+
+    def test_feedback_link_is_a_mailto_and_hidden_when_unset(self, tmp_path: Path) -> None:
+        assert "mailto:" not in _make_client(tmp_path).get("/").text
+        client = _make_client(tmp_path, feedback_email="hi@example.com")
+        assert 'href="mailto:hi@example.com' in client.get("/").text
+
+
+class TestUsageTally:
+    def _lines(self, tmp_path: Path) -> list[str]:
+        from caption_checker.web.usage import USAGE_FILENAME
+
+        path = tmp_path / "data" / USAGE_FILENAME
+        return [line.split(" ", 1)[1] for line in path.read_text().splitlines()]
+
+    def test_upload_correct_and_export_each_add_a_line(self, tmp_path: Path) -> None:
+        client = _make_client(tmp_path, reader=StubReader())
+        transcript_id = _upload(client)
+        client.post(f"/transcripts/{transcript_id}/correct", data={"api_key": "sk-or-test"})
+        client.get(f"/transcripts/{transcript_id}/export")
+        assert self._lines(tmp_path) == ["upload", "correct", "export"]
+
+    def test_a_refused_upload_and_a_keyless_correct_are_not_counted(
+        self, tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+    ) -> None:
+        monkeypatch.delenv("OPENROUTER_API_KEY", raising=False)
+        client = _make_client(tmp_path)
+        bad = client.post("/transcripts", files={"file": ("x.srt", b"nonsense", "text/plain")})
+        assert bad.status_code == 400
+        transcript_id = _upload(client)
+        client.post(f"/transcripts/{transcript_id}/correct", data={})
+        assert self._lines(tmp_path) == ["upload"]
+
+    def test_lines_hold_no_session_or_content(self, tmp_path: Path) -> None:
+        from caption_checker.web.usage import USAGE_FILENAME
+
+        client = _make_client(tmp_path)
+        _upload(client)
+        text = (tmp_path / "data" / USAGE_FILENAME).read_text()
+        assert client.cookies.get("cc_session") not in text
+        assert "sample_lecture" not in text
+
+    def test_the_retention_sweep_leaves_the_tally(self, tmp_path: Path) -> None:
+        from caption_checker.web.usage import USAGE_FILENAME
+
+        client = _make_client(tmp_path, retention=timedelta(seconds=0.001))
+        with client:  # startup runs a sweep
+            _upload(client)
+        assert (tmp_path / "data" / USAGE_FILENAME).exists()
+
+
+class TestUsageCommand:
+    def test_prints_daily_counts(self, tmp_path: Path) -> None:
+        from click.testing import CliRunner
+
+        from caption_checker.cli import main
+        from caption_checker.web.usage import USAGE_FILENAME
+
+        (tmp_path / USAGE_FILENAME).write_text(
+            "2026-10-01T09:00:00+00:00 upload\n"
+            "2026-10-01T09:05:00+00:00 correct\n"
+            "2026-10-02T09:00:00+00:00 upload\n"
+        )
+        result = CliRunner().invoke(main, ["usage", "--data-dir", str(tmp_path)])
+        assert result.exit_code == 0, result.output
+        lines = result.output.splitlines()
+        assert lines[0].split() == ["date", "upload", "correct", "export"]
+        assert lines[1].split() == ["2026-10-01", "1", "1", "0"]
+        assert lines[2].split() == ["2026-10-02", "1", "0", "0"]
+
+    def test_says_so_when_nothing_is_recorded(self, tmp_path: Path) -> None:
+        from click.testing import CliRunner
+
+        from caption_checker.cli import main
+
+        result = CliRunner().invoke(main, ["usage", "--data-dir", str(tmp_path)])
+        assert result.exit_code == 0
+        assert "No usage recorded" in result.output
 
 
 @pytest.mark.parametrize(

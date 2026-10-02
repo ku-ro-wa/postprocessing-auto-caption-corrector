@@ -164,6 +164,14 @@ change it), or until you delete it. See
 `docs/adr/0008-metered-free-tier-on-the-server-key.md` and
 `docs/adr/0010-public-deployment.md` for the reasoning behind these choices.
 
+The pages are headed with the app name (`--app-name` or
+`CAPTION_CHECKER_APP_NAME`, default "Misheard"), and a footer links the
+feedback address (`--feedback-email` or `CAPTION_CHECKER_FEEDBACK_EMAIL`)
+when one is set. The server also tallies each upload, Correct run and Export
+as one line (time and event only) in `usage.log` at the data root, which the
+retention sweep leaves alone; `caption-checker usage` prints the daily counts
+(on Fly: `fly ssh console -C "caption-checker usage"`).
+
 ## Deploying
 
 The public deployment is one Fly.io machine with a volume (ADR 0010). From a
