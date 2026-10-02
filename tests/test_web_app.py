@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import threading
 from datetime import datetime, timedelta, timezone
 from pathlib import Path
 from typing import Any
@@ -421,6 +422,130 @@ class TestCorrectPass:
 
         assert "2 of 3 chunks failed" in page.text
         assert "left unjudged" in page.text
+
+
+class _BlockingReader(StubReader):
+    """Holds its first read until released, so a test can act mid-run; later
+    reads go straight through."""
+
+    def __init__(self, **kwargs: Any) -> None:
+        super().__init__(**kwargs)
+        self.started = threading.Event()
+        self.release = threading.Event()
+        self._first = True
+
+    def read(self, request):  # type: ignore[override]
+        if self._first:
+            self._first = False
+            self.started.set()
+            assert self.release.wait(timeout=10), "the test never released the reader"
+        return super().read(request)
+
+
+class TestCorrectInProgress:
+    def _start_run(
+        self,
+        client: TestClient,
+        reader: _BlockingReader,
+        transcript_id: str,
+        data: dict[str, str] | None = None,
+    ) -> threading.Thread:
+        thread = threading.Thread(
+            target=client.post,
+            args=(f"/transcripts/{transcript_id}/correct",),
+            kwargs={"data": {"api_key": "sk-or-test"} if data is None else data},
+        )
+        thread.start()
+        assert reader.started.wait(timeout=10)
+        return thread
+
+    def test_a_second_correct_during_a_run_is_refused(self, tmp_path: Path) -> None:
+        reader = _BlockingReader()
+        client = _make_client(tmp_path, reader=reader)
+        transcript_id = _upload(client)
+        thread = self._start_run(client, reader, transcript_id)
+        try:
+            response = client.post(
+                f"/transcripts/{transcript_id}/correct", data={"api_key": "sk-or-test"}
+            )
+        finally:
+            reader.release.set()
+            thread.join(timeout=10)
+
+        assert response.status_code == 409
+        assert "already running" in response.text
+        assert len(reader.requests) == 1  # only the first run reached the model
+
+    def test_a_refused_second_correct_charges_nothing(
+        self, tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+    ) -> None:
+        # The Free tier path: no visitor key, so the server's key meters the run.
+        monkeypatch.setenv("OPENROUTER_API_KEY", "server-key")
+        reader = _BlockingReader()
+        client = _make_client(tmp_path, reader=reader, limits=Limits())
+        transcript_id = _upload(client)
+        thread = self._start_run(client, reader, transcript_id, data={})
+        try:
+            response = client.post(f"/transcripts/{transcript_id}/correct")
+        finally:
+            reader.release.set()
+            thread.join(timeout=10)
+
+        assert response.status_code == 409
+        ledger = (tmp_path / "data" / LEDGER_FILENAME).read_text().splitlines()
+        assert len([line for line in ledger if line.strip()]) == 1  # the first run's
+
+    def test_the_guard_is_released_when_a_run_finishes(self, tmp_path: Path) -> None:
+        reader = _BlockingReader(garbage=True)
+        reader.release.set()
+        client = _make_client(tmp_path, reader=reader)
+        transcript_id = _upload(client)
+
+        first = client.post(f"/transcripts/{transcript_id}/correct", data={"api_key": "k"})
+        second = client.post(f"/transcripts/{transcript_id}/correct", data={"api_key": "k"})
+
+        assert first.status_code == 200  # failed run, retriable
+        assert second.status_code == 200  # not refused as in progress
+
+    def test_the_guard_is_released_when_a_run_crashes(self, tmp_path: Path) -> None:
+        class Crashing(StubReader):
+            def read(self, request):  # type: ignore[override]
+                raise RuntimeError("boom")
+
+        client = _make_client(tmp_path, reader=Crashing())
+        client = TestClient(client.app, raise_server_exceptions=False)
+        transcript_id = _upload(client)
+
+        client.post(f"/transcripts/{transcript_id}/correct", data={"api_key": "k"})
+        second = client.post(f"/transcripts/{transcript_id}/correct", data={"api_key": "k"})
+
+        assert second.status_code != 409
+
+    def test_another_transcript_can_correct_during_a_run(self, tmp_path: Path) -> None:
+        reader = _BlockingReader()
+        client = _make_client(tmp_path, reader=reader)
+        first_id = _upload(client)
+        second_id = _upload(client)
+        thread = self._start_run(client, reader, first_id)
+        try:
+            response = client.post(
+                f"/transcripts/{second_id}/correct", data={"api_key": "sk-or-test"}
+            )
+        finally:
+            reader.release.set()
+            thread.join(timeout=10)
+
+        assert response.status_code != 409
+
+    def test_the_form_disables_the_button_and_says_how_long_it_takes(
+        self, tmp_path: Path
+    ) -> None:
+        client = _make_client(tmp_path)
+        page = client.get(f"/transcripts/{_upload(client)}").text
+
+        assert "This takes about 1–2 minutes for an hour of video. Don't refresh." in page
+        assert "submit-correct" in page
+        assert ".disabled = true" in page
 
 
 class TestVisitorKey:

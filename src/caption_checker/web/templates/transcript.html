@@ -53,6 +53,9 @@
       <div class="error">{{ transcript.failed_chunks }} of {{ transcript.chunk_count }} chunks failed: the Flags in them were left unjudged.</div>
     {% endif %}
   {% else %}
+  {% if already_running %}
+    <div class="error" role="alert">A Read-through is already running on this Transcript. Wait for it to finish, then reload this page.</div>
+  {% endif %}
   {% if refusal %}
     <div class="error" role="alert">
       {% if refusal == "allowance" %}
@@ -95,7 +98,8 @@
     {% if suggested_priming_terms %}
       <p class="muted">Filled in from the Source video's title and channel. Trim it down to the names and terms before running.</p>
     {% endif %}
-    <button class="btn" type="submit">Run Read-through</button>
+    <button class="btn" type="submit" id="submit-correct">Run Read-through</button>
+    <p class="muted" id="correct-wait" hidden>This takes about 1–2 minutes for an hour of video. Don't refresh.</p>
   </form>
   <script>
   // The visitor's key lives in this browser's local storage and rides along
@@ -119,6 +123,19 @@
     document.getElementById("correct-form").addEventListener("submit", function () {
       const value = input.value.trim();
       if (value) remember(value);
+      // A second click would start a second paid run.
+      const button = document.getElementById("submit-correct");
+      button.disabled = true;
+      button.textContent = "Running…";
+      document.getElementById("correct-wait").hidden = false;
+    });
+    // Coming back to this page with Back must not leave a dead button.
+    window.addEventListener("pageshow", function (event) {
+      if (!event.persisted) return;
+      const button = document.getElementById("submit-correct");
+      button.disabled = false;
+      button.textContent = "Run Read-through";
+      document.getElementById("correct-wait").hidden = true;
     });
     document.getElementById("forget-key").addEventListener("click", function () {
       forget();

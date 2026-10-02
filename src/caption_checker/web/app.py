@@ -13,6 +13,7 @@ import logging
 import math
 import os
 import re
+import threading
 from contextlib import asynccontextmanager
 from datetime import timedelta
 from pathlib import Path
@@ -190,6 +191,11 @@ def create_app(
     templates.env.globals["source_video"] = source_video
     templates.env.globals["retention"] = retention
 
+    # Transcripts with a Correct running, so a refresh or a second click
+    # can't start (and charge for) another. One server process (ADR 0010).
+    running: set[tuple[str, str]] = set()
+    running_lock = threading.Lock()
+
     def load_or_404(session_id: str, transcript_id: str) -> TranscriptRecord:
         record = storage.load_transcript(session_id, transcript_id)
         if record is None:
@@ -297,7 +303,28 @@ def create_app(
         priming_terms: str = Form(""),
     ) -> Response:
         session_id = request.state.session_id
-        record = load_or_404(session_id, transcript_id)
+        key = (session_id, transcript_id)
+        # The guard comes before the load, so a run that finishes in between
+        # can't leave this one working from a stale, uncorrected record.
+        with running_lock:
+            already_running = key in running
+            running.add(key)
+        if already_running:
+            return review_page(
+                request, load_or_404(session_id, transcript_id), status_code=409, already_running=True
+            )
+        try:
+            return run_correct(
+                request, load_or_404(session_id, transcript_id), api_key, priming_terms
+            )
+        finally:
+            with running_lock:
+                running.discard(key)
+
+    def run_correct(
+        request: Request, record: TranscriptRecord, api_key: str, priming_terms: str
+    ) -> Response:
+        transcript_id = record.id
         # Saved with the run's outcome below, so a failed run shows them again.
         record.priming_terms = priming_terms.strip()
 
