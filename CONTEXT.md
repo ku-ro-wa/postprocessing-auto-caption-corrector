@@ -268,7 +268,7 @@ _Avoid_: media, recording, link.
 Read-through runs in the web UI paid for by the server's own OpenRouter key,
 for a Correct sent without the visitor's own key. Metered by the Session's
 Allowance and the Daily budget; a run either doesn't start or finishes, never
-stopping partway. Runs on a Session's own key are never metered.
+stopping partway. Runs on the visitor's own key are never metered.
 _Avoid_: trial, free plan.
 
 **Allowance**:

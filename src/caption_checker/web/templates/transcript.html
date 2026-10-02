@@ -51,14 +51,13 @@
     {% endif %}
   {% else %}
   <p class="muted">The model reads the whole transcript, judges every Flag below and adds errors the local scan missed.</p>
-  <form action="/transcripts/{{ transcript.id }}/correct" method="post">
-    {% if not has_session_key and not has_server_key %}
-      <label>OpenRouter API key: <input type="password" name="api_key" placeholder="sk-or-..."></label>
-    {% elif not has_session_key and has_server_key %}
-      <p class="muted">Using the server's configured OPENROUTER_API_KEY (local/dev fallback). Enter your own to use it instead: <input type="password" name="api_key" placeholder="sk-or-..."></p>
-    {% else %}
-      <p class="muted">Using the OpenRouter key saved for this session. Enter a different one to replace it: <input type="password" name="api_key" placeholder="sk-or-..."></p>
-    {% endif %}
+  <form action="/transcripts/{{ transcript.id }}/correct" method="post" id="correct-form">
+    <label>Your OpenRouter API key: <input type="password" name="api_key" id="api-key" autocomplete="off" placeholder="sk-or-..."></label>
+    <button class="btn" type="button" id="forget-key">Forget my key</button>
+    <p class="muted">
+      Your key stays in this browser and is sent only with each run; it is never stored on the server.
+      {% if has_server_key %}Leave it blank to use the server's configured OPENROUTER_API_KEY (local/dev fallback).{% endif %}
+    </p>
     <label>Priming terms (names and terms in this recording, comma-separated):
       <input type="text" name="priming_terms"{% if transcript.priming_terms or suggested_priming_terms %} value="{{ transcript.priming_terms or suggested_priming_terms }}"{% endif %} placeholder="Kafka, Raft, Jensen Huang">
     </label>
@@ -67,6 +66,35 @@
     {% endif %}
     <button class="btn" type="submit">Run Read-through</button>
   </form>
+  <script>
+  // The visitor's key lives in this browser's local storage and rides along
+  // with each run (ADR 0010). Storage can be blocked or throw, which just
+  // means typing the key each time.
+  (function () {
+    const STORAGE_KEY = "openrouter_api_key";
+    const input = document.getElementById("api-key");
+
+    function remembered() {
+      try { return window.localStorage.getItem(STORAGE_KEY) || ""; } catch (e) { return ""; }
+    }
+    function remember(value) {
+      try { window.localStorage.setItem(STORAGE_KEY, value); } catch (e) {}
+    }
+    function forget() {
+      try { window.localStorage.removeItem(STORAGE_KEY); } catch (e) {}
+    }
+
+    input.value = remembered();
+    document.getElementById("correct-form").addEventListener("submit", function () {
+      const value = input.value.trim();
+      if (value) remember(value);
+    });
+    document.getElementById("forget-key").addEventListener("click", function () {
+      forget();
+      input.value = "";
+    });
+  })();
+  </script>
   {% endif %}
 </section>
 

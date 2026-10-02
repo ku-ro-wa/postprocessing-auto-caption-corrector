@@ -254,7 +254,7 @@ class TestCorrectPass:
         assert response.status_code == 200
         assert "api key" in response.text.lower()
 
-    def test_correct_with_session_key_populates_corrections(self, tmp_path: Path) -> None:
+    def test_correct_with_a_key_populates_corrections(self, tmp_path: Path) -> None:
         stub = StubReader(replacement_for={"cubernetes": "Kubernetes"})
         client = _make_client(tmp_path, reader=stub)
         transcript_id = _upload(client)
@@ -370,6 +370,93 @@ class TestCorrectPass:
 
         assert "2 of 3 chunks failed" in page.text
         assert "left unjudged" in page.text
+
+
+class TestVisitorKey:
+    """#45 / ADR 0010: a visitor's own key lives in their browser and is
+    sent with each Correct; the server uses it for that run only."""
+
+    @pytest.fixture
+    def keys_used(self, monkeypatch: pytest.MonkeyPatch) -> list[str]:
+        """The key each run built its reader with. Every run fails, so the
+        Transcript stays retriable."""
+        from caption_checker.web import service
+
+        used: list[str] = []
+
+        def reader(config, *, api_key):
+            used.append(api_key)
+            return StubReader(garbage=True)
+
+        monkeypatch.setattr(service, "OpenRouterReader", reader)
+        monkeypatch.delenv("OPENROUTER_CONFIG", raising=False)
+        monkeypatch.setenv("OPENROUTER_MODEL", "some/slug")
+        return used
+
+    def test_a_correct_with_a_key_leaves_no_key_on_disk(
+        self, tmp_path: Path, keys_used: list[str]
+    ) -> None:
+        # The run fails, so its correct_error is written too.
+        client = _make_client(tmp_path)
+        transcript_id = _upload(client)
+
+        client.post(f"/transcripts/{transcript_id}/correct", data={"api_key": "sk-or-secret"})
+
+        assert keys_used == ["sk-or-secret"]
+        assert _record(tmp_path, client, transcript_id).correct_error
+
+        stored = [p for p in (tmp_path / "data").rglob("*") if p.is_file()]
+        assert stored
+        assert not [p for p in stored if b"sk-or-secret" in p.read_bytes()]
+
+    def test_a_correct_without_a_key_uses_the_server_key(
+        self, tmp_path: Path, monkeypatch: pytest.MonkeyPatch, keys_used: list[str]
+    ) -> None:
+        monkeypatch.setenv("OPENROUTER_API_KEY", "server-key")
+        client = _make_client(tmp_path)
+        transcript_id = _upload(client)
+
+        client.post(f"/transcripts/{transcript_id}/correct", data={"api_key": "  "})
+
+        assert keys_used == ["server-key"]
+
+    def test_a_submitted_key_is_used_for_that_run_only(
+        self, tmp_path: Path, monkeypatch: pytest.MonkeyPatch, keys_used: list[str]
+    ) -> None:
+        # The failing run with the visitor's key never retries on the
+        # server's, and the next run without one doesn't remember it.
+        monkeypatch.setenv("OPENROUTER_API_KEY", "server-key")
+        client = _make_client(tmp_path)
+        transcript_id = _upload(client)
+
+        client.post(f"/transcripts/{transcript_id}/correct", data={"api_key": "sk-or-mine"})
+        client.post(f"/transcripts/{transcript_id}/correct", data={})
+
+        assert keys_used == ["sk-or-mine", "server-key"]
+
+    def test_a_key_left_in_an_old_session_file_is_ignored(
+        self, tmp_path: Path, monkeypatch: pytest.MonkeyPatch, keys_used: list[str]
+    ) -> None:
+        monkeypatch.delenv("OPENROUTER_API_KEY", raising=False)
+        client = _make_client(tmp_path)
+        transcript_id = _upload(client)
+        session_dir = tmp_path / "data" / "sessions" / client.cookies["cc_session"]
+        (session_dir / "session.json").write_text('{"api_key": "sk-or-old"}')
+
+        page = client.post(f"/transcripts/{transcript_id}/correct", data={}).text
+
+        assert keys_used == []
+        assert "api key" in page.lower()
+
+    def test_the_page_says_the_key_stays_in_the_browser(self, tmp_path: Path) -> None:
+        client = _make_client(tmp_path)
+        transcript_id = _upload(client)
+
+        page = client.get(f"/transcripts/{transcript_id}").text
+
+        assert 'name="api_key"' in page
+        assert "never stored on the server" in page
+        assert "Forget my key" in page
 
 
 class TestExport:

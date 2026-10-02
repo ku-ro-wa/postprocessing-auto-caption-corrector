@@ -135,17 +135,18 @@ runs when you trigger it on a specific transcript. Errors it finds that the
 local scan missed join the transcript as new Flags to review like any other;
 Flags it judged not an error are shown as dismissed and left unchanged. If
 some chunks of the transcript failed, the page says how many, and the Flags
-in them stay unjudged (only a run where every chunk failed can be retried). It uses your own OpenRouter key entered in the
-browser, falling back to the server's `OPENROUTER_API_KEY` only for
-local/dev use. The server runs the default Read-through configuration
-(`qwen3.6-plus-p2`); set `OPENROUTER_CONFIG=NAME` (e.g. `flash-v4`) to run
+in them stay unjudged (only a run where every chunk failed can be
+retried). It uses your own OpenRouter key, which your browser keeps and
+sends with each run -- the server never stores it -- or, left blank, the
+server's `OPENROUTER_API_KEY`. The server runs the default Read-through
+configuration (`qwen3.6-plus-p2`); set `OPENROUTER_CONFIG=NAME` (e.g. `flash-v4`) to run
 another registered one, or `OPENROUTER_MODEL=SLUG` for prompt v4 with that
 model -- in the environment or `.env`, not both. An unknown name, or both
 set, stops `serve` at startup. Uploads and review state are
 private to your browser session and persist across server restarts. See
 `docs/adr/0003-web-ui-upload-session-persisted.md` and
-`docs/adr/0004-llm-correction-manual-session-keyed.md` for the reasoning
-behind these choices.
+`docs/adr/0004-llm-correction-manual-session-keyed.md` and
+`docs/adr/0010-public-deployment.md` for the reasoning behind these choices.
 
 ## Evaluation
 

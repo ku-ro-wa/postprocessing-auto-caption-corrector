@@ -2,15 +2,15 @@
 
 Layout, per ADR-0003 (persisted, session-scoped):
 
-    <root>/sessions/<session_id>/session.json
     <root>/sessions/<session_id>/transcripts/<transcript_id>/original.<ext>
     <root>/sessions/<session_id>/transcripts/<transcript_id>/state.json
 
-A Session directory's existence *is* the session; ``session.json`` holds
-only what's small and session-scoped (today: an optional OpenRouter API
-key). A Transcript's Cues are never duplicated into ``state.json`` — they're
-re-parsed from ``original.<ext>`` on load, per the spec's "or a pointer to
-the stored original file, re-parsed on load."
+A Session directory's existence *is* the session. Nothing about a visitor's
+OpenRouter key is stored here: the browser keeps it and sends it with each
+Correct (ADR 0010), and a ``session.json`` an older version left with a key
+in it is never read. A Transcript's Cues are never duplicated into
+``state.json`` — they're re-parsed from ``original.<ext>`` on load, per the
+spec's "or a pointer to the stored original file, re-parsed on load."
 """
 
 from __future__ import annotations
@@ -52,19 +52,8 @@ class Storage:
 
     def create_session(self) -> str:
         session_id = secrets.token_hex(SESSION_ID_BYTES)
-        session_dir = self._session_dir(session_id)
-        session_dir.mkdir(parents=True, exist_ok=True)
-        self._write_json(session_dir / "session.json", {"api_key": None})
+        self._session_dir(session_id).mkdir(parents=True, exist_ok=True)
         return session_id
-
-    def get_session_api_key(self, session_id: str) -> str | None:
-        data = self._read_json(self._session_dir(session_id) / "session.json")
-        return data.get("api_key") if data else None
-
-    def set_session_api_key(self, session_id: str, api_key: str | None) -> None:
-        session_dir = self._session_dir(session_id)
-        session_dir.mkdir(parents=True, exist_ok=True)
-        self._write_json(session_dir / "session.json", {"api_key": api_key})
 
     # -- Transcripts ---------------------------------------------------
 

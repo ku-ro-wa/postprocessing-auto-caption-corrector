@@ -157,7 +157,6 @@ def create_app(
                 "rows": service.transcript_rows(storage, record),
                 "cues": service.cue_rows(storage, record),
                 "summary": service.correction_summary(record),
-                "has_session_key": bool(storage.get_session_api_key(record.session_id)),
                 "has_server_key": bool(os.environ.get("OPENROUTER_API_KEY")),
                 "suggested_priming_terms": service.suggested_priming_terms(record),
                 **extra,
@@ -200,13 +199,10 @@ def create_app(
         # Saved with the run's outcome below, so a failed run shows them again.
         record.priming_terms = priming_terms.strip()
 
-        api_key = api_key.strip()
-        if api_key:
-            storage.set_session_api_key(session_id, api_key)
-
-        resolved_key = (
-            storage.get_session_api_key(session_id) or os.environ.get("OPENROUTER_API_KEY")
-        )
+        # The visitor's own key is used for this run and never stored. Without
+        # one the run falls to the server's key; a run on the visitor's key
+        # that fails never retries on the server's (ADR 0010).
+        resolved_key = api_key.strip() or os.environ.get("OPENROUTER_API_KEY")
         if not resolved_key:
             record.correct_error = (
                 "No OpenRouter API key available. Enter one below, or set "
