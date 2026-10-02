@@ -1,7 +1,7 @@
 # One machine only: storage is plain directories and the spend ledger is
 # guarded by an in-process lock (ADR 0010). Never scale past one.
 app = "misheard"
-primary_region = "iad"
+primary_region = "sin"
 
 [build]
 
