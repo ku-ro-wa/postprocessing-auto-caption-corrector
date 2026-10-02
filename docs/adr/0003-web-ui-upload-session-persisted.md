@@ -1,5 +1,7 @@
 # Web review UI: upload-based, session-scoped, persisted, server-rendered
 
+_Amended by ADR 0010: Transcripts are deleted 24 hours after their last activity._
+
 The CLI's `check`/`correct` output only reaches you as text or JSON in a
 terminal. We're adding a locally-hosted web UI for reviewing Flags,
 confirming/editing Corrections, and producing an Export — usable today as a

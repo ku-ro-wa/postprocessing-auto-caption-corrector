@@ -225,13 +225,18 @@ A caption file (SRT/VTT), parsed into Cues, uploaded through the web review
 UI (`caption-checker serve`) and belonging to the Session that uploaded it.
 Everything else on this page (Flags, Corrections) attaches to one. Its Flags
 are the local scan's, plus any the Read-through found when `correct` ran, plus
-any the reviewer raised by editing a Cue.
+any the reviewer raised by editing a Cue. Deleted 24 hours after its last
+activity (upload, run, Review Decision, Cue edit or Export), or sooner when the
+reviewer deletes it (ADR 0010).
 _Avoid_: upload, file, document.
 
 **Session**:
-An anonymous, cookie-identified scope isolating which Transcripts, Review
-Decisions, and OpenRouter API key belong to one browser. No login or account
-sits behind it — it's an isolation boundary, not an identity.
+An anonymous, cookie-identified scope isolating which Transcripts and Review
+Decisions belong to one browser, and whose Allowance a Free tier run draws on.
+No login or account sits behind it — it's an isolation boundary, not an
+identity. A visitor's own OpenRouter key is not part of it: the browser keeps
+the key and sends it with each Correct, and the server never stores it
+(ADR 0010).
 _Avoid_: user, account.
 
 **Review Decision**:
@@ -261,7 +266,7 @@ _Avoid_: media, recording, link.
 
 **Free tier**:
 Read-through runs in the web UI paid for by the server's own OpenRouter key,
-for a Session that hasn't entered one of its own. Metered by the Session's
+for a Correct sent without the visitor's own key. Metered by the Session's
 Allowance and the Daily budget; a run either doesn't start or finishes, never
 stopping partway. Runs on a Session's own key are never metered.
 _Avoid_: trial, free plan.
