@@ -392,10 +392,9 @@ def correct(
 @click.option(
     "--max-upload-mb",
     type=click.FloatRange(min=0, min_open=True),
-    default=2.0,
-    show_default=True,
+    default=None,
     envvar="CAPTION_CHECKER_MAX_UPLOAD_MB",
-    help="Refuse uploads larger than this many MB (ADR 0010).",
+    help="Refuse uploads larger than this many MB (default 2; ADR 0010).",
 )
 def serve(
     host: str,
@@ -407,7 +406,7 @@ def serve(
     donate_url: str | None,
     retention_hours: float,
     secure_cookie: bool,
-    max_upload_mb: float,
+    max_upload_mb: float | None,
 ) -> None:
     """Start the web review UI. Runs on the server's own key are metered
     as a Free tier unless --no-limits is given, and Transcripts are deleted
@@ -419,7 +418,7 @@ def serve(
     from dotenv import load_dotenv
 
     from caption_checker.readthrough import ConfigError
-    from caption_checker.web.app import create_app
+    from caption_checker.web.app import MAX_UPLOAD_BYTES, create_app
     from caption_checker.web.free_tier import Limits
     from caption_checker.web.storage import Storage, default_data_dir
 
@@ -441,7 +440,9 @@ def serve(
             limits=limits,
             retention=timedelta(hours=retention_hours),
             secure_cookie=secure_cookie,
-            max_upload_bytes=int(max_upload_mb * 1024 * 1024),
+            max_upload_bytes=(
+                MAX_UPLOAD_BYTES if max_upload_mb is None else int(max_upload_mb * 1024 * 1024)
+            ),
         )
     except ConfigError as exc:
         raise click.ClickException(str(exc)) from exc

@@ -213,9 +213,8 @@ def create_app(
                 "index.html",
                 {
                     "transcripts": storage.list_transcripts(session_id),
-                    "upload_error": f"That file is larger than the {max_upload_bytes:,} byte "
-                    "limit. Caption files are far smaller than this, so it may not be "
-                    "a caption file.",
+                    "upload_error": "That file is larger than the "
+                    f"{max_upload_bytes / 1024 / 1024:g} MB limit.",
                     "video_link": video_link,
                 },
                 status_code=413,

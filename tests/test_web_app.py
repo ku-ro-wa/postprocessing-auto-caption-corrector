@@ -95,10 +95,10 @@ class TestUploadHardening:
     def test_upload_over_the_cap_is_refused_with_a_message_and_saves_nothing(
         self, tmp_path: Path
     ) -> None:
-        client = _make_client(tmp_path, max_upload_bytes=1000)
-        response = self._post(client, b"x" * 1001)
+        client = _make_client(tmp_path, max_upload_bytes=1024 * 1024)
+        response = self._post(client, b"x" * (1024 * 1024 + 1))
         assert response.status_code == 413
-        assert "larger than the 1,000 byte limit" in response.text
+        assert "larger than the 1 MB limit" in response.text
         assert "Nothing uploaded yet" in client.get("/").text
 
     def test_upload_at_the_cap_is_still_parsed(self, tmp_path: Path) -> None:
