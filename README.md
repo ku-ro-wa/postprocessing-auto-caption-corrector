@@ -186,6 +186,22 @@ directories and the spend ledger is guarded by an in-process lock, so a
 second instance would corrupt both. The 2 MB upload cap is enforced after
 the body arrives, so consider a request-size limit at the proxy as well.
 
+### Updating
+
+The live app runs the last image you deployed; pushing to GitHub changes
+nothing. `fly deploy --ha=false` builds from your working directory, so
+commit and push first (`git status` clean) if you want the live app to match
+a commit. Edits to `fly.toml` also wait for a deploy; `fly secrets set`
+restarts the machine at once.
+
+With one machine and a volume there is no zero-downtime swap: expect the site
+to be unreachable for a short while. The old process is given 180 seconds
+(`kill_timeout`) to finish a Correct already running, so a deploy can take that
+long to start; deploy when the app is quiet (`fly logs`). The volume, and so
+Transcripts and the spend ledger, carries over, so a change to either file
+format must still read yesterday's files. `fly releases` lists past deployments
+if you need to roll back.
+
 ## Evaluation
 
 Tuning detector thresholds (in `oov`, `phonetic_vocab`, `phonetic_internal`,

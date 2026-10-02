@@ -2,6 +2,11 @@
 # guarded by an in-process lock (ADR 0010). Never scale past one.
 app = "misheard"
 primary_region = "sin"
+# On deploy the old process gets this long to finish in-flight requests (a
+# Correct runs a minute or two) before it is killed. uvicorn stops accepting
+# new connections on SIGINT and waits for the running ones.
+kill_signal = "SIGINT"
+kill_timeout = "180s"
 
 [build]
 
