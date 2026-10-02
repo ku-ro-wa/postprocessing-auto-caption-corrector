@@ -41,7 +41,12 @@ back to the server key when that key fails.
 - **Transparent.** The Transcript page shows words left and this
   Transcript's word count before Correct. A refusal says the Allowance (or
   Daily budget) is used up and offers "enter your own key", plus a donate link
-  when one is configured. Donations fund the server key's credits by hand;
+  when one is configured. Because both limits are rolling windows, the page
+  never says "today" (which reads as a midnight reset): it says when the
+  oldest run's words come back, and a refusal says how long until this
+  Transcript fits -- or that it never will -- as relative waits rounded up to
+  the minute. A Daily budget wait is approximate, since every Session shares
+  it. Donations fund the server key's credits by hand;
   donors get no extra Allowance, which would need accounts.
 - The Free tier runs the default Read-through configuration.
 
