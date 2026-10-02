@@ -72,6 +72,48 @@ class TestSessionCookie:
         response = client.get("/")
         assert "set-cookie" not in response.headers
 
+    def test_cookie_is_not_secure_by_default_so_local_http_works(self, tmp_path: Path) -> None:
+        response = _make_client(tmp_path).get("/")
+        assert "secure" not in response.headers["set-cookie"].lower()
+
+    def test_secure_cookie_when_configured(self, tmp_path: Path) -> None:
+        response = _make_client(tmp_path, secure_cookie=True).get("/")
+        cookie = response.headers["set-cookie"].lower()
+        assert "secure" in cookie
+        assert "httponly" in cookie
+        assert f"max-age={60 * 60 * 24 * 180}" in cookie
+
+
+class TestUploadHardening:
+    def _post(self, client: TestClient, content: bytes) -> Any:
+        return client.post(
+            "/transcripts",
+            files={"file": ("big.srt", content, "text/plain")},
+            follow_redirects=False,
+        )
+
+    def test_upload_over_the_cap_is_refused_with_a_message_and_saves_nothing(
+        self, tmp_path: Path
+    ) -> None:
+        client = _make_client(tmp_path, max_upload_bytes=1000)
+        response = self._post(client, b"x" * 1001)
+        assert response.status_code == 413
+        assert "larger than the 1,000 byte limit" in response.text
+        assert "Nothing uploaded yet" in client.get("/").text
+
+    def test_upload_at_the_cap_is_still_parsed(self, tmp_path: Path) -> None:
+        client = _make_client(tmp_path, max_upload_bytes=SAMPLE.stat().st_size)
+        assert _upload(client)
+
+    def test_default_cap_is_2_mb(self, tmp_path: Path) -> None:
+        client = _make_client(tmp_path)
+        assert self._post(client, b"x" * (2 * 1024 * 1024 + 1)).status_code == 413
+        assert self._post(client, b"x" * 2048).status_code == 400  # parsed, not a cap hit
+
+    def test_upload_page_says_only_english_is_supported(self, tmp_path: Path) -> None:
+        page = _make_client(tmp_path).get("/").text
+        assert "English captions only" in page
+
 
 class TestUpload:
     def test_upload_scans_and_redirects_to_review_page(self, tmp_path: Path) -> None:
@@ -1510,16 +1552,24 @@ class TestServeLimits:
         used: list[Limits | None] = []
 
         def fake_create_app(
-            storage: Storage, *, limits: Limits | None, retention: timedelta
+            storage: Storage,
+            *,
+            limits: Limits | None,
+            retention: timedelta,
+            secure_cookie: bool,
+            max_upload_bytes: int,
         ) -> object:
             used.append(limits)
             self.retention = retention
+            self.secure_cookie = secure_cookie
+            self.max_upload_bytes = max_upload_bytes
             return object()
 
         monkeypatch.setattr(web_app, "create_app", fake_create_app)
         monkeypatch.setattr(uvicorn, "run", lambda app, **kwargs: None)
         for name in (
-            "NO_LIMITS", "ALLOWANCE_WORDS", "DAILY_BUDGET_USD", "DONATE_URL", "RETENTION_HOURS"
+            "NO_LIMITS", "ALLOWANCE_WORDS", "DAILY_BUDGET_USD", "DONATE_URL", "RETENTION_HOURS",
+            "SECURE_COOKIE", "MAX_UPLOAD_MB",
         ):
             monkeypatch.delenv(f"CAPTION_CHECKER_{name}", raising=False)
         return used
@@ -1577,6 +1627,20 @@ class TestServeLimits:
     ) -> None:
         self._serve(tmp_path, env={"CAPTION_CHECKER_RETENTION_HOURS": "1.5"})
         assert self.retention == timedelta(hours=1.5)
+
+    def test_cookie_is_not_secure_and_uploads_capped_at_2_mb_by_default(
+        self, tmp_path: Path, limits_used: list[Limits | None]
+    ) -> None:
+        self._serve(tmp_path)
+        assert self.secure_cookie is False
+        assert self.max_upload_bytes == 2 * 1024 * 1024
+
+    def test_secure_cookie_and_upload_cap_are_configurable(
+        self, tmp_path: Path, limits_used: list[Limits | None]
+    ) -> None:
+        self._serve(tmp_path, "--secure-cookie", "--max-upload-mb", "0.5")
+        assert self.secure_cookie is True
+        assert self.max_upload_bytes == 512 * 1024
 
 
 @pytest.mark.parametrize(

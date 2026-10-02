@@ -382,6 +382,21 @@ def correct(
     envvar="CAPTION_CHECKER_RETENTION_HOURS",
     help="Delete a Transcript this many hours after its last activity (ADR 0010).",
 )
+@click.option(
+    "--secure-cookie",
+    is_flag=True,
+    envvar="CAPTION_CHECKER_SECURE_COOKIE",
+    help="Mark the Session cookie Secure. Set this when served over HTTPS "
+    "(a Secure cookie is never sent back over plain HTTP).",
+)
+@click.option(
+    "--max-upload-mb",
+    type=click.FloatRange(min=0, min_open=True),
+    default=2.0,
+    show_default=True,
+    envvar="CAPTION_CHECKER_MAX_UPLOAD_MB",
+    help="Refuse uploads larger than this many MB (ADR 0010).",
+)
 def serve(
     host: str,
     port: int,
@@ -391,6 +406,8 @@ def serve(
     daily_budget: float | None,
     donate_url: str | None,
     retention_hours: float,
+    secure_cookie: bool,
+    max_upload_mb: float,
 ) -> None:
     """Start the web review UI. Runs on the server's own key are metered
     as a Free tier unless --no-limits is given, and Transcripts are deleted
@@ -419,7 +436,13 @@ def serve(
             donate_url=donate_url or None,
         )
     try:
-        app = create_app(storage, limits=limits, retention=timedelta(hours=retention_hours))
+        app = create_app(
+            storage,
+            limits=limits,
+            retention=timedelta(hours=retention_hours),
+            secure_cookie=secure_cookie,
+            max_upload_bytes=int(max_upload_mb * 1024 * 1024),
+        )
     except ConfigError as exc:
         raise click.ClickException(str(exc)) from exc
     uvicorn.run(app, host=host, port=port)

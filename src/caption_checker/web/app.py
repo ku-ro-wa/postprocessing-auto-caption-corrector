@@ -35,6 +35,9 @@ from caption_checker.web.storage import Storage
 COOKIE_NAME = "cc_session"
 COOKIE_MAX_AGE = 60 * 60 * 24 * 180  # 180 days
 
+#: Largest upload accepted (ADR 0010). A three-hour SRT is ~200 KB.
+MAX_UPLOAD_BYTES = 2 * 1024 * 1024
+
 TEMPLATES_DIR = Path(__file__).parent / "templates"
 
 #: How long a Transcript is kept after its last activity (ADR 0010).
@@ -79,9 +82,10 @@ class _SessionCookieMiddleware(BaseHTTPMiddleware):
     read. Issues the cookie only when a Session was just created, so
     routes never touch cookie plumbing themselves."""
 
-    def __init__(self, app: FastAPI, *, storage: Storage) -> None:
+    def __init__(self, app: FastAPI, *, storage: Storage, secure: bool = False) -> None:
         super().__init__(app)
         self.storage = storage
+        self.secure = secure
 
     async def dispatch(
         self, request: Request, call_next: RequestResponseEndpoint
@@ -100,6 +104,7 @@ class _SessionCookieMiddleware(BaseHTTPMiddleware):
                 session_id,
                 max_age=COOKIE_MAX_AGE,
                 httponly=True,
+                secure=self.secure,
                 samesite="lax",
             )
         return response
@@ -117,6 +122,8 @@ def create_app(
     video_lookup: source_video.MetadataLookup = source_video.lookup_metadata,
     limits: Limits | None = Limits(),
     retention: timedelta = RETENTION,
+    secure_cookie: bool = False,
+    max_upload_bytes: int = MAX_UPLOAD_BYTES,
 ) -> FastAPI:
     """``reader`` lets tests inject a ``StubReader`` (or any other
     ``Reader``) at the same seam the CLI's Read-through tests use — no route
@@ -132,6 +139,10 @@ def create_app(
     explicitly turned off with None, for local use. Its ledger lives at
     ``storage.root``. A Free tier run needs a priced model, also checked
     here when the server has a key to run one on.
+
+    ``secure_cookie`` marks the Session cookie ``Secure`` (for a server
+    reached over HTTPS; plain-HTTP local use leaves it off), and uploads
+    over ``max_upload_bytes`` are refused before parsing (ADR 0010).
 
     While the app runs, Transcripts idle for ``retention`` are swept at
     startup and every ``SWEEP_INTERVAL`` after (ADR 0010). An emptied
@@ -170,7 +181,7 @@ def create_app(
             task.cancel()
 
     app = FastAPI(title="caption-checker", lifespan=lifespan)
-    app.add_middleware(_SessionCookieMiddleware, storage=storage)
+    app.add_middleware(_SessionCookieMiddleware, storage=storage, secure=secure_cookie)
     templates = Jinja2Templates(directory=str(TEMPLATES_DIR))
     templates.env.filters["ts"] = lambda td: _fmt_ts(td.total_seconds())
     templates.env.filters["highlight"] = _highlight
@@ -195,7 +206,20 @@ def create_app(
         request: Request, file: UploadFile, video_link: str = Form("")
     ) -> Response:
         session_id = request.state.session_id
-        content = await file.read()
+        content = await file.read(max_upload_bytes + 1)
+        if len(content) > max_upload_bytes:
+            return templates.TemplateResponse(
+                request,
+                "index.html",
+                {
+                    "transcripts": storage.list_transcripts(session_id),
+                    "upload_error": f"That file is larger than the {max_upload_bytes:,} byte "
+                    "limit. Caption files are far smaller than this, so it may not be "
+                    "a caption file.",
+                    "video_link": video_link,
+                },
+                status_code=413,
+            )
         try:
             record = service.upload_transcript(
                 storage,
