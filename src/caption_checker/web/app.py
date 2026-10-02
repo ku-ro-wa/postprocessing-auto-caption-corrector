@@ -190,7 +190,7 @@ def create_app(
     app = FastAPI(title="caption-checker", lifespan=lifespan)
     app.add_middleware(_SessionCookieMiddleware, storage=storage, secure=secure_cookie)
 
-    @app.get(HEALTH_PATH, include_in_schema=False)
+    @app.api_route(HEALTH_PATH, methods=["GET", "HEAD"], include_in_schema=False)
     def healthz() -> dict[str, str]:
         return {"status": "ok"}
 

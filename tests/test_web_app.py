@@ -69,6 +69,10 @@ class TestHealthCheck:
         assert not [d for d in (tmp_path / "data").glob("**/*") if d.is_dir()]
 
 
+    def test_healthz_answers_head_for_uptime_monitors(self, tmp_path: Path) -> None:
+        assert _make_client(tmp_path).head("/healthz").status_code == 200
+
+
 class TestSessionCookie:
     def test_index_sets_session_cookie(self, tmp_path: Path) -> None:
         client = _make_client(tmp_path)
