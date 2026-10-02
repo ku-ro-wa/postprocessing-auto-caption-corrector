@@ -17,3 +17,6 @@ wheels/
 
 # Derived datasets (Earnings-21 is CC BY-SA: never commit)
 .cache/
+
+# Fly-generated auto-deploy; ADR 0010 deploys by hand
+.github/workflows/fly-deploy.yml
