@@ -146,7 +146,7 @@
   {% endif %}
 </section>
 
-<section>
+<section id="review-views">
   <div class="tabs" role="tablist">
     <button class="tab" type="button" role="tab" id="tab-flags" aria-controls="flags-view" aria-selected="true">Flags</button>
     <button class="tab" type="button" role="tab" id="tab-cues" aria-controls="cues-view" aria-selected="false">All Cues</button>
@@ -160,6 +160,7 @@
       {% include "partials/cue_row.html" %}
     {% endfor %}
   </div>
+  <button class="btn back-to-top" type="button" id="back-to-top" hidden>Back to top</button>
 </section>
 
 <script>
@@ -175,6 +176,7 @@
       t.setAttribute("aria-selected", String(selected));
       document.getElementById(t.getAttribute("aria-controls")).hidden = !selected;
     });
+    updateBackToTop();
   }
 
   tabs.forEach(function (t) {
@@ -192,6 +194,42 @@
   document.addEventListener("click", function (event) {
     if (event.target.closest("a.cue-flag")) show(document.getElementById("tab-flags"));
   });
+
+  // Back to top returns to the top of the current list — the tabs pinned
+  // just under the player — not the page top, and shows only once the
+  // reviewer has scrolled half a screen into the list.
+  const views = document.getElementById("review-views");
+  const tabBar = views.querySelector(".tabs");
+  const backToTop = document.getElementById("back-to-top");
+
+  function listTop() {
+    const pinnedAbove = player ? player.offsetHeight : 0;
+    const tabsMargin = parseFloat(getComputedStyle(tabBar).marginTop);
+    return views.getBoundingClientRect().top + window.scrollY + tabsMargin - pinnedAbove;
+  }
+
+  // Keyboard focus lands on the current tab, so Tab carries on from the top
+  // of the list rather than from the page top.
+  function focusSelectedTab() {
+    tabBar.querySelector('[aria-selected="true"]').focus({ preventScroll: true });
+  }
+
+  function updateBackToTop() {
+    const hide = window.scrollY < listTop() + window.innerHeight / 2;
+    if (hide && document.activeElement === backToTop) focusSelectedTab();
+    backToTop.hidden = hide;
+  }
+
+  window.addEventListener("scroll", updateBackToTop, { passive: true });
+  window.addEventListener("resize", updateBackToTop);
+  // A Review Decision or Cue edit can change how long the page is.
+  document.body.addEventListener("htmx:afterSwap", updateBackToTop);
+  backToTop.addEventListener("click", function () {
+    const smooth = !window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    window.scrollTo({ top: listTop(), behavior: smooth ? "smooth" : "auto" });
+    focusSelectedTab();
+  });
+  updateBackToTop();
 })();
 </script>
 

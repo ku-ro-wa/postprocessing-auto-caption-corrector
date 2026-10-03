@@ -1418,6 +1418,22 @@ class TestAllCuesView:
         assert positions == sorted(positions)
         assert "Welcome back to the lecture on distributed systems." in _cue_row(page, 1)
 
+    def test_one_back_to_top_button_serves_both_views_hidden_until_scrolled(
+        self, tmp_path: Path
+    ) -> None:
+        client = _make_client(tmp_path)
+        transcript_id = _upload(client)
+
+        page = client.get(f"/transcripts/{transcript_id}").text
+
+        # A real <button>, so it is keyboard reachable; script reveals it on scroll.
+        assert page.count('id="back-to-top"') == 1
+        start = page.index('id="back-to-top"')
+        tag = page[page.rindex("<", 0, start) : page.index("</button>", start)]
+        assert tag.startswith("<button") and " hidden" in tag and tag.endswith(">Back to top")
+        # Outside both tabpanels, after the All Cues one, so either view can use it.
+        assert page.index('id="back-to-top"') > page.index('id="cues-view"')
+
     def test_flagged_spans_link_to_their_flag_card_with_their_status(
         self, tmp_path: Path
     ) -> None:
