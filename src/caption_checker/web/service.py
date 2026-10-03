@@ -15,6 +15,7 @@ reused here, not ``correct.py``'s CLI-specific orchestration.
 from __future__ import annotations
 
 import os
+import re
 from dataclasses import dataclass, replace
 from datetime import datetime, timedelta, timezone
 from functools import lru_cache
@@ -166,14 +167,22 @@ def clear_source_video(storage: Storage, record: TranscriptRecord) -> None:
     storage.save_transcript(record)
 
 
-def suggested_priming_terms(record: TranscriptRecord) -> str:
-    """What the review page prefills an empty Priming terms field with: the
-    Source video's ``<title>, <channel>``, for the reviewer to trim into
-    terms. Empty when there's no metadata, or when the reviewer has already
-    submitted terms of their own."""
-    if record.priming_terms:
-        return ""
-    return ", ".join(t for t in (record.video_title, record.video_channel) if t)
+#: Where a video title breaks into phrases: a bar, a spaced dash (a hyphen
+#: inside a word doesn't count), a colon or a comma.
+_TITLE_SEPARATORS = re.compile(r"\s*\|\s*|\s+[-–—]\s+|\s*[:,]\s*")
+
+
+def priming_term_suggestions(record: TranscriptRecord) -> list[str]:
+    """What the review page offers as Priming-term chips: the Source video's
+    title split into phrases, then its channel, each once. Phrases are never
+    split further into words. Empty when there's no metadata."""
+    phrases = _TITLE_SEPARATORS.split(record.video_title or "")
+    suggestions: list[str] = []
+    for phrase in [*phrases, record.video_channel or ""]:
+        phrase = phrase.strip()
+        if phrase and phrase.casefold() not in (s.casefold() for s in suggestions):
+            suggestions.append(phrase)
+    return suggestions
 
 
 def _same_text(a: str, b: str) -> bool:

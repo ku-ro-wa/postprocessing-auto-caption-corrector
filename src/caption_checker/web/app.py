@@ -295,7 +295,7 @@ def create_app(
                 "words_left": words_left,
                 "next_return": next_return,
                 "limits": limits,
-                "suggested_priming_terms": service.suggested_priming_terms(record),
+                "priming_suggestions": service.priming_term_suggestions(record),
                 **extra,
             },
             status_code=status_code,

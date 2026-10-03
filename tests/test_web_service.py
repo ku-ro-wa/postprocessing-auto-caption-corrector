@@ -995,3 +995,77 @@ class TestReadThroughConfigFromEnv:
             storage, record, api_key="test-key", config=CONFIGS["flash-v4"]
         )
         assert built == [(CONFIGS["flash-v4"], "test-key")]
+
+
+def _with_video(title: str | None, channel: str | None):
+    from caption_checker.web.models import TranscriptRecord
+
+    return TranscriptRecord(
+        id="t",
+        session_id="s",
+        filename="f.srt",
+        format="srt",
+        created_at="",
+        video_id="dQw4w9WgXcQ",
+        video_title=title,
+        video_channel=channel,
+    )
+
+
+class TestPrimingTermSuggestions:
+    """#56: the Source video's title split into phrases, plus its channel,
+    offered as chips for the reviewer to tap into the Priming terms field."""
+
+    def test_title_phrases_then_channel(self) -> None:
+        record = _with_video("Noam Brown: Reasoning Models | Podcast", "Some Channel")
+
+        assert service.priming_term_suggestions(record) == [
+            "Noam Brown",
+            "Reasoning Models",
+            "Podcast",
+            "Some Channel",
+        ]
+
+    @pytest.mark.parametrize(
+        "title, expected",
+        [
+            ("Kafka internals - Part 2", ["Kafka internals", "Part 2"]),
+            ("Raft, Paxos, and Zab", ["Raft", "Paxos", "and Zab"]),
+            ("A | B - C: D, E", ["A", "B", "C", "D", "E"]),
+            ("Raft in 10 minutes", ["Raft in 10 minutes"]),
+        ],
+    )
+    def test_splits_on_each_separator_but_never_into_words(
+        self, title: str, expected: list[str]
+    ) -> None:
+        assert service.priming_term_suggestions(_with_video(title, None)) == expected
+
+    def test_a_hyphenated_word_is_not_split(self) -> None:
+        record = _with_video("State-of-the-art ASR", None)
+
+        assert service.priming_term_suggestions(record) == ["State-of-the-art ASR"]
+
+    def test_blank_phrases_are_dropped(self) -> None:
+        record = _with_video(" | Podcast ||  : Episode 4 , ", None)
+
+        assert service.priming_term_suggestions(record) == ["Podcast", "Episode 4"]
+
+    def test_repeats_are_offered_once(self) -> None:
+        record = _with_video("Lex Fridman Podcast | Lex Fridman", "Lex Fridman")
+
+        assert service.priming_term_suggestions(record) == ["Lex Fridman Podcast", "Lex Fridman"]
+
+    def test_only_a_channel(self) -> None:
+        assert service.priming_term_suggestions(_with_video(None, "Stream & Co")) == ["Stream & Co"]
+
+    def test_nothing_without_metadata(self) -> None:
+        assert service.priming_term_suggestions(_with_video(None, None)) == []
+
+    def test_offered_even_after_terms_were_submitted(self) -> None:
+        record = _with_video("Raft in 10 minutes", "Distributed Dan")
+        record.priming_terms = "Raft"
+
+        assert service.priming_term_suggestions(record) == [
+            "Raft in 10 minutes",
+            "Distributed Dan",
+        ]

@@ -92,12 +92,16 @@
       {% endif %}
       This Transcript is {{ word_count|thousands }} words.
     </p>
-    <label>Priming terms (names and terms in this recording, comma-separated):
-      <input type="text" name="priming_terms"{% if transcript.priming_terms or suggested_priming_terms %} value="{{ transcript.priming_terms or suggested_priming_terms }}"{% endif %} placeholder="Technical terms, proper nouns, etc.">
-    </label>
-    {% if suggested_priming_terms %}
-      <p class="muted">Filled in from the Source video's title and channel. Trim it down to the names and terms before running.</p>
-    {% endif %}
+    <div class="priming-terms">
+      <label for="priming-terms">Priming terms <span class="muted">(names and terms that appear in this video, one per line or comma-separated; they help the AI recognise how they're spelled)</span></label>
+      <textarea name="priming_terms" id="priming-terms" rows="3" placeholder="Speakers, products, companies, technical terms…">{{ transcript.priming_terms }}</textarea>
+      {% if priming_suggestions %}
+        <div class="chips" id="priming-chips" aria-label="Suggested from the Source video's title and channel">
+          <span class="muted">From the video's title and channel, tap to add:</span>
+          {% for term in priming_suggestions %}<button class="chip" type="button">{{ term }}</button>{% endfor %}
+        </div>
+      {% endif %}
+    </div>
     <button class="btn btn-primary" type="submit" id="submit-correct">Run Read-through</button>
     <p class="muted" id="correct-wait" hidden>This takes about 1–2 minutes for an hour of video. Don't refresh.</p>
   </form>
@@ -143,6 +147,39 @@
     });
   })();
   </script>
+  {% if priming_suggestions %}
+  <script>
+  // A chip appends its term to the Priming terms field on its own line, as a
+  // reviewer would type it; a term already there isn't added twice. The
+  // field stays plain text, so the submission is unchanged.
+  (function () {
+    const field = document.getElementById("priming-terms");
+    const chips = document.querySelectorAll("#priming-chips .chip");
+
+    function terms() {
+      return field.value.split(/[,\n]/).map(function (t) { return t.trim().toLowerCase(); }).filter(Boolean);
+    }
+    function markAdded() {
+      const present = terms();
+      chips.forEach(function (chip) {
+        chip.setAttribute("aria-pressed", String(present.includes(chip.textContent.trim().toLowerCase())));
+      });
+    }
+
+    chips.forEach(function (chip) {
+      chip.addEventListener("click", function () {
+        const term = chip.textContent.trim();
+        if (terms().includes(term.toLowerCase())) return;
+        const value = field.value.replace(/[\s,]+$/, "");
+        field.value = value ? value + "\n" + term : term;
+        markAdded();
+      });
+    });
+    field.addEventListener("input", markAdded);
+    markAdded();
+  })();
+  </script>
+  {% endif %}
   {% endif %}
 </section>
 

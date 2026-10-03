@@ -396,9 +396,14 @@ class TestCorrectPass:
         client = _make_client(tmp_path)
         transcript_id = _upload(client)
 
-        page = client.get(f"/transcripts/{transcript_id}")
+        page = client.get(f"/transcripts/{transcript_id}").text
 
-        assert 'name="priming_terms"' in page.text
+        assert _priming_field(page) == ""
+        label = page[page.index('<label for="priming-terms"') :]
+        label = label[: label.index("</label>")]
+        assert "Priming terms" in label
+        assert "AI" in label
+        assert "detector" not in label.lower()
 
     def test_priming_terms_field_is_used_for_the_run(self, tmp_path: Path) -> None:
         stub = StubReader()
@@ -1308,31 +1313,41 @@ class TestSourceVideoMetadata:
         record = _record(tmp_path, client, transcript_id)
         assert (record.video_title, record.video_channel) == (None, None)
 
-    def test_priming_terms_are_prefilled_with_title_and_channel(self, tmp_path: Path) -> None:
+    def test_the_field_starts_empty_with_metadata(self, tmp_path: Path) -> None:
         client = _make_client(tmp_path, video_lookup=_Lookup({OTHER_ID: KAFKA}))
         transcript_id = _upload(client, data={"video_link": OTHER_ID})
 
         page = client.get(f"/transcripts/{transcript_id}").text
-        assert 'value="Kafka internals, Stream &amp; Co"' in page
+        assert _priming_field(page) == ""
 
-    def test_priming_terms_prefill_with_only_a_title(self, tmp_path: Path) -> None:
-        lookup = _Lookup({VIDEO_ID: VideoMetadata(title="Raft in 10 minutes", channel=None)})
+    def test_title_phrases_and_channel_are_offered_as_chips(self, tmp_path: Path) -> None:
+        lookup = _Lookup(
+            {VIDEO_ID: VideoMetadata("Noam Brown: Reasoning Models | Podcast", "Some Channel")}
+        )
         client = _make_client(tmp_path, video_lookup=lookup)
         transcript_id = _upload(client, data={"video_link": VIDEO_ID})
 
         page = client.get(f"/transcripts/{transcript_id}").text
-        assert 'value="Raft in 10 minutes"' in page
+        assert _chips(page) == ["Noam Brown", "Reasoning Models", "Podcast", "Some Channel"]
+
+    def test_chip_text_is_escaped(self, tmp_path: Path) -> None:
+        client = _make_client(tmp_path, video_lookup=_Lookup({OTHER_ID: KAFKA}))
+        transcript_id = _upload(client, data={"video_link": OTHER_ID})
+
+        page = client.get(f"/transcripts/{transcript_id}").text
+        assert _chips(page) == ["Kafka internals", "Stream &amp; Co"]
 
     @pytest.mark.parametrize("video_link", [None, VIDEO_ID], ids=["no-video", "no-metadata"])
-    def test_no_prefill_without_metadata(self, tmp_path: Path, video_link: str | None) -> None:
+    def test_no_chips_without_metadata(self, tmp_path: Path, video_link: str | None) -> None:
         client = _make_client(tmp_path)
         data = {"video_link": video_link} if video_link else None
         transcript_id = _upload(client, data=data)
 
         page = client.get(f"/transcripts/{transcript_id}").text
-        assert 'name="priming_terms" value=' not in page
+        assert _chips(page) == []
+        assert _priming_field(page) == ""
 
-    def test_the_prefill_is_not_sent_unless_submitted(self, tmp_path: Path) -> None:
+    def test_chips_are_not_sent_unless_submitted(self, tmp_path: Path) -> None:
         stub = StubReader()
         client = _make_client(tmp_path, reader=stub, video_lookup=_Lookup({VIDEO_ID: RAFT}))
         transcript_id = _upload(client, data={"video_link": VIDEO_ID})
@@ -1341,10 +1356,24 @@ class TestSourceVideoMetadata:
 
         assert stub.requests[0].priming_terms == []
 
+    def test_terms_added_from_chips_submit_as_a_list(self, tmp_path: Path) -> None:
+        """The chips append to the field the way a reviewer would type: a
+        newline between terms, so the submission parses unchanged."""
+        stub = StubReader()
+        client = _make_client(tmp_path, reader=stub, video_lookup=_Lookup({VIDEO_ID: RAFT}))
+        transcript_id = _upload(client, data={"video_link": VIDEO_ID})
+
+        client.post(
+            f"/transcripts/{transcript_id}/correct",
+            data={"api_key": "sk-or-test", "priming_terms": "Paxos\nRaft in 10 minutes\n"},
+        )
+
+        assert stub.requests[0].priming_terms == ["Paxos", "Raft in 10 minutes"]
+
     @pytest.mark.parametrize(
         "reader", [None, StubReader(garbage=True)], ids=["no-key", "all-chunks-failed"]
     )
-    def test_a_failed_run_keeps_the_submitted_terms_not_the_suggestion(
+    def test_a_failed_run_keeps_the_submitted_terms_and_the_chips(
         self, tmp_path: Path, monkeypatch: pytest.MonkeyPatch, reader: Reader | None
     ) -> None:
         monkeypatch.delenv("OPENROUTER_API_KEY", raising=False)
@@ -1359,10 +1388,10 @@ class TestSourceVideoMetadata:
         ).text
 
         assert 'class="error"' in page
-        assert 'name="priming_terms" value="Raft"' in page
-        assert RAFT.title not in page.split('name="priming_terms"')[1].split(">")[0]
+        assert _priming_field(page) == "Raft"
+        assert _chips(page) == [RAFT.title, RAFT.channel]
 
-    def test_a_failed_run_with_no_terms_offers_the_suggestion_again(
+    def test_a_failed_run_with_no_terms_leaves_the_field_empty(
         self, tmp_path: Path, monkeypatch: pytest.MonkeyPatch
     ) -> None:
         monkeypatch.delenv("OPENROUTER_API_KEY", raising=False)
@@ -1373,7 +1402,7 @@ class TestSourceVideoMetadata:
             f"/transcripts/{transcript_id}/correct", data={"priming_terms": "  "}
         ).text
 
-        assert 'value="Raft in 10 minutes, Distributed Dan"' in page
+        assert _priming_field(page) == ""
 
     def test_submitted_terms_are_kept_without_a_source_video(
         self, tmp_path: Path, monkeypatch: pytest.MonkeyPatch
@@ -1382,11 +1411,24 @@ class TestSourceVideoMetadata:
         client = _make_client(tmp_path)
         transcript_id = _upload(client)
 
-        client.post(f"/transcripts/{transcript_id}/correct", data={"priming_terms": "Kafka"})
+        client.post(
+            f"/transcripts/{transcript_id}/correct", data={"priming_terms": "Kafka\nRaft"}
+        )
 
         page = client.get(f"/transcripts/{transcript_id}").text
-        assert 'name="priming_terms" value="Kafka"' in page
+        assert _priming_field(page) == "Kafka\nRaft"
 
+
+def _priming_field(page: str) -> str:
+    """The contents of the review page's Priming terms textarea."""
+    match = re.search(r'<textarea[^>]*name="priming_terms"[^>]*>(.*?)</textarea>', page, re.S)
+    assert match, "no Priming terms textarea"
+    return match.group(1)
+
+
+def _chips(page: str) -> list[str]:
+    """The Priming-term suggestion chips offered on the review page."""
+    return re.findall(r'<button[^>]*class="chip"[^>]*>(.*?)</button>', page, re.S)
 
 def _cue_row(page: str, index: int) -> str:
     """The HTML of Cue ``index``'s row in the All Cues view."""
