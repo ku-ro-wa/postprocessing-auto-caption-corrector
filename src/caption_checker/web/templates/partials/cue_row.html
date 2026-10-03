@@ -11,7 +11,7 @@
         {%- if piece.flag_id is none -%}
           {{ piece.text }}
         {%- else -%}
-          <a class="cue-flag {{ piece.status }}" href="#flag-{{ piece.flag_id }}" title="{{ piece.status }} Flag: show its card">{{ piece.text }}</a>
+          <a class="cue-flag {{ piece.status }}" href="#flag-{{ piece.flag_id }}" data-flag-id="{{ piece.flag_id }}" title="{{ piece.status }} Flag: show its card">{{ piece.text }}</a>
         {%- endif -%}
       {%- endfor -%}
     </div>

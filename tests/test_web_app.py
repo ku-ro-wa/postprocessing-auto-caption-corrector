@@ -1449,6 +1449,54 @@ class TestAllCuesView:
             f'<a class="cue-flag pending" href="#flag-{flag_id}"' in _cue_row(page, 2)
         )
 
+    def test_a_flag_cards_cue_links_to_that_cue_naming_the_flag(self, tmp_path: Path) -> None:
+        client = _make_client(tmp_path)
+        transcript_id = _upload(client)
+        record = _record(tmp_path, client, transcript_id)
+        flag_id = next(i for i, f in enumerate(record.flags) if f.span == "con sensus")
+
+        page = client.get(f"/transcripts/{transcript_id}").text
+
+        # The page's script switches to All Cues and highlights the Flag's span.
+        assert f'<a class="flag-cue" href="#cue-2" data-flag-id="{flag_id}">cue 2</a>' in page
+        assert f'data-flag-id="{flag_id}"' in _cue_row(page, 2)
+
+    def test_a_cross_cue_flag_links_to_its_first_cue(self, tmp_path: Path) -> None:
+        path = tmp_path / "cross.srt"
+        path.write_text(
+            "1\n00:00:00,000 --> 00:00:02,000\nwe reached con\n\n"
+            "2\n00:00:02,000 --> 00:00:04,000\nsensus\n\n"
+            "3\n00:00:04,000 --> 00:00:06,000\nquickly.\n",
+            encoding="utf-8",
+        )
+        client = _make_client(tmp_path, reader=StubReader(extra={"con sensus": "consensus"}))
+        transcript_id = _upload(client, "cross.srt", path)
+        client.post(f"/transcripts/{transcript_id}/correct", data={"api_key": "sk-or-test"})
+
+        page = client.get(f"/transcripts/{transcript_id}").text
+
+        assert '<a class="flag-cue" href="#cue-1" data-flag-id="0">cues 1–2</a>' in page
+
+    def test_all_cues_has_a_flag_stepper_with_a_pending_only_toggle(
+        self, tmp_path: Path
+    ) -> None:
+        client = _make_client(tmp_path)
+        transcript_id = _upload(client)
+
+        page = client.get(f"/transcripts/{transcript_id}").text
+
+        # Pinned with the tabs, outside the tablist, and shown only in All Cues
+        # by the page's script.
+        start = page.index('id="flag-nav"')
+        nav = page[page.rindex("<", 0, start) : page.index("</div>", start)]
+        assert " hidden" in nav[: nav.index(">")]
+        assert 'id="flag-prev"' in nav and 'aria-label="Previous Flag"' in nav
+        assert 'id="flag-next"' in nav and 'aria-label="Next Flag"' in nav
+        assert '<input type="checkbox" id="flag-pending-only">' in nav
+        assert 'id="flag-position" role="status"' in nav
+        assert page.index("</div>", page.index('role="tablist"')) < start
+        assert start < page.index('id="back-to-top"')
+
     def test_a_decision_refreshes_the_cues_it_touches(self, tmp_path: Path) -> None:
         client = _make_client(tmp_path)
         transcript_id = _upload(client)

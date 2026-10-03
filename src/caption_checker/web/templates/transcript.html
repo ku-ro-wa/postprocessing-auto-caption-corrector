@@ -147,9 +147,17 @@
 </section>
 
 <section id="review-views">
-  <div class="tabs" role="tablist">
-    <button class="tab" type="button" role="tab" id="tab-flags" aria-controls="flags-view" aria-selected="true">Flags</button>
-    <button class="tab" type="button" role="tab" id="tab-cues" aria-controls="cues-view" aria-selected="false">All Cues</button>
+  <div class="review-bar">
+    <div class="tabs" role="tablist">
+      <button class="tab" type="button" role="tab" id="tab-flags" aria-controls="flags-view" aria-selected="true">Flags</button>
+      <button class="tab" type="button" role="tab" id="tab-cues" aria-controls="cues-view" aria-selected="false">All Cues</button>
+    </div>
+    <div class="flag-nav" id="flag-nav" hidden>
+      <button class="btn" type="button" id="flag-prev" aria-label="Previous Flag">◀</button>
+      <span id="flag-position" role="status"></span>
+      <button class="btn" type="button" id="flag-next" aria-label="Next Flag">▶</button>
+      <label><input type="checkbox" id="flag-pending-only"> Pending only</label>
+    </div>
   </div>
   <button class="btn back-to-top" type="button" id="back-to-top" hidden>Back to top</button>
   <div id="flags-view" role="tabpanel" aria-labelledby="tab-flags">
@@ -165,10 +173,15 @@
 
 <script>
 // Flags and All Cues are two views of one page, so switching keeps the
-// player and every Review Decision. The tab bar stays pinned with the player. A highlighted span in a Cue shows the
-// Flags view before its #flag-N link scrolls to the card.
+// player and every Review Decision. The bar of tabs (and, in All Cues, the
+// Flag stepper) stays pinned with the player. A highlighted span in a Cue shows the Flags view before its
+// #flag-N link scrolls to the card; a Flag card's cue link goes the other
+// way, to its Cue with the Flag's span outlined.
 (function () {
   const tabs = document.querySelectorAll('[role="tab"]');
+  const tabFlags = document.getElementById("tab-flags");
+  const tabCues = document.getElementById("tab-cues");
+  const flagNav = document.getElementById("flag-nav");
 
   function show(tab) {
     tabs.forEach(function (t) {
@@ -176,6 +189,9 @@
       t.setAttribute("aria-selected", String(selected));
       document.getElementById(t.getAttribute("aria-controls")).hidden = !selected;
     });
+    flagNav.hidden = tab !== tabCues;
+    // The steps depend on which Cue is in view, unknown while it's hidden.
+    if (tab === tabCues) updateNav();
     updateBackToTop();
   }
 
@@ -183,29 +199,167 @@
     t.addEventListener("click", function () { show(t); });
   });
 
-  // The tabs pin just under the player, so they need its height (it varies
-  // with the viewport); without a Source video they pin to the top.
+  // The bar pins just under the player, so it needs the player's height (it
+  // varies with the viewport); without a Source video it pins to the top. A
+  // Flag or Cue scrolled to lands below both.
   const player = document.getElementById("source-player");
-  if (player && window.ResizeObserver) {
-    new ResizeObserver(function () {
-      document.documentElement.style.setProperty("--player-height", player.offsetHeight + "px");
-    }).observe(player);
+  const views = document.getElementById("review-views");
+  const reviewBar = views.querySelector(".review-bar");
+  if (window.ResizeObserver) {
+    const root = document.documentElement.style;
+    const observer = new ResizeObserver(function () {
+      if (player) root.setProperty("--player-height", player.offsetHeight + "px");
+      root.setProperty("--bar-height", reviewBar.offsetHeight + "px");
+    });
+    observer.observe(reviewBar);
+    if (player) observer.observe(player);
   }
+
+  // Stepping through Flags in All Cues. The Flags list holds every Flag in
+  // transcript order with its status kept current, so the stepper reads it
+  // rather than keeping its own copy.
+  const prev = document.getElementById("flag-prev");
+  const next = document.getElementById("flag-next");
+  const position = document.getElementById("flag-position");
+  const pendingOnly = document.getElementById("flag-pending-only");
+  // The Flag last shown in All Cues, its span outlined.
+  let currentFlagId = null;
+
+  function cards() {
+    return Array.from(document.querySelectorAll("#flags-list .flag-card"));
+  }
+
+  function indexOfCurrent(all) {
+    return all.findIndex(function (c) { return c.id === "flag-" + currentFlagId; });
+  }
+
+  function cueIndex(card) {
+    return parseInt(card.querySelector("a.flag-cue").hash.slice("#cue-".length), 10);
+  }
+
+  function isPending(card) {
+    return card.classList.contains("pending");
+  }
+
+  function stoppable(card) {
+    return !pendingOnly.checked || isPending(card);
+  }
+
+  // The Cue the reviewer is looking at: the first one not hidden under the
+  // pinned bar. Rows are in page order, so a binary search keeps this cheap
+  // enough to run on scroll.
+  function cueInView() {
+    const under = reviewBar.getBoundingClientRect().bottom;
+    const rows = document.querySelectorAll("#cues-view .cue-row");
+    let lo = 0;
+    let hi = rows.length;
+    while (lo < hi) {
+      const mid = (lo + hi) >> 1;
+      if (rows[mid].getBoundingClientRect().bottom > under) hi = mid;
+      else lo = mid + 1;
+    }
+    return lo < rows.length ? parseInt(rows[lo].id.slice("cue-".length), 10) : Infinity;
+  }
+
+  // The Flag a step of `step` (-1 or 1) lands on. From the current Flag it
+  // is the nearest stoppable one in the list; with none yet it is the
+  // nearest from the Cue in view, so the first step doesn't jump back to
+  // the top.
+  function stepTarget(all, step) {
+    let from = indexOfCurrent(all);
+    if (from === -1) {
+      const cue = cueInView();
+      let firstInView = all.findIndex(function (c) { return cueIndex(c) >= cue; });
+      if (firstInView === -1) firstInView = all.length;
+      from = step > 0 ? firstInView - 1 : firstInView;
+    }
+    for (let i = from + step; i >= 0 && i < all.length; i += step) {
+      if (stoppable(all[i])) return all[i];
+    }
+    return null;
+  }
+
+  function updateNav() {
+    const all = cards();
+    const at = indexOfCurrent(all);
+    const shown = at === -1
+      ? all.length + (all.length === 1 ? " Flag" : " Flags")
+      : "Flag " + (at + 1) + " of " + all.length;
+    position.textContent = shown + " · " + all.filter(isPending).length + " pending";
+    prev.disabled = !stepTarget(all, -1);
+    next.disabled = !stepTarget(all, 1);
+  }
+
+  // Until a Flag is current the steps depend on the Cue in view, so they
+  // follow scrolling, at most once a frame.
+  let navQueued = false;
+  window.addEventListener("scroll", function () {
+    if (currentFlagId !== null || flagNav.hidden || navQueued) return;
+    navQueued = true;
+    requestAnimationFrame(function () {
+      navQueued = false;
+      updateNav();
+    });
+  }, { passive: true });
+
+  // Outline the Flag's span in its Cue; Cue rows re-rendered after a Review
+  // Decision or Cue edit get it back from `currentFlagId`.
+  function setCurrentFlag(flagId) {
+    currentFlagId = flagId;
+    document.querySelectorAll("a.cue-flag.current").forEach(function (a) {
+      a.classList.remove("current");
+    });
+    if (currentFlagId !== null) {
+      document.querySelectorAll('a.cue-flag[data-flag-id="' + currentFlagId + '"]').forEach(function (a) {
+        a.classList.add("current");
+      });
+    }
+    updateNav();
+  }
+
+  function showFlagInCue(link) {
+    show(tabCues);
+    setCurrentFlag(link.dataset.flagId);
+    document.getElementById(link.hash.slice(1)).scrollIntoView({ block: "start" });
+  }
+
   document.addEventListener("click", function (event) {
-    if (event.target.closest("a.cue-flag")) show(document.getElementById("tab-flags"));
+    const span = event.target.closest("a.cue-flag");
+    if (span) {
+      setCurrentFlag(span.dataset.flagId);
+      show(tabFlags);
+      return;
+    }
+    const link = event.target.closest("a.flag-cue");
+    if (link) {
+      event.preventDefault();
+      showFlagInCue(link);
+      // Keyboard focus follows to the span, so Tab carries on from there.
+      const outlined = document.querySelector("a.cue-flag.current");
+      if (outlined) outlined.focus({ preventScroll: true });
+    }
   });
 
-  // Back to top returns to the top of the current list — the tabs pinned
+  function stepBy(step) {
+    const card = stepTarget(cards(), step);
+    if (card) showFlagInCue(card.querySelector("a.flag-cue"));
+  }
+  prev.addEventListener("click", function () { stepBy(-1); });
+  next.addEventListener("click", function () { stepBy(1); });
+  pendingOnly.addEventListener("change", updateNav);
+  // A swapped-in Flag card takes its new status class only once htmx settles.
+  document.body.addEventListener("htmx:afterSettle", function () { setCurrentFlag(currentFlagId); });
+
+  // Back to top returns to the top of the current list — the bar pinned
   // just under the player — not the page top, and shows only once the
   // reviewer has scrolled half a screen into the list.
-  const views = document.getElementById("review-views");
-  const tabBar = views.querySelector(".tabs");
+  const tabBar = reviewBar.querySelector('[role="tablist"]');
   const backToTop = document.getElementById("back-to-top");
 
   function listTop() {
     const pinnedAbove = player ? player.offsetHeight : 0;
-    const tabsMargin = parseFloat(getComputedStyle(tabBar).marginTop);
-    return views.getBoundingClientRect().top + window.scrollY + tabsMargin - pinnedAbove;
+    const barMargin = parseFloat(getComputedStyle(reviewBar).marginTop);
+    return views.getBoundingClientRect().top + window.scrollY + barMargin - pinnedAbove;
   }
 
   // Keyboard focus lands on the current tab, so Tab carries on from the top
@@ -230,6 +384,7 @@
     focusSelectedTab();
   });
   updateBackToTop();
+  updateNav();
 })();
 </script>
 

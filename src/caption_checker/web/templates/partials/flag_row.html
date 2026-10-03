@@ -2,7 +2,7 @@
 <div class="flag-card {{ status }}" id="flag-{{ row.id }}">
   <div class="flag-meta">
     {% with start=row.flag.start, end=row.flag.end, play_title="Play this span" %}{% include "partials/play_span.html" %}{% endwith %}
-    {{ row.cue_label }}
+    <a class="flag-cue" href="#cue-{{ row.flag.cue_index }}" data-flag-id="{{ row.id }}">{{ row.cue_label }}</a>
     {% if row.by_reviewer %}
     &middot; <span title="You raised this Flag by editing a Cue. It starts out accepted with your text; reject it to undo the fix."><span class="badge">Added by you</span></span>
     {% else %}
