@@ -164,6 +164,18 @@ class TestUploadHardening:
 
 
 class TestUpload:
+    def test_drop_box_invites_a_dropped_file_and_feeds_the_file_input(
+        self, tmp_path: Path
+    ) -> None:
+        """A dropped file goes into the same file input as the picker, so it is
+        posted, capped and parsed exactly like a picked one (#58)."""
+        page = _make_client(tmp_path).get("/").text
+        drop_box = re.search(r'<div class="upload-drop"[^>]*>.*?</div>', page, re.S)
+        assert drop_box is not None
+        assert "drop it here" in drop_box.group(0)
+        assert 'addEventListener("drop"' in page
+        assert "input.files = picked.files" in page
+
     def test_upload_scans_and_redirects_to_review_page(self, tmp_path: Path) -> None:
         client = _make_client(tmp_path)
         transcript_id = _upload(client)

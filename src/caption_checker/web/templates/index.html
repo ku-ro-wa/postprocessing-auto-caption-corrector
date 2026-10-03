@@ -24,12 +24,48 @@
     <div class="error">{{ upload_error }}</div>
   {% endif %}
   <form class="upload-form" action="/transcripts" method="post" enctype="multipart/form-data">
-    <div class="upload-drop"><input type="file" name="file" accept=".srt,.vtt" required aria-label="Transcript file (SRT or VTT)"></div>
+    <div class="upload-drop"><input type="file" name="file" accept=".srt,.vtt" required aria-label="Transcript file (SRT or VTT)"><p class="muted">or drop it here</p></div>
     <label>Source video, as a YouTube link (optional):
       <input type="text" name="video_link" value="{{ video_link or '' }}" placeholder="https://youtu.be/...">
     </label>
     <div><button class="btn btn-primary" type="submit">Upload &amp; scan</button></div>
   </form>
+  <script>
+  // A file dropped on the dashed box goes into its file input, so it is posted,
+  // capped and parsed exactly like a picked one. A drop that misses the
+  // box is swallowed rather than letting the browser open the file and lose the form.
+  (function () {
+    const box = document.querySelector(".upload-drop");
+    const input = box.querySelector("input[type=file]");
+    function carriesFiles(event) {
+      return event.dataTransfer && event.dataTransfer.types.includes("Files");
+    }
+    window.addEventListener("dragover", function (event) {
+      if (!carriesFiles(event)) return;
+      event.preventDefault();
+      event.dataTransfer.dropEffect = box.contains(event.target) ? "copy" : "none";
+    });
+    window.addEventListener("drop", function (event) {
+      if (carriesFiles(event)) event.preventDefault();
+    });
+    box.addEventListener("dragenter", function (event) {
+      if (carriesFiles(event)) box.classList.add("dragover");
+    });
+    box.addEventListener("dragleave", function (event) {
+      if (!box.contains(event.relatedTarget)) box.classList.remove("dragover");
+    });
+    box.addEventListener("drop", function (event) {
+      event.preventDefault();
+      box.classList.remove("dragover");
+      const file = event.dataTransfer.files[0];
+      if (!file) return;
+      // The input takes one file; keep only the first of several dropped.
+      const picked = new DataTransfer();
+      picked.items.add(file);
+      input.files = picked.files;
+    });
+  })();
+  </script>
   <p class="muted">English captions only: the detectors and the known-good word lists are English.</p>
   <p class="muted">With a Source video, you can play each Flag's span on the review page. You can add, change or remove it there later.</p>
   <p class="muted">Uploads are scanned automatically by the local detectors. Nothing is sent to an LLM until you ask for it on a transcript's review page: running Correct sends its text to OpenRouter's model provider.</p>

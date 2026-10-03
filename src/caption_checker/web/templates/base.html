@@ -45,7 +45,8 @@
   input[type=file] { font: inherit; font-size: 0.9rem; max-width: 100%; }
   input[type=file]::file-selector-button { margin-right: 0.75rem; }
   .upload-drop { border: 2px dashed var(--border); border-radius: 10px; padding: 1.25rem; text-align: center; background: #8880; transition: border-color 0.12s, background 0.12s; }
-  .upload-drop:hover, .upload-drop:focus-within { border-color: var(--accent); background: color-mix(in srgb, var(--accent) 5%, transparent); }
+  .upload-drop p { margin: 0.5rem 0 0; font-size: 0.9rem; }
+  .upload-drop:hover, .upload-drop:focus-within, .upload-drop.dragover { border-color: var(--accent); background: color-mix(in srgb, var(--accent) 5%, transparent); }
   .upload-drop input[type=file]::file-selector-button { background: var(--accent); border-color: var(--accent); color: var(--accent-text); padding: 0.55rem 1.2rem; }
   .upload-drop input[type=file]::file-selector-button:hover { background: var(--accent-hover); border-color: var(--accent-hover); }
   .upload-form { display: grid; gap: 0.9rem; }
