@@ -13,6 +13,7 @@ kill_timeout = "180s"
 [env]
   CAPTION_CHECKER_DATA_DIR = "/data"
   CAPTION_CHECKER_SECURE_COOKIE = "1"
+  CAPTION_CHECKER_FEEDBACK_EMAIL = "misheard_app@outlook.com"
 
 [[mounts]]
   source = "data"
