@@ -288,3 +288,25 @@ class TestLedger:
         with (tmp_path / LEDGER_FILENAME).open("a") as f:
             f.write('{"at": "2026-10')
         assert _tier(tmp_path, clock).words_left("s1") == 9_000
+
+
+class TestWhetherARunCouldStart:
+    """What the review page asks before offering the Free tier first (#63)."""
+
+    def test_the_allowance_fits_within_the_grace_margin(
+        self, tmp_path: Path, clock: FakeClock
+    ) -> None:
+        tier = _tier(tmp_path, clock, words=1_000)
+        _run(tier, "s1", 900)
+
+        assert tier.could_run("s1", 300)
+        assert not tier.could_run("s1", 301)
+
+    def test_not_once_the_budget_is_spent(self, tmp_path: Path, clock: FakeClock) -> None:
+        tier = _tier(tmp_path, clock, budget=0.25)
+        _run(tier, "s1", 100, cost=0.20)
+        assert tier.could_run("s2", 100)
+
+        _run(tier, "s2", 100, cost=0.05)
+
+        assert not tier.could_run("s3", 100)

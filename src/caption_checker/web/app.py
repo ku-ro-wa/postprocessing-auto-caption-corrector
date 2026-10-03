@@ -289,14 +289,28 @@ def create_app(
         usage.record("upload")
         return RedirectResponse(f"/transcripts/{record.id}", status_code=303)
 
+    def review_status(record: TranscriptRecord) -> dict[str, object]:
+        """What the counts and done banner need, on the page and in every
+        fragment that re-renders them."""
+        return {
+            "progress": service.review_progress(record),
+            "has_server_key": bool(os.environ.get("OPENROUTER_API_KEY")),
+        }
+
     def review_page(
         request: Request, record: TranscriptRecord, *, status_code: int = 200, **extra: object
     ) -> Response:
-        has_server_key = bool(os.environ.get("OPENROUTER_API_KEY"))
+        status = review_status(record)
+        has_server_key = status["has_server_key"]
+        word_count = service.transcript_word_count(storage, record)
         words_left = next_return = None
+        # The key comes first when the Free tier can't run this Transcript
+        # (#63); a key stored in the browser opens it too, client-side.
+        own_key_open = not has_server_key or bool(extra.get("refusal"))
         if free_tier is not None and has_server_key:
             words_left = free_tier.words_left(record.session_id)
             next_return = free_tier.next_return(record.session_id)
+            own_key_open = own_key_open or not free_tier.could_run(record.session_id, word_count)
         return templates.TemplateResponse(
             request,
             "transcript.html",
@@ -305,12 +319,13 @@ def create_app(
                 "rows": service.transcript_rows(storage, record),
                 "cues": service.cue_rows(storage, record),
                 "summary": service.correction_summary(record),
-                "has_server_key": has_server_key,
-                "word_count": service.transcript_word_count(storage, record),
+                "word_count": word_count,
                 "words_left": words_left,
                 "next_return": next_return,
+                "own_key_open": own_key_open,
                 "limits": limits,
                 "offered_priming_terms": service.offered_priming_terms(record),
+                **status,
                 **extra,
             },
             status_code=status_code,
@@ -446,7 +461,28 @@ def create_app(
         return templates.TemplateResponse(
             request,
             "partials/decision.html",
-            {"transcript": record, "row": row, "cues": cues, "oob": True},
+            {"transcript": record, "row": row, "cues": cues, "oob": True, **review_status(record)},
+        )
+
+    @app.post("/transcripts/{transcript_id}/flags/accept-all", response_class=HTMLResponse)
+    def accept_all(request: Request, transcript_id: str) -> Response:
+        record = load_or_404(request.state.session_id, transcript_id)
+        accepted = service.accept_ai_suggestions(record)
+        storage.save_transcript(record)
+        # The page swaps in everything this changed: the Flags list, the
+        # counts and banner, and the All Cues rows of each accepted Flag.
+        return templates.TemplateResponse(
+            request,
+            "partials/accept_all.html",
+            {
+                "transcript": record,
+                "rows": service.transcript_rows(storage, record),
+                "cues": service.cue_rows(
+                    storage, record, cue_indices=service.cues_affected(storage, record, *accepted)
+                ),
+                "oob": True,
+                **review_status(record),
+            },
         )
 
     @app.post("/transcripts/{transcript_id}/cues/{cue_index}/edit", response_class=HTMLResponse)
@@ -479,8 +515,8 @@ def create_app(
                 "transcript": record,
                 "cue": cue,
                 "rows": service.transcript_rows(storage, record),
-                "summary": service.correction_summary(record),
                 "oob": True,
+                **review_status(record),
                 **extra,
             },
         )

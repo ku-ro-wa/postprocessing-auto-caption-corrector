@@ -42,17 +42,19 @@
 </div>
 {% endif %}
 
-<section>
+{% if transcript.corrected %}
+<div class="ai-summary" id="ai-read-through">
+  <p class="muted">AI read-through done: confirmed {{ summary.confirmed }}, dismissed {{ summary.dismissed }}, found {{ summary.found }} new. Re-running isn't supported yet.</p>
+  {% if transcript.failed_chunks %}
+    <div class="error">{{ transcript.failed_chunks }} of {{ transcript.chunk_count }} chunks failed: the Flags in them were left unjudged.</div>
+  {% endif %}
+</div>
+{% else %}
+<section class="ai-panel" id="ai-read-through">
   <h3>AI read-through</h3>
   {% if transcript.correct_error %}
     <div class="error">{{ transcript.correct_error }}</div>
   {% endif %}
-  {% if transcript.corrected %}
-    <p class="muted">AI read-through complete. Re-running isn't supported yet — see each Flag below for the AI's verdict.</p>
-    {% if transcript.failed_chunks %}
-      <div class="error">{{ transcript.failed_chunks }} of {{ transcript.chunk_count }} chunks failed: the Flags in them were left unjudged.</div>
-    {% endif %}
-  {% else %}
   {% if already_running %}
     <div class="error" role="alert">An AI read-through is already running on this Transcript. Wait for it to finish, then reload this page.</div>
   {% endif %}
@@ -79,19 +81,6 @@
   {% endif %}
   <p class="muted">The AI reads your whole captions file, judges every Flag below and adds mistakes the local scan missed.</p>
   <form action="/transcripts/{{ transcript.id }}/correct" method="post" id="correct-form">
-    <label>Your OpenRouter API key: <input type="password" name="api_key" id="api-key" autocomplete="off" placeholder="sk-or-..."></label>
-    <button class="btn" type="button" id="forget-key">Forget my key</button>
-    <p class="muted">
-      Your key stays in this browser and is sent only with each run; it is never stored on the server.
-      {% if words_left is not none %}
-        Leave it blank to use the Free tier: <strong>{{ words_left|thousands }} of {{ limits.allowance_words|thousands }} words left in your rolling 24 hours</strong>{% if next_return %}; {{ next_return[1]|thousands }} come back in {{ next_return[0]|duration }}{% endif %}.
-      {% elif has_server_key %}
-        Leave it blank to use the server's own key.
-      {% else %}
-        This server has no Free tier, so a run needs your own key.
-      {% endif %}
-      This Transcript is {{ word_count|thousands }} words.
-    </p>
     <div class="priming-terms">
       <label for="priming-terms">Priming terms <span class="muted">(names and terms that appear in this video, one per line or comma-separated; they help the AI recognise how they're spelled)</span></label>
       <textarea name="priming_terms" id="priming-terms" rows="3" placeholder="Speakers, products, companies, technical terms…">{{ transcript.priming_terms }}</textarea>
@@ -102,8 +91,29 @@
         </div>
       {% endif %}
     </div>
-    <button class="btn btn-primary" type="submit" id="submit-correct">Run AI read-through</button>
+    <div class="run-row">
+      <button class="btn btn-primary" type="submit" id="submit-correct">Run AI read-through</button>
+      <p class="muted run-note">
+        {% if words_left is not none %}
+          Free up to {{ limits.allowance_words|thousands }} words in any 24 hours: <strong>{{ words_left|thousands }} of {{ limits.allowance_words|thousands }} words left in your rolling 24 hours</strong>{% if next_return %}; {{ next_return[1]|thousands }} come back in {{ next_return[0]|duration }}{% endif %}.
+        {% elif has_server_key %}
+          Free on this server.
+        {% else %}
+          This server has no Free tier, so a run needs your own key.
+        {% endif %}
+        This Transcript is {{ word_count|thousands }} words.
+      </p>
+    </div>
     <p class="muted" id="correct-wait" hidden>This takes about 1–2 minutes for an hour of video. Don't refresh.</p>
+    <details class="own-key" id="own-key"{% if own_key_open %} open{% endif %}>
+      <summary>Use my own OpenRouter key</summary>
+      <label>Your OpenRouter API key: <input type="password" name="api_key" id="api-key" autocomplete="off" placeholder="sk-or-..."></label>
+      <button class="btn" type="button" id="forget-key">Forget my key</button>
+      <p class="muted">
+        Your key stays in this browser and is sent only with each run; it is never stored on the server.
+        {% if has_server_key %}Leave it blank to use the {{ "Free tier" if words_left is not none else "server's own key" }}.{% endif %}
+      </p>
+    </details>
   </form>
   <script>
   // The visitor's key lives in this browser's local storage and rides along
@@ -124,10 +134,13 @@
     }
 
     input.value = remembered();
-    document.getElementById("correct-form").addEventListener("submit", function () {
+    const ownKey = document.getElementById("own-key");
+    if (input.value) ownKey.open = true;
+    document.getElementById("correct-form").addEventListener("submit", function (event) {
       const value = input.value.trim();
       if (value) remember(value);
-      // A second click would start a second paid run.
+      // A second click would start a second paid run, from either button.
+      if (event.submitter) event.submitter.disabled = true;
       const button = document.getElementById("submit-correct");
       button.disabled = true;
       button.textContent = "Running…";
@@ -136,6 +149,7 @@
     // Coming back to this page with Back must not leave a dead button.
     window.addEventListener("pageshow", function (event) {
       if (!event.persisted) return;
+      document.querySelectorAll('[form="correct-form"]').forEach(function (b) { b.disabled = false; });
       const button = document.getElementById("submit-correct");
       button.disabled = false;
       button.textContent = "Run AI read-through";
@@ -181,8 +195,8 @@
   })();
   </script>
   {% endif %}
-  {% endif %}
 </section>
+{% endif %}
 
 <section id="review-views">
   <div class="review-bar">
@@ -199,6 +213,7 @@
   </div>
   <button class="btn back-to-top" type="button" id="back-to-top" hidden>Back to top</button>
   <div id="flags-view" role="tabpanel" aria-labelledby="tab-flags">
+    {% include "partials/done_banner.html" %}
     {% include "partials/flag_list.html" %}
   </div>
   <div id="cues-view" role="tabpanel" aria-labelledby="tab-cues" hidden>
@@ -221,6 +236,24 @@ document.addEventListener("input", function (event) {
   form.querySelector('button[value="accept"]').disabled = unchanged;
   form.querySelector(".accept-hint").hidden = !unchanged;
 });
+</script>
+
+<script>
+// Without a Free tier, the done banner offers the AI read-through first only
+// to a visitor whose key is stored in this browser (ADR 0010), which the
+// server can't see. Re-checked whenever htmx swaps the banner in.
+(function () {
+  function hasStoredKey() {
+    try { return Boolean(window.localStorage.getItem("openrouter_api_key")); } catch (e) { return false; }
+  }
+  function sync() {
+    const withKey = hasStoredKey();
+    document.querySelectorAll("#done-banner [data-with-key]").forEach(function (el) { el.hidden = !withKey; });
+    document.querySelectorAll("#done-banner [data-without-key]").forEach(function (el) { el.hidden = withKey; });
+  }
+  sync();
+  document.body.addEventListener("htmx:afterSettle", sync);
+})();
 </script>
 
 <script>

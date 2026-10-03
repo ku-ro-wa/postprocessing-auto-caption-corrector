@@ -458,6 +458,100 @@ class TestSetDecision:
             service.set_decision(record, 0, action="frobnicate", text=None)
 
 
+def _corrected_sample(storage: Storage, session_id: str):
+    """The sample after a Read-through: Flag 0 confirmed with an AI
+    replacement, 1 dismissed, 2 left with only its local Candidate, 3
+    confirmed (#63)."""
+    record = _upload_sample(storage, session_id)
+    record.corrections = [
+        Correction(id="0", replacement="consensus", confidence=0.9),
+        Correction(id="1", replacement=None, confidence=0.9),
+        None,
+        Correction(id="3", replacement="Kubernetes", confidence=0.9),
+    ]
+    record.corrected_at = "t"
+    return record
+
+
+class TestReviewProgress:
+    def test_counts_accepted_and_rejected_as_reviewed(
+        self, storage: Storage, session_id: str
+    ) -> None:
+        record = _upload_sample(storage, session_id)
+        service.set_decision(record, 0, action="accept", text=None)
+        service.set_decision(record, 1, action="reject", text=None)
+
+        progress = service.review_progress(record)
+
+        assert (progress.reviewed, progress.total, progress.pending) == (2, 4, 2)
+
+    def test_dismissed_flags_are_left_out_of_the_total(
+        self, storage: Storage, session_id: str
+    ) -> None:
+        progress = service.review_progress(_corrected_sample(storage, session_id))
+
+        assert (progress.reviewed, progress.total, progress.pending) == (0, 3, 3)
+
+    def test_counts_the_pending_flags_with_an_ai_replacement(
+        self, storage: Storage, session_id: str
+    ) -> None:
+        record = _corrected_sample(storage, session_id)
+        assert service.review_progress(record).ai_acceptable == 2
+
+        service.set_decision(record, 3, action="reject", text=None)
+
+        assert service.review_progress(record).ai_acceptable == 1
+
+
+class TestAcceptAllAiSuggestions:
+    def test_accepts_each_pending_flag_with_its_ai_replacement(
+        self, storage: Storage, session_id: str
+    ) -> None:
+        record = _corrected_sample(storage, session_id)
+
+        accepted = service.accept_ai_suggestions(record)
+
+        assert accepted == [0, 3]
+        assert [(d.status, d.text) for d in record.decisions] == [
+            ("accepted", "consensus"),
+            ("pending", None),
+            ("pending", None),
+            ("accepted", "Kubernetes"),
+        ]
+
+    def test_never_changes_a_dismissed_flag(self, storage: Storage, session_id: str) -> None:
+        record = _corrected_sample(storage, session_id)
+
+        service.accept_ai_suggestions(record)
+
+        assert record.decisions[1].status == "pending"
+
+    def test_never_changes_a_flag_with_only_a_local_candidate(
+        self, storage: Storage, session_id: str
+    ) -> None:
+        record = _corrected_sample(storage, session_id)
+        assert record.flags[2].candidates
+
+        service.accept_ai_suggestions(record)
+
+        assert record.decisions[2].status == "pending"
+
+    def test_never_changes_a_flag_already_rejected_or_accepted(
+        self, storage: Storage, session_id: str
+    ) -> None:
+        record = _corrected_sample(storage, session_id)
+        service.set_decision(record, 0, action="reject", text=None)
+        service.set_decision(record, 3, action="accept", text="K8s")
+
+        assert service.accept_ai_suggestions(record) == []
+        assert [(d.status, d.text) for d in record.decisions] == [
+            ("rejected", None),
+            ("pending", None),
+            ("pending", None),
+            ("accepted", "K8s"),
+        ]
+
+
 class TestTranscriptRows:
     def test_default_text_uses_top_local_candidate_when_no_correction(
         self, storage: Storage, session_id: str

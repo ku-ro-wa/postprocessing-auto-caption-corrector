@@ -1,0 +1,29 @@
+{#- Shown on the Flags view once no Flag is pending (dismissed ones don't
+    count), and re-rendered out of band with the counts (#63). Before the AI
+    read-through it offers to run it first; without a Free tier that depends
+    on a key stored in this browser, which only the page can check. -#}
+<div class="done-banner" id="done-banner" role="status"{% if oob %} hx-swap-oob="true"{% endif %}>
+{% if not progress.pending %}
+  {% set export_url = "/transcripts/" ~ transcript.id ~ "/export" %}
+  {% if not transcript.corrected %}
+    <div{% if not has_server_key %} data-with-key hidden{% endif %}>
+      <p><strong>You've reviewed every Flag the scan found.</strong> The AI read-through hasn't run yet and may find more.</p>
+      <p class="banner-actions">
+        <button class="btn btn-primary" type="submit" form="correct-form">Run AI read-through</button>
+        <a class="btn" href="{{ export_url }}">Export corrected file</a>
+      </p>
+    </div>
+  {% endif %}
+  {% if transcript.corrected or not has_server_key %}
+    <div{% if not transcript.corrected %} data-without-key{% endif %}>
+      {% if progress.total %}
+        <p><strong>All {{ progress.total }} Flag{{ "" if progress.total == 1 else "s" }} reviewed.</strong> Export the corrected file and upload it back to YouTube Studio.</p>
+      {% else %}
+        <p><strong>No Flags found. Your captions look fine.</strong></p>
+      {% endif %}
+      <p class="banner-actions"><a class="btn btn-primary" href="{{ export_url }}">Export corrected file</a></p>
+      {% if progress.total %}{% include "partials/upload_back.html" %}{% endif %}
+    </div>
+  {% endif %}
+{% endif %}
+</div><!-- /done-banner -->

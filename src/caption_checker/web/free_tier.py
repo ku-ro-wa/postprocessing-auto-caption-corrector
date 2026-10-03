@@ -114,6 +114,16 @@ class FreeTier:
             oldest = min(charged, key=lambda e: e.at)
             return self._until_aged_out(oldest), oldest.words
 
+    def could_run(self, session_id: str, words: int) -> bool:
+        """Whether a run of ``words`` could start now: the Session's Allowance
+        takes it and the Daily budget isn't used up. Only a guess for the
+        page to lead with (the real check needs the run's estimate)."""
+        with self._lock:
+            return (
+                self._allowance_fits(words, self._words_left(session_id))
+                and self._spent_usd() < self.limits.daily_budget_usd
+            )
+
     # -- a run -----------------------------------------------------------
 
     def reserve(self, session_id: str, words: int, *, estimate_usd: float) -> Reservation:

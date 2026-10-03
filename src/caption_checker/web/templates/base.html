@@ -116,6 +116,25 @@
   a.cue-flag.current { outline: 2px solid var(--accent); outline-offset: 2px; border-radius: 2px; }
   /* Full-strength text even inside a faded .flag-meta; rejected and dismissed cards still fade it a little. */
   .status-pill { font-size: 0.8rem; font-weight: 600; color: CanvasText; padding: 0.1rem 0.5rem; border-radius: 1rem; border: 1px solid currentColor; white-space: nowrap; }
+  /* The review page's progress, accept-all and done banner (#63). */
+  .review-progress { margin: 0.25rem 0 1rem; }
+  .review-progress p { margin: 0.25rem 0; }
+  .progress-line { display: flex; flex-wrap: wrap; align-items: center; gap: 0.25rem 0.75rem; font-variant-numeric: tabular-nums; }
+  .progress-line progress { width: min(100%, 16rem); accent-color: var(--accent); }
+  .ai-panel { border: 1px solid var(--border); border-radius: 8px; padding: 0.25rem 1rem 1rem; margin: 1rem 0; }
+  .run-row { display: flex; flex-wrap: wrap; align-items: center; gap: 0.5rem 1rem; margin: 0.75rem 0; }
+  .run-row .run-note { flex: 1 1 14rem; margin: 0; }
+  .own-key { margin-top: 0.75rem; }
+  .own-key summary { cursor: pointer; }
+  .own-key label { display: flex; flex-wrap: wrap; align-items: center; gap: 0.25rem 0.5rem; margin: 0.5rem 0; }
+  .own-key input[type=password] { flex: 1 1 12rem; min-width: 0; }
+  .ai-summary { margin: 1rem 0; }
+  .ai-summary p { margin: 0.25rem 0; }
+  .done-banner > div { border: 1px solid #2a7; background: #2a72; border-radius: 8px; padding: 0.25rem 1rem 0.75rem; margin-bottom: 1rem; }
+  .done-banner > div[hidden] { display: none; }
+  .banner-actions { display: flex; flex-wrap: wrap; gap: 0.5rem; }
+  a.btn { display: inline-block; text-decoration: none; }
+  .done-banner summary { cursor: pointer; }
   .status-legend { display: flex; flex-wrap: wrap; gap: 0.3rem 1rem; font-size: 0.9rem; margin: 0.5rem 0 0.75rem; }
 </style>
 </head>

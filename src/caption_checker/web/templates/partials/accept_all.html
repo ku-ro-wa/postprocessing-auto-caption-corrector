@@ -1,0 +1,7 @@
+{#- Accept-all's response: everything it changed, swapped out of band. -#}
+{% include "partials/flag_list.html" %}
+{% include "partials/counts.html" %}
+{% include "partials/done_banner.html" %}
+{% for cue in cues %}
+  {% include "partials/cue_row.html" %}
+{% endfor %}

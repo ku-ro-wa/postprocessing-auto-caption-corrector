@@ -399,8 +399,8 @@ def _default_replacement(flag: Flag, correction: Correction | None) -> str:
     """The text an Accept should default to, absent an explicit edit: the
     Flag's LLM Correction where one exists, else its own top local Candidate,
     else its unchanged span."""
-    if correction is not None and correction.replacement:
-        return correction.replacement
+    if (replacement := _ai_replacement(correction)) is not None:
+        return replacement
     if flag.candidates:
         return flag.candidates[0]
     return flag.span
@@ -431,6 +431,56 @@ def set_decision(record: TranscriptRecord, flag_id: int, *, action: str, text: s
         return
 
     raise ValueError(f"Unknown review action {action!r} (expected 'accept' or 'reject')")
+
+
+def _ai_replacement(correction: Correction | None) -> str | None:
+    """The Read-through's replacement for a Flag, if it proposed one."""
+    return correction.replacement if correction is not None and correction.replacement else None
+
+
+def accept_ai_suggestions(record: TranscriptRecord) -> list[int]:
+    """Accept every pending Flag that has an AI replacement, with that
+    replacement as its text, and return their ids. A Flag already decided,
+    dismissed, or with only a local Candidate is left as it is (#63)."""
+    accepted = []
+    for flag_id, decision in enumerate(record.decisions):
+        replacement = _ai_replacement(record.corrections[flag_id] if record.corrections else None)
+        if decision.status == "pending" and replacement is not None:
+            record.decisions[flag_id] = ReviewDecision(status="accepted", text=replacement)
+            accepted.append(flag_id)
+    return accepted
+
+
+@dataclass
+class ReviewProgress:
+    """How far the review has got. Dismissed Flags have nothing to decide,
+    so they are left out of every count."""
+
+    reviewed: int
+    total: int
+    #: Pending Flags with an AI replacement: what accept-all would accept.
+    ai_acceptable: int
+
+    @property
+    def pending(self) -> int:
+        return self.total - self.reviewed
+
+
+def review_progress(record: TranscriptRecord) -> ReviewProgress:
+    """Counted from the same statuses the Flag cards show, so the progress
+    bar, accept-all and done banner always agree with the list."""
+    reviewed = total = ai_acceptable = 0
+    for flag_id, decision in enumerate(record.decisions):
+        correction = record.corrections[flag_id] if record.corrections else None
+        status = _status(correction, decision)
+        if status == "dismissed":
+            continue
+        total += 1
+        if status != "pending":
+            reviewed += 1
+        elif _ai_replacement(correction) is not None:
+            ai_acceptable += 1
+    return ReviewProgress(reviewed=reviewed, total=total, ai_acceptable=ai_acceptable)
 
 
 def export_transcript(storage: Storage, record: TranscriptRecord) -> str:
@@ -620,11 +670,18 @@ def cue_rows(
     ]
 
 
-def cues_affected(storage: Storage, record: TranscriptRecord, flag_id: int) -> list[int]:
-    """The indices of the Cues a Review Decision on ``flag_id`` can change."""
+def cues_affected(storage: Storage, record: TranscriptRecord, *flag_ids: int) -> list[int]:
+    """The indices of the Cues Review Decisions on ``flag_ids`` can change,
+    in order."""
     cues = storage.load_cues(record.session_id, record.id)
     words_by_gi = {w.global_index: w for w in tokenize(cues)}
-    return [c.index for c in cues_spanned(record.flags[flag_id], cues, words_by_gi)]
+    return sorted(
+        {
+            c.index
+            for flag_id in flag_ids
+            for c in cues_spanned(record.flags[flag_id], cues, words_by_gi)
+        }
+    )
 
 
 @dataclass

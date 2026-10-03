@@ -331,7 +331,7 @@ class TestReviewDecisions:
         )
         page = client.get(f"/transcripts/{transcript_id}")
         assert page.status_code == 200
-        assert "1 reviewed" in page.text
+        assert "1 of 4 reviewed" in page.text
 
     def test_unknown_flag_id_is_404(self, tmp_path: Path) -> None:
         client = _make_client(tmp_path)
@@ -2744,3 +2744,317 @@ class TestLandingSteps:
         assert "<h3>AI read-through</h3>" in review
         assert ">Run AI read-through</button>" in review
         assert 'button.textContent = "Run AI read-through";' in review
+
+
+def _own_key_details(page: str) -> str:
+    """The opening tag of the "Use my own OpenRouter key" <details>."""
+    return _tag(page, 'id="own-key"')
+
+
+def _done_banner(page: str) -> str:
+    """The done banner's visible text, collapsed; empty while Flags are pending."""
+    start = page.index('id="done-banner"')
+    end = page.index("<!-- /done-banner -->", start)
+    return " ".join(_visible_text(page[page.rindex("<", 0, start) : end]).split())
+
+
+def _counts(page: str) -> str:
+    start = page.index('id="flag-counts"')
+    return page[page.rindex("<", 0, start) : page.index("<!-- /flag-counts -->", start)]
+
+
+# The sample's 4 Flags after this stub: 0 "con sensus" and 3 "cubernetes"
+# get AI replacements, 1 "cough ka" is dismissed, 2 "cough ka" keeps only its
+# local Candidate.
+def _corrected(tmp_path: Path, **kwargs: Any) -> tuple[TestClient, str]:
+    client = _make_client(tmp_path, reader=StubReader(), **kwargs)
+    transcript_id = _upload(client)
+    storage = _storage_for(tmp_path)
+    record = _record(tmp_path, client, transcript_id)
+    from caption_checker.corrector import Correction
+
+    record.corrections = [
+        Correction(id="0", replacement="consensus", confidence=0.9),
+        Correction(id="1", replacement=None, confidence=0.9),
+        None,
+        Correction(id="3", replacement="Kubernetes", confidence=0.9),
+    ]
+    record.corrected_at = "t"
+    storage.save_transcript(record)
+    return client, transcript_id
+
+
+def _decide_all(client: TestClient, transcript_id: str, ids: list[int]) -> str:
+    response = None
+    for flag_id in ids:
+        response = client.post(
+            f"/transcripts/{transcript_id}/flags/{flag_id}/decision", data={"action": "reject"}
+        )
+    assert response is not None
+    return response.text
+
+
+class TestReviewFlow:
+    """The review page leads with the AI read-through until it has run,
+    offers the Free tier before the key, and shows progress, accept-all and
+    a done banner (#63)."""
+
+    @pytest.fixture(autouse=True)
+    def server_key(self, monkeypatch: pytest.MonkeyPatch) -> None:
+        monkeypatch.setenv("OPENROUTER_API_KEY", "server-key")
+        monkeypatch.delenv("OPENROUTER_CONFIG", raising=False)
+        monkeypatch.delenv("OPENROUTER_MODEL", raising=False)
+
+    # -- page order ------------------------------------------------------
+
+    def test_before_the_pass_the_open_panel_sits_above_the_flags(self, tmp_path: Path) -> None:
+        client = _make_client(tmp_path)
+        page = client.get(f"/transcripts/{_upload(client)}").text
+
+        panel = page.index('id="ai-read-through"')
+        assert panel < page.index('id="review-views"')
+        assert panel < page.index('id="correct-form"') < page.index('id="review-views"')
+        assert "<h3>AI read-through</h3>" in page
+
+    def test_after_the_pass_the_panel_is_one_summary_line(self, tmp_path: Path) -> None:
+        stub = StubReader(null_spans={"cough ka"}, replacement_for={"cubernetes": "Kubernetes"})
+        client = _make_client(tmp_path, reader=stub)
+        transcript_id = _upload(client)
+        page = client.post(
+            f"/transcripts/{transcript_id}/correct", data={}, follow_redirects=True
+        ).text
+
+        summary = _tag(page, 'id="ai-read-through"')
+        assert 'class="ai-summary"' in summary
+        assert 'id="correct-form"' not in page
+        assert "<h3>AI read-through</h3>" not in page
+        assert "AI read-through done: confirmed 1, dismissed 3, found 0 new" in page
+
+    # -- free option before the key ---------------------------------------
+
+    def test_the_run_button_states_the_configured_allowance(self, tmp_path: Path) -> None:
+        client = _make_client(tmp_path, limits=Limits(allowance_words=7_500))
+        page = client.get(f"/transcripts/{_upload(client)}").text
+
+        run_row = page[page.index('class="run-row"') :]
+        run_row = run_row[: run_row.index("</div>")]
+        assert "Run AI read-through" in run_row
+        assert "Free up to 7,500 words in any 24 hours" in run_row
+        assert page.index('class="run-row"') < page.index('id="own-key"')
+
+    def test_the_key_is_in_a_closed_details_with_forget_and_privacy(
+        self, tmp_path: Path
+    ) -> None:
+        client = _make_client(tmp_path)
+        page = client.get(f"/transcripts/{_upload(client)}").text
+
+        assert " open" not in _own_key_details(page)
+        details = page[page.index('id="own-key"') : page.index("</details>", page.index('id="own-key"'))]
+        assert "<summary>Use my own OpenRouter key</summary>" in details
+        for part in ['name="api_key"', 'id="forget-key"', "never stored on the server"]:
+            assert part in details
+
+    def test_the_key_opens_when_the_server_has_no_free_tier(
+        self, tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+    ) -> None:
+        monkeypatch.delenv("OPENROUTER_API_KEY")
+        client = _make_client(tmp_path)
+        page = client.get(f"/transcripts/{_upload(client)}").text
+
+        assert " open" in _own_key_details(page)
+
+    def test_the_key_opens_when_the_allowance_wont_take_this_transcript(
+        self, tmp_path: Path
+    ) -> None:
+        client = _make_client(tmp_path, limits=Limits(allowance_words=10))
+        page = client.get(f"/transcripts/{_upload(client)}").text
+
+        assert " open" in _own_key_details(page)
+
+    def test_the_key_opens_when_the_daily_budget_is_spent(self, tmp_path: Path) -> None:
+        client = _make_client(tmp_path, limits=Limits(daily_budget_usd=0.0))
+        page = client.get(f"/transcripts/{_upload(client)}").text
+
+        assert " open" in _own_key_details(page)
+
+    @pytest.mark.parametrize(
+        "limits", [Limits(allowance_words=10), Limits(daily_budget_usd=0.0)]
+    )
+    def test_the_key_opens_on_a_refusal(self, tmp_path: Path, limits: Limits) -> None:
+        client = _make_client(tmp_path, reader=_NeverRead(), limits=limits)
+        page = client.post(f"/transcripts/{_upload(client)}/correct", data={}).text
+
+        assert "Enter your own OpenRouter key below" in page
+        assert " open" in _own_key_details(page)
+
+    def test_a_key_stored_in_the_browser_opens_the_details(self, tmp_path: Path) -> None:
+        client = _make_client(tmp_path)
+        page = client.get(f"/transcripts/{_upload(client)}").text
+
+        assert "if (input.value) ownKey.open = true;" in page
+
+    # -- progress ----------------------------------------------------------
+
+    def test_progress_counts_reviewed_flags(self, tmp_path: Path) -> None:
+        client = _make_client(tmp_path)
+        transcript_id = _upload(client)
+        counts = _counts(client.get(f"/transcripts/{transcript_id}").text)
+        assert "0 of 4 reviewed" in counts
+        assert '<progress value="0" max="4"' in counts
+
+        response = client.post(
+            f"/transcripts/{transcript_id}/flags/0/decision", data={"action": "reject"}
+        ).text
+
+        counts = _counts(response)
+        assert 'hx-swap-oob="true"' in counts
+        assert "1 of 4 reviewed" in counts
+        assert '<progress value="1" max="4"' in counts
+
+    def test_progress_leaves_out_dismissed_flags(self, tmp_path: Path) -> None:
+        client, transcript_id = _corrected(tmp_path)
+
+        counts = _counts(client.get(f"/transcripts/{transcript_id}").text)
+
+        assert "0 of 3 reviewed" in counts
+        assert "4 flags" in counts
+
+    # -- accept all --------------------------------------------------------
+
+    def test_accept_all_is_not_offered_before_the_pass(self, tmp_path: Path) -> None:
+        client = _make_client(tmp_path)
+        page = client.get(f"/transcripts/{_upload(client)}").text
+
+        assert "Accept all remaining AI suggestions" not in page
+
+    def test_accept_all_states_its_count_and_asks_first(self, tmp_path: Path) -> None:
+        client, transcript_id = _corrected(tmp_path)
+        page = client.get(f"/transcripts/{transcript_id}").text
+
+        button = _tag(page, 'id="accept-all"')
+        assert f'hx-post="/transcripts/{transcript_id}/flags/accept-all"' in button
+        assert re.search(r'hx-confirm="[^"]*\b2\b[^"]*"', button)
+        assert "Accept all remaining AI suggestions (2)" in page
+
+    def test_accept_all_is_hidden_once_no_ai_suggestion_is_pending(self, tmp_path: Path) -> None:
+        client, transcript_id = _corrected(tmp_path)
+        response = _decide_all(client, transcript_id, [0, 3])
+
+        assert "Accept all remaining AI suggestions" not in _counts(response)
+
+    def test_accept_all_accepts_only_pending_flags_with_an_ai_replacement(
+        self, tmp_path: Path
+    ) -> None:
+        client, transcript_id = _corrected(tmp_path)
+        client.post(f"/transcripts/{transcript_id}/flags/0/decision", data={"action": "reject"})
+
+        response = client.post(f"/transcripts/{transcript_id}/flags/accept-all")
+
+        assert response.status_code == 200
+        decisions = _record(tmp_path, client, transcript_id).decisions
+        assert [(d.status, d.text) for d in decisions] == [
+            ("rejected", None),  # already rejected
+            ("pending", None),  # dismissed
+            ("pending", None),  # local Candidate only
+            ("accepted", "Kubernetes"),
+        ]
+
+    def test_accept_all_returns_every_affected_fragment(self, tmp_path: Path) -> None:
+        client, transcript_id = _corrected(tmp_path)
+
+        page = client.post(f"/transcripts/{transcript_id}/flags/accept-all").text
+
+        assert '<div id="flags-list" hx-swap-oob="true">' in page
+        assert re.search(r'<div class="flag-card accepted" id="flag-3">', page)
+        assert "2 of 3 reviewed" in _counts(page)
+        assert 'hx-swap-oob="true"' in _tag(page, 'id="cue-7"')
+        assert "Kubernetes" in _cue_row(page, 7)
+        assert 'hx-swap-oob="true"' in _tag(page, 'id="done-banner"')
+
+    def test_accept_all_on_an_unknown_transcript_is_404(self, tmp_path: Path) -> None:
+        client = _make_client(tmp_path)
+        client.get("/")
+        assert client.post("/transcripts/nope/flags/accept-all").status_code == 404
+
+    # -- done banner -------------------------------------------------------
+
+    def test_no_banner_while_flags_are_pending(self, tmp_path: Path) -> None:
+        client = _make_client(tmp_path)
+        transcript_id = _upload(client)
+        page = client.get(f"/transcripts/{transcript_id}").text
+        assert _done_banner(page) == ""
+
+        response = client.post(
+            f"/transcripts/{transcript_id}/flags/0/decision", data={"action": "reject"}
+        ).text
+        assert 'hx-swap-oob="true"' in _tag(response, 'id="done-banner"')
+        assert _done_banner(response) == ""
+
+    def test_before_the_pass_the_banner_offers_the_ai_read_through_first(
+        self, tmp_path: Path
+    ) -> None:
+        client = _make_client(tmp_path)
+        transcript_id = _upload(client)
+
+        banner = _done_banner(_decide_all(client, transcript_id, [0, 1, 2, 3]))
+
+        assert banner.startswith(
+            "You've reviewed every Flag the scan found. The AI read-through hasn't run yet and may find more."
+        )
+        assert banner.index("Run AI read-through") < banner.index("Export corrected file")
+        page = client.get(f"/transcripts/{transcript_id}").text
+        run = _tag(page[page.index('id="done-banner"') :], 'form="correct-form"')
+        assert "btn-primary" in run
+
+    def test_after_the_pass_the_banner_offers_export_and_the_upload_back_how_to(
+        self, tmp_path: Path
+    ) -> None:
+        client, transcript_id = _corrected(tmp_path)
+
+        response = _decide_all(client, transcript_id, [0, 2, 3])
+
+        banner = _done_banner(response)
+        assert banner.startswith("All 3 Flags reviewed")
+        assert "Export corrected file" in banner
+        assert "How to upload it back" in banner
+        assert "With timing" in banner
+
+    def test_with_no_way_to_run_the_pass_the_banner_offers_export(
+        self, tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+    ) -> None:
+        monkeypatch.delenv("OPENROUTER_API_KEY")
+        client = _make_client(tmp_path)
+        transcript_id = _upload(client)
+
+        page = _decide_all(client, transcript_id, [0, 1, 2, 3])
+
+        # Unless a key is stored in this browser, which the page checks.
+        assert "data-with-key hidden" in page
+        assert "All 4 Flags reviewed" in _done_banner(page)
+
+    def test_zero_flags_after_the_pass_says_the_captions_look_fine(
+        self, tmp_path: Path
+    ) -> None:
+        client = _make_client(tmp_path, reader=StubReader(null_spans={"con sensus", "cough ka", "cubernetes"}))
+        transcript_id = _upload(client)
+        page = client.post(
+            f"/transcripts/{transcript_id}/correct", data={}, follow_redirects=True
+        ).text
+
+        banner = _done_banner(page)
+        assert banner.startswith("No Flags found. Your captions look fine")
+        assert "Export corrected file" in banner
+
+    def test_the_banner_is_on_the_flags_view(self, tmp_path: Path) -> None:
+        client = _make_client(tmp_path)
+        page = client.get(f"/transcripts/{_upload(client)}").text
+
+        flags_view = page.index('id="flags-view"')
+        assert flags_view < page.index('id="done-banner"') < page.index('id="flags-list"')
+
+    def test_the_landing_page_and_banner_share_one_upload_back_how_to(
+        self, tmp_path: Path
+    ) -> None:
+        template = (Path(__file__).parents[1] / "src/caption_checker/web/templates")
+        sources = [p.read_text() for p in template.rglob("*.html")]
+        assert sum("With timing" in s for s in sources) == 1

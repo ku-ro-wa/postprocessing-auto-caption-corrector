@@ -1,10 +1,22 @@
-<p class="muted" id="flag-counts"{% if oob %} hx-swap-oob="true"{% endif %}>
-  {{ transcript.flags|length }} flag{{ "" if transcript.flags|length == 1 else "s" }}
-  &middot; {{ transcript.reviewed_count }} reviewed
-  {% if transcript.added_count %}
-    &middot; {{ transcript.added_count }} added by you
+{#- The Flag counts, review progress and, once the AI read-through has run,
+    accept-all. Re-rendered out of band after every decision (#63). -#}
+<div class="review-progress" id="flag-counts"{% if oob %} hx-swap-oob="true"{% endif %}>
+  <p class="muted">
+    {{ transcript.flags|length }} flag{{ "" if transcript.flags|length == 1 else "s" }}
+    {% if transcript.added_count %}
+      &middot; {{ transcript.added_count }} added by you
+    {% endif %}
+  </p>
+  {% if progress.total %}
+    <p class="progress-line">
+      <progress value="{{ progress.reviewed }}" max="{{ progress.total }}" aria-labelledby="progress-text"></progress>
+      <span id="progress-text">{{ progress.reviewed }} of {{ progress.total }} reviewed</span>
+    </p>
   {% endif %}
-  {% if summary %}
-    &middot; AI read-through confirmed {{ summary.confirmed }}, dismissed {{ summary.dismissed }}, found {{ summary.found }} new
+  {% if transcript.corrected and progress.ai_acceptable %}
+    {% set n = progress.ai_acceptable %}
+    <button class="btn" type="button" id="accept-all"
+            hx-post="/transcripts/{{ transcript.id }}/flags/accept-all" hx-swap="none"
+            hx-confirm="Accept the AI read-through's fix on {{ n }} pending Flag{{ '' if n == 1 else 's' }}? This can't be undone all at once, but you can still reject each one.">Accept all remaining AI suggestions ({{ n }})</button>
   {% endif %}
-</p>
+</div><!-- /flag-counts -->
