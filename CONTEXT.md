@@ -11,7 +11,9 @@ proposals with an LLM and writes a corrected file.
 
 **Cue**:
 One timed subtitle entry: an index, a start and end time, and its text. The
-unit the parser reads and the serializer writes.
+unit the parser reads and the serializer writes. In the web UI, which is read
+by strangers, it is called a **caption** ("All captions", "caption 7"), and the
+whole file stays "the captions file".
 _Avoid_: subtitle, caption line, entry.
 
 **Word**:
@@ -26,6 +28,7 @@ The stretch of transcript text a flag covers — one Word, or several adjacent
 Words when the suspected error crosses token boundaries. A Read-through span
 may also cross a Cue boundary; its Correction is written into the Cue it
 starts in (ADR 0001).
+In the web UI it is called "the flagged words" (or "highlighted words"), never "span".
 
 **Sentence context**:
 The full sentence a flagged span sits in, reconstructed across cue boundaries.
@@ -265,8 +268,9 @@ linked to it by the reviewer so a Flag's span can be played back during
 review. Only referenced: its title and channel are looked up once when it is
 linked, and offered as Priming terms, but the video itself is never fetched
 or stored. A Transcript has at most one, and it can be changed or removed at
-any time.
-_Avoid_: media, recording, link.
+any time. In the web UI, which is read by strangers, it is labelled
+**Video link**.
+_Avoid_: media, recording.
 
 **Free tier**:
 Read-through runs in the web UI paid for by the server's own OpenRouter key,
