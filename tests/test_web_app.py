@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import html
 import re
 import threading
 from datetime import datetime, timedelta, timezone
@@ -545,7 +546,7 @@ class TestCorrectPass:
             follow_redirects=True,
         )
 
-        assert "Found by the LLM" in page.text
+        assert "Found by the AI read-through" in page.text
         assert "5 flags" in page.text  # 4 local + 1 found
         assert "found 1 new" in page.text
         assert 'hx-post="/transcripts/%s/flags/4/decision"' % transcript_id in page.text
@@ -864,7 +865,7 @@ class TestCrossCueFlag:
         ).text
         # the context runs across the Cue boundary, with the whole span marked
         assert "we reached <mark>con sensus</mark> quickly." in page
-        assert "cues 1–2" in page
+        assert "captions 1–2" in page
 
         client.post(
             f"/transcripts/{transcript_id}/flags/0/decision",
@@ -1565,8 +1566,8 @@ class TestAllCuesView:
         assert 'id="flags-view" role="tabpanel"' in page
         assert 'id="cues-view" role="tabpanel" aria-labelledby="tab-cues" hidden' in page
         assert 'aria-selected="true" tabindex="0">Flags</button>' in page
-        assert 'aria-selected="false" tabindex="-1">All Cues</button>' in page
-        assert "Each Cue is one timed caption line from your file" in page
+        assert 'aria-selected="false" tabindex="-1">All captions</button>' in page
+        assert "Each caption is one timed line from your captions file" in page
 
     def test_every_cue_is_listed_in_order(self, tmp_path: Path) -> None:
         client = _make_client(tmp_path)
@@ -1618,7 +1619,7 @@ class TestAllCuesView:
         page = client.get(f"/transcripts/{transcript_id}").text
 
         # The page's script switches to All Cues and highlights the Flag's span.
-        assert f'<a class="flag-cue" href="#cue-2" data-flag-id="{flag_id}">cue 2</a>' in page
+        assert f'<a class="flag-cue" href="#cue-2" data-flag-id="{flag_id}">caption 2</a>' in page
         assert f'data-flag-id="{flag_id}"' in _cue_row(page, 2)
 
     def test_a_cross_cue_flag_links_to_its_first_cue(self, tmp_path: Path) -> None:
@@ -1635,7 +1636,7 @@ class TestAllCuesView:
 
         page = client.get(f"/transcripts/{transcript_id}").text
 
-        assert '<a class="flag-cue" href="#cue-1" data-flag-id="0">cues 1–2</a>' in page
+        assert '<a class="flag-cue" href="#cue-1" data-flag-id="0">captions 1–2</a>' in page
 
     def test_all_cues_has_a_flag_stepper_with_a_pending_only_toggle(
         self, tmp_path: Path
@@ -1717,7 +1718,7 @@ class TestAllCuesView:
 
         page = client.get(f"/transcripts/{transcript_id}").text
 
-        assert "merged into Cue 1 by an accepted fix" in _cue_row(page, 2)
+        assert "merged into caption 1 by an accepted fix" in _cue_row(page, 2)
         assert "consensus" in _cue_row(page, 1)
 
 
@@ -1819,7 +1820,7 @@ class TestEditCueRoute:
 
         body = self._edit(client, transcript_id, 1, "   ").text
 
-        assert "A Cue can&#39;t be left empty." in body or "A Cue can't be left empty." in body
+        assert "A caption can&#39;t be left empty." in body or "A caption can't be left empty." in body
 
     def test_unknown_cue_is_404(self, tmp_path: Path) -> None:
         client = _make_client(tmp_path)
@@ -1877,7 +1878,7 @@ class TestFlagReasons:
         assert "&middot; confidence" not in page
         assert re.search(r'title="What raised this Flag[^"]*Confidence: 0\.\d\d', page)
 
-    def test_read_through_find_reads_as_found_by_the_llm(self, tmp_path: Path) -> None:
+    def test_read_through_find_reads_as_found_by_the_ai_read_through(self, tmp_path: Path) -> None:
         stub = StubReader(extra={"leader election": "leader elections"})
         client = _make_client(tmp_path, reader=stub)
         transcript_id = _upload(client)
@@ -1888,7 +1889,7 @@ class TestFlagReasons:
             follow_redirects=True,
         ).text
 
-        assert "Found by the LLM" in page
+        assert "Found by the AI read-through" in page
         assert not _DETECTOR_ID.search(page)
 
 
@@ -1905,8 +1906,8 @@ class TestGlossaryHints:
 
         page = client.get(f"/transcripts/{transcript_id}").text
 
-        assert "A Flag is a span of the captions that may be a mistake" in page
-        assert "edit the Cue on the All Cues tab" in page
+        assert "A Flag is a word or phrase in your captions that looks misheard" in page
+        assert "edit the caption on the All captions tab" in page
 
     def test_page_explains_the_detector_on_every_flag_card(self, tmp_path: Path) -> None:
         client = _make_client(tmp_path)
@@ -2099,7 +2100,7 @@ class TestTouchAndKeyboard:
         links = re.findall(r'<a class="play-span"[^>]*>', page)
         assert links
         for link in links:
-            assert re.search(r'aria-label="Play (the flagged words|this caption), [^"]+ to [^"]+"', link)
+            assert re.search(r'aria-label="Play (this part|this caption), [^"]+ to [^"]+"', link)
 
     def test_flagged_words_in_a_caption_are_named_with_their_status(self, tmp_path: Path) -> None:
         client = _make_client(tmp_path)
@@ -2269,11 +2270,6 @@ class TestLandingPage:
         ):
             assert text in html
             assert html.index(text) < html.index('name="file"')
-
-    def test_explains_the_three_steps(self, tmp_path: Path) -> None:
-        html = _make_client(tmp_path).get("/").text
-        assert "How it works" in html
-        assert html.index("Upload") < html.index("Correct") < html.index("export")
 
     def test_app_name_is_a_setting(self, tmp_path: Path) -> None:
         client = _make_client(tmp_path, app_name="Recaption")
@@ -2490,3 +2486,261 @@ def test_upload_times_are_shown_as_a_date_and_minute(iso: str, shown: str) -> No
     from caption_checker.web.app import _fmt_uploaded
 
     assert _fmt_uploaded(iso) == shown
+
+
+#: Jargon a stranger shouldn't meet on the landing or review page (#62); the
+#: glossary, code and CLI keep these terms.
+_JARGON = {
+    "span": re.compile(r"\bspans?\b", re.I),
+    "Source video": re.compile(r"source video", re.I),
+    "LLM": re.compile(r"\bLLM"),
+    "Correct as a step": re.compile(r"\bCorrect\b"),
+    "bare Read-through": re.compile(r"(?<!AI )read-through", re.I),
+    "Cue": re.compile(r"\bcues?\b", re.I),
+}
+
+
+def _visible_text(page: str) -> str:
+    """What a visitor can read on ``page``: the text between tags, each
+    tooltip, label and placeholder, and what its scripts write on screen.
+    Markup, other attributes, script code and styles are left out."""
+    shown = [m.group(2) for m in re.finditer(r'\s(title|aria-label|placeholder)="([^"]*)"', page)]
+    shown += re.findall(r"textContent\s*=\s*([^;]+);", page)
+    body = re.sub(r"<(script|style)\b.*?</\1>", " ", page, flags=re.S)
+    body = re.sub(r"<[^>]*>", " ", body)
+    return html.unescape(" ".join([body, *shown]))
+
+
+def _jargon_in(page: str) -> dict[str, list[str]]:
+    text = _visible_text(page)
+    found = {name: pattern.findall(text) for name, pattern in _JARGON.items()}
+    return {name: hits for name, hits in found.items() if hits}
+
+
+@pytest.mark.parametrize(
+    "page",
+    [
+        "<h3>Source video</h3>",
+        "<p>Play each Flag's span.</p>",
+        "<p>the LLM's verdict</p>",
+        "<li><strong>Correct</strong> runs</li>",
+        "<button>Run Read-through</button>",
+        "<p>A Read-through is already running.</p>",
+        '<a title="Play the flagged span">▶</a>',
+        '<script>button.textContent = "Run Read-through";</script>',
+        "<a>cue 7</a>",
+        "<button>All Cues</button>",
+    ],
+)
+def test_the_jargon_guard_catches_each_banned_word(page: str) -> None:
+    assert _jargon_in(page)
+
+
+def test_the_jargon_guard_ignores_markup_code_and_the_plain_words() -> None:
+    page = (
+        '<span class="flag-span" data-span="x" id="cue-2">AI read-through</span>'
+        '<script>// the Source video span of a Cue\nconst cue = "a.cue-flag";</script>'
+        "<style>.cue-row { }</style><p>Export corrected SRT · caption 7</p>"
+    )
+    assert _jargon_in(page) == {}
+
+
+class TestPlainLanguage:
+    """The landing and review pages, server messages included, use the plain
+    words a stranger knows rather than the glossary's jargon (#62)."""
+
+    def _pages(self, tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> dict[str, str]:
+        pages: dict[str, str] = {}
+        monkeypatch.delenv("OPENROUTER_API_KEY", raising=False)
+        client = _make_client(tmp_path / "a", video_lookup=_Lookup({VIDEO_ID: RAFT}))
+        pages["landing, no Free tier"] = client.get("/").text
+        pages["upload refused"] = client.post(
+            "/transcripts", files={"file": ("notes.txt", b"hello", "text/plain")}
+        ).text
+        empty = tmp_path / "empty.srt"
+        empty.write_text("", encoding="utf-8")
+        with empty.open("rb") as f:
+            pages["upload with no captions"] = client.post(
+                "/transcripts", files={"file": ("empty.srt", f, "text/plain")}
+            ).text
+        transcript_id = _upload(client, data={"video_link": VIDEO_ID})
+        pages["review, with a video"] = client.get(f"/transcripts/{transcript_id}").text
+        pages["bad video link"] = client.post(
+            f"/transcripts/{transcript_id}/video", data={"video_link": "not a link"}
+        ).text
+        pages["no key"] = client.post(
+            f"/transcripts/{transcript_id}/correct", data={}, follow_redirects=True
+        ).text
+        for cue, text in [(1, "  "), (1, "Welcome back to the lecture on distributed systems.")]:
+            pages[f"cue edit {text!r}"] = client.post(
+                f"/transcripts/{transcript_id}/cues/{cue}/edit", data={"text": text}
+            ).text
+
+        failing = _make_client(tmp_path / "b", reader=StubReader(garbage=True))
+        transcript_id = _upload(failing)
+        pages["every chunk failed"] = failing.post(
+            f"/transcripts/{transcript_id}/correct",
+            data={"api_key": "sk-or-test"},
+            follow_redirects=True,
+        ).text
+
+        path = tmp_path / "cross.srt"
+        path.write_text(
+            "1\n00:00:00,000 --> 00:00:02,000\nwe reached con\n\n"
+            "2\n00:00:02,000 --> 00:00:04,000\nsensus\n\n"
+            "3\n00:00:04,000 --> 00:00:06,000\nquickly, said cough ka.\n",
+            encoding="utf-8",
+        )
+        stub = StubReader(
+            extra={"con sensus": "consensual", "quickly": "quick"}, null_spans={"cough ka"}
+        )
+        corrected = _make_client(tmp_path / "c", reader=stub, video_lookup=_Lookup({}))
+        transcript_id = _upload(corrected, "cross.srt", path, data={"video_link": VIDEO_ID})
+        corrected.post(f"/transcripts/{transcript_id}/correct", data={"api_key": "sk-or-test"})
+        record = _storage_for(tmp_path / "c").load_transcript(
+            corrected.cookies["cc_session"], transcript_id
+        )
+        assert record is not None
+        flag_id = next(i for i, f in enumerate(record.flags) if f.span == "con sensus")
+        pages["edit across a cross-caption Flag"] = corrected.post(
+            f"/transcripts/{transcript_id}/cues/1/edit", data={"text": "we gotcon"}
+        ).text
+        corrected.post(
+            f"/transcripts/{transcript_id}/flags/{flag_id}/decision",
+            data={"action": "accept", "text": ""},
+        )
+        pages["review, corrected"] = corrected.get(f"/transcripts/{transcript_id}").text
+        pages["edit of a merged caption"] = corrected.post(
+            f"/transcripts/{transcript_id}/cues/2/edit", data={"text": "census"}
+        ).text
+        pages["punctuation-only edit"] = corrected.post(
+            f"/transcripts/{transcript_id}/cues/3/edit", data={"text": "quick, said cough ka!"}
+        ).text
+        pages["saved caption edit"] = corrected.post(
+            f"/transcripts/{transcript_id}/cues/3/edit", data={"text": "slowly, said cough ka."}
+        ).text
+
+        reader = _BlockingReader()
+        running = _make_client(tmp_path / "d", reader=reader)
+        transcript_id = _upload(running)
+        thread = threading.Thread(
+            target=running.post,
+            args=(f"/transcripts/{transcript_id}/correct",),
+            kwargs={"data": {"api_key": "sk-or-test"}},
+        )
+        thread.start()
+        try:
+            assert reader.started.wait(timeout=10)
+            pages["already running"] = running.post(
+                f"/transcripts/{transcript_id}/correct", data={"api_key": "sk-or-test"}
+            ).text
+        finally:
+            reader.release.set()
+            thread.join(timeout=10)
+
+        monkeypatch.setenv("OPENROUTER_API_KEY", "server-key")
+        for name, limits in [
+            ("allowance", Limits(allowance_words=10)),
+            ("daily budget", Limits(daily_budget_usd=0.0, donate_url="https://example.org/give")),
+        ]:
+            refusing = _make_client(tmp_path / name, reader=_NeverRead(), limits=limits)
+            pages[f"landing, {name} Free tier"] = refusing.get("/").text
+            pages[f"{name} refusal"] = refusing.post(
+                f"/transcripts/{_upload(refusing)}/correct", data={}
+            ).text
+        return pages
+
+    def test_no_page_or_message_uses_the_jargon(
+        self, tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+    ) -> None:
+        pages = self._pages(tmp_path, monkeypatch)
+
+        assert {name: hits for name, page in pages.items() if (hits := _jargon_in(page))} == {}
+
+
+def _steps(page: str) -> list[str]:
+    """The landing page's How-it-works steps, as visible text."""
+    match = re.search(r'<ol class="steps">(.*?)</ol>', page, re.S)
+    assert match is not None
+    items = re.findall(r"<li>(.*?)</li>", match.group(1), re.S)
+    return [" ".join(_visible_text(item).split()) for item in items]
+
+
+class TestLandingSteps:
+    """The landing page walks a first-time visitor from YouTube Studio to
+    the review and back (#62)."""
+
+    def test_five_steps_in_order_from_studio_and_back(self, tmp_path: Path) -> None:
+        steps = _steps(_make_client(tmp_path).get("/").text)
+
+        assert [s.split()[0] for s in steps] == ["Download", "Upload", "Run", "Review", "Export"]
+        assert steps[2].startswith("Run the AI read-through")
+        assert "upload it back to YouTube Studio" in steps[4]
+
+    def test_flag_is_explained_where_it_first_appears(self, tmp_path: Path) -> None:
+        page = _make_client(tmp_path).get("/").text
+        text = " ".join(_visible_text(page).split())
+
+        first = text.index("Flag")
+        assert text[first:].startswith("Flags (words or phrases that look misheard)")
+        assert "video link" in _steps(page)[1]
+
+    def test_the_ai_step_is_recommended_and_states_the_configured_allowance(
+        self, tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+    ) -> None:
+        monkeypatch.setenv("OPENROUTER_API_KEY", "server-key")
+        page = _make_client(tmp_path, limits=Limits(allowance_words=7_500)).get("/").text
+        step = _steps(page)[2]
+
+        assert "optional but recommended" in step
+        assert "The local scan alone is hit-or-miss" in step
+        assert "free up to the Free tier's Allowance of 7,500 words" in step
+        assert "your own OpenRouter key" in step
+        assert "running the AI read-through sends its text to OpenRouter" in step
+
+    def test_without_a_free_tier_the_ai_step_asks_for_a_key(
+        self, tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+    ) -> None:
+        monkeypatch.delenv("OPENROUTER_API_KEY", raising=False)
+        step = _steps(_make_client(tmp_path).get("/").text)[2]
+
+        assert "Allowance" not in step
+        assert "your own OpenRouter key" in step
+
+    def test_the_upload_error_page_keeps_the_steps(
+        self, tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+    ) -> None:
+        monkeypatch.setenv("OPENROUTER_API_KEY", "server-key")
+        client = _make_client(tmp_path, limits=Limits(allowance_words=7_500))
+        page = client.post(
+            "/transcripts", files={"file": ("notes.txt", b"hello", "text/plain")}
+        ).text
+
+        assert "Allowance of 7,500 words" in _steps(page)[2]
+
+    def test_studio_how_tos_are_collapsed_with_the_menu_names(self, tmp_path: Path) -> None:
+        steps = re.search(
+            r'<ol class="steps">(.*?)</ol>', _make_client(tmp_path).get("/").text, re.S
+        )
+        assert steps is not None
+        how_tos = re.findall(r"<details>(.*?)</details>", steps.group(1), re.S)
+        download, upload = (" ".join(_visible_text(h).split()) for h in how_tos)
+
+        assert "<details open" not in steps.group(1)
+        for menu in ["Subtitles", "Edit", "Options", "Download subtitles"]:
+            assert f"<strong>{menu}</strong>" in how_tos[0]
+        for menu in ["Subtitles", "ADD LANGUAGE", "ADD", "Upload file", "With timing", "Continue", "Save"]:
+            assert f"<strong>{menu}</strong>" in how_tos[1]
+        assert "as of October 2026" in download and "as of October 2026" in upload
+        assert "kept alongside the original captions" in upload
+        assert "the auto-captions remain the only live captions" in upload
+
+    def test_the_step_name_matches_the_review_page(self, tmp_path: Path) -> None:
+        client = _make_client(tmp_path)
+        landing = client.get("/").text
+        review = client.get(f"/transcripts/{_upload(client)}").text
+
+        assert "AI read-through" in _steps(landing)[2]
+        assert "<h3>AI read-through</h3>" in review
+        assert ">Run AI read-through</button>" in review
+        assert 'button.textContent = "Run AI read-through";' in review

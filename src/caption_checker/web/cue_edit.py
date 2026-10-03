@@ -73,7 +73,7 @@ def plan_edit(
         if region.inside is None and any(crosses_cues(f) for f in region.flags):
             unsaved.append(
                 f"Not saved: {_quote(old_text[region.start : region.end])} overlaps "
-                "a fix that runs across Cues."
+                "a fix that runs across captions."
             )
         else:
             saved.append(region)
@@ -180,8 +180,8 @@ def _spans(old: str, new: str) -> tuple[list[_Span], list[str]]:
             unsaved.append(
                 f"Not saved: {_quote(raw(old, old_toks, i1, i2))} → "
                 f"{_quote(raw(new, new_toks, j1, j2))}. A change that only touches "
-                "punctuation at the very start or end of a Cue can't be saved, "
-                "and a Cue can't be left without a Word."
+                "punctuation at the very start or end of a caption can't be saved, "
+                "and a caption can't be left without a word."
             )
         else:
             ranges.append(list(grown))

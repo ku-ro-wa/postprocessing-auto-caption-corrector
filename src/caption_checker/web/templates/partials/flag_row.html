@@ -1,7 +1,7 @@
 {% set status = row.status %}
 <div class="flag-card {{ status }}" id="flag-{{ row.id }}">
   <div class="flag-meta">
-    {% with start=row.flag.start, end=row.flag.end, play_title="Play the flagged words" %}{% include "partials/play_span.html" %}{% endwith %}
+    {% with start=row.flag.start, end=row.flag.end, play_title="Play this part" %}{% include "partials/play_span.html" %}{% endwith %}
     <a class="flag-cue" href="#cue-{{ row.flag.cue_index }}" data-flag-id="{{ row.id }}">{{ row.cue_label }}</a>
     {% if row.by_reviewer %}
     &middot; <span class="badge">Added by you</span> from your edit to the caption; reject it to undo

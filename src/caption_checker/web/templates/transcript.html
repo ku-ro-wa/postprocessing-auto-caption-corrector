@@ -12,25 +12,25 @@
 {% include "partials/counts.html" %}
 
 <section class="source-video-controls">
-  <h3>Source video</h3>
+  <h3>Video link</h3>
   {% if video_error %}
     <div class="error">{{ video_error }}</div>
   {% endif %}
   {% set current_url = source_video.watch_url(transcript.video_id) if transcript.video_id else "" %}
   {% if transcript.video_id %}
-    <p class="muted">This Transcript's Source video is <a href="{{ current_url }}" target="_blank" rel="noopener">{{ current_url }}</a>. Click a Flag's or Cue's ▶ timestamp to hear it. If it's the wrong video, change or remove it here.</p>
+    <p class="muted">These captions are for <a href="{{ current_url }}" target="_blank" rel="noopener">{{ current_url }}</a>. Click the ▶ timestamp on a Flag or caption to hear it. If it's the wrong video, change or remove the link here.</p>
   {% else %}
-    <p class="muted">Add the YouTube video these captions were made for, to play each Flag's span while you review.</p>
+    <p class="muted">Add a link to the YouTube video these captions are for, to play the flagged words while you review.</p>
   {% endif %}
   <form action="/transcripts/{{ transcript.id }}/video" method="post">
     <input type="text" name="video_link" required
            value="{{ video_link if video_error else current_url }}"
            placeholder="https://www.youtube.com/watch?v=...">
-    <button class="btn" type="submit">{{ "Change Source video" if transcript.video_id else "Add Source video" }}</button>
+    <button class="btn" type="submit">{{ "Change video link" if transcript.video_id else "Add video link" }}</button>
   </form>
   {% if transcript.video_id %}
     <form action="/transcripts/{{ transcript.id }}/video/delete" method="post">
-      <button class="btn" type="submit">Remove Source video</button>
+      <button class="btn" type="submit">Remove video link</button>
     </form>
   {% endif %}
 </section>
@@ -43,18 +43,18 @@
 {% endif %}
 
 <section>
-  <h3>LLM Read-through</h3>
+  <h3>AI read-through</h3>
   {% if transcript.correct_error %}
     <div class="error">{{ transcript.correct_error }}</div>
   {% endif %}
   {% if transcript.corrected %}
-    <p class="muted">Read-through complete. Re-running isn't supported yet — see each Flag below for the LLM's verdict.</p>
+    <p class="muted">AI read-through complete. Re-running isn't supported yet — see each Flag below for the AI's verdict.</p>
     {% if transcript.failed_chunks %}
       <div class="error">{{ transcript.failed_chunks }} of {{ transcript.chunk_count }} chunks failed: the Flags in them were left unjudged.</div>
     {% endif %}
   {% else %}
   {% if already_running %}
-    <div class="error" role="alert">A Read-through is already running on this Transcript. Wait for it to finish, then reload this page.</div>
+    <div class="error" role="alert">An AI read-through is already running on this Transcript. Wait for it to finish, then reload this page.</div>
   {% endif %}
   {% if refusal %}
     <div class="error" role="alert">
@@ -77,7 +77,7 @@
       {% endif %}
     </div>
   {% endif %}
-  <p class="muted">The model reads the whole transcript, judges every Flag below and adds errors the local scan missed.</p>
+  <p class="muted">The AI reads your whole captions file, judges every Flag below and adds mistakes the local scan missed.</p>
   <form action="/transcripts/{{ transcript.id }}/correct" method="post" id="correct-form">
     <label>Your OpenRouter API key: <input type="password" name="api_key" id="api-key" autocomplete="off" placeholder="sk-or-..."></label>
     <button class="btn" type="button" id="forget-key">Forget my key</button>
@@ -96,13 +96,13 @@
       <label for="priming-terms">Priming terms <span class="muted">(names and terms that appear in this video, one per line or comma-separated; they help the AI recognise how they're spelled)</span></label>
       <textarea name="priming_terms" id="priming-terms" rows="3" placeholder="Speakers, products, companies, technical terms…">{{ transcript.priming_terms }}</textarea>
       {% if offered_priming_terms %}
-        <div class="chips" id="priming-chips" role="group" aria-label="Priming terms from the Source video's title and channel">
+        <div class="chips" id="priming-chips" role="group" aria-label="Priming terms from the video's title and channel">
           <span class="muted">From the video's title and channel, tap to add:</span>
           {% for term in offered_priming_terms %}<button class="chip" type="button">{{ term }}</button>{% endfor %}
         </div>
       {% endif %}
     </div>
-    <button class="btn btn-primary" type="submit" id="submit-correct">Run Read-through</button>
+    <button class="btn btn-primary" type="submit" id="submit-correct">Run AI read-through</button>
     <p class="muted" id="correct-wait" hidden>This takes about 1–2 minutes for an hour of video. Don't refresh.</p>
   </form>
   <script>
@@ -138,7 +138,7 @@
       if (!event.persisted) return;
       const button = document.getElementById("submit-correct");
       button.disabled = false;
-      button.textContent = "Run Read-through";
+      button.textContent = "Run AI read-through";
       document.getElementById("correct-wait").hidden = true;
     });
     document.getElementById("forget-key").addEventListener("click", function () {
@@ -188,7 +188,7 @@
   <div class="review-bar">
     <div class="tabs" role="tablist">
       <button class="tab" type="button" role="tab" id="tab-flags" aria-controls="flags-view" aria-selected="true" tabindex="0">Flags</button>
-      <button class="tab" type="button" role="tab" id="tab-cues" aria-controls="cues-view" aria-selected="false" tabindex="-1">All Cues</button>
+      <button class="tab" type="button" role="tab" id="tab-cues" aria-controls="cues-view" aria-selected="false" tabindex="-1">All captions</button>
     </div>
     <div class="flag-nav" id="flag-nav" hidden>
       <button class="btn" type="button" id="flag-prev" aria-label="Previous Flag">◀</button>
@@ -202,7 +202,7 @@
     {% include "partials/flag_list.html" %}
   </div>
   <div id="cues-view" role="tabpanel" aria-labelledby="tab-cues" hidden>
-    <p class="muted">Each Cue is one timed caption line from your file, shown here as Export would write it. Click a highlighted span to see its Flag.</p>
+    <p class="muted">Each caption is one timed line from your captions file, shown here as Export would write it. Click highlighted words to see their Flag.</p>
     {% for cue in cues %}
       {% include "partials/cue_row.html" %}
     {% endfor %}

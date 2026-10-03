@@ -1,10 +1,10 @@
 <div class="cue-row" id="cue-{{ cue.index }}"{% if oob %} hx-swap-oob="true"{% endif %}>
   <div class="flag-meta">
     {% with start=cue.start, end=cue.end, play_title="Play this caption" %}{% include "partials/play_span.html" %}{% endwith %}
-    cue {{ cue.index }}
+    caption {{ cue.index }}
   </div>
   {% if cue.merged_into is not none %}
-    <div class="cue-text muted">merged into Cue {{ cue.merged_into }} by an accepted fix</div>
+    <div class="cue-text muted">merged into caption {{ cue.merged_into }} by an accepted fix</div>
   {% else %}
     <div class="cue-text">
       {%- for piece in cue.pieces -%}
@@ -16,13 +16,13 @@
       {%- endfor -%}
     </div>
     <details class="cue-edit"{% if edit_open %} open{% endif %}>
-      <summary>Fix this Cue's text</summary>
+      <summary>Fix this caption's text</summary>
       <form
         hx-post="/transcripts/{{ transcript.id }}/cues/{{ cue.index }}/edit"
         hx-target="#cue-{{ cue.index }}"
         hx-swap="outerHTML"
       >
-        <textarea name="text" rows="{{ [2, cue.text.count('\n') + 2]|max }}" aria-label="Text of cue {{ cue.index }}">{{ edit_text if edit_text is defined else cue.text }}</textarea>
+        <textarea name="text" rows="{{ [2, cue.text.count('\n') + 2]|max }}" aria-label="Text of caption {{ cue.index }}">{{ edit_text if edit_text is defined else cue.text }}</textarea>
         <button class="btn" type="submit">Save</button>
       </form>
     </details>

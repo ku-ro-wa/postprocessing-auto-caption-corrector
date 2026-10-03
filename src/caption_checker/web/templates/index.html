@@ -12,9 +12,40 @@
 <section>
   <h2>How it works</h2>
   <ol class="steps">
-    <li><strong>Upload</strong> your SRT or VTT file. It is scanned at once for words that look misheard.</li>
-    <li><strong>Correct</strong> runs a Read-through: an LLM reads the transcript, judges each Flag and raises the ones the scan missed.</li>
-    <li><strong>Review and export:</strong> accept or reject each Flag, then export the corrected file.</li>
+    <li>
+      <strong>Download</strong> your video's auto-captions from YouTube Studio.
+      <details>
+        <summary>How to download them</summary>
+        <p>In YouTube Studio: <strong>Subtitles</strong> → pick the video → <strong>Edit</strong> next to the language → <strong>Options</strong> → <strong>Download subtitles</strong>.</p>
+        <p class="muted">Menu names as of October 2026.</p>
+      </details>
+    </li>
+    <li>
+      <strong>Upload</strong> the file here. It is scanned at once for Flags (words or phrases that look misheard). Add the video link too if you like, to play each one while you review.
+    </li>
+    <li>
+      <strong>Run the AI read-through</strong>: optional but recommended. The local scan alone is hit-or-miss; the AI reads your whole captions file and catches mistakes the scan can't see.
+      {% if has_server_key and limits %}
+        It's free up to the Free tier's Allowance of {{ limits.allowance_words|thousands }} words in any 24 hours, or you can use your own OpenRouter key.
+      {% elif has_server_key %}
+        It's free on this server, or you can use your own OpenRouter key.
+      {% else %}
+        This server has no Free tier, so it needs your own OpenRouter key.
+      {% endif %}
+      Nothing is sent to an AI until you ask for it on the review page: running the AI read-through sends its text to OpenRouter's model provider.
+    </li>
+    <li>
+      <strong>Review</strong> the Flags: accept or reject each one.
+    </li>
+    <li>
+      <strong>Export</strong> the corrected file and <strong>upload it back</strong> to YouTube Studio.
+      <details>
+        <summary>How to upload it back</summary>
+        <p>In YouTube Studio: <strong>Subtitles</strong> → pick the video → <strong>ADD LANGUAGE</strong> (or <strong>ADD</strong> under Subtitles) → <strong>Upload file</strong> → <strong>With timing</strong> → <strong>Continue</strong> → choose the file → <strong>Save</strong>.</p>
+        <p>Your uploaded captions are kept alongside the original captions and must be <strong>published</strong>: if they aren't, the auto-captions remain the only live captions.</p>
+        <p class="muted">Menu names as of October 2026.</p>
+      </details>
+    </li>
   </ol>
 </section>
 
@@ -26,7 +57,7 @@
   <form class="upload-form" action="/transcripts" method="post" enctype="multipart/form-data">
     <div class="upload-drop"><input type="file" name="file" accept=".srt,.vtt" required aria-label="Transcript file (SRT or VTT)"><p class="muted">or drop it here</p></div>
     <div class="error drop-error" role="alert" hidden></div>
-    <label>Source video, as a YouTube link (optional):
+    <label>Video link, the YouTube video these captions are for (optional):
       <input type="text" name="video_link" value="{{ video_link or '' }}" placeholder="https://youtu.be/...">
     </label>
     <div><button class="btn btn-primary" type="submit">Upload &amp; scan</button></div>
@@ -82,8 +113,7 @@
   })();
   </script>
   <p class="muted">English captions only: the detectors and the known-good word lists are English.</p>
-  <p class="muted">With a Source video, you can play each Flag's span on the review page. You can add, change or remove it there later.</p>
-  <p class="muted">Uploads are scanned automatically by the local detectors. Nothing is sent to an LLM until you ask for it on a transcript's review page: running Correct sends its text to OpenRouter's model provider.</p>
+  <p class="muted">With a video link, you can play the flagged words on the review page. You can add, change or remove it there later.</p>
   <p class="muted">Your transcript is kept for {{ retention|duration }} after you last use it, or until you delete it.</p>
 </section>
 

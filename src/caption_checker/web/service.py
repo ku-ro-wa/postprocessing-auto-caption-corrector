@@ -118,7 +118,7 @@ def upload_transcript(
 
     if not cues:
         storage.discard_staged(session_id, transcript_id)
-        raise InvalidTranscriptError(f"{filename} has no cues to review.")
+        raise InvalidTranscriptError(f"{filename} has no captions to review.")
 
     flags = detect(cues, vocab=_default_vocab(), config=SCAN_CONFIG)
     record = TranscriptRecord(
@@ -274,7 +274,7 @@ def run_correction(
         result = read_through(cues, _hints(record), active_reader, priming_terms=priming_terms)
         if result.chunk_count and result.failed_chunks == result.chunk_count:
             raise CorrectorError(
-                f"The Read-through failed on all {result.chunk_count} chunk(s); "
+                f"The AI read-through failed on all {result.chunk_count} chunk(s); "
                 "nothing was judged. Try again."
             )
     except (MissingAPIKeyError, CorrectorError) as exc:
@@ -461,7 +461,7 @@ _REASONS = {
     DETECTOR_PHONETIC_VOCAB: "Sounds like a known term",
     DETECTOR_PHONETIC_INTERNAL: "Spelled differently elsewhere in this transcript",
     DETECTOR_SPLIT_WORD: "Looks like one word split in two",
-    DETECTOR_READ_THROUGH: "Found by the LLM",
+    DETECTOR_READ_THROUGH: "Found by the AI read-through",
 }
 _UNKNOWN_REASON = "Flagged by a local check"
 
@@ -479,7 +479,7 @@ class FlagRow:
     correction: Correction | None
     decision: ReviewDecision
     default_text: str
-    #: "cue 7", or "cues 7–8" for a span across a Cue boundary.
+    #: "caption 7", or "captions 7–8" for a span across a Cue boundary.
     cue_label: str
 
     @property
@@ -547,9 +547,9 @@ def transcript_rows(storage: Storage, record: TranscriptRecord) -> list[FlagRow]
                 decision=record.decisions[flag_id],
                 default_text=_default_replacement(flag, correction),
                 cue_label=(
-                    f"cues {spanned[0].index}–{spanned[-1].index}"
+                    f"captions {spanned[0].index}–{spanned[-1].index}"
                     if len(spanned) > 1
-                    else f"cue {flag.cue_index}"
+                    else f"caption {flag.cue_index}"
                 ),
             )
         )
@@ -685,12 +685,12 @@ def edit_cue(
         raise IndexError(f"No cue {cue_index} on transcript {record.id}")
     if spliced.merged_into is not None:
         raise CueEditError(
-            f"Cue {cue_index} was merged into Cue {spliced.merged_into} by an accepted fix; "
-            "edit that Cue, or reject the fix."
+            f"Caption {cue_index} was merged into caption {spliced.merged_into} by an accepted fix; "
+            "edit that caption, or reject the fix."
         )
     new_text = new_text.replace("\r\n", "\n").replace("\r", "\n")
     if not new_text.split():
-        raise CueEditError("A Cue can't be left empty.")
+        raise CueEditError("A caption can't be left empty.")
 
     flag_ids = {id(flag): i for i, flag in enumerate(record.flags)}
     corrections = list(record.corrections) + [None] * (len(record.flags) - len(record.corrections))
@@ -727,7 +727,7 @@ def edit_cue(
             key=lambda w: w.global_index,
         )
         if not span_words:
-            unsaved.append(f"Not saved: {region.replacement!r}: it covers no Word of the Cue.")
+            unsaved.append(f"Not saved: {region.replacement!r}: it covers no word of the caption.")
             continue
         for old in region.flags:
             decisions[flag_ids[id(old)]] = ReviewDecision(status="rejected", text=None)

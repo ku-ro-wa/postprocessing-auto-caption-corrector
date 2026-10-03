@@ -45,7 +45,7 @@
   .btn:hover:not(:disabled), input[type=file]::file-selector-button:hover { background: #8883; border-color: #888; }
   .btn:focus-visible, .btn-quiet:focus-visible, .chip:focus-visible, input[type=file]:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
   .btn:disabled { cursor: default; opacity: 0.55; }
-  /* The one action a form is for: Upload & scan, Run Read-through, Accept, Export. */
+  /* The one action a form is for: Upload & scan, Run AI read-through, Accept, Export. */
   .btn-primary { background: var(--accent); border-color: var(--accent); color: var(--accent-text); }
   .btn-primary:hover:not(:disabled) { background: var(--accent-hover); border-color: var(--accent-hover); }
   /* An action kept out of the way, like a page's Delete: reads as a muted link but keeps a button's tap target. */
@@ -72,6 +72,9 @@
   .steps li { counter-increment: step; border: 1px solid var(--border); border-radius: 8px; padding: 0.75rem 1rem; }
   .steps li::before { content: counter(step); display: inline-grid; place-items: center; width: 1.6rem; height: 1.6rem; margin-right: 0.5rem; border-radius: 50%; background: var(--accent); color: var(--accent-text); font-weight: 700; font-size: 0.85rem; }
   .steps strong { font-weight: 700; }
+  .steps details { margin-top: 0.5rem; }
+  .steps summary { cursor: pointer; }
+  .steps details p { margin: 0.5rem 0 0; }
   footer { margin-top: 3rem; padding-top: 1rem; border-top: 1px solid var(--border); }
   .source-player { position: sticky; top: 0; z-index: 10; background: Canvas; padding: 0.5rem 0; margin-bottom: 1rem; border-bottom: 1px solid #ccc5; }
   .source-video-controls form { display: flex; flex-wrap: wrap; gap: 0.5rem; margin-bottom: 0.5rem; }

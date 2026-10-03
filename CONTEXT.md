@@ -28,7 +28,8 @@ The stretch of transcript text a flag covers — one Word, or several adjacent
 Words when the suspected error crosses token boundaries. A Read-through span
 may also cross a Cue boundary; its Correction is written into the Cue it
 starts in (ADR 0001).
-In the web UI it is called "the flagged words" (or "highlighted words"), never "span".
+In the web UI it is called "the flagged words" (or "highlighted words"), never "span";
+its play control is "Play this part".
 
 **Sentence context**:
 The full sentence a flagged span sits in, reconstructed across cue boundaries.

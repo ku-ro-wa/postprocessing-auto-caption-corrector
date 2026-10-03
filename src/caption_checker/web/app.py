@@ -239,10 +239,24 @@ def create_app(
             raise HTTPException(status_code=404, detail="Transcript not found")
         return record
 
+    def landing_page(
+        request: Request, *, status_code: int = 200, **extra: object
+    ) -> Response:
+        return templates.TemplateResponse(
+            request,
+            "index.html",
+            {
+                "transcripts": storage.list_transcripts(request.state.session_id),
+                "limits": limits,
+                "has_server_key": bool(os.environ.get("OPENROUTER_API_KEY")),
+                **extra,
+            },
+            status_code=status_code,
+        )
+
     @app.get("/", response_class=HTMLResponse)
     def index(request: Request) -> Response:
-        transcripts = storage.list_transcripts(request.state.session_id)
-        return templates.TemplateResponse(request, "index.html", {"transcripts": transcripts})
+        return landing_page(request)
 
     @app.post("/transcripts")
     async def upload(
@@ -251,16 +265,12 @@ def create_app(
         session_id = request.state.session_id
         content = await file.read(max_upload_bytes + 1)
         if len(content) > max_upload_bytes:
-            return templates.TemplateResponse(
+            return landing_page(
                 request,
-                "index.html",
-                {
-                    "transcripts": storage.list_transcripts(session_id),
-                    "upload_error": "That file is larger than the "
-                    f"{max_upload_bytes / 1024 / 1024:g} MB limit.",
-                    "video_link": video_link,
-                },
                 status_code=413,
+                upload_error="That file is larger than the "
+                f"{max_upload_bytes / 1024 / 1024:g} MB limit.",
+                video_link=video_link,
             )
         try:
             record = service.upload_transcript(
@@ -272,12 +282,8 @@ def create_app(
                 video_lookup=video_lookup,
             )
         except (service.InvalidTranscriptError, service.InvalidVideoLinkError) as exc:
-            transcripts = storage.list_transcripts(session_id)
-            return templates.TemplateResponse(
-                request,
-                "index.html",
-                {"transcripts": transcripts, "upload_error": str(exc), "video_link": video_link},
-                status_code=400,
+            return landing_page(
+                request, status_code=400, upload_error=str(exc), video_link=video_link
             )
 
         usage.record("upload")
