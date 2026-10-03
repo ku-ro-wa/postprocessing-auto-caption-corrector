@@ -491,6 +491,7 @@ class TestReviewProgress:
         progress = service.review_progress(_corrected_sample(storage, session_id))
 
         assert (progress.reviewed, progress.total, progress.pending) == (0, 3, 3)
+        assert progress.dismissed == 1
 
     def test_counts_the_pending_flags_with_an_ai_replacement(
         self, storage: Storage, session_id: str

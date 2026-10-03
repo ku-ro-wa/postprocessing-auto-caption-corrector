@@ -460,6 +460,8 @@ class ReviewProgress:
     total: int
     #: Pending Flags with an AI replacement: what accept-all would accept.
     ai_acceptable: int
+    #: Flags the AI read-through judged not a mistake, left out of the rest.
+    dismissed: int
 
     @property
     def pending(self) -> int:
@@ -469,18 +471,21 @@ class ReviewProgress:
 def review_progress(record: TranscriptRecord) -> ReviewProgress:
     """Counted from the same statuses the Flag cards show, so the progress
     bar, accept-all and done banner always agree with the list."""
-    reviewed = total = ai_acceptable = 0
+    reviewed = total = ai_acceptable = dismissed = 0
     for flag_id, decision in enumerate(record.decisions):
         correction = record.corrections[flag_id] if record.corrections else None
         status = _status(correction, decision)
         if status == "dismissed":
+            dismissed += 1
             continue
         total += 1
         if status != "pending":
             reviewed += 1
         elif _ai_replacement(correction) is not None:
             ai_acceptable += 1
-    return ReviewProgress(reviewed=reviewed, total=total, ai_acceptable=ai_acceptable)
+    return ReviewProgress(
+        reviewed=reviewed, total=total, ai_acceptable=ai_acceptable, dismissed=dismissed
+    )
 
 
 def export_transcript(storage: Storage, record: TranscriptRecord) -> str:

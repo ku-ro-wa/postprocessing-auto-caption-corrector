@@ -2918,6 +2918,15 @@ class TestReviewFlow:
 
         assert "0 of 3 reviewed" in counts
         assert "4 flags" in counts
+        assert "1 dismissed by the AI read-through, not counted" in " ".join(
+            _visible_text(counts).split()
+        )
+
+    def test_no_dismissed_note_without_dismissed_flags(self, tmp_path: Path) -> None:
+        client = _make_client(tmp_path)
+        page = client.get(f"/transcripts/{_upload(client)}").text
+
+        assert "dismissed" not in _visible_text(_counts(page))
 
     # -- accept all --------------------------------------------------------
 
