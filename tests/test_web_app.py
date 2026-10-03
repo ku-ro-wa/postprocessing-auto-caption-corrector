@@ -3067,3 +3067,57 @@ class TestReviewFlow:
         template = (Path(__file__).parents[1] / "src/caption_checker/web/templates")
         sources = [p.read_text() for p in template.rglob("*.html")]
         assert sum("With timing" in s for s in sources) == 1
+
+
+def _reduced_motion_css(page: str) -> str:
+    """The base stylesheet's ``prefers-reduced-motion: reduce`` block."""
+    start = page.index("@media (prefers-reduced-motion: reduce)")
+    return page[start : page.index("\n  }", start)]
+
+
+class TestListPosition:
+    """The review page shows where the reviewer is in the list: an arrival outline
+    after Back to top and a shadow once the list scrolls under the bar (#64)."""
+
+    def test_the_bar_casts_a_shadow_only_once_the_list_is_under_it(
+        self, tmp_path: Path
+    ) -> None:
+        client = _make_client(tmp_path)
+        page = client.get(f"/transcripts/{_upload(client)}").text
+
+        # The page's script sets .scrolled on scroll, resize and htmx swaps.
+        assert "box-shadow" not in _css_rule(page, ".review-bar")
+        assert "box-shadow" in _css_rule(page, ".review-bar.scrolled")
+        assert 'classList.toggle("scrolled"' in page
+
+    def test_back_to_top_outlines_the_first_card_or_cue(self, tmp_path: Path) -> None:
+        client = _make_client(tmp_path)
+        page = client.get(f"/transcripts/{_upload(client)}").text
+
+        rule = _css_rule(page, ".arrived")
+        assert "outline: 2px solid var(--accent)" in rule
+        assert "animation: arrive" in rule
+        assert "markArrival(" in page
+
+    def test_reduced_motion_keeps_the_outline_but_drops_the_fades(self, tmp_path: Path) -> None:
+        client = _make_client(tmp_path)
+        page = client.get(f"/transcripts/{_upload(client)}").text
+
+        reduced = _reduced_motion_css(page)
+        assert _css_rule(reduced, ".arrived").strip() == "animation: none;"
+        assert "opacity" not in _css_rule(reduced, ".back-to-top")
+
+    def test_back_to_top_fades_in(self, tmp_path: Path) -> None:
+        client = _make_client(tmp_path)
+        page = client.get(f"/transcripts/{_upload(client)}").text
+
+        assert "opacity 0.15s" in _css_rule(page, ".back-to-top")
+        start = page.index("@starting-style")
+        assert "opacity: 0" in page[start : page.index("}", page.index("{", start) + 1)]
+
+    def test_the_tab_bar_adds_no_position_count(self, tmp_path: Path) -> None:
+        client = _make_client(tmp_path)
+        page = client.get(f"/transcripts/{_upload(client)}").text
+
+        tablist = page.index('role="tablist"')
+        assert " of " not in page[tablist : page.index("</div>", tablist)]

@@ -86,6 +86,8 @@
   a.play-span { font-variant-numeric: tabular-nums; }
   /* The tabs and, in All Cues, the Flag stepper; on a narrow screen the stepper wraps above the tabs, so they keep the bottom border. */
   .review-bar { position: sticky; top: var(--player-height, 0px); z-index: 9; background: Canvas; display: flex; flex-wrap: wrap-reverse; align-items: flex-end; justify-content: space-between; gap: 0.25rem 1rem; border-bottom: 1px solid #ccc5; margin: 1rem 0 0.75rem; }
+  /* Set by the page's script once the list has scrolled under the bar, so the bar reads as lifted off it (#64). */
+  .review-bar.scrolled { box-shadow: 0 6px 6px -6px color-mix(in srgb, CanvasText 45%, transparent); }
   .tabs { display: flex; gap: 0.25rem; }
   .tab { cursor: pointer; font: inherit; font-weight: 600; background: none; color: inherit; border: 1px solid transparent; border-bottom: none; border-radius: 6px 6px 0 0; padding: 0.4rem 0.9rem; margin-bottom: -1px; }
   .tab[aria-selected=true] { border-color: #ccc5; background: Canvas; }
@@ -95,11 +97,16 @@
   #flag-position { font-variant-numeric: tabular-nums; }
   .flag-card, .cue-row { scroll-margin-top: calc(var(--player-height, 0px) + var(--bar-height, 2.5rem) + 0.5rem); }
   /* Pinned to the bottom corner, clear of the sticky player at the top; opaque so the list doesn't show through. */
-  .back-to-top { position: fixed; right: 1rem; bottom: max(1rem, env(safe-area-inset-bottom)); z-index: 11; background: color-mix(in srgb, #888 12%, Canvas); box-shadow: 0 2px 8px #0003; }
+  .back-to-top { position: fixed; right: 1rem; bottom: max(1rem, env(safe-area-inset-bottom)); z-index: 11; background: color-mix(in srgb, #888 12%, Canvas); box-shadow: 0 2px 8px #0003; transition: background 0.12s, border-color 0.12s, opacity 0.15s; }
+  /* Fades in from hidden; leaving stays instant. */
+  @starting-style { .back-to-top { opacity: 0; } }
   .back-to-top:hover:not(:disabled) { background: color-mix(in srgb, #888 25%, Canvas); }
   /* Room below the last Flag or Cue, so the pinned button never covers its controls. */
   #review-views { padding-bottom: 4rem; }
   .cue-row { padding: 0.4rem 0; border-bottom: 1px solid #ccc3; }
+  /* Where Back to top landed: the first Flag card or Cue, outlined briefly, then faded (#64). */
+  .arrived { outline: 2px solid var(--accent); outline-offset: 2px; animation: arrive 0.6s ease-in 0.4s forwards; }
+  @keyframes arrive { to { outline-color: transparent; } }
   .cue-text { white-space: pre-line; }
   /* The same yellow as a Flag card's <mark>; the underline shows the Flag's status. */
   .cue-edit { margin-top: 0.25rem; }
@@ -136,6 +143,11 @@
   a.btn { display: inline-block; text-decoration: none; }
   .done-banner summary { cursor: pointer; }
   .status-legend { display: flex; flex-wrap: wrap; gap: 0.3rem 1rem; font-size: 0.9rem; margin: 0.5rem 0 0.75rem; }
+  /* The arrival outline is information, so it stays, just without the fade; the script removes it. */
+  @media (prefers-reduced-motion: reduce) {
+    .arrived { animation: none; }
+    .back-to-top { transition: background 0.12s, border-color 0.12s; }
+  }
 </style>
 </head>
 <body>

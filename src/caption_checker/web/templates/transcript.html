@@ -459,7 +459,8 @@ document.addEventListener("input", function (event) {
 
   // Back to top returns to the top of the current list — the bar pinned
   // just under the player — not the page top, and shows only once the
-  // reviewer has scrolled half a screen into the list.
+  // reviewer has scrolled half a screen into the list. The same scroll
+  // check gives the bar its shadow once the list is under it (#64).
   const tabBar = reviewBar.querySelector('[role="tablist"]');
   const backToTop = document.getElementById("back-to-top");
 
@@ -476,19 +477,70 @@ document.addEventListener("input", function (event) {
   }
 
   function updateBackToTop() {
-    const hide = window.scrollY < listTop() + window.innerHeight / 2;
+    const top = listTop();
+    // A pixel of slack, so landing exactly at the top of the list reads as the top.
+    reviewBar.classList.toggle("scrolled", window.scrollY > top + 1);
+    const hide = window.scrollY < top + window.innerHeight / 2;
     if (hide && document.activeElement === backToTop) focusSelectedTab();
     backToTop.hidden = hide;
   }
 
+  // Marks where Back to top landed: the current view's first Flag card or
+  // Cue is outlined once the scroll ends. The outline fades out and is
+  // removed when its animation ends; under reduced motion it shows without
+  // a fade and is removed after REDUCED_OUTLINE_MS.
+  const REDUCED_OUTLINE_MS = 1500;
+  // How long to wait for a smooth scroll to land: a safety net where
+  // scrollend fires, roughly a smooth scroll's length where it doesn't.
+  const SCROLLEND_FALLBACK_MS = 1500;
+  const SMOOTH_SCROLL_MS = 500;
+  let outlined = null;
+  let outlineTimer = null;
+
+  function clearArrival() {
+    clearTimeout(outlineTimer);
+    if (outlined) outlined.classList.remove("arrived");
+    outlined = null;
+  }
+
+  function markArrival(reduced) {
+    const first = tabCues.getAttribute("aria-selected") === "true"
+      ? document.querySelector("#cues-view .cue-row")
+      : cards()[0];
+    if (!first) return;
+    clearArrival();
+    // Re-adding the class restarts the fade if the reviewer clicks again.
+    void first.offsetWidth;
+    outlined = first;
+    first.classList.add("arrived");
+    if (reduced) outlineTimer = setTimeout(clearArrival, REDUCED_OUTLINE_MS);
+    else first.addEventListener("animationend", clearArrival, { once: true });
+  }
+
+  // The outline shows once a smooth scroll lands, not while the list rushes past.
+  function afterScroll(callback) {
+    let done = false;
+    function landed() {
+      if (done) return;
+      done = true;
+      window.removeEventListener("scrollend", landed);
+      callback();
+    }
+    window.addEventListener("scrollend", landed);
+    setTimeout(landed, "onscrollend" in window ? SCROLLEND_FALLBACK_MS : SMOOTH_SCROLL_MS);
+  }
+
   window.addEventListener("scroll", updateBackToTop, { passive: true });
   window.addEventListener("resize", updateBackToTop);
-  // A Review Decision or Cue edit can change how long the page is.
-  document.body.addEventListener("htmx:afterSwap", updateBackToTop);
+  // A Review Decision or Cue edit can change how long the page is, and its
+  // out-of-band swaps (the counts, the done banner) can move the list's top.
+  document.body.addEventListener("htmx:afterSettle", updateBackToTop);
   backToTop.addEventListener("click", function () {
-    const smooth = !window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-    window.scrollTo({ top: listTop(), behavior: smooth ? "smooth" : "auto" });
+    const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    window.scrollTo({ top: listTop(), behavior: reduced ? "auto" : "smooth" });
     focusSelectedTab();
+    if (reduced) markArrival(true);
+    else afterScroll(function () { markArrival(false); });
   });
   updateBackToTop();
   updateNav();
