@@ -15,7 +15,7 @@ import os
 import re
 import threading
 from contextlib import asynccontextmanager
-from datetime import timedelta
+from datetime import datetime, timedelta, timezone
 from pathlib import Path
 
 from fastapi import FastAPI, Form, HTTPException, Request, UploadFile
@@ -52,12 +52,20 @@ SWEEP_INTERVAL = timedelta(hours=1)
 logger = logging.getLogger(__name__)
 
 
-def _fmt_ts(seconds: float) -> str:
-    total_ms = round(seconds * 1000)
-    h, rem = divmod(total_ms, 3_600_000)
-    m, rem = divmod(rem, 60_000)
-    s, ms = divmod(rem, 1000)
-    return f"{h:02d}:{m:02d}:{s:02d}.{ms:03d}"
+def _fmt_ts(seconds: float, round_up: bool = False) -> str:
+    """A moment in the video as a player shows it: "0:03", "1:02:03".
+    A start is rounded down and an end (``round_up``) up, so the shown range
+    always covers the span and a sub-second one never reads "0:03 → 0:03"."""
+    whole = math.ceil(seconds) if round_up else int(seconds)
+    h, rem = divmod(whole, 3600)
+    m, s = divmod(rem, 60)
+    return f"{h}:{m:02d}:{s:02d}" if h else f"{m}:{s:02d}"
+
+
+def _fmt_uploaded(iso: str) -> str:
+    """A stored UTC timestamp as the page states it: "4 Oct 2026, 09:05 UTC"."""
+    at = datetime.fromisoformat(iso).astimezone(timezone.utc)
+    return f"{at.day} {at:%b %Y, %H:%M} UTC"
 
 
 def _duration(span: timedelta) -> str:
@@ -207,10 +215,11 @@ def create_app(
         return {"status": "ok"}
 
     templates = Jinja2Templates(directory=str(TEMPLATES_DIR))
-    templates.env.filters["ts"] = lambda td: _fmt_ts(td.total_seconds())
+    templates.env.filters["ts"] = lambda td, round_up=False: _fmt_ts(td.total_seconds(), round_up)
     templates.env.filters["highlight"] = _highlight
     templates.env.filters["thousands"] = lambda n: f"{n:,}"
     templates.env.filters["duration"] = _duration
+    templates.env.filters["uploaded"] = _fmt_uploaded
     templates.env.globals["source_video"] = source_video
     templates.env.globals["retention"] = retention
     templates.env.globals["app_name"] = app_name

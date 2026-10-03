@@ -1694,7 +1694,7 @@ class TestAllCuesView:
 
         row = _cue_row(client.get(f"/transcripts/{transcript_id}").text, 2)
 
-        assert "[00:00:03.500 → 00:00:07.200]" in row
+        assert "[0:03 → 0:08]" in row
         assert "play-span" not in row
 
     def test_a_cue_emptied_by_a_cross_cue_fix_shows_where_it_went(
@@ -2411,3 +2411,82 @@ def test_waits_are_shown_rounded_up_to_the_minute(span: timedelta, shown: str) -
     from caption_checker.web.app import _duration
 
     assert _duration(span) == shown
+
+
+class TestReviewPageHeaderAndTimes:
+    """The review page is titled with the app's name, leads with Export, and
+    shows times as a person reads them (#61)."""
+
+    def test_export_is_the_primary_header_action_and_delete_is_demoted(
+        self, tmp_path: Path
+    ) -> None:
+        client = _make_client(tmp_path)
+        transcript_id = _upload(client)
+
+        page = client.get(f"/transcripts/{transcript_id}").text
+
+        assert 'class="btn btn-primary"' in _tag(page, f'href="/transcripts/{transcript_id}/export"')
+        delete = _tag(page, "Delete this transcript")
+        assert "btn-quiet" in delete
+        assert "btn-primary" not in delete
+
+    def test_review_page_is_titled_with_the_transcript_and_app_name(
+        self, tmp_path: Path
+    ) -> None:
+        client = _make_client(tmp_path, app_name="Recaption")
+        transcript_id = _upload(client)
+
+        page = client.get(f"/transcripts/{transcript_id}").text
+
+        assert "<title>sample_lecture.srt · Recaption</title>" in page
+
+    def test_upload_time_is_shown_readably_not_as_iso(self, tmp_path: Path) -> None:
+        client = _make_client(tmp_path)
+        _upload(client)
+
+        index = client.get("/").text
+
+        shown = re.sub(r"<[^>]*>", "", index.split("<tbody>")[1])
+        assert not re.search(r"\d{4}-\d\d-\d\dT\d\d:", shown)
+        assert re.search(r"\d{1,2} [A-Z][a-z]{2} \d{4}, \d\d:\d\d UTC", shown)
+
+
+@pytest.mark.parametrize(
+    ("seconds", "shown"),
+    [
+        (3.5, "0:03"),
+        (7.999, "0:07"),  # a start never reads later than it is
+        (65, "1:05"),
+        (600, "10:00"),
+        (3723.2, "1:02:03"),
+    ],
+)
+def test_timestamps_are_shown_without_milliseconds(seconds: float, shown: str) -> None:
+    from caption_checker.web.app import _fmt_ts
+
+    assert _fmt_ts(seconds) == shown
+
+
+@pytest.mark.parametrize(
+    ("seconds", "shown"),
+    [(7.2, "0:08"), (7.0, "0:07"), (3599.5, "1:00:00")],
+)
+def test_an_end_time_is_rounded_up_so_the_range_covers_the_span(
+    seconds: float, shown: str
+) -> None:
+    from caption_checker.web.app import _fmt_ts
+
+    assert _fmt_ts(seconds, round_up=True) == shown
+
+
+@pytest.mark.parametrize(
+    ("iso", "shown"),
+    [
+        ("2026-10-04T09:05:31.123456+00:00", "4 Oct 2026, 09:05 UTC"),
+        ("2026-12-25T23:59:59+00:00", "25 Dec 2026, 23:59 UTC"),
+    ],
+)
+def test_upload_times_are_shown_as_a_date_and_minute(iso: str, shown: str) -> None:
+    from caption_checker.web.app import _fmt_uploaded
+
+    assert _fmt_uploaded(iso) == shown

@@ -104,7 +104,7 @@
           <td>{{ t.format }}</td>
           <td>{{ t.flag_count }}</td>
           <td>{{ t.reviewed_count }} / {{ t.flag_count }}</td>
-          <td class="muted">{{ t.created_at }}</td>
+          <td class="muted"><time datetime="{{ t.created_at }}">{{ t.created_at|uploaded }}</time></td>
           <td>
             <form class="inline" action="/transcripts/{{ t.id }}/delete" method="post" onsubmit='return confirm({{ ("Delete " ~ t.filename ~ " and its review state?")|tojson }});'>
               <button class="btn" type="submit">Delete</button>

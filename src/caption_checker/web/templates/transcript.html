@@ -1,9 +1,9 @@
 {% extends "base.html" %}
-{% block title %}{{ transcript.filename }} · caption-checker{% endblock %}
+{% block title %}{{ transcript.filename }} · {{ app_name }}{% endblock %}
 {% block header_extra %}
-  <a href="/transcripts/{{ transcript.id }}/export">Export corrected {{ transcript.format }}</a>
+  <a class="btn btn-primary" href="/transcripts/{{ transcript.id }}/export">Export corrected {{ transcript.format }}</a>
   <form class="inline" action="/transcripts/{{ transcript.id }}/delete" method="post" onsubmit='return confirm({{ ("Delete " ~ transcript.filename ~ " and its review state?")|tojson }});'>
-    <button class="btn" type="submit">Delete this transcript</button>
+    <button class="btn-quiet" type="submit">Delete this transcript</button>
   </form>
 {% endblock %}
 {% block content %}
