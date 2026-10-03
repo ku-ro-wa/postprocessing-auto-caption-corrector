@@ -92,27 +92,29 @@
   {% if not transcripts %}
     <p class="muted">Nothing uploaded yet in this session.</p>
   {% else %}
-  <table>
-    <thead>
-      <tr><th>File</th><th>Format</th><th>Flags</th><th>Reviewed</th><th>Uploaded</th><th></th></tr>
-    </thead>
-    <tbody>
-      {% for t in transcripts %}
-      <tr>
-        <td><a href="/transcripts/{{ t.id }}">{{ t.filename }}</a></td>
-        <td>{{ t.format }}</td>
-        <td>{{ t.flag_count }}</td>
-        <td>{{ t.reviewed_count }} / {{ t.flag_count }}</td>
-        <td class="muted">{{ t.created_at }}</td>
-        <td>
-          <form class="inline" action="/transcripts/{{ t.id }}/delete" method="post" onsubmit='return confirm({{ ("Delete " ~ t.filename ~ " and its review state?")|tojson }});'>
-            <button class="btn" type="submit">Delete</button>
-          </form>
-        </td>
-      </tr>
-      {% endfor %}
-    </tbody>
-  </table>
+  <div class="table-scroll" tabindex="0" role="region" aria-label="Your transcripts">
+    <table>
+      <thead>
+        <tr><th>File</th><th>Format</th><th>Flags</th><th>Reviewed</th><th>Uploaded</th><th></th></tr>
+      </thead>
+      <tbody>
+        {% for t in transcripts %}
+        <tr>
+          <td><a href="/transcripts/{{ t.id }}">{{ t.filename }}</a></td>
+          <td>{{ t.format }}</td>
+          <td>{{ t.flag_count }}</td>
+          <td>{{ t.reviewed_count }} / {{ t.flag_count }}</td>
+          <td class="muted">{{ t.created_at }}</td>
+          <td>
+            <form class="inline" action="/transcripts/{{ t.id }}/delete" method="post" onsubmit='return confirm({{ ("Delete " ~ t.filename ~ " and its review state?")|tojson }});'>
+              <button class="btn" type="submit">Delete</button>
+            </form>
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
   {% endif %}
 </section>
 

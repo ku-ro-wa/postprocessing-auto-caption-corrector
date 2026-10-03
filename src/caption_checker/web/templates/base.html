@@ -7,8 +7,11 @@
 <script src="https://unpkg.com/htmx.org@1.9.12"></script>
 <style>
   :root { color-scheme: light dark; --accent: #3563e9; --accent-hover: #2a50c4; --accent-text: #fff; --border: #8886; }
-  body { font-family: system-ui, sans-serif; max-width: 60rem; margin: 2rem auto; padding: 0 1rem; line-height: 1.4; }
-  header { display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 1.5rem; }
+  /* break-word: a long filename, pasted link or unbroken caption breaks instead of widening the page on a phone. */
+  body { font-family: system-ui, sans-serif; max-width: 60rem; margin: 2rem auto; padding: 0 1rem; line-height: 1.4; overflow-wrap: break-word; }
+  /* Wraps rather than squeezes on a phone: the page's actions drop below the app name. */
+  header { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: baseline; gap: 0.5rem 1rem; margin-bottom: 1.5rem; }
+  .header-actions { display: flex; flex-wrap: wrap; align-items: baseline; gap: 0.5rem 1rem; }
   header a { text-decoration: none; color: inherit; font-weight: 600; }
   /* Translucent, like .notice, so the inherited text colour stays legible in both colour schemes. */
   .error { background: #c332; border: 1px solid #c33; padding: 0.5rem 0.75rem; border-radius: 4px; margin-bottom: 1rem; }
@@ -22,6 +25,8 @@
   .chip[aria-pressed="true"] { opacity: 0.55; }
   .chip[aria-pressed="true"]::before { content: "✓ "; }
   table { border-collapse: collapse; width: 100%; }
+  /* A wide table scrolls inside this box, never the page. */
+  .table-scroll { overflow-x: auto; }
   th, td { text-align: left; padding: 0.4rem 0.6rem; border-bottom: 1px solid #ccc3; }
   .flag-card { border: 1px solid #ccc5; border-radius: 6px; padding: 0.75rem 1rem; margin-bottom: 0.75rem; }
   .flag-card.pending { border-left: 4px solid #999; }
@@ -49,7 +54,8 @@
   .upload-drop:hover, .upload-drop:focus-within, .upload-drop.dragover { border-color: var(--accent); background: color-mix(in srgb, var(--accent) 5%, transparent); }
   .upload-drop input[type=file]::file-selector-button { background: var(--accent); border-color: var(--accent); color: var(--accent-text); padding: 0.55rem 1.2rem; }
   .upload-drop input[type=file]::file-selector-button:hover { background: var(--accent-hover); border-color: var(--accent-hover); }
-  .upload-form { display: grid; gap: 0.9rem; }
+  /* minmax(0, …) so the file input's natural width can't push the form past a phone's screen. */
+  .upload-form { display: grid; grid-template-columns: minmax(0, 1fr); gap: 0.9rem; }
   .upload-form label { display: grid; gap: 0.25rem; }
   .hero { margin: 0 0 2rem; }
   .hero h1 { font-size: 2.4rem; margin: 0 0 0.25rem; letter-spacing: -0.02em; }
@@ -104,7 +110,7 @@
 <body>
 <header>
   <a href="/">{{ app_name }}</a>
-  {% block header_extra %}{% endblock %}
+  <div class="header-actions">{% block header_extra %}{% endblock %}</div>
 </header>
 {% block content %}{% endblock %}
 <footer class="muted">
