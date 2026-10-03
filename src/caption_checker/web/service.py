@@ -172,17 +172,22 @@ def clear_source_video(storage: Storage, record: TranscriptRecord) -> None:
 _TITLE_SEPARATORS = re.compile(r"\s*\|\s*|\s+[-–—]\s+|\s*[:,]\s*")
 
 
-def priming_term_suggestions(record: TranscriptRecord) -> list[str]:
+def offered_priming_terms(record: TranscriptRecord) -> list[str]:
     """What the review page offers as Priming-term chips: the Source video's
     title split into phrases, then its channel, each once. Phrases are never
-    split further into words. Empty when there's no metadata."""
-    phrases = _TITLE_SEPARATORS.split(record.video_title or "")
-    suggestions: list[str] = []
-    for phrase in [*phrases, record.video_channel or ""]:
+    split further into words. A comma splits the channel too, since the
+    Priming terms field would split it there anyway. Empty when there's no
+    metadata."""
+    phrases = [
+        *_TITLE_SEPARATORS.split(record.video_title or ""),
+        *(record.video_channel or "").split(","),
+    ]
+    offered: list[str] = []
+    for phrase in phrases:
         phrase = phrase.strip()
-        if phrase and phrase.casefold() not in (s.casefold() for s in suggestions):
-            suggestions.append(phrase)
-    return suggestions
+        if phrase and phrase.casefold() not in (t.casefold() for t in offered):
+            offered.append(phrase)
+    return offered
 
 
 def _same_text(a: str, b: str) -> bool:

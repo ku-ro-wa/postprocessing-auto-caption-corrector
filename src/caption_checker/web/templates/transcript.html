@@ -95,10 +95,10 @@
     <div class="priming-terms">
       <label for="priming-terms">Priming terms <span class="muted">(names and terms that appear in this video, one per line or comma-separated; they help the AI recognise how they're spelled)</span></label>
       <textarea name="priming_terms" id="priming-terms" rows="3" placeholder="Speakers, products, companies, technical terms…">{{ transcript.priming_terms }}</textarea>
-      {% if priming_suggestions %}
-        <div class="chips" id="priming-chips" aria-label="Suggested from the Source video's title and channel">
+      {% if offered_priming_terms %}
+        <div class="chips" id="priming-chips" role="group" aria-label="Priming terms from the Source video's title and channel">
           <span class="muted">From the video's title and channel, tap to add:</span>
-          {% for term in priming_suggestions %}<button class="chip" type="button">{{ term }}</button>{% endfor %}
+          {% for term in offered_priming_terms %}<button class="chip" type="button">{{ term }}</button>{% endfor %}
         </div>
       {% endif %}
     </div>
@@ -147,7 +147,7 @@
     });
   })();
   </script>
-  {% if priming_suggestions %}
+  {% if offered_priming_terms %}
   <script>
   // A chip appends its term to the Priming terms field on its own line, as a
   // reviewer would type it; a term already there isn't added twice. The
@@ -156,20 +156,21 @@
     const field = document.getElementById("priming-terms");
     const chips = document.querySelectorAll("#priming-chips .chip");
 
+    function norm(term) { return term.trim().toLowerCase(); }
     function terms() {
-      return field.value.split(/[,\n]/).map(function (t) { return t.trim().toLowerCase(); }).filter(Boolean);
+      return field.value.split(/[,\n]/).map(norm).filter(Boolean);
     }
     function markAdded() {
       const present = terms();
       chips.forEach(function (chip) {
-        chip.setAttribute("aria-pressed", String(present.includes(chip.textContent.trim().toLowerCase())));
+        chip.setAttribute("aria-pressed", String(present.includes(norm(chip.textContent))));
       });
     }
 
     chips.forEach(function (chip) {
       chip.addEventListener("click", function () {
         const term = chip.textContent.trim();
-        if (terms().includes(term.toLowerCase())) return;
+        if (terms().includes(norm(term))) return;
         const value = field.value.replace(/[\s,]+$/, "");
         field.value = value ? value + "\n" + term : term;
         markAdded();

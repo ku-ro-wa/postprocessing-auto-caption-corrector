@@ -1427,8 +1427,9 @@ def _priming_field(page: str) -> str:
 
 
 def _chips(page: str) -> list[str]:
-    """The Priming-term suggestion chips offered on the review page."""
+    """The Priming-term chips offered on the review page."""
     return re.findall(r'<button[^>]*class="chip"[^>]*>(.*?)</button>', page, re.S)
+
 
 def _cue_row(page: str, index: int) -> str:
     """The HTML of Cue ``index``'s row in the All Cues view."""

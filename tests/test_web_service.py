@@ -1012,14 +1012,14 @@ def _with_video(title: str | None, channel: str | None):
     )
 
 
-class TestPrimingTermSuggestions:
+class TestOfferedPrimingTerms:
     """#56: the Source video's title split into phrases, plus its channel,
     offered as chips for the reviewer to tap into the Priming terms field."""
 
     def test_title_phrases_then_channel(self) -> None:
         record = _with_video("Noam Brown: Reasoning Models | Podcast", "Some Channel")
 
-        assert service.priming_term_suggestions(record) == [
+        assert service.offered_priming_terms(record) == [
             "Noam Brown",
             "Reasoning Models",
             "Podcast",
@@ -1038,34 +1038,41 @@ class TestPrimingTermSuggestions:
     def test_splits_on_each_separator_but_never_into_words(
         self, title: str, expected: list[str]
     ) -> None:
-        assert service.priming_term_suggestions(_with_video(title, None)) == expected
+        assert service.offered_priming_terms(_with_video(title, None)) == expected
 
     def test_a_hyphenated_word_is_not_split(self) -> None:
         record = _with_video("State-of-the-art ASR", None)
 
-        assert service.priming_term_suggestions(record) == ["State-of-the-art ASR"]
+        assert service.offered_priming_terms(record) == ["State-of-the-art ASR"]
 
     def test_blank_phrases_are_dropped(self) -> None:
         record = _with_video(" | Podcast ||  : Episode 4 , ", None)
 
-        assert service.priming_term_suggestions(record) == ["Podcast", "Episode 4"]
+        assert service.offered_priming_terms(record) == ["Podcast", "Episode 4"]
 
     def test_repeats_are_offered_once(self) -> None:
         record = _with_video("Lex Fridman Podcast | Lex Fridman", "Lex Fridman")
 
-        assert service.priming_term_suggestions(record) == ["Lex Fridman Podcast", "Lex Fridman"]
+        assert service.offered_priming_terms(record) == ["Lex Fridman Podcast", "Lex Fridman"]
+
+    def test_a_channel_with_a_comma_is_offered_as_its_parts(self) -> None:
+        """The Priming terms field splits on commas, so a chip with one in it
+        would submit as two terms anyway."""
+        record = _with_video("Earnings call", "Acme, Inc.")
+
+        assert service.offered_priming_terms(record) == ["Earnings call", "Acme", "Inc."]
 
     def test_only_a_channel(self) -> None:
-        assert service.priming_term_suggestions(_with_video(None, "Stream & Co")) == ["Stream & Co"]
+        assert service.offered_priming_terms(_with_video(None, "Stream & Co")) == ["Stream & Co"]
 
     def test_nothing_without_metadata(self) -> None:
-        assert service.priming_term_suggestions(_with_video(None, None)) == []
+        assert service.offered_priming_terms(_with_video(None, None)) == []
 
     def test_offered_even_after_terms_were_submitted(self) -> None:
         record = _with_video("Raft in 10 minutes", "Distributed Dan")
         record.priming_terms = "Raft"
 
-        assert service.priming_term_suggestions(record) == [
+        assert service.offered_priming_terms(record) == [
             "Raft in 10 minutes",
             "Distributed Dan",
         ]
