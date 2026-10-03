@@ -6,7 +6,8 @@ from pathlib import Path
 from click.testing import CliRunner
 
 from caption_checker.cli import main
-from caption_checker.detect import detect
+from caption_checker.detect import _merge, detect
+from caption_checker.detectors.base import make_flag
 from caption_checker.models import DetectConfig
 from caption_checker.parser import parse, tokenize
 
@@ -185,3 +186,73 @@ def test_split_word_ignores_filler_and_existing_terms(tmp_path: Path) -> None:
     itself; neither is a split term."""
     flags = _detect_text(tmp_path, "So uh when did you see why OpenAI moved?")
     assert not [f for f in flags if f.detector.startswith("split_word")]
+
+
+def _merge_text(tmp_path: Path, text: str, *sub_flags):
+    """Merge hand-built Flags, each ``(first, last, detector, confidence,
+    candidates)`` over Word indices of ``text``."""
+    srt = tmp_path / "m.srt"
+    srt.write_text(f"1\n00:00:00,000 --> 00:00:04,000\n{text}\n", encoding="utf-8")
+    cues = parse(srt)
+    words = tokenize(cues)
+    cues_by_index = {c.index: c for c in cues}
+    flags = [
+        make_flag(
+            words[first : last + 1], cues_by_index,
+            detector=detector, reason=detector, confidence=confidence,
+            candidates=candidates,
+        )
+        for first, last, detector, confidence, candidates in sub_flags
+    ]
+    return _merge(flags, words)
+
+
+def test_merged_flag_candidates_replace_its_whole_span(tmp_path: Path) -> None:
+    """A one-Word phonetic Flag inside a two-Word split-word Flag: its
+    Candidate is rewritten to cover the merged span, so accepting the top
+    Candidate never drops "Brown"."""
+    [flag] = _merge_text(
+        tmp_path, "but Nome Brown. thinks",
+        (1, 1, "phonetic_vocab", 0.9, ["Noam", "noam"]),
+        (1, 2, "split_word", 0.6, ["Noam Brown"]),
+    )
+    assert flag.span == "Nome Brown"
+    assert flag.candidates == ["Noam Brown", "noam Brown"]
+
+
+def test_partly_overlapping_flags_merge_to_their_full_extent(tmp_path: Path) -> None:
+    """Neither Flag holds the merged span, so both Candidates are widened;
+    they stay in Confidence order."""
+    [flag] = _merge_text(
+        tmp_path, "one two three four",
+        (0, 1, "split_word", 0.6, ["onetwo"]),
+        (1, 2, "split_word", 0.7, ["twothree"]),
+    )
+    assert flag.span == "one two three"
+    assert flag.candidates == ["one twothree", "onetwo three"]
+
+
+def test_single_flag_unchanged_by_merge(tmp_path: Path) -> None:
+    [flag] = _merge_text(
+        tmp_path, "but Nome Brown thinks",
+        (1, 1, "phonetic_vocab", 0.9, ["Noam"]),
+    )
+    assert flag.span == "Nome"
+    assert flag.candidates == ["Noam"]
+
+
+def test_nome_brown_defaults_to_full_name() -> None:
+    [flag] = _covering(_flags("ai-researchers-pace-demand.auto.srt"), "nome brown")
+    assert flag.candidates[0] == "Noam Brown"
+
+
+def test_widened_candidate_keeps_punctuation_inside_the_merged_span(tmp_path: Path) -> None:
+    """The comma after "Treyus" is outer punctuation to the one-Word Flag but
+    inside the merged span, so the splice would otherwise drop it."""
+    [flag] = _merge_text(
+        tmp_path, "asking Treyus, why drag",
+        (1, 1, "phonetic_internal", 0.9, ["trace"]),
+        (1, 2, "split_word", 0.6, ["Treyuswhy"]),
+    )
+    assert flag.span == "Treyus, why"
+    assert flag.candidates == ["trace, why", "Treyuswhy"]
