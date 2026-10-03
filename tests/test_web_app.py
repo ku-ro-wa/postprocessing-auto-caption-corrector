@@ -176,6 +176,19 @@ class TestUpload:
         assert 'addEventListener("drop"' in page
         assert "input.files = picked.files" in page
 
+    def test_a_dropped_file_of_the_wrong_kind_is_warned_about_before_upload(
+        self, tmp_path: Path
+    ) -> None:
+        """The picker only offers .srt and .vtt; a drop can be anything, so the
+        page checks the dropped name against the input's accept list and
+        warns at once instead of waiting for the server's refusal (#58)."""
+        page = _make_client(tmp_path).get("/").text
+        warning = re.search(r'<div class="error drop-error"[^>]*>', page)
+        assert warning is not None
+        assert "hidden" in warning.group(0)
+        assert "input.accept.split" in page
+        assert "isn't a caption file" in page
+
     def test_upload_scans_and_redirects_to_review_page(self, tmp_path: Path) -> None:
         client = _make_client(tmp_path)
         transcript_id = _upload(client)

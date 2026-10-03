@@ -25,6 +25,7 @@
   {% endif %}
   <form class="upload-form" action="/transcripts" method="post" enctype="multipart/form-data">
     <div class="upload-drop"><input type="file" name="file" accept=".srt,.vtt" required aria-label="Transcript file (SRT or VTT)"><p class="muted">or drop it here</p></div>
+    <div class="error drop-error" role="alert" hidden></div>
     <label>Source video, as a YouTube link (optional):
       <input type="text" name="video_link" value="{{ video_link or '' }}" placeholder="https://youtu.be/...">
     </label>
@@ -34,9 +35,13 @@
   // A file dropped on the dashed box goes into its file input, so it is posted,
   // capped and parsed exactly like a picked one. A drop that misses the
   // box is swallowed rather than letting the browser open the file and lose the form.
+  // The picker only offers the accepted kinds but a drop can be anything, so a
+  // dropped file of another kind is warned about at once and not selected.
   (function () {
     const box = document.querySelector(".upload-drop");
     const input = box.querySelector("input[type=file]");
+    const warning = document.querySelector(".drop-error");
+    const accepted = input.accept.split(",");
     function carriesFiles(event) {
       return event.dataTransfer && event.dataTransfer.types.includes("Files");
     }
@@ -59,10 +64,20 @@
       box.classList.remove("dragover");
       const file = event.dataTransfer.files[0];
       if (!file) return;
+      const name = file.name.toLowerCase();
+      if (!accepted.some(function (suffix) { return name.endsWith(suffix); })) {
+        warning.textContent = "\u201c" + file.name + "\u201d isn't a caption file: drop an SRT or VTT file.";
+        warning.hidden = false;
+        return;
+      }
+      warning.hidden = true;
       // The input takes one file; keep only the first of several dropped.
       const picked = new DataTransfer();
       picked.items.add(file);
       input.files = picked.files;
+    });
+    input.addEventListener("change", function () {
+      warning.hidden = true;
     });
   })();
   </script>
