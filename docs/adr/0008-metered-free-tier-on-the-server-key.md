@@ -1,5 +1,5 @@
 ---
-status: proposed
+status: accepted
 ---
 
 # Meter the web UI's server key as a Free tier: a per-Session word Allowance under a global Daily budget
