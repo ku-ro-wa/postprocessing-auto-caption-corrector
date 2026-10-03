@@ -493,6 +493,29 @@ class TestTranscriptRows:
 
         assert rows[flag_id].default_text == record.flags[flag_id].span
 
+    def test_a_flag_with_no_candidate_or_correction_proposes_no_change(
+        self, storage: Storage, session_id: str
+    ) -> None:
+        record = _upload_sample(storage, session_id)
+        record.flags[0].candidates = []
+
+        rows = service.transcript_rows(storage, record)
+
+        assert not rows[0].proposes_change
+        assert rows[1].proposes_change
+
+    def test_an_llm_replacement_alone_proposes_a_change(
+        self, storage: Storage, session_id: str
+    ) -> None:
+        record = _upload_sample(storage, session_id)
+        record.flags[0].candidates = []
+        record.corrections = [None] * len(record.flags)
+        record.corrections[0] = Correction(id="0", replacement="consensus", confidence=0.9)
+
+        rows = service.transcript_rows(storage, record)
+
+        assert rows[0].proposes_change
+
     def test_reasons_spell_out_each_detector_of_a_merged_flag(
         self, storage: Storage, session_id: str
     ) -> None:

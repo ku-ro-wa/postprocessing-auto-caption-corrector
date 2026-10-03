@@ -210,6 +210,20 @@
 </section>
 
 <script>
+// A Flag with no proposed replacement prefills its own span, so Accept would change
+// nothing: it stays disabled until the text differs (#57). Listening on the
+// document keeps this working on cards htmx swaps in after a decision.
+document.addEventListener("input", function (event) {
+  const input = event.target;
+  if (!input.matches(".flag-actions input[data-span]")) return;
+  const unchanged = input.value === input.dataset.span;
+  const form = input.closest(".flag-actions");
+  form.querySelector('button[value="accept"]').disabled = unchanged;
+  form.querySelector(".accept-hint").hidden = !unchanged;
+});
+</script>
+
+<script>
 // Flags and All Cues are two views of one page, so switching keeps the
 // player and every Review Decision. The bar of tabs (and, in All Cues, the
 // Flag stepper) stays pinned with the player. A highlighted span in a Cue shows the Flags view before its

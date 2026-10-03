@@ -470,8 +470,9 @@ _UNKNOWN_REASON = "Flagged by a local check"
 class FlagRow:
     """One Flag shaped for the review page: its Correction (if any), the
     reviewer's current Review Decision, whether it's a not-an-error (or
-    same-text no-op) verdict — never an actionable accept — and the text an
-    Accept should default to."""
+    same-text no-op) verdict — never an actionable accept — the text an
+    Accept should default to, and whether accepting it unedited would change
+    anything."""
 
     id: int
     flag: Flag
@@ -498,6 +499,27 @@ class FlagRow:
     @property
     def dismissed(self) -> bool:
         return self.status == "dismissed"
+
+    @property
+    def proposes_change(self) -> bool:
+        """Whether an Accept left unedited would change anything: false for a
+        Flag with no LLM replacement and no local Candidate, whose Accept text
+        defaults to its own span (#57)."""
+        return self.default_text != self.flag.span
+
+    @property
+    def accept_text(self) -> str:
+        """The text the card's Accept box shows: the accepted text once
+        accepted, else the default."""
+        if self.decision.status == "accepted" and self.decision.text is not None:
+            return self.decision.text
+        return self.default_text
+
+    @property
+    def accept_inert(self) -> bool:
+        """Whether the card's Accept should start disabled: no replacement is
+        proposed and the box still holds the span unchanged."""
+        return not self.proposes_change and self.accept_text == self.flag.span
 
 
 def _status(correction: Correction | None, decision: ReviewDecision) -> str:

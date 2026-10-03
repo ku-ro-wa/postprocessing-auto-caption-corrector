@@ -33,9 +33,12 @@
     hx-target="#flag-{{ row.id }}"
     hx-swap="outerHTML"
   >
-    <input type="text" name="text" value="{{ row.decision.text if row.decision.status == 'accepted' else row.default_text }}">
-    <button class="btn btn-primary" type="submit" name="action" value="accept">Accept</button>
+    <input type="text" name="text" value="{{ row.accept_text }}" autocomplete="off"{% if not row.proposes_change %} data-span="{{ row.flag.span }}" aria-describedby="accept-hint-{{ row.id }}"{% endif %}>
+    <button class="btn btn-primary" type="submit" name="action" value="accept"{% if row.accept_inert %} disabled{% endif %}>Accept</button>
     <button class="btn" type="submit" name="action" value="reject">Reject</button>
+    {% if not row.proposes_change %}
+    <span class="muted accept-hint" id="accept-hint-{{ row.id }}"{% if not row.accept_inert %} hidden{% endif %}>No fix suggested: type one to accept, or reject to keep the original.</span>
+    {% endif %}
   </form>
   {% endif %}
 </div>

@@ -67,6 +67,33 @@ def _upload(
     return response.headers["location"].rsplit("/", 1)[-1]
 
 
+def _drop_candidates(tmp_path: Path, client: TestClient, transcript_id: str, flag_id: int) -> None:
+    """Leave Flag ``flag_id`` proposing no change: no local Candidate (and
+    no Correction, as before any Read-through)."""
+    storage = _storage_for(tmp_path)
+    record = _record(tmp_path, client, transcript_id)
+    record.flags[flag_id].candidates = []
+    storage.save_transcript(record)
+
+
+def _flag_card(page: str, flag_id: int) -> str:
+    match = re.search(rf'<div class="flag-card[^"]*" id="flag-{flag_id}">.*?</form>', page, re.S)
+    assert match is not None
+    return match.group(0)
+
+
+def _button(card: str, action: str) -> str:
+    match = re.search(rf'<button[^>]*value="{action}"[^>]*>', card)
+    assert match is not None
+    return match.group(0)
+
+
+def _accept_hint(card: str) -> str:
+    match = re.search(r'<[^>]*class="[^"]*accept-hint[^"]*"[^>]*>', card)
+    assert match is not None
+    return match.group(0)
+
+
 class TestHealthCheck:
     def test_healthz_is_200_and_creates_no_session(self, tmp_path: Path) -> None:
         client = _make_client(tmp_path)
@@ -298,6 +325,71 @@ class TestReviewDecisions:
 
         page = client.get(f"/transcripts/{transcript_id}")
         assert 'value="consensus"' in page.text
+
+    def test_a_flag_with_a_candidate_renders_accept_enabled(self, tmp_path: Path) -> None:
+        client = _make_client(tmp_path)
+        transcript_id = _upload(client)
+
+        card = _flag_card(client.get(f"/transcripts/{transcript_id}").text, 0)
+        assert "disabled" not in _button(card, "accept")
+
+    def test_a_replacement_less_flag_renders_accept_disabled_with_the_span_prefilled(
+        self, tmp_path: Path
+    ) -> None:
+        client = _make_client(tmp_path)
+        transcript_id = _upload(client)
+        _drop_candidates(tmp_path, client, transcript_id, 0)
+
+        card = _flag_card(client.get(f"/transcripts/{transcript_id}").text, 0)
+        assert 'value="con sensus"' in card
+        assert 'data-span="con sensus"' in card
+        assert "disabled" in _button(card, "accept")
+        # Not colour alone: a visible hint says why, and Reject stays usable.
+        assert "hidden" not in _accept_hint(card)
+        assert "disabled" not in _button(card, "reject")
+
+    def test_after_a_reject_the_replacement_less_card_has_accept_disabled_again(
+        self, tmp_path: Path
+    ) -> None:
+        client = _make_client(tmp_path)
+        transcript_id = _upload(client)
+        _drop_candidates(tmp_path, client, transcript_id, 0)
+
+        card = client.post(
+            f"/transcripts/{transcript_id}/flags/0/decision", data={"action": "reject"}
+        ).text
+        assert "rejected" in card
+        assert "disabled" in _button(card, "accept")
+
+    def test_a_replacement_less_flag_accepted_with_an_edit_renders_accept_enabled(
+        self, tmp_path: Path
+    ) -> None:
+        client = _make_client(tmp_path)
+        transcript_id = _upload(client)
+        _drop_candidates(tmp_path, client, transcript_id, 0)
+
+        card = client.post(
+            f"/transcripts/{transcript_id}/flags/0/decision",
+            data={"action": "accept", "text": "consensus"},
+        ).text
+        assert 'value="consensus"' in card
+        assert "disabled" not in _button(card, "accept")
+        assert "hidden" in _accept_hint(card)
+
+    def test_a_same_text_accept_posted_directly_is_still_stored(
+        self, tmp_path: Path
+    ) -> None:
+        client = _make_client(tmp_path)
+        transcript_id = _upload(client)
+        _drop_candidates(tmp_path, client, transcript_id, 0)
+
+        response = client.post(
+            f"/transcripts/{transcript_id}/flags/0/decision",
+            data={"action": "accept", "text": "con sensus"},
+        )
+        assert response.status_code == 200
+        decision = _record(tmp_path, client, transcript_id).decisions[0]
+        assert (decision.status, decision.text) == ("accepted", "con sensus")
 
     def test_unknown_action_is_400(self, tmp_path: Path) -> None:
         client = _make_client(tmp_path)

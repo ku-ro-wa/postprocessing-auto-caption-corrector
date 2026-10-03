@@ -31,8 +31,9 @@
   .flag-span { font-weight: 700; }
   .flag-meta { font-size: 0.85em; opacity: 0.75; margin: 0.25rem 0; }
   .flag-context { margin: 0.4rem 0; }
-  .flag-actions { display: flex; gap: 0.5rem; align-items: center; margin-top: 0.5rem; }
+  .flag-actions { display: flex; flex-wrap: wrap; gap: 0.5rem; align-items: center; margin-top: 0.5rem; }
   .flag-actions input[type=text] { flex: 1; }
+  .flag-actions .accept-hint { flex-basis: 100%; }
   form.inline { display: inline; }
   .btn, input[type=file]::file-selector-button { cursor: pointer; font: inherit; font-weight: 600; font-size: 0.9rem; color: inherit; background: #8881; border: 1px solid var(--border); border-radius: 6px; padding: 0.4rem 0.9rem; transition: background 0.12s, border-color 0.12s; }
   .btn:hover:not(:disabled), input[type=file]::file-selector-button:hover { background: #8883; border-color: #888; }
