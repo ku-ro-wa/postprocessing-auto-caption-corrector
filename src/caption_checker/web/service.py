@@ -27,7 +27,15 @@ from caption_checker.correct import prompt_price, read_through_estimate
 from caption_checker.corrector import Correction, CorrectorError, MissingAPIKeyError
 from caption_checker.detect import detect
 from caption_checker.detectors.base import make_flag
-from caption_checker.models import DETECTOR_REVIEWER, DetectConfig, Flag
+from caption_checker.models import (
+    DETECTOR_OOV,
+    DETECTOR_PHONETIC_INTERNAL,
+    DETECTOR_PHONETIC_VOCAB,
+    DETECTOR_REVIEWER,
+    DETECTOR_SPLIT_WORD,
+    DetectConfig,
+    Flag,
+)
 from caption_checker.parser import serialize, tokenize
 from caption_checker.readthrough import (
     DETECTOR_READ_THROUGH,
@@ -432,6 +440,18 @@ def _accepted(record: TranscriptRecord) -> list[tuple[Flag, str]]:
     ]
 
 
+#: What a Flag card says for each Detector (and the Read-through), so a
+#: stranger never has to read a detector id (#53).
+_REASONS = {
+    DETECTOR_OOV: "Not a known word",
+    DETECTOR_PHONETIC_VOCAB: "Sounds like a known term",
+    DETECTOR_PHONETIC_INTERNAL: "Spelled differently elsewhere in this transcript",
+    DETECTOR_SPLIT_WORD: "Looks like one word split in two",
+    DETECTOR_READ_THROUGH: "Found by the LLM",
+}
+_UNKNOWN_REASON = "Flagged by a local check"
+
+
 @dataclass
 class FlagRow:
     """One Flag shaped for the review page: its Correction (if any), the
@@ -450,6 +470,12 @@ class FlagRow:
     @property
     def by_reviewer(self) -> bool:
         return self.flag.detector == DETECTOR_REVIEWER
+
+    @property
+    def reasons(self) -> list[str]:
+        """Why the Flag was raised, one plain-language reason per Detector or
+        Read-through that raised it (a merged Flag's ids are joined with "+")."""
+        return [_REASONS.get(d, _UNKNOWN_REASON) for d in self.flag.detector.split("+")]
 
     @property
     def status(self) -> str:

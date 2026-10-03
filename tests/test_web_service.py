@@ -493,6 +493,29 @@ class TestTranscriptRows:
 
         assert rows[flag_id].default_text == record.flags[flag_id].span
 
+    def test_reasons_spell_out_each_detector_of_a_merged_flag(
+        self, storage: Storage, session_id: str
+    ) -> None:
+        record = _upload_sample(storage, session_id)
+        record.flags[0].detector = "oov+phonetic_internal"
+
+        rows = service.transcript_rows(storage, record)
+
+        assert rows[0].reasons == [
+            "Not a known word",
+            "Spelled differently elsewhere in this transcript",
+        ]
+
+    def test_reasons_never_show_an_unknown_detector_id(
+        self, storage: Storage, session_id: str
+    ) -> None:
+        record = _upload_sample(storage, session_id)
+        record.flags[0].detector = "some_future_check"
+
+        rows = service.transcript_rows(storage, record)
+
+        assert rows[0].reasons == ["Flagged by a local check"]
+
 
 class TestExportTranscript:
     def test_only_accepted_decisions_change_text(

@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import re
 import threading
 from datetime import datetime, timedelta, timezone
 from pathlib import Path
@@ -8,7 +9,13 @@ from typing import Any
 import pytest
 from fastapi.testclient import TestClient
 
-from caption_checker.readthrough import Reader, StubReader
+from caption_checker.models import (
+    DETECTOR_OOV,
+    DETECTOR_PHONETIC_INTERNAL,
+    DETECTOR_PHONETIC_VOCAB,
+    DETECTOR_SPLIT_WORD,
+)
+from caption_checker.readthrough import DETECTOR_READ_THROUGH, Reader, StubReader
 from caption_checker.web.app import create_app
 from caption_checker.web.free_tier import LEDGER_FILENAME, Limits
 from caption_checker.web.models import TranscriptRecord
@@ -416,7 +423,7 @@ class TestCorrectPass:
             follow_redirects=True,
         )
 
-        assert "read_through" in page.text
+        assert "Found by the LLM" in page.text
         assert "5 flags" in page.text  # 4 local + 1 found
         assert "found 1 new" in page.text
         assert 'hx-post="/transcripts/%s/flags/4/decision"' % transcript_id in page.text
@@ -1594,6 +1601,70 @@ class TestEditCueRoute:
         transcript_id = _upload(client)
 
         assert self._edit(client, transcript_id, 99, "text").status_code == 404
+
+
+#: Every raw detector id the system can put on a Flag (the reviewer's own is
+#: covered by the "Added by you" badge).
+_DETECTOR_ID = re.compile(
+    r"\b(%s)\b"
+    % "|".join(
+        (
+            DETECTOR_OOV,
+            DETECTOR_PHONETIC_VOCAB,
+            DETECTOR_PHONETIC_INTERNAL,
+            DETECTOR_SPLIT_WORD,
+            DETECTOR_READ_THROUGH,
+        )
+    )
+)
+
+
+class TestFlagReasons:
+    """Flag cards say why in plain language, not detector ids (#53)."""
+
+    def test_cards_show_reasons_not_detector_ids(self, tmp_path: Path) -> None:
+        client = _make_client(tmp_path)
+        transcript_id = _upload(client)
+
+        page = client.get(f"/transcripts/{transcript_id}").text
+
+        assert not _DETECTOR_ID.search(page)
+        assert "Looks like one word split in two" in page
+
+    def test_flag_from_several_detectors_shows_each_reason(self, tmp_path: Path) -> None:
+        client = _make_client(tmp_path)
+        transcript_id = _upload(client)
+
+        page = client.get(f"/transcripts/{transcript_id}").text
+
+        assert re.search(
+            r'<span class="reason">Not a known word</span>\s*'
+            r'<span class="reason">Sounds like a known term</span>',
+            page,
+        )
+
+    def test_confidence_moves_from_card_text_to_tooltip(self, tmp_path: Path) -> None:
+        client = _make_client(tmp_path)
+        transcript_id = _upload(client)
+
+        page = client.get(f"/transcripts/{transcript_id}").text
+
+        assert "&middot; confidence" not in page
+        assert re.search(r'title="What raised this Flag[^"]*Confidence: 0\.\d\d', page)
+
+    def test_read_through_find_reads_as_found_by_the_llm(self, tmp_path: Path) -> None:
+        stub = StubReader(extra={"leader election": "leader elections"})
+        client = _make_client(tmp_path, reader=stub)
+        transcript_id = _upload(client)
+
+        page = client.post(
+            f"/transcripts/{transcript_id}/correct",
+            data={"api_key": "sk-or-test"},
+            follow_redirects=True,
+        ).text
+
+        assert "Found by the LLM" in page
+        assert not _DETECTOR_ID.search(page)
 
 
 class TestGlossaryHints:

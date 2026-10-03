@@ -6,7 +6,9 @@
     {% if row.by_reviewer %}
     &middot; <span title="You raised this Flag by editing a Cue. It starts out accepted with your text; reject it to undo the fix."><span class="badge">Added by you</span></span>
     {% else %}
-    &middot; <span title="What raised this Flag (a Detector, one of the local checks), and how sure it was that the span is an error, from 0 to 1.">{{ row.flag.detector }} &middot; confidence {{ "%.2f"|format(row.flag.confidence) }}</span>
+    &middot; <span title="What raised this Flag: one of the local checks, or the LLM's Read-through. Confidence: {{ "%.2f"|format(row.flag.confidence) }} (how sure it was that the span is an error, from 0 to 1).">
+      {%- for reason in row.reasons %}<span class="reason">{{ reason }}</span>{% if not loop.last %} {% endif %}{% endfor -%}
+    </span>
     {% endif %}
     <span class="status-pill" title="Your Review Decision on this Flag. Accepted: the replacement goes into the exported file. Rejected: the original text stays. Dismissed: the LLM judged it not an error, so there is nothing to accept. Pending: you haven't decided yet.">{{ status }}</span>
   </div>
