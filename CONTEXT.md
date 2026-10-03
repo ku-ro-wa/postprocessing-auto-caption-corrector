@@ -104,7 +104,11 @@ their Corrections in one pass -- including errors no Detector raised. Not a
 Detector: it depends on their output rather than running independently.
 The default LLM pass of both `correct` and the web UI; the older per-flag
 pass, which sends only the Residue, is its opt-out (`--per-flag`, CLI only).
-_Avoid_: LLM detector, LLM scan, rewrite.
+In the web UI, which is read by strangers, it is called the **AI read-through**
+(the plain-language label for the same stage); "Read-through" stays the term
+everywhere else.
+_Avoid_: LLM detector, LLM scan, rewrite; "Correct" as the web UI's name for
+this step.
 
 **Read-through configuration**:
 The model, prompt and reply format a Read-through runs with, judged and
