@@ -84,8 +84,8 @@
   .source-player.failed .source-player-frame { display: none; }
   .source-player-status:empty { display: none; }
   a.play-span { font-variant-numeric: tabular-nums; }
-  /* The tabs and, in All Cues, the Flag stepper; on a narrow screen the stepper wraps above the tabs, so they keep the bottom border. */
-  .review-bar { position: sticky; top: var(--player-height, 0px); z-index: 9; background: Canvas; display: flex; flex-wrap: wrap-reverse; align-items: flex-end; justify-content: space-between; gap: 0.25rem 1rem; border-bottom: 1px solid #ccc5; margin: 1rem 0 0.75rem; }
+  /* The tabs and, in All Cues, the Flag stepper; on a narrow screen the stepper wraps above the tabs, so they keep the bottom border. The top padding keeps the pinned tabs off the browser's edge; the margin is trimmed by as much so the bar sits where it did unpinned. */
+  .review-bar { position: sticky; top: var(--player-height, 0px); z-index: 9; background: Canvas; display: flex; flex-wrap: wrap-reverse; align-items: flex-end; justify-content: space-between; gap: 0.25rem 1rem; border-bottom: 1px solid #ccc5; margin: 0.5rem 0 0.75rem; padding-top: 0.5rem; }
   /* Set by the page's script once the list has scrolled under the bar, so the bar reads as lifted off it (#64). */
   .review-bar.scrolled { box-shadow: 0 6px 6px -6px color-mix(in srgb, CanvasText 45%, transparent); }
   .tabs { display: flex; gap: 0.25rem; }
