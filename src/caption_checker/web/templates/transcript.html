@@ -151,6 +151,7 @@
     <button class="tab" type="button" role="tab" id="tab-flags" aria-controls="flags-view" aria-selected="true">Flags</button>
     <button class="tab" type="button" role="tab" id="tab-cues" aria-controls="cues-view" aria-selected="false">All Cues</button>
   </div>
+  <button class="btn back-to-top" type="button" id="back-to-top" hidden>Back to top</button>
   <div id="flags-view" role="tabpanel" aria-labelledby="tab-flags">
     {% include "partials/flag_list.html" %}
   </div>
@@ -160,7 +161,6 @@
       {% include "partials/cue_row.html" %}
     {% endfor %}
   </div>
-  <button class="btn back-to-top" type="button" id="back-to-top" hidden>Back to top</button>
 </section>
 
 <script>

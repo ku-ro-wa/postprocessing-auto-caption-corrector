@@ -1431,8 +1431,9 @@ class TestAllCuesView:
         start = page.index('id="back-to-top"')
         tag = page[page.rindex("<", 0, start) : page.index("</button>", start)]
         assert tag.startswith("<button") and " hidden" in tag and tag.endswith(">Back to top")
-        # Outside both tabpanels, after the All Cues one, so either view can use it.
-        assert page.index('id="back-to-top"') > page.index('id="cues-view"')
+        # Between the tabs and both tabpanels, so either view can use it and
+        # keyboard users reach it without tabbing through a whole list.
+        assert page.index('role="tablist"') < page.index('id="back-to-top"') < page.index('id="flags-view"')
 
     def test_flagged_spans_link_to_their_flag_card_with_their_status(
         self, tmp_path: Path
