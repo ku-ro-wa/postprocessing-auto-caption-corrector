@@ -1,6 +1,12 @@
 <div id="flags-list"{% if oob %} hx-swap-oob="true"{% endif %}>
   {% if rows %}
   <p class="muted">A Flag is a span of the captions that may be a mistake. Accept or reject each one; Export applies only what you accept. To override the LLM or fix something no Flag caught, edit the Cue on the All Cues tab.</p>
+  <p class="status-legend">
+    <span><span class="status-pill">pending</span> not decided yet</span>
+    <span><span class="status-pill">accepted</span> your fix goes into the exported file</span>
+    <span><span class="status-pill">rejected</span> the original words stay</span>
+    <span><span class="status-pill">dismissed</span> the AI read-through found no mistake, so there is nothing to accept</span>
+  </p>
   {% endif %}
   {% if not rows %}
     <p class="muted">No likely caption errors found by the local scan.</p>

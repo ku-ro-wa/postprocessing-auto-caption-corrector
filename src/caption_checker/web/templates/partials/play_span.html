@@ -6,7 +6,7 @@
   <a class="play-span" href="{{ source_video.span_watch_url(transcript.video_id, start.total_seconds()) }}"
      target="_blank" rel="noopener"
      data-start="{{ start.total_seconds() }}" data-end="{{ end.total_seconds() }}"
-     title="{{ play_title }}">▶ {{ span_time }}</a>
+     title="{{ play_title }}" aria-label="{{ play_title }}, {{ start|ts }} to {{ end|ts }}">▶ {{ span_time }}</a>
 {% else %}
   {{ span_time }}
 {% endif %}

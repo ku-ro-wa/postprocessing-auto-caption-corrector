@@ -4,7 +4,7 @@ import re
 import threading
 from datetime import datetime, timedelta, timezone
 from pathlib import Path
-from typing import Any
+from typing import Any, get_args
 
 import pytest
 from fastapi.testclient import TestClient
@@ -18,7 +18,7 @@ from caption_checker.models import (
 from caption_checker.readthrough import DETECTOR_READ_THROUGH, Reader, StubReader
 from caption_checker.web.app import create_app
 from caption_checker.web.free_tier import LEDGER_FILENAME, Limits
-from caption_checker.web.models import TranscriptRecord
+from caption_checker.web.models import DecisionStatus, TranscriptRecord
 from caption_checker.web.source_video import MetadataLookup, VideoMetadata
 from caption_checker.web.storage import Storage
 
@@ -457,7 +457,7 @@ class TestCorrectPass:
         # Per-flag-row content, not just the page-level summary line -- a
         # stale Correction field name in the template would still leave
         # "confirmed" in the summary but silently blank/wrong per row.
-        assert 'LLM: confirmed' in response.text
+        assert "AI read-through: confirmed" in response.text
         assert '→ "Kubernetes"' in response.text
 
     def test_correct_summary_shows_confirmed_and_dismissed_counts(
@@ -1564,8 +1564,8 @@ class TestAllCuesView:
 
         assert 'id="flags-view" role="tabpanel"' in page
         assert 'id="cues-view" role="tabpanel" aria-labelledby="tab-cues" hidden' in page
-        assert 'aria-selected="true">Flags</button>' in page
-        assert 'aria-selected="false">All Cues</button>' in page
+        assert 'aria-selected="true" tabindex="0">Flags</button>' in page
+        assert 'aria-selected="false" tabindex="-1">All Cues</button>' in page
         assert "Each Cue is one timed caption line from your file" in page
 
     def test_every_cue_is_listed_in_order(self, tmp_path: Path) -> None:
@@ -1892,6 +1892,10 @@ class TestFlagReasons:
         assert not _DETECTOR_ID.search(page)
 
 
+#: The visible explanation beside a reviewer-raised Flag's badge (#60).
+ADDED_BY_YOU_HINT = "from your edit to the caption; reject it to undo"
+
+
 class TestGlossaryHints:
     """First-time reviewers meet glossary terms; the page explains them (#43)."""
 
@@ -1904,17 +1908,15 @@ class TestGlossaryHints:
         assert "A Flag is a span of the captions that may be a mistake" in page
         assert "edit the Cue on the All Cues tab" in page
 
-    def test_page_explains_status_and_detector_on_every_flag_card(self, tmp_path: Path) -> None:
+    def test_page_explains_the_detector_on_every_flag_card(self, tmp_path: Path) -> None:
         client = _make_client(tmp_path)
         transcript_id = _upload(client)
 
         page = client.get(f"/transcripts/{transcript_id}").text
 
-        assert 'class="status-pill" title="Your Review Decision' in page
-        assert "Dismissed: the LLM judged it not an error" in page
         assert 'title="What raised this Flag' in page
 
-    def test_rerendered_flag_card_keeps_its_tooltips(self, tmp_path: Path) -> None:
+    def test_rerendered_flag_card_keeps_its_reasons_tooltip(self, tmp_path: Path) -> None:
         client = _make_client(tmp_path)
         transcript_id = _upload(client)
 
@@ -1923,10 +1925,9 @@ class TestGlossaryHints:
             data={"action": "reject"},
         ).text
 
-        assert 'class="status-pill" title="Your Review Decision' in card
         assert 'title="What raised this Flag' in card
 
-    def test_llm_verdict_line_is_explained_on_page_and_card(self, tmp_path: Path) -> None:
+    def test_llm_verdict_line_is_shown_on_page_and_card(self, tmp_path: Path) -> None:
         stub = StubReader(replacement_for={"cubernetes": "Kubernetes"})
         client = _make_client(tmp_path, reader=stub)
         transcript_id = _upload(client)
@@ -1940,8 +1941,9 @@ class TestGlossaryHints:
             data={"action": "reject"},
         ).text
 
-        for body in (page, card):
-            assert "Confirmed: the model agrees it is an error and proposes the replacement" in body
+        assert 'AI read-through: confirmed → "Kubernetes"' in page
+        # The stub dismisses Flag 0, so its card shows the other verdict.
+        assert "AI read-through: not a mistake, so there is nothing to accept" in card
 
     def test_added_by_you_badge_is_explained(self, tmp_path: Path) -> None:
         client = _make_client(tmp_path)
@@ -1951,9 +1953,9 @@ class TestGlossaryHints:
             data={"text": "Welcome back to the lectures on distributed systems."},
         ).text
 
-        assert 'title="You raised this Flag by editing a Cue' in body
+        assert ADDED_BY_YOU_HINT in body
 
-    def test_added_by_you_tooltip_is_on_the_page_and_the_rerendered_card(
+    def test_added_by_you_explanation_is_on_the_page_and_the_rerendered_card(
         self, tmp_path: Path
     ) -> None:
         client = _make_client(tmp_path)
@@ -1970,7 +1972,165 @@ class TestGlossaryHints:
         ).text
 
         for body in (page, card):
-            assert 'title="You raised this Flag by editing a Cue' in body
+            assert ADDED_BY_YOU_HINT in body
+
+
+
+def _tag(page: str, marker: str) -> str:
+    """The opening tag containing ``marker``."""
+    at = page.index(marker)
+    return page[page.rindex("<", 0, at) : page.index(">", at) + 1]
+
+
+def _legend(page: str) -> str:
+    """The status legend above the Flag list."""
+    start = page.index('class="status-legend"')
+    return page[start : page.index("</p>", start)]
+
+
+def _css_rule(page: str, selector: str) -> str:
+    """The declarations of the base stylesheet's rule for ``selector``."""
+    match = re.search(r"(?m)^\s*" + re.escape(selector) + r"\s*\{([^}]*)\}", page)
+    assert match, f"no CSS rule for {selector}"
+    return match.group(1)
+
+
+class TestTouchAndKeyboard:
+    """Nothing on a Flag card is explained only on hover, and the tabs follow
+    the ARIA tabs pattern (#60)."""
+
+    def test_a_legend_above_the_flags_names_all_four_statuses(self, tmp_path: Path) -> None:
+        client = _make_client(tmp_path)
+        transcript_id = _upload(client)
+
+        page = client.get(f"/transcripts/{transcript_id}").text
+
+        legend = _legend(page)
+        for status in ("pending", "accepted", "rejected", "dismissed"):
+            assert f'<span class="status-pill">{status}</span>' in legend
+        assert "nothing to accept" in legend
+        assert page.index(legend) < page.index('class="flag-card')
+
+    def test_the_legend_matches_every_status_a_pill_can_show(self, tmp_path: Path) -> None:
+        client = _make_client(tmp_path)
+        transcript_id = _upload(client)
+
+        page = client.get(f"/transcripts/{transcript_id}").text
+        legend = _legend(page)
+
+        # A Review Decision's status, or "dismissed" for a not-an-error verdict.
+        pill_statuses = set(get_args(DecisionStatus)) | {"dismissed"}
+        assert set(re.findall(r'<span class="status-pill">(\w+)</span>', legend)) == pill_statuses
+
+    def test_no_legend_without_flags(self, tmp_path: Path) -> None:
+        clean = tmp_path / "clean.srt"
+        clean.write_text("1\n00:00:01,000 --> 00:00:03,000\nHello and welcome.\n")
+        client = _make_client(tmp_path)
+        transcript_id = _upload(client, filename="clean.srt", path=clean)
+
+        page = client.get(f"/transcripts/{transcript_id}").text
+
+        assert "No likely caption errors" in page
+        assert 'class="status-legend"' not in page
+
+    def test_status_pill_has_no_tooltip_on_page_or_card(self, tmp_path: Path) -> None:
+        client = _make_client(tmp_path)
+        transcript_id = _upload(client)
+
+        page = client.get(f"/transcripts/{transcript_id}").text
+        card = client.post(
+            f"/transcripts/{transcript_id}/flags/0/decision", data={"action": "reject"}
+        ).text
+
+        for body in (page, card):
+            assert re.search(r'<span class="status-pill">\w+</span>', body)
+            assert 'class="status-pill" title=' not in body
+
+    def test_status_pill_is_readable(self, tmp_path: Path) -> None:
+        client = _make_client(tmp_path)
+
+        rule = _css_rule(client.get("/").text, ".status-pill")
+
+        size = re.search(r"font-size:\s*([\d.]+)rem", rule)
+        assert size and float(size.group(1)) >= 0.8
+        assert "uppercase" not in rule
+
+    def test_added_by_you_is_explained_in_visible_text(self, tmp_path: Path) -> None:
+        client = _make_client(tmp_path)
+        transcript_id = _upload(client)
+        client.post(
+            f"/transcripts/{transcript_id}/cues/1/edit",
+            data={"text": "Welcome back to the lectures on distributed systems."},
+        )
+
+        page = client.get(f"/transcripts/{transcript_id}").text
+
+        assert ADDED_BY_YOU_HINT in page
+        assert "title=\"You raised this Flag" not in page
+
+    def test_a_dismissed_flag_says_why_there_is_nothing_to_accept(self, tmp_path: Path) -> None:
+        stub = StubReader(null_spans={"con sensus"})
+        client = _make_client(tmp_path, reader=stub)
+        transcript_id = _upload(client)
+        record = _record(tmp_path, client, transcript_id)
+        flag_id = next(i for i, f in enumerate(record.flags) if f.span == "con sensus")
+
+        page = client.post(
+            f"/transcripts/{transcript_id}/correct",
+            data={"api_key": "sk-or-test"},
+            follow_redirects=True,
+        ).text
+
+        card = page[page.index(f'id="flag-{flag_id}"') :]
+        card = card[: card.index('class="flag-card') if 'class="flag-card' in card else None]
+        assert "AI read-through: not a mistake, so there is nothing to accept" in card
+        assert "The LLM&#39;s verdict" not in page and "The LLM's verdict" not in page
+
+    def test_play_links_are_named_without_their_tooltip(self, tmp_path: Path) -> None:
+        client = _make_client(tmp_path)
+        transcript_id = _upload(client)
+        client.post(
+            f"/transcripts/{transcript_id}/video",
+            data={"video_link": "https://youtu.be/dQw4w9WgXcQ"},
+        )
+
+        page = client.get(f"/transcripts/{transcript_id}").text
+
+        links = re.findall(r'<a class="play-span"[^>]*>', page)
+        assert links
+        for link in links:
+            assert re.search(r'aria-label="Play (the flagged words|this caption), [^"]+ to [^"]+"', link)
+
+    def test_flagged_words_in_a_caption_are_named_with_their_status(self, tmp_path: Path) -> None:
+        client = _make_client(tmp_path)
+        transcript_id = _upload(client)
+
+        page = client.get(f"/transcripts/{transcript_id}").text
+
+        assert 'aria-label="con sensus: pending Flag, show its card"' in _cue_row(page, 2)
+
+    def test_only_the_selected_tab_is_in_the_tab_order(self, tmp_path: Path) -> None:
+        client = _make_client(tmp_path)
+        transcript_id = _upload(client)
+
+        page = client.get(f"/transcripts/{transcript_id}").text
+
+        flags = _tag(page, 'id="tab-flags"')
+        cues = _tag(page, 'id="tab-cues"')
+        assert 'aria-selected="true"' in flags and 'tabindex="0"' in flags
+        assert 'aria-selected="false"' in cues and 'tabindex="-1"' in cues
+
+    def test_text_fields_share_one_base_style(self, tmp_path: Path) -> None:
+        client = _make_client(tmp_path)
+
+        page = client.get("/").text
+        selector = 'input[type=text], input[type=password], textarea'
+        rule = _css_rule(page, selector)
+
+        assert "font-size: max(16px, 1rem)" in rule
+        assert "border-radius: 6px" in rule
+        focus = _css_rule(page, ", ".join(f"{s.strip()}:focus-visible" for s in selector.split(",")))
+        assert "outline" in focus
 
 
 class TestServeLimits:

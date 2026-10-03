@@ -18,7 +18,7 @@
   .muted { opacity: 0.7; font-size: 0.9em; }
   .priming-terms { margin: 0.75rem 0; }
   .priming-terms label { display: block; margin-bottom: 0.25rem; }
-  .priming-terms textarea { display: block; width: 100%; box-sizing: border-box; font: inherit; }
+  .priming-terms textarea { display: block; width: 100%; }
   .chips { display: flex; flex-wrap: wrap; gap: 0.4rem; align-items: center; margin-top: 0.5rem; }
   .chip { cursor: pointer; font: inherit; font-size: 0.9rem; color: inherit; background: #8881; border: 1px solid var(--border); border-radius: 999px; padding: 0.3rem 0.8rem; min-height: 2rem; }
   .chip:hover { background: #8883; }
@@ -34,10 +34,11 @@
   .flag-card.rejected { border-left: 4px solid #c33; opacity: 0.75; }
   .flag-card.dismissed { border-left: 4px solid #999; opacity: 0.6; }
   .flag-span { font-weight: 700; }
-  .flag-meta { font-size: 0.85em; opacity: 0.75; margin: 0.25rem 0; }
+  /* Faded by colour, not opacity, so the status pill inside can stay full contrast. */
+  .flag-meta { font-size: 0.85em; color: color-mix(in srgb, currentColor 75%, transparent); margin: 0.25rem 0; }
   .flag-context { margin: 0.4rem 0; }
   .flag-actions { display: flex; flex-wrap: wrap; gap: 0.5rem; align-items: center; margin-top: 0.5rem; }
-  .flag-actions input[type=text] { flex: 1; }
+  .flag-actions input[type=text] { flex: 1 1 12rem; min-width: 0; }
   .flag-actions .accept-hint { flex-basis: 100%; }
   form.inline { display: inline; }
   .btn, input[type=file]::file-selector-button { cursor: pointer; font: inherit; font-weight: 600; font-size: 0.9rem; color: inherit; background: #8881; border: 1px solid var(--border); border-radius: 6px; padding: 0.4rem 0.9rem; transition: background 0.12s, border-color 0.12s; }
@@ -48,6 +49,9 @@
   .btn-primary { background: var(--accent); border-color: var(--accent); color: var(--accent-text); }
   .btn-primary:hover:not(:disabled) { background: var(--accent-hover); border-color: var(--accent-hover); }
   input[type=file] { font: inherit; font-size: 0.9rem; max-width: 100%; }
+  /* One base for every text field. 16px or more, or phone browsers zoom in on focus. */
+  input[type=text], input[type=password], textarea { font: inherit; font-size: max(16px, 1rem); color: FieldText; background: Field; border: 1px solid var(--border); border-radius: 6px; padding: 0.4rem 0.6rem; max-width: 100%; box-sizing: border-box; transition: border-color 0.12s; }
+  input[type=text]:focus-visible, input[type=password]:focus-visible, textarea:focus-visible { outline: 2px solid var(--accent); outline-offset: 1px; border-color: var(--accent); }
   input[type=file]::file-selector-button { margin-right: 0.75rem; }
   .upload-drop { border: 2px dashed var(--border); border-radius: 10px; padding: 1.25rem; text-align: center; background: #8880; transition: border-color 0.12s, background 0.12s; }
   .upload-drop p { margin: 0.5rem 0 0; font-size: 0.9rem; }
@@ -67,8 +71,8 @@
   .steps strong { font-weight: 700; }
   footer { margin-top: 3rem; padding-top: 1rem; border-top: 1px solid var(--border); }
   .source-player { position: sticky; top: 0; z-index: 10; background: Canvas; padding: 0.5rem 0; margin-bottom: 1rem; border-bottom: 1px solid #ccc5; }
-  .source-video-controls form { display: flex; gap: 0.5rem; margin-bottom: 0.5rem; }
-  .source-video-controls input[type=text] { flex: 1; }
+  .source-video-controls form { display: flex; flex-wrap: wrap; gap: 0.5rem; margin-bottom: 0.5rem; }
+  .source-video-controls input[type=text] { flex: 1 1 12rem; min-width: 0; }
   /* Capped by viewport height too, so the pinned player never hides most of the Flags. */
   .source-player-frame { width: min(100%, 32rem, calc(28vh * 16 / 9)); aspect-ratio: 16 / 9; }
   .source-player.failed .source-player-frame { display: none; }
@@ -94,7 +98,7 @@
   /* The same yellow as a Flag card's <mark>; the underline shows the Flag's status. */
   .cue-edit { margin-top: 0.25rem; }
   .cue-edit summary { cursor: pointer; font-size: 0.85rem; opacity: 0.7; }
-  .cue-edit textarea { width: 100%; box-sizing: border-box; font: inherit; }
+  .cue-edit textarea { width: 100%; }
   .notice { background: #2a72; border: 1px solid #2a7; padding: 0.4rem 0.75rem; border-radius: 4px; margin-top: 0.4rem; }
   .badge { background: #36c3; border-radius: 3px; padding: 0 0.35rem; font-weight: 600; }
   .reason + .reason::before { content: "· "; }
@@ -104,7 +108,9 @@
   a.cue-flag.dismissed { border-bottom-style: dashed; }
   /* The Flag reached from its card's cue link or the Flag stepper. */
   a.cue-flag.current { outline: 2px solid var(--accent); outline-offset: 2px; border-radius: 2px; }
-  .status-pill { font-size: 0.75em; padding: 0.1rem 0.5rem; border-radius: 1rem; border: 1px solid currentColor; text-transform: uppercase; }
+  /* Full-strength text even inside a faded .flag-meta; rejected and dismissed cards still fade it a little. */
+  .status-pill { font-size: 0.8rem; font-weight: 600; color: CanvasText; padding: 0.1rem 0.5rem; border-radius: 1rem; border: 1px solid currentColor; white-space: nowrap; }
+  .status-legend { display: flex; flex-wrap: wrap; gap: 0.3rem 1rem; font-size: 0.9rem; margin: 0.5rem 0 0.75rem; }
 </style>
 </head>
 <body>

@@ -1,27 +1,28 @@
 {% set status = row.status %}
 <div class="flag-card {{ status }}" id="flag-{{ row.id }}">
   <div class="flag-meta">
-    {% with start=row.flag.start, end=row.flag.end, play_title="Play this span" %}{% include "partials/play_span.html" %}{% endwith %}
+    {% with start=row.flag.start, end=row.flag.end, play_title="Play the flagged words" %}{% include "partials/play_span.html" %}{% endwith %}
     <a class="flag-cue" href="#cue-{{ row.flag.cue_index }}" data-flag-id="{{ row.id }}">{{ row.cue_label }}</a>
     {% if row.by_reviewer %}
-    &middot; <span title="You raised this Flag by editing a Cue. It starts out accepted with your text; reject it to undo the fix."><span class="badge">Added by you</span></span>
+    &middot; <span class="badge">Added by you</span> from your edit to the caption; reject it to undo
     {% else %}
-    &middot; <span title="What raised this Flag: one of the local checks, or the LLM's Read-through. Confidence: {{ "%.2f"|format(row.flag.confidence) }} (how sure it was that the span is an error, from 0 to 1).">
+    &middot; <span title="What raised this Flag: one of the local checks, or the AI read-through. Confidence: {{ "%.2f"|format(row.flag.confidence) }} (how sure it was that these words are a mistake, from 0 to 1).">
       {%- for reason in row.reasons %}<span class="reason">{{ reason }}</span>{% if not loop.last %} {% endif %}{% endfor -%}
     </span>
     {% endif %}
-    <span class="status-pill" title="Your Review Decision on this Flag. Accepted: the replacement goes into the exported file. Rejected: the original text stays. Dismissed: the LLM judged it not an error, so there is nothing to accept. Pending: you haven't decided yet.">{{ status }}</span>
+    <span class="status-pill">{{ status }}</span>
   </div>
   <div class="flag-context">
     {{ (row.flag.context or row.flag.span)|highlight(row.flag.span) }}
   </div>
 
   {% if row.correction %}
-    <div class="flag-meta" title="The LLM's verdict on this Flag. Confirmed: the model agrees it is an error and proposes the replacement. Dismissed: the model judged it not an error.">
-      LLM: {{ "confirmed" if row.correction.replacement is not none else "dismissed" }}
-      {% if row.correction.replacement is not none %}
-        → "{{ row.correction.replacement }}" (confidence {{ "%.2f"|format(row.correction.confidence) }})
-      {% endif %}
+    <div class="flag-meta">
+      {% if row.correction.replacement is not none -%}
+        AI read-through: confirmed → "{{ row.correction.replacement }}" (confidence {{ "%.2f"|format(row.correction.confidence) }})
+      {%- else -%}
+        AI read-through: not a mistake, so there is nothing to accept
+      {%- endif %}
       {% if row.correction.rationale %}&mdash; {{ row.correction.rationale }}{% endif %}
     </div>
   {% endif %}

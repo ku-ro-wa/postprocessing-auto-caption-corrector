@@ -187,8 +187,8 @@
 <section id="review-views">
   <div class="review-bar">
     <div class="tabs" role="tablist">
-      <button class="tab" type="button" role="tab" id="tab-flags" aria-controls="flags-view" aria-selected="true">Flags</button>
-      <button class="tab" type="button" role="tab" id="tab-cues" aria-controls="cues-view" aria-selected="false">All Cues</button>
+      <button class="tab" type="button" role="tab" id="tab-flags" aria-controls="flags-view" aria-selected="true" tabindex="0">Flags</button>
+      <button class="tab" type="button" role="tab" id="tab-cues" aria-controls="cues-view" aria-selected="false" tabindex="-1">All Cues</button>
     </div>
     <div class="flag-nav" id="flag-nav" hidden>
       <button class="btn" type="button" id="flag-prev" aria-label="Previous Flag">◀</button>
@@ -239,6 +239,9 @@ document.addEventListener("input", function (event) {
     tabs.forEach(function (t) {
       const selected = t === tab;
       t.setAttribute("aria-selected", String(selected));
+      // Roving tabindex: only the selected tab is in the Tab order; the
+      // arrow keys move between tabs.
+      t.tabIndex = selected ? 0 : -1;
       document.getElementById(t.getAttribute("aria-controls")).hidden = !selected;
     });
     flagNav.hidden = tab !== tabCues;
@@ -249,6 +252,25 @@ document.addEventListener("input", function (event) {
 
   tabs.forEach(function (t) {
     t.addEventListener("click", function () { show(t); });
+  });
+
+  // The ARIA tabs pattern: Left/Right move to the previous/next tab,
+  // wrapping, and Home/End to the first/last; each activates the tab it
+  // lands on.
+  document.querySelector('[role="tablist"]').addEventListener("keydown", function (event) {
+    const list = Array.from(tabs);
+    const at = list.indexOf(document.activeElement);
+    if (at === -1) return;
+    const to = {
+      ArrowLeft: (at - 1 + list.length) % list.length,
+      ArrowRight: (at + 1) % list.length,
+      Home: 0,
+      End: list.length - 1,
+    }[event.key];
+    if (to === undefined) return;
+    event.preventDefault();
+    show(list[to]);
+    list[to].focus();
   });
 
   // The bar pins just under the player, so it needs the player's height (it
