@@ -68,9 +68,10 @@
   .hero h1 { font-size: 2.4rem; margin: 0 0 0.25rem; letter-spacing: -0.02em; }
   .hero .tagline { font-size: 1.3rem; margin: 0 0 0.75rem; font-weight: 600; }
   .hero p { margin: 0.25rem 0; }
-  .steps { display: grid; grid-template-columns: repeat(auto-fit, minmax(14rem, 1fr)); gap: 0.75rem; list-style: none; padding: 0; margin: 0.5rem 0 2rem; counter-reset: step; }
-  .steps li { counter-increment: step; border: 1px solid var(--border); border-radius: 8px; padding: 0.75rem 1rem; }
-  .steps li::before { content: counter(step); display: inline-grid; place-items: center; width: 1.6rem; height: 1.6rem; margin-right: 0.5rem; border-radius: 50%; background: var(--accent); color: var(--accent-text); font-weight: 700; font-size: 0.85rem; }
+  /* One step per row, the number hanging to the left, so a long step wraps across the width instead of stretching the short ones beside it. */
+  .steps { display: grid; gap: 0.5rem; list-style: none; padding: 0; margin: 0.5rem 0 2rem; counter-reset: step; }
+  .steps li { counter-increment: step; position: relative; border: 1px solid var(--border); border-radius: 8px; padding: 0.75rem 1rem 0.75rem 3.1rem; }
+  .steps li::before { content: counter(step); position: absolute; left: 1rem; top: 0.7rem; display: grid; place-items: center; width: 1.6rem; height: 1.6rem; border-radius: 50%; background: var(--accent); color: var(--accent-text); font-weight: 700; font-size: 0.85rem; }
   .steps strong { font-weight: 700; }
   .steps details { margin-top: 0.5rem; }
   .steps summary { cursor: pointer; }
