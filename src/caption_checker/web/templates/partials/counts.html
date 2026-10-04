@@ -2,7 +2,7 @@
     accept-all. Re-rendered out of band after every decision (#63). -#}
 <div class="review-progress" id="flag-counts"{% if oob %} hx-swap-oob="true"{% endif %}>
   <p class="muted">
-    {{ transcript.flags|length }} flag{{ "" if transcript.flags|length == 1 else "s" }}
+    {{ transcript.flags|length }} Flag{{ "" if transcript.flags|length == 1 else "s" }}
     {% if progress.dismissed %}
       &middot; {{ progress.dismissed }} dismissed by the AI read-through, not counted
     {% endif %}

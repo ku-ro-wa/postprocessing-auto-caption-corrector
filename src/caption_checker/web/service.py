@@ -542,6 +542,10 @@ class FlagRow:
         return self.flag.detector == DETECTOR_REVIEWER
 
     @property
+    def found_by_read_through(self) -> bool:
+        return self.flag.detector == DETECTOR_READ_THROUGH
+
+    @property
     def reasons(self) -> list[str]:
         """Why the Flag was raised, one plain-language reason per Detector or
         Read-through that raised it (a merged Flag's ids are joined with "+")."""
@@ -700,7 +704,13 @@ class CorrectionSummary:
 def correction_summary(record: TranscriptRecord) -> CorrectionSummary | None:
     if not record.corrected:
         return None
-    confirmed = sum(1 for c in record.corrections if c is not None and c.replacement is not None)
+    # The Read-through's own finds carry a replacement too, but they are
+    # counted as found, not as scan Flags it confirmed.
+    confirmed = sum(
+        1
+        for f, c in zip(record.flags, record.corrections)
+        if c is not None and c.replacement is not None and f.detector != DETECTOR_READ_THROUGH
+    )
     dismissed = sum(1 for c in record.corrections if c is not None and c.replacement is None)
     total = sum(1 for c in record.corrections if c is not None)
     found = sum(1 for f in record.flags if f.detector == DETECTOR_READ_THROUGH)

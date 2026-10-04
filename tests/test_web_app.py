@@ -482,6 +482,27 @@ class TestCorrectPass:
         assert "confirmed 1" in response.text.lower()
         assert "dismissed 3" in response.text.lower()
 
+    def test_correct_summary_counts_a_find_as_found_not_confirmed(
+        self, tmp_path: Path
+    ) -> None:
+        # As above, plus one find: it carries a replacement too, but only
+        # the scan Flags the AI agreed with are confirmed.
+        stub = StubReader(
+            null_spans={"con sensus", "cough ka"},
+            replacement_for={"cubernetes": "Kubernetes"},
+            extra={"leader election": "leader elections"},
+        )
+        client = _make_client(tmp_path, reader=stub)
+        transcript_id = _upload(client)
+
+        page = client.post(
+            f"/transcripts/{transcript_id}/correct",
+            data={"api_key": "sk-or-test"},
+            follow_redirects=True,
+        ).text
+
+        assert "AI read-through done: confirmed 1, dismissed 3, found 1 new" in page
+
     def test_correct_does_not_rerun_once_corrected(self, tmp_path: Path) -> None:
         stub = StubReader(replacement_for={"cubernetes": "Kubernetes"})
         client = _make_client(tmp_path, reader=stub)
@@ -547,9 +568,12 @@ class TestCorrectPass:
         )
 
         assert "Found by the AI read-through" in page.text
-        assert "5 flags" in page.text  # 4 local + 1 found
+        assert "5 Flags" in page.text  # 4 local + 1 found
         assert "found 1 new" in page.text
         assert 'hx-post="/transcripts/%s/flags/4/decision"' % transcript_id in page.text
+        # A find is the AI's own suggestion, not a scan Flag it confirmed.
+        assert 'AI read-through: suggests → "leader elections"' in page.text
+        assert 'AI read-through: confirmed → "leader elections"' not in page.text
 
     def test_failed_chunks_are_reported_on_the_page(self, tmp_path: Path) -> None:
         client = _make_client(tmp_path, reader=StubReader())
@@ -2917,7 +2941,7 @@ class TestReviewFlow:
         counts = _counts(client.get(f"/transcripts/{transcript_id}").text)
 
         assert "0 of 3 reviewed" in counts
-        assert "4 flags" in counts
+        assert "4 Flags" in counts
         assert "1 dismissed by the AI read-through, not counted" in " ".join(
             _visible_text(counts).split()
         )

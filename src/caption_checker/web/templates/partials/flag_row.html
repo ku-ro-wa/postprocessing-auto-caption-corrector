@@ -19,7 +19,7 @@
   {% if row.correction %}
     <div class="flag-meta">
       {% if row.correction.replacement is not none -%}
-        AI read-through: confirmed → "{{ row.correction.replacement }}" (confidence {{ "%.2f"|format(row.correction.confidence) }})
+        AI read-through: {{ "suggests" if row.found_by_read_through else "confirmed" }} → "{{ row.correction.replacement }}" (confidence {{ "%.2f"|format(row.correction.confidence) }})
       {%- else -%}
         AI read-through: not a mistake, so there is nothing to accept
       {%- endif %}
