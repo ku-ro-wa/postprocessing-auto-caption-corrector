@@ -2321,6 +2321,20 @@ class TestUsageTally:
         client.get(f"/transcripts/{transcript_id}/export")
         assert self._lines(tmp_path) == ["upload", "correct", "export"]
 
+    def test_a_repeat_correct_on_a_corrected_transcript_is_not_counted(
+        self, tmp_path: Path
+    ) -> None:
+        client = _make_client(tmp_path, reader=StubReader())
+        transcript_id = _upload(client)
+        for _ in range(2):
+            response = client.post(
+                f"/transcripts/{transcript_id}/correct",
+                data={"api_key": "sk-or-test"},
+                follow_redirects=False,
+            )
+            assert response.status_code == 303
+        assert self._lines(tmp_path) == ["upload", "correct"]
+
     def test_only_a_successful_correct_is_counted(self, tmp_path: Path) -> None:
         client = _make_client(tmp_path, reader=StubReader(garbage=True))
         transcript_id = _upload(client)

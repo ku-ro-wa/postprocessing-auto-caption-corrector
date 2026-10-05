@@ -401,6 +401,10 @@ def create_app(
         request: Request, record: TranscriptRecord, api_key: str, priming_terms: str
     ) -> Response:
         transcript_id = record.id
+        if record.corrected:
+            # Re-running isn't supported, so a repeat (a resubmitted form)
+            # runs nothing and isn't tallied as a run.
+            return RedirectResponse(f"/transcripts/{transcript_id}", status_code=303)
         # Saved with the run's outcome below, so a failed run shows them again.
         record.priming_terms = priming_terms.strip()
 
