@@ -99,14 +99,18 @@ class ChunkVerdict:
 
 @dataclass
 class ReadItem:
-    """A Flag the Read-through returned. ``correction`` is None only when its
-    chunk failed twice -- the hint is kept, unjudged. ``hint`` is the local
-    Flag it answers (``flag`` itself unless the verdict widened it), or None
-    for an error the Read-through found by itself."""
+    """A Flag the Read-through returned. ``correction`` is None when the hint
+    is kept unjudged: its chunk failed twice, or its verdict widened it onto
+    words it couldn't have. ``hint`` is the local Flag it answers (``flag``
+    itself unless the verdict widened it), or None for an error the
+    Read-through found by itself. ``absorbed`` are the other hints a widened
+    ``flag`` wholly covers and takes the place of; they get no item of their
+    own."""
 
     flag: Flag
     correction: Correction | None
     hint: Flag | None = None
+    absorbed: tuple[Flag, ...] = ()
 
 
 @dataclass
@@ -658,7 +662,8 @@ def read_through(
                 answered.append(
                     ReadItem(flag, correction, hint_flags[hint.start])
                 )
-        items.extend(_without_overlaps(answered, found))
+        hints = [hint_flags[h.start] for h in chunk.hints]
+        items.extend(_without_overlaps(answered, found, hints))
 
     items.sort(key=lambda i: min(i.flag.global_indices))
     return ReadThroughResult(
@@ -700,22 +705,58 @@ def _flag_for(
     )
 
 
+def _takeovers(answered: list[ReadItem], hints: list[Flag]) -> dict[int, tuple[Flag, ...]]:
+    """The other hints each widened verdict takes over, by ``id`` of its
+    item: every hint its span touches, when it covers each of them wholly
+    and touches no other verdict's span -- one error flagged word by word,
+    which the model fixed as one. A hint is taken over at most once, and
+    one that takes others over isn't taken over itself."""
+    takeovers: dict[int, tuple[Flag, ...]] = {}
+    claimed: set[int] = set()
+    for item in answered:
+        if item.hint is None or item.flag is item.hint or id(item.hint) in claimed:
+            continue
+        span = set(item.flag.global_indices)
+        others = tuple(
+            h for h in hints if h is not item.hint and span.intersection(h.global_indices)
+        )
+        covered = {id(item.hint), *(id(h) for h in others)}
+        if (
+            others
+            and all(span.issuperset(h.global_indices) and id(h) not in claimed for h in others)
+            and not any(
+                span.intersection(i.flag.global_indices)
+                for i in answered
+                if i is not item and id(i.hint) not in covered
+            )
+        ):
+            takeovers[id(item)] = others
+            claimed |= covered
+    return takeovers
+
+
 def _without_overlaps(
-    answered: list[ReadItem], found: list[ReadItem]
+    answered: list[ReadItem], found: list[ReadItem], hints: list[Flag]
 ) -> list[ReadItem]:
-    """One verdict per Word, since a Word can only be spliced once. Every
-    hint keeps its verdict -- on its own span if a widened one would collide
-    with another verdict or another hint's own span -- and the Read-through's
-    own finds fill the gaps, most confident first."""
+    """One verdict per Word, since a Word can only be spliced once. A hint
+    widened over other hints takes them over (:func:`_takeovers`), and
+    their own verdicts are dropped. Every other hint keeps its verdict --
+    but one widened onto a word another verdict or hint has goes back to
+    its own span unjudged, since its text was written for the wider span.
+    The Read-through's own finds fill the gaps, most confident first."""
     kept: list[ReadItem] = []
     taken: set[int] = set()
-    hint_words = [set(i.hint.global_indices) for i in answered if i.hint is not None]
+    takeovers = _takeovers(answered, hints)
+    absorbed = {id(h) for others in takeovers.values() for h in others}
     for item in answered:
-        if item.hint is not None and item.flag is not item.hint:
-            own = set(item.hint.global_indices)
-            others = set().union(*(w for w in hint_words if w != own))
+        if id(item.hint) in absorbed:
+            continue
+        if id(item) in takeovers:
+            item = replace(item, absorbed=takeovers[id(item)])
+        elif item.hint is not None and item.flag is not item.hint:
+            others = set().union(*(h.global_indices for h in hints if h is not item.hint))
             if (taken | others).intersection(item.flag.global_indices):
-                item = replace(item, flag=item.hint)
+                item = replace(item, flag=item.hint, correction=None)
         taken.update(item.flag.global_indices)
         kept.append(item)
     for item in sorted(found, key=lambda i: -(i.correction.confidence if i.correction else 0.0)):

@@ -1036,6 +1036,57 @@ class TestReadThroughAfterReviewerEdit:
         assert summary is not None and summary.found == 1
 
 
+class TestWidenedHintTakesOverAnother:
+    """A repeated misrecognition flagged word by word, which the model fixes
+    as one ("atencion atencion" -> "attention attention")."""
+
+    SRT = (
+        b"1\n00:00:00,000 --> 00:00:03,000\nWe pay attention to the input.\n\n"
+        b"2\n00:00:03,000 --> 00:00:06,000\nWe can now define atencion atencion mechanisms.\n"
+    )
+    STUB = StubReader(
+        widen={"atencion": "atencion atencion"},
+        replacement_for={"atencion atencion": "attention attention"},
+    )
+
+    def test_one_flag_takes_the_place_of_both(self, storage: Storage, session_id: str) -> None:
+        record = service.upload_transcript(storage, session_id, "a.srt", self.SRT)
+        assert [f.span for f in record.flags] == ["atencion", "atencion"]
+
+        service.run_correction(storage, record, api_key="k", reader=self.STUB)
+
+        assert [f.span for f in record.flags] == ["atencion atencion"]
+        assert record.corrections[0].replacement == "attention attention"
+        assert len(record.decisions) == 1
+        reloaded = storage.load_transcript(session_id, record.id)
+        assert reloaded is not None and len(reloaded.flags) == 1
+
+    def test_accepting_it_exports_the_fix_once(self, storage: Storage, session_id: str) -> None:
+        record = service.upload_transcript(storage, session_id, "a.srt", self.SRT)
+        service.run_correction(storage, record, api_key="k", reader=self.STUB)
+
+        service.accept_ai_suggestions(record)
+
+        assert "define attention attention mechanisms" in service.export_transcript(
+            storage, record
+        )
+
+    def test_not_when_a_reviewer_flag_sends_it_back_to_its_own_span(
+        self, storage: Storage, session_id: str
+    ) -> None:
+        record = service.upload_transcript(storage, session_id, "a.srt", self.SRT)
+        stub = StubReader(
+            widen={"atencion": "can now define atencion atencion"},
+            replacement_for={"can now define atencion atencion": "can now define attention attention"},
+        )
+        service.edit_cue(storage, record, 2, "We could now define atencion atencion mechanisms.")
+
+        service.run_correction(storage, record, api_key="k", reader=stub)
+
+        hints = [f for f in record.flags if f.detector != DETECTOR_REVIEWER]
+        assert [f.span for f in hints] == ["atencion", "atencion"]
+
+
 class TestWidenedHintMeetsReviewerFlag:
     def test_a_hint_widened_onto_it_keeps_its_own_span_unjudged(
         self, storage: Storage, session_id: str

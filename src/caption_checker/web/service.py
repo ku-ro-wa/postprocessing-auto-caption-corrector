@@ -248,7 +248,8 @@ def run_correction(
     ``config`` (default: :func:`config_from_env`) says what reads it.
 
     Each hint's verdict becomes that Flag's Correction (a verdict that widens
-    a hint replaces the Flag's span in place); each error the Read-through
+    a hint replaces the Flag's span in place, and the Flags of any other
+    hints it takes over are removed); each error the Read-through
     found by itself is appended as a new Flag with a pending Review Decision.
     Flags the reviewer raised are not hints, so the model never judges or
     widens them, and a Flag it finds or widens onto one is dropped (ADR 0009).
@@ -290,13 +291,16 @@ def run_correction(
         if f.detector == DETECTOR_REVIEWER
         for gi in f.global_indices
     }
+    absorbed: set[int] = set()
     for item in result.items:
         if reviewer_words.intersection(item.flag.global_indices):
             if item.hint is None:
                 continue
             # Widened onto it: the verdict was for the wider span, so the hint
-            # keeps its own span and is left unjudged.
-            item = replace(item, flag=item.hint, correction=None)
+            # keeps its own span and is left unjudged, as are the hints it
+            # would have taken over.
+            item = replace(item, flag=item.hint, correction=None, absorbed=())
+        absorbed.update(id(flag) for flag in item.absorbed)
         correction = _without_echo(item.flag, item.correction)
         if item.hint is None:
             record.flags.append(item.flag)
@@ -311,7 +315,10 @@ def run_correction(
                 record.decisions[i] = ReviewDecision()
         corrections[i] = correction
 
-    record.corrections = corrections
+    keep = [i for i, flag in enumerate(record.flags) if id(flag) not in absorbed]
+    record.flags = [record.flags[i] for i in keep]
+    record.corrections = [corrections[i] for i in keep]
+    record.decisions = [record.decisions[i] for i in keep]
     record.correct_error = None
     record.corrected_at = _now_iso()
     record.chunk_count = result.chunk_count

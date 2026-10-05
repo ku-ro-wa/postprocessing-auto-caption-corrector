@@ -607,7 +607,10 @@ def _run_read_through(
                 detector_confidence=item.flag.confidence,
                 llm_confidence=c.confidence if c else None,
                 rationale=(
-                    c.rationale if c else "chunk parse failure after one retry"
+                    c.rationale
+                    if c
+                    else "left unjudged: its chunk failed after one retry, or "
+                    "its fix ran onto another Flag's words"
                 ),
                 preset=_preset_for(c.replacement) if c else PRESET_SKIP,
             )

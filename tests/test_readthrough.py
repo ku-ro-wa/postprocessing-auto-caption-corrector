@@ -398,12 +398,39 @@ def test_a_hint_widened_across_cues_keeps_the_wider_span(cues) -> None:
     assert item.correction.replacement == "Kubernetes. The"
 
 
-def test_a_hint_cannot_widen_over_another_hint(cues) -> None:
+def test_a_hint_widened_over_another_hint_takes_it_over(cues) -> None:
+    # The model answers one hint for both and the other "not an error",
+    # covered by the first: one Flag for the whole error, not a fix written
+    # for both words spliced into one of them.
     [kube] = detect(cues)
     deploy = replace(kube, span="deploy", global_indices=[2], candidates=["employ"])
-    reader = StubReader(widen={"deploy": "deploy on cubernetes"})
-    result = read_through(cues, [deploy, kube], reader)
-    assert [i.flag for i in result.items] == [deploy, kube]  # each on its own span
+    reader = StubReader(
+        widen={"deploy": "deploy on cubernetes"},
+        replacement_for={"deploy on cubernetes": "deploy on Kubernetes"},
+        null_spans={"cubernetes"},
+    )
+    [item] = read_through(cues, [deploy, kube], reader).items
+    assert item.hint is deploy
+    assert item.flag.global_indices == [2, 3, 4]
+    assert item.correction.replacement == "deploy on Kubernetes"
+    assert item.absorbed == (kube,)
+
+
+def test_a_hint_widened_part_way_over_another_is_left_unjudged(cues) -> None:
+    [kube] = detect(cues)
+    deploy = replace(kube, span="deploy", global_indices=[2], candidates=["employ"])
+    on_kube = replace(kube, span="on cubernetes", global_indices=[3, 4])
+    reader = StubReader(
+        widen={"deploy": "deploy on"},
+        replacement_for={"deploy on": "employ on", "on cubernetes": "on Kubernetes"},
+    )
+    result = read_through(cues, [deploy, on_kube], reader)
+    by_hint = {id(i.hint): i for i in result.items}
+    # Its text was written for the wider span, so it can't stand on its own.
+    assert by_hint[id(deploy)].flag is deploy
+    assert by_hint[id(deploy)].correction is None
+    assert by_hint[id(on_kube)].correction.replacement == "on Kubernetes"
+    assert all(not i.absorbed for i in result.items)
 
 
 def test_new_finds_below_the_confidence_floor_are_dropped_but_hints_kept(cues) -> None:
