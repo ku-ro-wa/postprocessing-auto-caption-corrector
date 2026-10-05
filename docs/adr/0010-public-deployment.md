@@ -34,8 +34,9 @@ into rules a public server has to keep, and settles where it runs.
 - **Launch figures for ADR 0008.** Allowance 10,000 words per Session per
   day, Daily budget $0.25, and a dedicated OpenRouter key with a hard $5 a
   month credit limit as the backstop -- inside a $5-10 a month total budget.
-- **Counting without trackers.** The server tallies uploads, Correct runs and
-  Exports itself; no third-party analytics. Feedback goes to a dedicated email
+- **Counting without trackers.** The server tallies first visits (with the
+  link's `?ref=` tag), uploads, Correct runs, Free tier refusals and Exports
+  itself; no third-party analytics. Feedback goes to a dedicated email
   address.
 
 ## Considered Options

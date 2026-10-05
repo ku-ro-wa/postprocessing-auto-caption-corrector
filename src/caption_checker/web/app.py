@@ -32,7 +32,7 @@ from caption_checker.web import source_video
 from caption_checker.web.free_tier import WINDOW, FreeTier, LimitReached, Limits
 from caption_checker.web.models import TranscriptRecord
 from caption_checker.web.storage import Storage
-from caption_checker.web.usage import UsageLog
+from caption_checker.web.usage import UsageLog, ref_tag
 
 #: The product's public name (ADR 0010); a setting, not a constant of the pages.
 DEFAULT_APP_NAME = "Misheard"
@@ -94,7 +94,8 @@ HEALTH_PATH = "/healthz"
 class _SessionCookieMiddleware(BaseHTTPMiddleware):
     """Ensures every request has a Session: reads ``cc_session`` off the
     incoming cookie, creating a new anonymous Session when it's missing or
-    stale, and stashes the id on ``request.state.session_id`` for routes to
+    stale, and stashes the id on ``request.state.session_id`` (and whether
+    it was just created on ``request.state.new_session``) for routes to
     read. Issues the cookie only when a Session was just created, so
     routes never touch cookie plumbing themselves."""
 
@@ -114,6 +115,7 @@ class _SessionCookieMiddleware(BaseHTTPMiddleware):
         if is_new:
             session_id = self.storage.create_session()
         request.state.session_id = session_id
+        request.state.new_session = is_new
 
         response = await call_next(request)
 
@@ -167,9 +169,10 @@ def create_app(
     over ``max_upload_bytes`` are refused before parsing (ADR 0010).
 
     ``app_name`` heads every page; the footer links ``feedback_email`` as a
-    mailto, and has no feedback link while it is None. Each upload, Correct
-    run, Export and opened Example is tallied to ``usage.log`` at
-    ``storage.root`` (ADR 0010).
+    mailto, and has no feedback link while it is None. Each first visit to
+    the landing page (with its link's ``?ref=`` tag), upload, Correct run,
+    Free tier refusal, Export and opened Example is tallied to ``usage.log``
+    at ``storage.root`` (ADR 0010).
 
     The landing page offers the Example saved in ``example_dir`` (#65), and
     nothing when none is saved there or it is None.
@@ -261,7 +264,11 @@ def create_app(
         )
 
     @app.get("/", response_class=HTMLResponse)
-    def index(request: Request) -> Response:
+    def index(request: Request, ref: str = "") -> Response:
+        # A new Session landing here is a first visit: a refresh or a return
+        # isn't counted again, so visits compare with uploads.
+        if request.state.new_session:
+            usage.record("visit", ref_tag(ref))
         return landing_page(request)
 
     @app.post("/transcripts")
@@ -444,6 +451,7 @@ def create_app(
                         priming_terms=terms,
                     )
             except LimitReached as exc:
+                usage.record("refused", exc.limit)
                 return review_page(
                     request, record, status_code=429, refusal=exc.limit, refusal_wait=exc.wait
                 )

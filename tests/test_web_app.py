@@ -2341,7 +2341,7 @@ class TestUsageTally:
         client.post(f"/transcripts/{transcript_id}/correct", data={"api_key": "sk-or-test"})
         assert self._lines(tmp_path) == ["upload"]
 
-    def test_a_limit_refused_correct_is_not_counted(
+    def test_a_limit_refused_correct_is_counted_as_a_refusal_not_a_run(
         self, tmp_path: Path, monkeypatch: pytest.MonkeyPatch
     ) -> None:
         monkeypatch.setenv("OPENROUTER_API_KEY", "server-key")
@@ -2351,7 +2351,21 @@ class TestUsageTally:
         transcript_id = _upload(client)
         response = client.post(f"/transcripts/{transcript_id}/correct", data={})
         assert response.status_code == 429
-        assert self._lines(tmp_path) == ["upload"]
+        assert self._lines(tmp_path) == ["upload", "refused allowance"]
+
+    def test_a_first_visit_is_counted_with_its_ref_tag_and_a_return_is_not(
+        self, tmp_path: Path
+    ) -> None:
+        client = _make_client(tmp_path)
+        client.get("/?ref=IH")
+        client.get("/")  # same Session: a refresh
+        _make_client(tmp_path).get("/")
+        assert self._lines(tmp_path) == ["visit ih", "visit"]
+
+    def test_a_ref_that_isnt_a_short_tag_is_dropped(self, tmp_path: Path) -> None:
+        _make_client(tmp_path).get("/", params={"ref": "x\n2026-10-01T00:00:00 upload"})
+        _make_client(tmp_path).get("/", params={"ref": "a" * 33})
+        assert self._lines(tmp_path) == ["visit", "visit"]
 
     def test_downloading_the_same_export_again_is_not_counted_again(
         self, tmp_path: Path
@@ -2414,13 +2428,21 @@ class TestUsageCommand:
             "2026-10-01T09:05:00+00:00 correct\n"
             "2026-10-02T09:00:00+00:00 upload\n"
             "2026-10-02T09:10:00+00:00 example\n"
+            "2026-10-02T09:11:00+00:00 visit ih\n"
+            "2026-10-02T09:12:00+00:00 visit\n"
+            "2026-10-02T09:13:00+00:00 visit ih\n"
+            "2026-10-02T09:14:00+00:00 refused daily_budget\n"
         )
         result = CliRunner().invoke(main, ["usage", "--data-dir", str(tmp_path)])
         assert result.exit_code == 0, result.output
         lines = result.output.splitlines()
-        assert lines[0].split() == ["date", "upload", "correct", "export", "example"]
-        assert lines[1].split() == ["2026-10-01", "1", "1", "0", "0"]
-        assert lines[2].split() == ["2026-10-02", "1", "0", "0", "1"]
+        assert lines[0].split() == [
+            "date", "visit", "upload", "correct", "refused", "export", "example"
+        ]
+        assert lines[1].split() == ["2026-10-01", "0", "1", "1", "0", "0", "0"]
+        assert lines[2].split() == ["2026-10-02", "3", "1", "0", "1", "0", "1"]
+        assert "Visits by ref: ih 2, (none) 1" in lines
+        assert "Refusals by Limit: daily_budget 1" in lines
 
     def test_says_so_when_nothing_is_recorded(self, tmp_path: Path) -> None:
         from click.testing import CliRunner

@@ -474,18 +474,24 @@ def serve(
     help="The server's data directory (default: as `serve`).",
 )
 def usage(data_dir: Path | None) -> None:
-    """Print the web UI's daily counts of uploads, Correct runs, Exports and
-    opened Examples (UTC days), from the tally the server keeps (ADR 0010)."""
+    """Print the web UI's daily counts of first visits, uploads, Correct
+    runs, Free tier refusals, Exports and opened Examples (UTC days), then
+    visits by ref tag and refusals by Limit, from the tally the server keeps
+    (ADR 0010)."""
     from caption_checker.web.storage import default_data_dir
     from caption_checker.web.usage import EVENTS, UsageLog
 
-    days = UsageLog(data_dir or default_data_dir()).daily_counts()
+    log = UsageLog(data_dir or default_data_dir())
+    days = log.daily_counts()
     if not days:
         click.echo("No usage recorded yet.")
         return
     click.echo(f"{'date':<12}" + "".join(f"{event:>9}" for event in EVENTS))
     for day, counts in days.items():
         click.echo(f"{day.isoformat():<12}" + "".join(f"{counts.get(e, 0):>9}" for e in EVENTS))
+    for event, heading in (("visit", "Visits by ref"), ("refused", "Refusals by Limit")):
+        if by_detail := log.details(event):
+            click.echo(f"\n{heading}: " + ", ".join(f"{d} {n}" for d, n in by_detail.items()))
 
 
 @main.command("capture-example")

@@ -167,10 +167,13 @@ change it), or until you delete it. See
 The pages are headed with the app name (`--app-name` or
 `CAPTION_CHECKER_APP_NAME`, default "Misheard"), and a footer links the
 feedback address (`--feedback-email` or `CAPTION_CHECKER_FEEDBACK_EMAIL`)
-when one is set. The server also tallies each upload, Correct run and Export
-as one line (time and event only) in `usage.log` at the data root, which the
-retention sweep leaves alone; `caption-checker usage` prints the daily counts
-(on Fly: `fly ssh console -C "caption-checker usage"`).
+when one is set. The server also tallies each first visit, upload, Correct
+run, Free tier refusal and Export as one line (time and event only, plus the
+link's `?ref=` tag for a visit and the Limit for a refusal) in `usage.log` at
+the data root, which the retention sweep leaves alone; `caption-checker usage`
+prints the daily counts and the visits by ref (on Fly:
+`fly ssh console -C "caption-checker usage"`). Link each place you post with
+its own tag, e.g. `https://misheard.fly.dev/?ref=ih`.
 
 ## Deploying
 

@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from datetime import date, datetime, timezone
 
-from caption_checker.web.usage import USAGE_FILENAME, UsageLog
+from caption_checker.web.usage import USAGE_FILENAME, UsageLog, ref_tag
 
 from fake_clock import FakeClock
 
@@ -45,3 +45,31 @@ def test_unknown_event_is_refused(tmp_path):
 
     with pytest.raises(ValueError):
         UsageLog(tmp_path).record("login")
+
+
+def test_a_detail_follows_the_event_and_is_counted_by_details(tmp_path):
+    log = UsageLog(tmp_path, clock=FakeClock(START))
+    log.record("visit", "hn")
+    log.record("visit")
+    log.record("visit", "hn")
+
+    assert (tmp_path / USAGE_FILENAME).read_text().splitlines()[0] == (
+        "2026-10-01T23:59:00+00:00 visit hn"
+    )
+    assert log.daily_counts() == {date(2026, 10, 1): {"visit": 3}}
+    assert log.details("visit") == {"hn": 2, "(none)": 1}
+
+
+def test_an_unsafe_detail_is_refused(tmp_path):
+    import pytest
+
+    with pytest.raises(ValueError):
+        UsageLog(tmp_path).record("visit", "two words")
+
+
+def test_ref_tag_keeps_only_short_tags():
+    assert ref_tag(" IH ") == "ih"
+    assert ref_tag("show-hn_1") == "show-hn_1"
+    assert ref_tag("") is None
+    assert ref_tag("a b") is None
+    assert ref_tag("a" * 33) is None
