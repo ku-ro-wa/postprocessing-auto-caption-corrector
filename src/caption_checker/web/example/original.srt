@@ -1,0 +1,1056 @@
+1
+00:00:00,000 --> 00:00:03,000
+[Music]
+
+2
+00:00:00,620 --> 00:00:05,310
+say I give you the deep learning book
+
+3
+00:00:03,000 --> 00:00:07,470
+along with the question how is
+
+4
+00:00:05,310 --> 00:00:10,139
+convolution equivalent with respect to
+
+5
+00:00:07,470 --> 00:00:10,920
+translation what would you do to answer
+
+6
+00:00:10,139 --> 00:00:13,440
+this question
+
+7
+00:00:10,920 --> 00:00:15,030
+well one way you can do this is to read
+
+8
+00:00:13,440 --> 00:00:17,039
+the entire book and assuming you
+
+9
+00:00:15,030 --> 00:00:19,830
+remember everything you've read try to
+
+10
+00:00:17,039 --> 00:00:22,529
+answer the question but there's a better
+
+11
+00:00:19,830 --> 00:00:24,900
+way since it's a question on convolution
+
+12
+00:00:22,529 --> 00:00:27,930
+I flip to the chapter on convolution
+
+13
+00:00:24,900 --> 00:00:29,880
+neural networks then I find equivalence
+
+14
+00:00:27,930 --> 00:00:32,279
+as one of the properties and read out
+
+15
+00:00:29,880 --> 00:00:35,460
+that page or at least that part of the
+
+16
+00:00:32,279 --> 00:00:38,190
+page which do you think is a faster
+
+17
+00:00:35,460 --> 00:00:40,050
+method if we read the entire text like
+
+18
+00:00:38,190 --> 00:00:42,840
+in the first method answering the
+
+19
+00:00:40,050 --> 00:00:44,550
+question may take us a few weeks but in
+
+20
+00:00:42,840 --> 00:00:47,489
+the second method the same can be done
+
+21
+00:00:44,550 --> 00:00:50,160
+within a few minutes that's a very big
+
+22
+00:00:47,489 --> 00:00:51,899
+difference furthermore our answer while
+
+23
+00:00:50,160 --> 00:00:53,430
+reading the entire book may be more
+
+24
+00:00:51,899 --> 00:00:57,120
+vague as it's based on too much
+
+25
+00:00:53,430 --> 00:00:59,910
+information what did we do differently
+
+26
+00:00:57,120 --> 00:01:02,370
+here in the former case we didn't focus
+
+27
+00:00:59,910 --> 00:01:04,470
+on any part of the book specifically
+
+28
+00:01:02,370 --> 00:01:06,240
+whereas in the latter case we focused
+
+29
+00:01:04,470 --> 00:01:08,070
+our attention to the chapter on
+
+30
+00:01:06,240 --> 00:01:10,500
+convolution neural networks and then
+
+31
+00:01:08,070 --> 00:01:12,570
+further focused our attention to the
+
+32
+00:01:10,500 --> 00:01:15,390
+part where the concept of equal variance
+
+33
+00:01:12,570 --> 00:01:17,520
+is explained this second approach would
+
+34
+00:01:15,390 --> 00:01:21,530
+be the exact thought process many of us
+
+35
+00:01:17,520 --> 00:01:24,330
+humans would take it's quite intuitive
+
+36
+00:01:21,530 --> 00:01:26,960
+given this example scenario we can now
+
+37
+00:01:24,330 --> 00:01:29,430
+better define atencion atencion
+
+38
+00:01:26,960 --> 00:01:31,920
+mechanisms found in neural networks is
+
+39
+00:01:29,430 --> 00:01:35,130
+somewhat similar to that found in humans
+
+40
+00:01:31,920 --> 00:01:36,780
+they focus in high resolution on certain
+
+41
+00:01:35,130 --> 00:01:41,119
+parts of the input while the rest of the
+
+42
+00:01:36,780 --> 00:01:43,710
+input is in low resolution or blurred in
+
+43
+00:01:41,119 --> 00:01:45,869
+this video I'm going to talk about the
+
+44
+00:01:43,710 --> 00:01:47,409
+attention mechanism applied on image
+
+45
+00:01:45,869 --> 00:01:49,689
+inputs
+
+46
+00:01:47,409 --> 00:01:52,479
+let's take a look at visual attention at
+
+47
+00:01:49,689 --> 00:01:54,759
+a higher level consider the problem of
+
+48
+00:01:52,479 --> 00:01:57,100
+determining appropriate captions for an
+
+49
+00:01:54,759 --> 00:01:59,829
+input image based on the papers show
+
+50
+00:01:57,100 --> 00:02:02,829
+tell and attend this normally consists
+
+51
+00:01:59,829 --> 00:02:04,360
+of two steps first is to encode the
+
+52
+00:02:02,829 --> 00:02:07,630
+image in an internal vector
+
+53
+00:02:04,360 --> 00:02:11,380
+representation H using a convolution
+
+54
+00:02:07,630 --> 00:02:13,540
+neural network and then we decode H into
+
+55
+00:02:11,380 --> 00:02:16,569
+word vectors signifying the captions
+
+56
+00:02:13,540 --> 00:02:18,099
+using a recurrent neural network the
+
+57
+00:02:16,569 --> 00:02:20,560
+problem with this method is when
+
+58
+00:02:18,099 --> 00:02:22,840
+generating a single word of the caption
+
+59
+00:02:20,560 --> 00:02:26,080
+the LST M looks at the entire image
+
+60
+00:02:22,840 --> 00:02:28,660
+representation H every time this is not
+
+61
+00:02:26,080 --> 00:02:30,489
+very efficient as usually we generate
+
+62
+00:02:28,660 --> 00:02:32,790
+different words of a caption looking at
+
+63
+00:02:30,489 --> 00:02:35,290
+different and specific parts of an image
+
+64
+00:02:32,790 --> 00:02:37,630
+to solve this problem we create n
+
+65
+00:02:35,290 --> 00:02:40,599
+different non-overlapping sub regions
+
+66
+00:02:37,630 --> 00:02:42,670
+hence H I would be the internal feature
+
+67
+00:02:40,599 --> 00:02:45,910
+representation used to generate the
+
+68
+00:02:42,670 --> 00:02:48,340
+eighth word it is not necessarily the
+
+69
+00:02:45,910 --> 00:02:50,440
+representation of the I 3 gene of the
+
+70
+00:02:48,340 --> 00:02:53,109
+original image I'll explain this in a
+
+71
+00:02:50,440 --> 00:02:56,109
+bit for now the figure on screen is a
+
+72
+00:02:53,109 --> 00:02:58,390
+high-level diagram of attention when the
+
+73
+00:02:56,109 --> 00:03:00,819
+decoder decides on a caption for every
+
+74
+00:02:58,390 --> 00:03:02,709
+word it only looks at specific regions
+
+75
+00:03:00,819 --> 00:03:06,489
+of the image leading to a more accurate
+
+76
+00:03:02,709 --> 00:03:09,160
+description now that's good but how does
+
+77
+00:03:06,489 --> 00:03:12,010
+it exactly decide the region or regions
+
+78
+00:03:09,160 --> 00:03:14,650
+to consider this is the crux of the
+
+79
+00:03:12,010 --> 00:03:17,410
+attention mechanism an attention unit
+
+80
+00:03:14,650 --> 00:03:20,230
+considers all sub regions and contexts
+
+81
+00:03:17,410 --> 00:03:22,709
+as its input and it outputs the weighted
+
+82
+00:03:20,230 --> 00:03:25,180
+arithmetic mean of these regions
+
+83
+00:03:22,709 --> 00:03:26,910
+arithmetic mean is the inner product of
+
+84
+00:03:25,180 --> 00:03:29,109
+actual values and their probabilities
+
+85
+00:03:26,910 --> 00:03:31,299
+how are these probabilities and weights
+
+86
+00:03:29,109 --> 00:03:34,600
+determined they are determined using the
+
+87
+00:03:31,299 --> 00:03:36,700
+context C context represents everything
+
+88
+00:03:34,600 --> 00:03:38,410
+that recurrent neural network has output
+
+89
+00:03:36,700 --> 00:03:41,010
+until now
+
+90
+00:03:38,410 --> 00:03:44,290
+let's take a closer look at what happens
+
+91
+00:03:41,010 --> 00:03:46,360
+we have input regions Y from the
+
+92
+00:03:44,290 --> 00:03:50,050
+convolution neural net and the context
+
+93
+00:03:46,360 --> 00:03:52,030
+see from the RN these inputs are applied
+
+94
+00:03:50,050 --> 00:03:53,860
+to weights which constitute the learn
+
+95
+00:03:52,030 --> 00:03:56,260
+about parameters of the attention unit
+
+96
+00:03:53,860 --> 00:04:00,010
+this means the weight vectors update as
+
+97
+00:03:56,260 --> 00:04:00,520
+we get more training data we apply a
+
+98
+00:04:00,010 --> 00:04:03,220
+tange
+
+99
+00:04:00,520 --> 00:04:05,230
+activation so that of very high values
+
+100
+00:04:03,220 --> 00:04:07,750
+tend to have very small differences and
+
+101
+00:04:05,230 --> 00:04:09,340
+be close to one and very low values also
+
+102
+00:04:07,750 --> 00:04:11,740
+a very small difference is closer to
+
+103
+00:04:09,340 --> 00:04:13,870
+minus one this leads to a much smoother
+
+104
+00:04:11,740 --> 00:04:17,410
+choice of regions of interest within
+
+105
+00:04:13,870 --> 00:04:18,840
+each sub region it is more fine-grained
+
+106
+00:04:17,410 --> 00:04:22,180
+so to speak
+
+107
+00:04:18,840 --> 00:04:24,910
+note we don't necessarily have to apply
+
+108
+00:04:22,180 --> 00:04:27,040
+a tange function we only need to ensure
+
+109
+00:04:24,910 --> 00:04:30,430
+the regions that we output are relevant
+
+110
+00:04:27,040 --> 00:04:32,020
+to the context in the simplest form this
+
+111
+00:04:30,430 --> 00:04:34,300
+similarity can be determined with a
+
+112
+00:04:32,020 --> 00:04:38,020
+simple dot product between the regions Y
+
+113
+00:04:34,300 --> 00:04:40,600
+and the context C the more similar they
+
+114
+00:04:38,020 --> 00:04:42,790
+are the higher is the product hence the
+
+115
+00:04:40,600 --> 00:04:46,450
+output is guaranteed to weight the more
+
+116
+00:04:42,790 --> 00:04:47,980
+relevant region why I hire the
+
+117
+00:04:46,450 --> 00:04:50,530
+difference of using the simple inner
+
+118
+00:04:47,980 --> 00:04:52,600
+product and tange function would be grin
+
+119
+00:04:50,530 --> 00:04:53,200
+you ality of the output regions of
+
+120
+00:04:52,600 --> 00:04:56,320
+interest
+
+121
+00:04:53,200 --> 00:04:58,420
+tange is more fine-grained with less
+
+122
+00:04:56,320 --> 00:05:01,750
+choppy and smoother parts of sub regions
+
+123
+00:04:58,420 --> 00:05:04,390
+chosen regardless of how they are
+
+124
+00:05:01,750 --> 00:05:07,060
+calculated these M's are then passed
+
+125
+00:05:04,390 --> 00:05:11,200
+through a softmax function which outputs
+
+126
+00:05:07,060 --> 00:05:12,520
+them as probabilities s finally we take
+
+127
+00:05:11,200 --> 00:05:15,940
+the inner product of this probability
+
+128
+00:05:12,520 --> 00:05:18,400
+vector s and the sub regions Y to get
+
+129
+00:05:15,940 --> 00:05:22,210
+the final output Z of relevant regions
+
+130
+00:05:18,400 --> 00:05:23,860
+of the entire image understand the
+
+131
+00:05:22,210 --> 00:05:26,230
+probabilities as correspond to the
+
+132
+00:05:23,860 --> 00:05:29,740
+relevance of the sub regions Y given the
+
+133
+00:05:26,230 --> 00:05:31,930
+context C now there are two types of
+
+134
+00:05:29,740 --> 00:05:33,370
+attention mechanisms the first is soft
+
+135
+00:05:31,930 --> 00:05:36,670
+attention and then we have hard
+
+136
+00:05:33,370 --> 00:05:39,700
+attention the main difference here is
+
+137
+00:05:36,670 --> 00:05:42,460
+that in soft attention the main relevant
+
+138
+00:05:39,700 --> 00:05:45,110
+region C consists of different parts of
+
+139
+00:05:42,460 --> 00:05:47,720
+different sub regions wide
+
+140
+00:05:45,110 --> 00:05:50,509
+in heart attention the main relevant
+
+141
+00:05:47,720 --> 00:05:53,689
+region Z consists of only one of the
+
+142
+00:05:50,509 --> 00:05:56,599
+regions why I'll explain them both in
+
+143
+00:05:53,689 --> 00:05:59,300
+detail the entire mechanism of attention
+
+144
+00:05:56,599 --> 00:06:02,330
+that I described until now is all soft
+
+145
+00:05:59,300 --> 00:06:04,909
+attention Z has relevant parts of
+
+146
+00:06:02,330 --> 00:06:05,750
+different regions soft attention is
+
+147
+00:06:04,909 --> 00:06:09,080
+deterministic
+
+148
+00:06:05,750 --> 00:06:10,610
+so deterministic what's that a system is
+
+149
+00:06:09,080 --> 00:06:13,789
+said to be deterministic if the
+
+150
+00:06:10,610 --> 00:06:17,389
+application of an action a on a state s
+
+151
+00:06:13,789 --> 00:06:20,479
+always leads to the same state s prime a
+
+152
+00:06:17,389 --> 00:06:22,759
+dumb example would be you're at a corner
+
+153
+00:06:20,479 --> 00:06:26,000
+of your room at coordinates 0 0 and
+
+154
+00:06:22,759 --> 00:06:29,990
+you're facing forward consider an action
+
+155
+00:06:26,000 --> 00:06:31,940
+a which is moving 5 feet forward the
+
+156
+00:06:29,990 --> 00:06:35,349
+system is now at a new state with the
+
+157
+00:06:31,940 --> 00:06:38,000
+coordinates 5 0 and still facing forward
+
+158
+00:06:35,349 --> 00:06:39,529
+no matter how many times you stand at
+
+159
+00:06:38,000 --> 00:06:41,990
+the corner of your room forward facing
+
+160
+00:06:39,529 --> 00:06:44,330
+and walk five feet forward you will
+
+161
+00:06:41,990 --> 00:06:46,810
+always end up 5 feet from the door and
+
+162
+00:06:44,330 --> 00:06:50,659
+facing forward try it trust me it works
+
+163
+00:06:46,810 --> 00:06:52,729
+hence the system is deterministic let us
+
+164
+00:06:50,659 --> 00:06:55,219
+apply the same concept to soft attention
+
+165
+00:06:52,729 --> 00:06:57,440
+initially we have an image just split
+
+166
+00:06:55,219 --> 00:07:00,139
+into a number of regions why with an
+
+167
+00:06:57,440 --> 00:07:02,750
+input context see this is our initial
+
+168
+00:07:00,139 --> 00:07:04,759
+state on the application of soft
+
+169
+00:07:02,750 --> 00:07:07,819
+attention we end up with a localized
+
+170
+00:07:04,759 --> 00:07:10,520
+image representing the new state s Prime
+
+171
+00:07:07,819 --> 00:07:13,279
+these regions of interest are determined
+
+172
+00:07:10,520 --> 00:07:15,199
+from Z the RO eyes will always be the
+
+173
+00:07:13,279 --> 00:07:17,509
+same regardless of how many times we
+
+174
+00:07:15,199 --> 00:07:20,180
+execute soft attention with these same
+
+175
+00:07:17,509 --> 00:07:25,159
+inputs this is because we consider all
+
+176
+00:07:20,180 --> 00:07:27,440
+the regions Y anyways to determine Z now
+
+177
+00:07:25,159 --> 00:07:29,060
+consider heart attention looking at the
+
+178
+00:07:27,440 --> 00:07:31,279
+architecture heart attention is very
+
+179
+00:07:29,060 --> 00:07:33,560
+similar to soft attention however
+
+180
+00:07:31,279 --> 00:07:35,930
+instead of taking the weighted
+
+181
+00:07:33,560 --> 00:07:38,270
+arithmetic mean of all regions heart
+
+182
+00:07:35,930 --> 00:07:42,409
+attention only considers one region
+
+183
+00:07:38,270 --> 00:07:46,159
+randomly so heart attention is a
+
+184
+00:07:42,409 --> 00:07:48,529
+stochastic process now stochastic when
+
+185
+00:07:46,159 --> 00:07:51,009
+you hear the word stochastic think about
+
+186
+00:07:48,529 --> 00:07:54,620
+randomness in such a stochastic process
+
+187
+00:07:51,009 --> 00:07:57,290
+performing an action a on a state s may
+
+188
+00:07:54,620 --> 00:07:59,870
+lead to different states every time
+
+189
+00:07:57,290 --> 00:08:02,230
+typical example is like in a board game
+
+190
+00:07:59,870 --> 00:08:05,450
+with the dice like snakes and ladders
+
+191
+00:08:02,230 --> 00:08:08,330
+the initial state is the position of the
+
+192
+00:08:05,450 --> 00:08:10,820
+players the action is rolling a dice and
+
+193
+00:08:08,330 --> 00:08:13,720
+depending on the roll there are multiple
+
+194
+00:08:10,820 --> 00:08:16,850
+possibilities for the next board state
+
+195
+00:08:13,720 --> 00:08:20,320
+what makes hard attention stochastic is
+
+196
+00:08:16,850 --> 00:08:24,560
+that a region Y I is chosen randomly
+
+197
+00:08:20,320 --> 00:08:27,110
+with the probability si this means that
+
+198
+00:08:24,560 --> 00:08:30,200
+the more relevant a region Y I as a
+
+199
+00:08:27,110 --> 00:08:32,390
+whole is relevant to the context then
+
+200
+00:08:30,200 --> 00:08:36,100
+greater the chance it is chosen for
+
+201
+00:08:32,390 --> 00:08:39,080
+determining the next word of the caption
+
+202
+00:08:36,100 --> 00:08:42,320
+using the word captions output until now
+
+203
+00:08:39,080 --> 00:08:44,480
+by the RNN that is H along the current
+
+204
+00:08:42,320 --> 00:08:46,220
+regions of interest in an image
+
+205
+00:08:44,480 --> 00:08:50,000
+determined by the attention mechanism
+
+206
+00:08:46,220 --> 00:08:53,540
+the RNN now tries to predict the next
+
+207
+00:08:50,000 --> 00:08:55,640
+word in the caption as far as
+
+208
+00:08:53,540 --> 00:08:57,710
+performance is concerned in the papers
+
+209
+00:08:55,640 --> 00:08:59,600
+show attend Intel released by the
+
+210
+00:08:57,710 --> 00:09:01,220
+University of Toronto and University of
+
+211
+00:08:59,600 --> 00:09:04,130
+Montreal in 2016
+
+212
+00:09:01,220 --> 00:09:05,990
+results vary with the data set soft and
+
+213
+00:09:04,130 --> 00:09:08,390
+heart attention both perform decently
+
+214
+00:09:05,990 --> 00:09:11,240
+well with heart attention performing it
+
+215
+00:09:08,390 --> 00:09:14,180
+slightly better this is pretty cool
+
+216
+00:09:11,240 --> 00:09:16,790
+right so where else can we use attention
+
+217
+00:09:14,180 --> 00:09:19,460
+attention is not only used for image
+
+218
+00:09:16,790 --> 00:09:22,250
+inputs for example neural machine
+
+219
+00:09:19,460 --> 00:09:24,650
+translation nmt systems they are used to
+
+220
+00:09:22,250 --> 00:09:27,680
+translate one language to another words
+
+221
+00:09:24,650 --> 00:09:29,360
+are fed in a sequence to an encoder one
+
+222
+00:09:27,680 --> 00:09:31,790
+after another and the sentence is
+
+223
+00:09:29,360 --> 00:09:34,910
+terminated by a specific input word or
+
+224
+00:09:31,790 --> 00:09:37,460
+symbol once complete the special signal
+
+225
+00:09:34,910 --> 00:09:41,600
+initiates the decoder phase where the
+
+226
+00:09:37,460 --> 00:09:43,520
+translated words are generated another
+
+227
+00:09:41,600 --> 00:09:45,350
+cool application would be Microsoft's
+
+228
+00:09:43,520 --> 00:09:48,380
+attention generative adversarial
+
+229
+00:09:45,350 --> 00:09:51,200
+networks or Microsoft's attention gann
+
+230
+00:09:48,380 --> 00:09:53,750
+that can create images from text through
+
+231
+00:09:51,200 --> 00:09:55,370
+natural language processing it can
+
+232
+00:09:53,750 --> 00:09:57,590
+perform fine-grained tasks like
+
+233
+00:09:55,370 --> 00:10:01,090
+generating parts of an image from a
+
+234
+00:09:57,590 --> 00:10:01,090
+single word in the description
+
+235
+00:10:01,290 --> 00:10:05,440
+another application would be in the
+
+236
+00:10:03,490 --> 00:10:07,960
+paper of teaching machines to read and
+
+237
+00:10:05,440 --> 00:10:09,460
+comprehend the altars do the same thing
+
+238
+00:10:07,960 --> 00:10:11,680
+I talked about in the beginning of the
+
+239
+00:10:09,460 --> 00:10:14,530
+video a recurrent neural network takes
+
+240
+00:10:11,680 --> 00:10:17,830
+some text and a question as input and it
+
+241
+00:10:14,530 --> 00:10:19,170
+is made to output an answer here are
+
+242
+00:10:17,830 --> 00:10:21,460
+some things to remember
+
+243
+00:10:19,170 --> 00:10:23,590
+attention involves focus in high
+
+244
+00:10:21,460 --> 00:10:25,660
+resolution on certain parts of an input
+
+245
+00:10:23,590 --> 00:10:29,470
+while the rest of the input is in low
+
+246
+00:10:25,660 --> 00:10:31,330
+resolution or is blurred two types of
+
+247
+00:10:29,470 --> 00:10:33,220
+attention are soft attention and hard
+
+248
+00:10:31,330 --> 00:10:34,330
+attention soft attention is
+
+249
+00:10:33,220 --> 00:10:37,470
+deterministic
+
+250
+00:10:34,330 --> 00:10:39,580
+while hard attention is stochastic
+
+251
+00:10:37,470 --> 00:10:41,950
+attention can be used for non image
+
+252
+00:10:39,580 --> 00:10:43,930
+inputs like neural machine translation
+
+253
+00:10:41,950 --> 00:10:47,950
+attention Gantz and answering questions
+
+254
+00:10:43,930 --> 00:10:50,050
+from text and that's all I have for you
+
+255
+00:10:47,950 --> 00:10:52,030
+now hope you guys got some newfound
+
+256
+00:10:50,050 --> 00:10:54,820
+understanding of attention and its
+
+257
+00:10:52,030 --> 00:10:57,130
+applications in this video I have left a
+
+258
+00:10:54,820 --> 00:10:59,440
+link to the main paper show attend intel
+
+259
+00:10:57,130 --> 00:11:01,930
+with other papers and blog posts in the
+
+260
+00:10:59,440 --> 00:11:04,060
+description down below don't forget to
+
+261
+00:11:01,930 --> 00:11:06,610
+give the video a thumbs up and subscribe
+
+262
+00:11:04,060 --> 00:11:15,270
+for more awesome content please
+
+263
+00:11:06,610 --> 00:11:15,270
+subscribe please you did it right
+
+264
+00:11:16,450 --> 00:11:19,450
+guys
+

@@ -1,0 +1,652 @@
+{
+  "id": "6c7d9ea9c1f342efbb8c97b24f657f45",
+  "session_id": "",
+  "filename": "attention-in-neural-networks.auto.srt",
+  "format": "srt",
+  "created_at": "2026-10-05T13:10:47.348529+00:00",
+  "flags": [
+    {
+      "span": "atencion atencion",
+      "global_indices": [
+        242,
+        243
+      ],
+      "cue_index": 37,
+      "start": 84.33,
+      "end": 89.43,
+      "detector": "oov+phonetic_internal+phonetic_vocab+read_through",
+      "reason": "\"atencion\" is not a common word or known term; \"atencion\" sounds like domain term \"attention\"; \"atencion\" sounds like \"attention\" used elsewhere in this transcript; widened by the Read-through: Spanish spelling of attention",
+      "candidates": [
+        "attention"
+      ],
+      "confidence": 0.95,
+      "context": "humans would take it's quite intuitive given this example scenario we can now better define atencion atencion mechanisms found in neural networks is somewhat similar to that found in humans they focus"
+    },
+    {
+      "span": "grin you ality",
+      "global_indices": [
+        774,
+        775,
+        776
+      ],
+      "cue_index": 118,
+      "start": 287.98,
+      "end": 293.2,
+      "detector": "phonetic_internal+read_through",
+      "reason": "\"ality\" sounds like \"would\" used elsewhere in this transcript; widened by the Read-through: Phonetic match for granularity",
+      "candidates": [
+        "granularity"
+      ],
+      "confidence": 0.9,
+      "context": "I hire the difference of using the simple inner product and tange function would be grin you ality of the output regions of interest tange is more fine-grained with less choppy and smoother"
+    },
+    {
+      "span": "nmt",
+      "global_indices": [
+        1443
+      ],
+      "cue_index": 219,
+      "start": 559.46,
+      "end": 564.65,
+      "detector": "phonetic_vocab",
+      "reason": "\"nmt\" sounds like domain term \"Nomad\"",
+      "candidates": [
+        "Nomad"
+      ],
+      "confidence": 0.841,
+      "context": "use attention attention is not only used for image inputs for example neural machine translation nmt systems they are used to translate one language to another words are fed in a"
+    },
+    {
+      "span": "gann",
+      "global_indices": [
+        1506
+      ],
+      "cue_index": 229,
+      "start": 585.35,
+      "end": 591.2,
+      "detector": "phonetic_internal+phonetic_vocab",
+      "reason": "\"gann\" sounds like domain term \"Qwen\"; \"gann\" sounds like \"gene\" used elsewhere in this transcript",
+      "candidates": [
+        "Qwen",
+        "gene"
+      ],
+      "confidence": 0.825,
+      "context": "are generated another cool application would be Microsoft's attention generative adversarial networks or Microsoft's attention gann that can create images from text through natural language processing it can perform fine-grained tasks"
+    },
+    {
+      "span": "eighth",
+      "global_indices": [
+        437
+      ],
+      "cue_index": 68,
+      "start": 162.67,
+      "end": 168.34,
+      "detector": "read_through",
+      "reason": "Context implies variable index i",
+      "candidates": [
+        "i-th"
+      ],
+      "confidence": 0.9,
+      "context": "sub regions hence H I would be the internal feature representation used to generate the eighth word it is not necessarily the representation of the I 3 gene of the original"
+    },
+    {
+      "span": "see",
+      "global_indices": [
+        600
+      ],
+      "cue_index": 93,
+      "start": 226.36,
+      "end": 232.03,
+      "detector": "read_through",
+      "reason": "Refers to context variable C",
+      "candidates": [
+        "C"
+      ],
+      "confidence": 0.95,
+      "context": "what happens we have input regions Y from the convolution neural net and the context see from the RN these inputs are applied to weights which constitute the learn about parameters"
+    },
+    {
+      "span": "RN",
+      "global_indices": [
+        603
+      ],
+      "cue_index": 93,
+      "start": 226.36,
+      "end": 232.03,
+      "detector": "read_through",
+      "reason": "Acronym for Recurrent Neural Network",
+      "candidates": [
+        "RNN"
+      ],
+      "confidence": 0.95,
+      "context": "have input regions Y from the convolution neural net and the context see from the RN these inputs are applied to weights which constitute the learn about parameters of the attention"
+    },
+    {
+      "span": "tange",
+      "global_indices": [
+        635
+      ],
+      "cue_index": 98,
+      "start": 240.01,
+      "end": 243.22,
+      "detector": "read_through",
+      "reason": "Hyperbolic tangent activation",
+      "candidates": [
+        "tanh"
+      ],
+      "confidence": 0.95,
+      "context": "this means the weight vectors update as we get more training data we apply a tange activation so that of very high values tend to have very small differences and be"
+    },
+    {
+      "span": "tange",
+      "global_indices": [
+        698
+      ],
+      "cue_index": 108,
+      "start": 262.18,
+      "end": 267.04,
+      "detector": "read_through",
+      "reason": "Hyperbolic tangent activation",
+      "candidates": [
+        "tanh"
+      ],
+      "confidence": 0.95,
+      "context": "it is more fine-grained so to speak note we don't necessarily have to apply a tange function we only need to ensure the regions that we output are relevant to the"
+    },
+    {
+      "span": "tange",
+      "global_indices": [
+        770
+      ],
+      "cue_index": 118,
+      "start": 287.98,
+      "end": 292.6,
+      "detector": "read_through",
+      "reason": "Hyperbolic tangent activation",
+      "candidates": [
+        "tanh"
+      ],
+      "confidence": 0.95,
+      "context": "more relevant region why I hire the difference of using the simple inner product and tange function would be grin you ality of the output regions of interest tange is more"
+    },
+    {
+      "span": "tange",
+      "global_indices": [
+        783
+      ],
+      "cue_index": 121,
+      "start": 293.2,
+      "end": 298.42,
+      "detector": "read_through",
+      "reason": "Hyperbolic tangent activation",
+      "candidates": [
+        "tanh"
+      ],
+      "confidence": 0.95,
+      "context": "product and tange function would be grin you ality of the output regions of interest tange is more fine-grained with less choppy and smoother parts of sub regions chosen regardless of"
+    },
+    {
+      "span": "wide",
+      "global_indices": [
+        905
+      ],
+      "cue_index": 139,
+      "start": 342.46,
+      "end": 347.72,
+      "detector": "read_through",
+      "reason": "contrast conjunction",
+      "candidates": [
+        "while"
+      ],
+      "confidence": 0.95,
+      "context": "soft attention the main relevant region C consists of different parts of different sub regions wide in heart attention the main relevant region Z consists of only one of the regions"
+    },
+    {
+      "span": "heart",
+      "global_indices": [
+        907
+      ],
+      "cue_index": 140,
+      "start": 345.11,
+      "end": 350.509,
+      "detector": "read_through",
+      "reason": "hard attention term",
+      "candidates": [
+        "hard"
+      ],
+      "confidence": 0.98,
+      "context": "the main relevant region C consists of different parts of different sub regions wide in heart attention the main relevant region Z consists of only one of the regions why I'll"
+    },
+    {
+      "span": "why",
+      "global_indices": [
+        1095
+      ],
+      "cue_index": 166,
+      "start": 415.219,
+      "end": 420.139,
+      "detector": "read_through",
+      "reason": "variable name Y",
+      "candidates": [
+        "Y"
+      ],
+      "confidence": 0.9,
+      "context": "to soft attention initially we have an image just split into a number of regions why with an input context see this is our initial state on the application of soft"
+    },
+    {
+      "span": "see",
+      "global_indices": [
+        1100
+      ],
+      "cue_index": 167,
+      "start": 417.44,
+      "end": 422.75,
+      "detector": "read_through",
+      "reason": "context variable C",
+      "candidates": [
+        "C"
+      ],
+      "confidence": 0.9,
+      "context": "have an image just split into a number of regions why with an input context see this is our initial state on the application of soft attention we end up with"
+    },
+    {
+      "span": "heart",
+      "global_indices": [
+        1169
+      ],
+      "cue_index": 177,
+      "start": 445.159,
+      "end": 449.06,
+      "detector": "read_through",
+      "reason": "hard attention term",
+      "candidates": [
+        "hard"
+      ],
+      "confidence": 0.98,
+      "context": "this is because we consider all the regions Y anyways to determine Z now consider heart attention looking at the architecture heart attention is very similar to soft attention however instead"
+    },
+    {
+      "span": "heart",
+      "global_indices": [
+        1175
+      ],
+      "cue_index": 178,
+      "start": 447.44,
+      "end": 451.279,
+      "detector": "read_through",
+      "reason": "hard attention term",
+      "candidates": [
+        "hard"
+      ],
+      "confidence": 0.98,
+      "context": "the regions Y anyways to determine Z now consider heart attention looking at the architecture heart attention is very similar to soft attention however instead of taking the weighted arithmetic mean"
+    },
+    {
+      "span": "heart",
+      "global_indices": [
+        1194
+      ],
+      "cue_index": 181,
+      "start": 453.56,
+      "end": 458.27,
+      "detector": "read_through",
+      "reason": "hard attention term",
+      "candidates": [
+        "hard"
+      ],
+      "confidence": 0.98,
+      "context": "similar to soft attention however instead of taking the weighted arithmetic mean of all regions heart attention only considers one region randomly so heart attention is a stochastic process now stochastic"
+    },
+    {
+      "span": "heart",
+      "global_indices": [
+        1202
+      ],
+      "cue_index": 183,
+      "start": 458.27,
+      "end": 466.159,
+      "detector": "read_through",
+      "reason": "hard attention term",
+      "candidates": [
+        "hard"
+      ],
+      "confidence": 0.98,
+      "context": "the weighted arithmetic mean of all regions heart attention only considers one region randomly so heart attention is a stochastic process now stochastic when you hear the word stochastic think about"
+    },
+    {
+      "span": "heart",
+      "global_indices": [
+        1405
+      ],
+      "cue_index": 213,
+      "start": 544.13,
+      "end": 548.39,
+      "detector": "read_through",
+      "reason": "hard attention term",
+      "candidates": [
+        "hard"
+      ],
+      "confidence": 0.98,
+      "context": "Toronto and University of Montreal in 2016 results vary with the data set soft and heart attention both perform decently well with heart attention performing it slightly better this is pretty"
+    },
+    {
+      "span": "heart",
+      "global_indices": [
+        1412
+      ],
+      "cue_index": 214,
+      "start": 545.99,
+      "end": 551.24,
+      "detector": "read_through",
+      "reason": "hard attention term",
+      "candidates": [
+        "hard"
+      ],
+      "confidence": 0.98,
+      "context": "results vary with the data set soft and heart attention both perform decently well with heart attention performing it slightly better this is pretty cool right so where else can we"
+    },
+    {
+      "span": "altars",
+      "global_indices": [
+        1550
+      ],
+      "cue_index": 237,
+      "start": 605.44,
+      "end": 609.46,
+      "detector": "read_through",
+      "reason": "paper authors",
+      "candidates": [
+        "authors"
+      ],
+      "confidence": 0.95,
+      "context": "another application would be in the paper of teaching machines to read and comprehend the altars do the same thing I talked about in the beginning of the video a recurrent"
+    },
+    {
+      "span": "Gantz",
+      "global_indices": [
+        1647
+      ],
+      "cue_index": 253,
+      "start": 641.95,
+      "end": 647.95,
+      "detector": "read_through",
+      "reason": "text generation context",
+      "candidates": [
+        "generation"
+      ],
+      "confidence": 0.95,
+      "context": "is stochastic attention can be used for non image inputs like neural machine translation attention Gantz and answering questions from text and that's all I have for you now hope you"
+    },
+    {
+      "span": "intel",
+      "global_indices": [
+        1687
+      ],
+      "cue_index": 258,
+      "start": 654.82,
+      "end": 659.44,
+      "detector": "read_through",
+      "reason": "Show, Attend and Tell paper",
+      "candidates": [
+        "and tell"
+      ],
+      "confidence": 0.9,
+      "context": "applications in this video I have left a link to the main paper show attend intel with other papers and blog posts in the description down below don't forget to give"
+    }
+  ],
+  "corrections": [
+    {
+      "id": "c0.0",
+      "replacement": "attention",
+      "confidence": 0.95,
+      "rationale": "Spanish spelling of attention"
+    },
+    {
+      "id": "c0.8",
+      "replacement": "granularity",
+      "confidence": 0.9,
+      "rationale": "Phonetic match for granularity"
+    },
+    {
+      "id": "c1.11",
+      "replacement": null,
+      "confidence": 0.9,
+      "rationale": "NMT is correct acronym"
+    },
+    {
+      "id": "c1.12",
+      "replacement": "GANs",
+      "confidence": 0.95,
+      "rationale": "Generative Adversarial Networks"
+    },
+    {
+      "id": "c0.2",
+      "replacement": "i-th",
+      "confidence": 0.9,
+      "rationale": "Context implies variable index i"
+    },
+    {
+      "id": "c0.3",
+      "replacement": "C",
+      "confidence": 0.95,
+      "rationale": "Refers to context variable C"
+    },
+    {
+      "id": "c0.4",
+      "replacement": "RNN",
+      "confidence": 0.95,
+      "rationale": "Acronym for Recurrent Neural Network"
+    },
+    {
+      "id": "c0.5",
+      "replacement": "tanh",
+      "confidence": 0.95,
+      "rationale": "Hyperbolic tangent activation"
+    },
+    {
+      "id": "c0.6",
+      "replacement": "tanh",
+      "confidence": 0.95,
+      "rationale": "Hyperbolic tangent activation"
+    },
+    {
+      "id": "c0.7",
+      "replacement": "tanh",
+      "confidence": 0.95,
+      "rationale": "Hyperbolic tangent activation"
+    },
+    {
+      "id": "c0.9",
+      "replacement": "tanh",
+      "confidence": 0.95,
+      "rationale": "Hyperbolic tangent activation"
+    },
+    {
+      "id": "c1.0",
+      "replacement": "while",
+      "confidence": 0.95,
+      "rationale": "contrast conjunction"
+    },
+    {
+      "id": "c1.1",
+      "replacement": "hard",
+      "confidence": 0.98,
+      "rationale": "hard attention term"
+    },
+    {
+      "id": "c1.2",
+      "replacement": "Y",
+      "confidence": 0.9,
+      "rationale": "variable name Y"
+    },
+    {
+      "id": "c1.3",
+      "replacement": "C",
+      "confidence": 0.9,
+      "rationale": "context variable C"
+    },
+    {
+      "id": "c1.4",
+      "replacement": "hard",
+      "confidence": 0.98,
+      "rationale": "hard attention term"
+    },
+    {
+      "id": "c1.5",
+      "replacement": "hard",
+      "confidence": 0.98,
+      "rationale": "hard attention term"
+    },
+    {
+      "id": "c1.6",
+      "replacement": "hard",
+      "confidence": 0.98,
+      "rationale": "hard attention term"
+    },
+    {
+      "id": "c1.7",
+      "replacement": "hard",
+      "confidence": 0.98,
+      "rationale": "hard attention term"
+    },
+    {
+      "id": "c1.9",
+      "replacement": "hard",
+      "confidence": 0.98,
+      "rationale": "hard attention term"
+    },
+    {
+      "id": "c1.10",
+      "replacement": "hard",
+      "confidence": 0.98,
+      "rationale": "hard attention term"
+    },
+    {
+      "id": "c1.13",
+      "replacement": "authors",
+      "confidence": 0.95,
+      "rationale": "paper authors"
+    },
+    {
+      "id": "c2.0",
+      "replacement": "generation",
+      "confidence": 0.95,
+      "rationale": "text generation context"
+    },
+    {
+      "id": "c2.1",
+      "replacement": "and tell",
+      "confidence": 0.9,
+      "rationale": "Show, Attend and Tell paper"
+    }
+  ],
+  "decisions": [
+    {
+      "status": "pending",
+      "text": null
+    },
+    {
+      "status": "pending",
+      "text": null
+    },
+    {
+      "status": "pending",
+      "text": null
+    },
+    {
+      "status": "pending",
+      "text": null
+    },
+    {
+      "status": "pending",
+      "text": null
+    },
+    {
+      "status": "pending",
+      "text": null
+    },
+    {
+      "status": "pending",
+      "text": null
+    },
+    {
+      "status": "pending",
+      "text": null
+    },
+    {
+      "status": "pending",
+      "text": null
+    },
+    {
+      "status": "pending",
+      "text": null
+    },
+    {
+      "status": "pending",
+      "text": null
+    },
+    {
+      "status": "pending",
+      "text": null
+    },
+    {
+      "status": "pending",
+      "text": null
+    },
+    {
+      "status": "pending",
+      "text": null
+    },
+    {
+      "status": "pending",
+      "text": null
+    },
+    {
+      "status": "pending",
+      "text": null
+    },
+    {
+      "status": "pending",
+      "text": null
+    },
+    {
+      "status": "pending",
+      "text": null
+    },
+    {
+      "status": "pending",
+      "text": null
+    },
+    {
+      "status": "pending",
+      "text": null
+    },
+    {
+      "status": "pending",
+      "text": null
+    },
+    {
+      "status": "pending",
+      "text": null
+    },
+    {
+      "status": "pending",
+      "text": null
+    },
+    {
+      "status": "pending",
+      "text": null
+    }
+  ],
+  "correct_error": null,
+  "corrected_at": "2026-10-05T13:11:02.804363+00:00",
+  "chunk_count": 3,
+  "failed_chunks": 0,
+  "video_id": "W2rWgXJBZhU",
+  "video_title": "Attention in Neural Networks",
+  "video_channel": "CodeEmporium",
+  "priming_terms": "",
+  "last_activity": "",
+  "is_example": false,
+  "credit": "\"Attention in Neural Networks\" by CodeEmporium, licensed under CC BY (Reuse Allowed)"
+}
