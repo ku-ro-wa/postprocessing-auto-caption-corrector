@@ -6,7 +6,7 @@ from __future__ import annotations
 from caption_checker.detectors import ALL_DETECTORS
 from caption_checker.detectors.base import span_text
 from caption_checker.models import Cue, DetectConfig, Flag, Word
-from caption_checker.normalize import _SPAN_EDGE, sentences
+from caption_checker.normalize import _SPAN_EDGE, span_contexts
 from caption_checker.parser import tokenize
 from caption_checker.vocab import Vocab, build_doc_vocab, load_vocab
 
@@ -118,13 +118,6 @@ def _widen(candidate: str, flag: Flag, indices: list[int], words: list[Word]) ->
 
 
 def _attach_context(flags: list[Flag], cues: list[Cue], words: list) -> None:
-    sents = sentences(cues, words)
-    by_index: dict[int, str] = {}
-    for sent_text, idxs in sents:
-        for gi in idxs:
-            by_index[gi] = sent_text
+    context = span_contexts(cues, words)
     for flag in flags:
-        for gi in flag.global_indices:
-            if gi in by_index:
-                flag.context = by_index[gi]
-                break
+        flag.context = context(flag.global_indices)

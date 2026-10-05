@@ -29,7 +29,7 @@ from caption_checker.corrector import (
 )
 from caption_checker.detectors.base import index_cues, make_flag
 from caption_checker.models import DEFAULT_MODEL, Cue, Flag, Word
-from caption_checker.normalize import clean, sentences
+from caption_checker.normalize import clean, span_contexts
 from caption_checker.parser import tokenize
 
 DETECTOR_READ_THROUGH = "read_through"
@@ -625,7 +625,7 @@ def read_through(
     with ThreadPoolExecutor(max_workers=max(1, workers)) as pool:
         replies = list(pool.map(ask, chunks))
 
-    context_of = {gi: text for text, idxs in sentences(cues, words) for gi in idxs}
+    context = span_contexts(cues, words)
     cues_by_index = index_cues(cues)
     items: list[ReadItem] = []
     failed = 0
@@ -645,7 +645,7 @@ def read_through(
             hint = next((h for h in chunk.hints if h.id == v.hint), None)
             span_words = [by_gi[gi] for gi in range(v.start, v.end + 1)]
             flag = _flag_for(v, hint, span_words, hint_flags, cues_by_index)
-            flag.context = flag.context or _context(span_words, context_of)
+            flag.context = flag.context or context(w.global_index for w in span_words)
             correction = Correction(
                 id=f"c{n}.{k}",
                 replacement=v.replacement,
@@ -670,17 +670,6 @@ def read_through(
         last_request_error=last_request_error,
         recovered_chunks=recovered,
     )
-
-
-def _context(span_words: list[Word], context_of: dict[int, str]) -> str:
-    """The sentence a span sits in -- or, for one that runs across a sentence
-    end (as a span across a Cue boundary may), every sentence it touches."""
-    parts: list[str] = []
-    for w in span_words:
-        text = context_of.get(w.global_index, "")
-        if text and text not in parts:
-            parts.append(text)
-    return " ".join(parts)
 
 
 def _flag_for(
