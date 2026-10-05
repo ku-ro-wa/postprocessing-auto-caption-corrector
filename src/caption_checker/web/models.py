@@ -43,7 +43,8 @@ class TranscriptRecord:
     run doesn't lose it. ``last_activity`` is when the record was last saved
     (or exported): the Transcript is deleted a retention period after it
     (ADR 0010). ``is_example`` marks a copy of the Example, whose run was
-    saved with the app and is never run again (#65)."""
+    saved with the app and is never run again, and ``credit`` is the credit
+    line saved with it for its Source video (#65)."""
 
     id: str
     session_id: str
@@ -63,6 +64,7 @@ class TranscriptRecord:
     priming_terms: str = ""
     last_activity: str = ""
     is_example: bool = False
+    credit: str = ""
 
     @property
     def reviewed_count(self) -> int:
@@ -163,6 +165,7 @@ def record_to_dict(record: TranscriptRecord) -> dict:
         "priming_terms": record.priming_terms,
         "last_activity": record.last_activity,
         "is_example": record.is_example,
+        "credit": record.credit,
     }
 
 
@@ -189,4 +192,5 @@ def record_from_dict(data: dict) -> TranscriptRecord:
         priming_terms=data.get("priming_terms", ""),
         last_activity=data.get("last_activity") or data["created_at"],
         is_example=data.get("is_example", False),
+        credit=data.get("credit", ""),
     )

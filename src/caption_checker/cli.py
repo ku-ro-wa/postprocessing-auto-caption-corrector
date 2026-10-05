@@ -502,7 +502,15 @@ def usage(data_dir: Path | None) -> None:
     default=None,
     help="Where to save the Example (default: the one the app offers).",
 )
-def capture_example(transcript_id: str, data_dir: Path | None, to: Path | None) -> None:
+@click.option(
+    "--credit",
+    default="",
+    help="Credit line shown with the Example, e.g. the video's title, "
+    "creator and licence, when its licence asks for one.",
+)
+def capture_example(
+    transcript_id: str, data_dir: Path | None, to: Path | None, credit: str
+) -> None:
     """Save TRANSCRIPT_ID, once Correct has run on it, as the Example the
     web UI offers first-time visitors (#65), replacing any saved before.
     Review Decisions are reset and the reviewer's own Flags dropped. The id
@@ -515,7 +523,9 @@ def capture_example(transcript_id: str, data_dir: Path | None, to: Path | None) 
 
     dest = to or EXAMPLE_DIR
     try:
-        saved = capture(Storage(data_dir or default_data_dir()), transcript_id, dest)
+        saved = capture(
+            Storage(data_dir or default_data_dir()), transcript_id, dest, credit=credit
+        )
     except ExampleError as exc:
         raise click.ClickException(str(exc)) from exc
     click.echo(f"Saved {saved.filename} ({len(saved.flags)} Flags) as the Example in {dest}")

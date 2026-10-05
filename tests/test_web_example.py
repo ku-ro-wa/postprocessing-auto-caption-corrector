@@ -88,6 +88,30 @@ class TestCapture:
         assert saved.session_id == ""
         assert example.load(dest) == saved
 
+    def test_recomputes_each_flags_context_from_the_original(self, tmp_path: Path) -> None:
+        # A Flag's context is stored when it is made, so one made before a
+        # change to how contexts are cut would otherwise be saved stale.
+        storage = Storage(tmp_path / "operator")
+        transcript_id, before = _corrected_and_reviewed(storage)
+        fresh = [flag.context for flag in before.flags]
+        for flag in before.flags:
+            flag.context = "stale"
+        storage.save_transcript(before)
+
+        saved = example.capture(storage, transcript_id, tmp_path / "example")
+
+        assert [flag.context for flag in saved.flags] == fresh[: len(saved.flags)]
+
+    def test_keeps_the_credit_given(self, tmp_path: Path) -> None:
+        storage = Storage(tmp_path / "operator")
+        transcript_id, _ = _corrected_and_reviewed(storage)
+        dest = tmp_path / "example"
+
+        assert example.capture(storage, transcript_id, dest).credit == ""
+        saved = example.capture(storage, transcript_id, dest, credit=" A talk by A channel, CC BY ")
+
+        assert saved.credit == "A talk by A channel, CC BY"
+
     def test_replaces_an_earlier_capture(self, tmp_path: Path) -> None:
         storage = Storage(tmp_path / "operator")
         transcript_id, _ = _corrected_and_reviewed(storage)
@@ -127,6 +151,22 @@ class TestCaptureCommand:
         assert result.exit_code == 0, result.output
         assert example.load(dest) is not None
         assert str(dest) in result.output
+
+    def test_saves_the_credit_given(self, tmp_path: Path) -> None:
+        from caption_checker.cli import main
+
+        storage = Storage(tmp_path / "operator")
+        transcript_id, _ = _corrected_and_reviewed(storage)
+        dest = tmp_path / "example"
+
+        result = CliRunner().invoke(
+            main,
+            ["capture-example", transcript_id, "--data-dir", str(storage.root),
+             "--to", str(dest), "--credit", "A talk by A channel, CC BY"],
+        )
+
+        assert result.exit_code == 0, result.output
+        assert example.load(dest).credit == "A talk by A channel, CC BY"
 
     def test_an_uncorrected_transcript_is_an_error(self, tmp_path: Path) -> None:
         from caption_checker.cli import main
@@ -207,6 +247,19 @@ class TestExampleRoutes:
         assert "AI read-through done" in page
         assert 'id="correct-form"' not in page
         assert "(example)" in client.get("/").text.split("Your transcripts")[-1]
+
+    def test_a_copy_shows_the_credit_when_one_was_saved(
+        self, tmp_path: Path, example_dir: Path
+    ) -> None:
+        client = self._client(tmp_path, example_dir)
+        assert "Video credit" not in client.get(f"/transcripts/{self._open(client)}").text
+
+        source = Storage(tmp_path / "operator")
+        transcript_id, _ = _corrected_and_reviewed(source)
+        example.capture(source, transcript_id, example_dir, credit="A talk by <A channel>, CC BY")
+
+        page = client.get(f"/transcripts/{self._open(client)}").text
+        assert "Video credit: A talk by &lt;A channel&gt;, CC BY" in page
 
     def test_an_uploaded_transcript_is_not_marked(self, tmp_path: Path, example_dir: Path) -> None:
         client = self._client(tmp_path, example_dir)

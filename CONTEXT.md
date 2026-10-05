@@ -298,7 +298,9 @@ _Avoid_: global quota, spend limit.
 A Transcript already run through Correct, saved with the app, which a
 first-time visitor can open without uploading anything (#65). Each visitor
 gets their own copy in their Session, with every Review Decision pending and
-none of the Flags its operator raised by editing Cues, and the retention sweep deletes it like any other Transcript. Its run is never
-repeated, so opening it is never charged to the Free tier. Saved from a
-finished Transcript with `caption-checker capture-example`.
+none of the Flags its operator raised by editing Cues, and the retention
+sweep deletes it like any other Transcript. Its run is never repeated, so
+opening it is never charged to the Free tier. Saved from a finished
+Transcript with `caption-checker capture-example`, with a credit line for its
+Source video when the video's licence asks for one.
 _Avoid_: demo, sample, tutorial.

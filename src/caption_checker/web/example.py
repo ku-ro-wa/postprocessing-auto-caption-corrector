@@ -22,6 +22,8 @@ from pathlib import Path
 from uuid import uuid4
 
 from caption_checker.models import DETECTOR_REVIEWER
+from caption_checker.normalize import span_contexts
+from caption_checker.parser import tokenize
 from caption_checker.web.models import (
     ReviewDecision,
     TranscriptRecord,
@@ -60,14 +62,20 @@ def load(example_dir: Path) -> TranscriptRecord:
     return record_from_dict(data)
 
 
-def capture(storage: Storage, transcript_id: str, example_dir: Path) -> TranscriptRecord:
+def capture(
+    storage: Storage, transcript_id: str, example_dir: Path, *, credit: str = ""
+) -> TranscriptRecord:
     """Save Transcript ``transcript_id`` from ``storage`` as the Example in
     ``example_dir``, replacing any saved before, and return what was saved.
 
     The run is kept -- Flags, Corrections, chunk counts, Video link -- but
     not the review: every Review Decision goes back to pending, and the
     Flags the reviewer raised by editing Cues are dropped, so each visitor
-    starts the review fresh. The record belongs to no Session until copied.
+    starts the review fresh. Each Flag's context is cut again from the
+    original, since a Flag made before a change to how contexts are cut
+    still holds the old one. ``credit`` is shown on every copy, for a
+    Source video whose licence asks for one. The record belongs to no
+    Session until copied.
     """
     record = storage.find_transcript(transcript_id)
     original = storage.original_path(record.session_id, record.id) if record else None
@@ -83,15 +91,21 @@ def capture(storage: Storage, transcript_id: str, example_dir: Path) -> Transcri
     # Flags; pad them so the two stay aligned by index.
     corrections = list(record.corrections) + [None] * (len(record.flags) - len(record.corrections))
     kept = [i for i, flag in enumerate(record.flags) if flag.detector != DETECTOR_REVIEWER]
+    cues = storage.load_cues(record.session_id, record.id)
+    context = span_contexts(cues, tokenize(cues))
     saved = replace(
         record,
         session_id="",
-        flags=[record.flags[i] for i in kept],
+        flags=[
+            replace(record.flags[i], context=context(record.flags[i].global_indices))
+            for i in kept
+        ],
         corrections=[corrections[i] for i in kept],
         decisions=[ReviewDecision() for _ in kept],
         correct_error=None,
         last_activity="",
         is_example=False,
+        credit=credit.strip(),
     )
 
     example_dir.mkdir(parents=True, exist_ok=True)
