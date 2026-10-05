@@ -27,7 +27,7 @@ from starlette.middleware.base import BaseHTTPMiddleware, RequestResponseEndpoin
 
 from caption_checker.corrector import CorrectorError, MissingAPIKeyError
 from caption_checker.readthrough import Reader, select_config
-from caption_checker.web import service
+from caption_checker.web import example, service
 from caption_checker.web import source_video
 from caption_checker.web.free_tier import WINDOW, FreeTier, LimitReached, Limits
 from caption_checker.web.models import TranscriptRecord
@@ -145,6 +145,7 @@ def create_app(
     max_upload_bytes: int = MAX_UPLOAD_BYTES,
     app_name: str = DEFAULT_APP_NAME,
     feedback_email: str | None = None,
+    example_dir: Path | None = example.EXAMPLE_DIR,
 ) -> FastAPI:
     """``reader`` lets tests inject a ``StubReader`` (or any other
     ``Reader``) at the same seam the CLI's Read-through tests use — no route
@@ -167,7 +168,11 @@ def create_app(
 
     ``app_name`` heads every page; the footer links ``feedback_email`` as a
     mailto, and has no feedback link while it is None. Each upload, Correct
-    run and Export is tallied to ``usage.log`` at ``storage.root`` (ADR 0010).
+    run, Export and opened Example is tallied to ``usage.log`` at
+    ``storage.root`` (ADR 0010).
+
+    The landing page offers the Example saved in ``example_dir`` (#65), and
+    nothing when none is saved there or it is None.
 
     While the app runs, Transcripts idle for ``retention`` are swept at
     startup and every ``SWEEP_INTERVAL`` after (ADR 0010). An emptied
@@ -249,6 +254,7 @@ def create_app(
                 "transcripts": storage.list_transcripts(request.state.session_id),
                 "limits": limits,
                 "has_server_key": bool(os.environ.get("OPENROUTER_API_KEY")),
+                "example_available": example.is_available(example_dir),
                 **extra,
             },
             status_code=status_code,
@@ -287,6 +293,14 @@ def create_app(
             )
 
         usage.record("upload")
+        return RedirectResponse(f"/transcripts/{record.id}", status_code=303)
+
+    @app.post("/example")
+    def open_example(request: Request) -> Response:
+        if example_dir is None or not example.is_available(example_dir):
+            raise HTTPException(status_code=404, detail="No example on this server")
+        record = example.copy_into(storage, request.state.session_id, example_dir)
+        usage.record("example")
         return RedirectResponse(f"/transcripts/{record.id}", status_code=303)
 
     def review_status(record: TranscriptRecord) -> dict[str, object]:
@@ -373,9 +387,12 @@ def create_app(
                 request, load_or_404(session_id, transcript_id), status_code=409, already_running=True
             )
         try:
-            return run_correct(
-                request, load_or_404(session_id, transcript_id), api_key, priming_terms
-            )
+            record = load_or_404(session_id, transcript_id)
+            if record.is_example:
+                # Its run was saved with the app; a run here would only be
+                # charged and tallied for nothing.
+                raise HTTPException(status_code=409, detail="An example's run can't be repeated")
+            return run_correct(request, record, api_key, priming_terms)
         finally:
             with running_lock:
                 running.discard(key)

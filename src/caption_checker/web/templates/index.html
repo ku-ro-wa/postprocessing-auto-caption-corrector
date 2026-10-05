@@ -7,6 +7,12 @@
   <p class="tagline">Find and fix the words your auto-captions got wrong.</p>
   <p>For YouTubers who fix their own auto-captions: it flags the names, jargon and mishearings and proposes the correction, so you review a short list instead of re-reading the whole video.</p>
   <p class="muted">Works with any SRT or VTT file.</p>
+  {% if example_available %}
+    <form class="hero-example" action="/example" method="post">
+      <span>No captions file to hand?</span>
+      <button class="btn" type="submit">Try an example</button>
+    </form>
+  {% endif %}
 </section>
 
 <section>
@@ -125,7 +131,7 @@
       <tbody>
         {% for t in transcripts %}
         <tr>
-          <td><a href="/transcripts/{{ t.id }}">{{ t.filename }}</a></td>
+          <td><a href="/transcripts/{{ t.id }}">{{ t.filename }}</a>{% if t.is_example %} <span class="muted">(example)</span>{% endif %}</td>
           <td>{{ t.format }}</td>
           <td>{{ t.flag_count }}</td>
           <td>{{ t.reviewed_count }} / {{ t.flag_count }}</td>

@@ -123,6 +123,16 @@ class Storage:
             return None
         return record_from_dict(data)
 
+    def find_transcript(self, transcript_id: str) -> TranscriptRecord | None:
+        """The Transcript ``transcript_id`` in whichever Session holds it,
+        for the operator's tools; a visitor's requests go by their own
+        Session."""
+        for state in self.root.glob(f"sessions/*/transcripts/{transcript_id}/state.json"):
+            data = self._read_json(state)
+            if data is not None:
+                return record_from_dict(data)
+        return None
+
     def list_transcripts(self, session_id: str) -> list[TranscriptSummary]:
         transcripts_dir = self._session_dir(session_id) / "transcripts"
         if not transcripts_dir.is_dir():
@@ -141,6 +151,7 @@ class Storage:
                     created_at=record.created_at,
                     flag_count=len(record.flags),
                     reviewed_count=record.reviewed_count,
+                    is_example=record.is_example,
                 )
             )
         summaries.sort(key=lambda s: s.created_at, reverse=True)

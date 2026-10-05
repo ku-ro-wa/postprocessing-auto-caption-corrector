@@ -9,6 +9,9 @@
 {% block content %}
 
 <h2>{{ transcript.filename }}</h2>
+{% if transcript.is_example %}
+  <div class="example-note"><strong>This is a saved example.</strong> The AI read-through has already been run on it, so you can review its Flags straight away. <a href="/">Upload your own captions</a> to run it live.</div>
+{% endif %}
 {% include "partials/counts.html" %}
 
 <section class="source-video-controls">

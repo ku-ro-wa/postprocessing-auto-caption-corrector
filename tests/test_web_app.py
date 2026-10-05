@@ -2399,13 +2399,14 @@ class TestUsageCommand:
             "2026-10-01T09:00:00+00:00 upload\n"
             "2026-10-01T09:05:00+00:00 correct\n"
             "2026-10-02T09:00:00+00:00 upload\n"
+            "2026-10-02T09:10:00+00:00 example\n"
         )
         result = CliRunner().invoke(main, ["usage", "--data-dir", str(tmp_path)])
         assert result.exit_code == 0, result.output
         lines = result.output.splitlines()
-        assert lines[0].split() == ["date", "upload", "correct", "export"]
-        assert lines[1].split() == ["2026-10-01", "1", "1", "0"]
-        assert lines[2].split() == ["2026-10-02", "1", "0", "0"]
+        assert lines[0].split() == ["date", "upload", "correct", "export", "example"]
+        assert lines[1].split() == ["2026-10-01", "1", "1", "0", "0"]
+        assert lines[2].split() == ["2026-10-02", "1", "0", "0", "1"]
 
     def test_says_so_when_nothing_is_recorded(self, tmp_path: Path) -> None:
         from click.testing import CliRunner

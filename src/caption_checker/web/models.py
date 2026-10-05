@@ -42,7 +42,8 @@ class TranscriptRecord:
     Priming terms field as the reviewer last submitted it, kept so a failed
     run doesn't lose it. ``last_activity`` is when the record was last saved
     (or exported): the Transcript is deleted a retention period after it
-    (ADR 0010)."""
+    (ADR 0010). ``is_example`` marks a copy of the Example, whose run was
+    saved with the app and is never run again (#65)."""
 
     id: str
     session_id: str
@@ -61,6 +62,7 @@ class TranscriptRecord:
     video_channel: str | None = None
     priming_terms: str = ""
     last_activity: str = ""
+    is_example: bool = False
 
     @property
     def reviewed_count(self) -> int:
@@ -93,6 +95,7 @@ class TranscriptSummary:
     created_at: str
     flag_count: int
     reviewed_count: int
+    is_example: bool = False
 
 
 def flag_from_dict(data: dict) -> Flag:
@@ -159,6 +162,7 @@ def record_to_dict(record: TranscriptRecord) -> dict:
         "video_channel": record.video_channel,
         "priming_terms": record.priming_terms,
         "last_activity": record.last_activity,
+        "is_example": record.is_example,
     }
 
 
@@ -184,4 +188,5 @@ def record_from_dict(data: dict) -> TranscriptRecord:
         video_channel=data.get("video_channel"),
         priming_terms=data.get("priming_terms", ""),
         last_activity=data.get("last_activity") or data["created_at"],
+        is_example=data.get("is_example", False),
     )

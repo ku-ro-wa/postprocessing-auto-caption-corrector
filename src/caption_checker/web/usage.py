@@ -1,7 +1,8 @@
-"""The usage tally (ADR 0010): one line per upload, Correct run and Export --
-a time and an event name, never a Session id or any content -- appended to a
-file at the data root. Like the spend ledger it sits beside ``sessions/``, so
-the retention sweep never touches it. No third-party analytics.
+"""The usage tally (ADR 0010): one line per upload, Correct run, Export and
+opened Example (#65) -- a time and an event name, never a Session id or any
+content -- appended to a file at the data root. Like the spend ledger it
+sits beside ``sessions/``, so the retention sweep never touches it. No
+third-party analytics.
 """
 
 from __future__ import annotations
@@ -13,7 +14,7 @@ from pathlib import Path
 from typing import Callable
 
 USAGE_FILENAME = "usage.log"
-EVENTS = ("upload", "correct", "export")
+EVENTS = ("upload", "correct", "export", "example")
 
 
 def _utcnow() -> datetime:

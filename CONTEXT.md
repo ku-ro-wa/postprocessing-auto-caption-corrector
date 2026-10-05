@@ -293,3 +293,12 @@ The dollar cap on all Free tier spend across every Session in a rolling 24
 hours, as OpenRouter reports it. The real limit on the server's bill; when it
 is spent, every Session is asked for its own key.
 _Avoid_: global quota, spend limit.
+
+**Example**:
+A Transcript already run through Correct, saved with the app, which a
+first-time visitor can open without uploading anything (#65). Each visitor
+gets their own copy in their Session, with every Review Decision pending and
+none of the Flags its operator raised by editing Cues, and the retention sweep deletes it like any other Transcript. Its run is never
+repeated, so opening it is never charged to the Free tier. Saved from a
+finished Transcript with `caption-checker capture-example`.
+_Avoid_: demo, sample, tutorial.

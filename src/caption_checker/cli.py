@@ -474,8 +474,8 @@ def serve(
     help="The server's data directory (default: as `serve`).",
 )
 def usage(data_dir: Path | None) -> None:
-    """Print the web UI's daily counts of uploads, Correct runs and Exports
-    (UTC days), from the tally the server keeps (ADR 0010)."""
+    """Print the web UI's daily counts of uploads, Correct runs, Exports and
+    opened Examples (UTC days), from the tally the server keeps (ADR 0010)."""
     from caption_checker.web.storage import default_data_dir
     from caption_checker.web.usage import EVENTS, UsageLog
 
@@ -486,6 +486,39 @@ def usage(data_dir: Path | None) -> None:
     click.echo(f"{'date':<12}" + "".join(f"{event:>9}" for event in EVENTS))
     for day, counts in days.items():
         click.echo(f"{day.isoformat():<12}" + "".join(f"{counts.get(e, 0):>9}" for e in EVENTS))
+
+
+@main.command("capture-example")
+@click.argument("transcript_id")
+@click.option(
+    "--data-dir",
+    type=click.Path(file_okay=False, path_type=Path),
+    default=None,
+    help="The data directory the Transcript is in (default: as `serve`).",
+)
+@click.option(
+    "--to",
+    type=click.Path(file_okay=False, path_type=Path),
+    default=None,
+    help="Where to save the Example (default: the one the app offers).",
+)
+def capture_example(transcript_id: str, data_dir: Path | None, to: Path | None) -> None:
+    """Save TRANSCRIPT_ID, once Correct has run on it, as the Example the
+    web UI offers first-time visitors (#65), replacing any saved before.
+    Review Decisions are reset and the reviewer's own Flags dropped. The id
+    is the last part of the Transcript's review page URL.
+
+    Run it locally and commit the result: by default it writes into the
+    installed package, so on a deployed server it would be lost."""
+    from caption_checker.web.example import EXAMPLE_DIR, ExampleError, capture
+    from caption_checker.web.storage import Storage, default_data_dir
+
+    dest = to or EXAMPLE_DIR
+    try:
+        saved = capture(Storage(data_dir or default_data_dir()), transcript_id, dest)
+    except ExampleError as exc:
+        raise click.ClickException(str(exc)) from exc
+    click.echo(f"Saved {saved.filename} ({len(saved.flags)} Flags) as the Example in {dest}")
 
 
 @main.command("eval")
